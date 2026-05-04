@@ -178,7 +178,7 @@
 .panel-title {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-xs);
     white-space: nowrap;
     overflow: hidden;
 }
@@ -194,19 +194,27 @@
 }
 
 .notebook-panel-title-input {
-    font-size: 15px;
-    font-weight: 600;
-    border: 1px solid #1a73e8;
-    border-radius: 4px;
-    padding: 2px 6px;
+    /* 표시 상태와 폰트·크기 완전 일치 → 클릭 시 글자 흔들림 없음 */
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    /* 언더라인만 표시 */
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+    /* 패딩 제거 → 텍스트 위치 유지 */
+    padding: 0;
+    margin: 0;
     outline: none;
+    background: transparent;
+    color: var(--color-text-primary);
     flex: 1;
     min-width: 0;
+    transition: border-color var(--transition-fast);
 }
 
-.notebook-panel-title-input:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+.notebook-panel-title-input:focus {
+    border-bottom-color: var(--color-accent);
 }
 
 .notebook-panel-title-text {
@@ -850,6 +858,8 @@
     align-items: center;
     justify-content: center;
     border-radius: 4px;
+    flex-shrink: 0;
+    margin-left: var(--spacing-xs);
 }
 
 .panel-toggle-btn:hover {

@@ -1276,3 +1276,40 @@
   - src/pages/Home.jsx - .card-header-right 래퍼로 배지·more-btn 감싸기
   - src/pages/Home.css - .card-header-right, .notebook-share-badge 스타일
   - src/App.css - .card-header / 그리드 .more-btn-container 조정
+
+## 2026-05-04
+
+### 95) 노트북 상세 제목 인라인 편집 input 공통 스타일 맞춤
+
+- **원인**: `.notebook-panel-title-input`의 `border`가 기본 상태부터 `#1a73e8`(액센트 파랑)로 고정되어, 포커스 전부터 파란 테두리가 표시되고 `:focus-visible`의 outline이 이중으로 올라오는 문제
+- **기준**: 프로젝트 공통 input 톤 - 기본 `--color-border`(회색) / 포커스 `--color-accent`(파랑) / `outline: none`
+- **변경 내용**
+  - `border`: `1px solid #1a73e8` → `1px solid var(--color-border)`
+  - `border-radius`: 리터럴 `4px` → `var(--radius-sm)`
+  - `background-color: var(--color-bg-secondary)`, `color: var(--color-text-primary)` 명시
+  - `transition: border-color var(--transition-fast)` 추가
+  - `:focus-visible` outline 이중 효과 제거 → `:focus { border-color: var(--color-accent) }` 로 통일
+- **영향**: `src/components/NotebookDetail.css` — `.notebook-panel-title-input` / `:focus`
+
+### 96) 노트북 상세 제목 input - 언더라인 스타일 + 클릭 시 텍스트 흔들림 제거
+
+- **원인**: input의 font-size(15px)/font-weight(600)가 표시 span(16px/700)과 달랐고, padding:2px 6px와 border가 레이아웃 공간을 추가로 차지해 클릭 순간 글자가 밀려 보임
+- **변경 내용**
+  - font-size/weight: 표시 상태와 완전 일치 (16px / 700)
+  - border: 전체 테두리 제거, border-bottom만 유지(기본: --color-border / 포커스: --color-accent)
+  - border-radius: 0 (언더라인 스타일에 불필요)
+  - padding/margin: 0 (좌우 공간 제거로 텍스트 위치 고정)
+  - background: transparent (표시 상태와 배경 동일)
+- **영향**: src/components/NotebookDetail.css - .notebook-panel-title-input / :focus
+
+### 97) 노트북 상세 패널 제목 아이콘-텍스트 간격 축소
+
+- **목적**: 말머리 아이콘과 제목 텍스트 사이 간격이 넓어 보여 조밀하게 조정
+- **변경**: `.panel-title` gap `8px` → `var(--spacing-xs)` (4px)
+- **영향**: `src/components/NotebookDetail.css` — `.panel-title`
+
+### 98) 노트북 상세 패널 헤더 - 제목 영역과 토글 버튼 사이 최소 간격 추가
+
+- **목적**: 제목 input이 flex:1로 늘어나 토글 버튼에 바짝 붙어 보이는 문제 해소
+- **변경**: `.panel-toggle-btn`에 `margin-left: var(--spacing-xs)` (4px) + `flex-shrink: 0` 추가
+- **영향**: `src/components/NotebookDetail.css` — `.panel-toggle-btn`
