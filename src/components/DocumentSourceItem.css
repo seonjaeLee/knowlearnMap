@@ -1,0 +1,305 @@
+.document-source-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  /* 체크박스 크기 — 메뉴 트리거 세로 정렬 보정과 동일 값 유지 */
+  --document-checkbox-size: 13px;
+  --document-menu-trigger-size: 24px;
+  padding: 8px 10px;
+  /* margin-bottom: 4px; */
+  /* 목록 스트립이 아니라 행마다 연회색(패널/리스트 컨테이너는 투명) */
+  background: var(--color-bg-primary);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  position: relative;
+}
+
+.document-source-item:last-child {
+  margin-bottom: 0;
+}
+
+.document-source-item:hover {
+  background: var(--color-accent-light);
+  border-color: rgba(26, 115, 232, 0.35);
+  box-shadow: 0 1px 3px rgba(26, 115, 232, 0.12);
+}
+
+/* 체크박스 */
+.document-checkbox {
+  flex-shrink: 0;
+  padding: 0 2px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.document-checkbox input[type="checkbox"] {
+  width: var(--document-checkbox-size);
+  height: var(--document-checkbox-size);
+  cursor: pointer;
+  margin: 0;
+}
+
+.document-checkbox input[type="checkbox"]:focus {
+  outline: none;
+}
+
+.document-checkbox input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* 문서 내용 (클릭 가능 영역) */
+.document-content {
+  flex: 1;
+  cursor: pointer;
+  min-width: 0;
+}
+
+/* 메뉴 버튼 - 워크스페이스 메뉴(.more-btn)와 동일 스타일 */
+/* 행은 상단 정렬 유지, 트리거만 체크박스 줄 높이에 맞춰 세로 중앙 */
+.document-menu {
+  position: relative;
+  flex-shrink: 0;
+  margin-top: calc(
+    (var(--document-checkbox-size) - var(--document-menu-trigger-size)) / 2
+  );
+}
+
+.menu-trigger {
+  width: var(--document-menu-trigger-size);
+  height: var(--document-menu-trigger-size);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #666);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.15s;
+}
+
+.menu-trigger:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary, #333);
+}
+
+.menu-trigger:focus {
+  outline: none;
+}
+
+.menu-trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* 드롭다운 메뉴 - 워크스페이스 메뉴(.popup-menu)와 동일 스타일 */
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: var(--spacing-xs, 4px);
+  background-color: var(--color-bg-primary, white);
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 120px;
+  z-index: 1000;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.menu-dropdown .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 13px;
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-text-primary, #333);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.menu-dropdown .menu-item svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--color-text-secondary, #666);
+}
+
+.menu-dropdown .menu-item:hover {
+  background-color: var(--color-bg-hover, #f5f5f5);
+}
+
+.menu-dropdown .menu-item.delete {
+  color: #d93025;
+}
+
+.menu-dropdown .menu-item.delete svg {
+  color: #d93025;
+}
+
+.menu-dropdown .menu-item.delete:hover {
+  background-color: #fce8e6;
+}
+
+.menu-dropdown .menu-item.reprocess {
+  color: #1a73e8;
+}
+
+.menu-dropdown .menu-item.reprocess svg {
+  color: #1a73e8;
+}
+
+.menu-dropdown .menu-item.reprocess:hover {
+  background-color: #e8f0fe;
+}
+
+/* 기존 스타일 */
+.source-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.source-icon {
+  flex-shrink: 0;
+  color: #666;
+}
+
+.source-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.source-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-icon {
+  display: inline-block;
+  font-size: 14px;
+}
+
+.status-icon.rotating {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.page-count {
+  color: #666;
+  white-space: nowrap;
+}
+
+.multimodal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: #7c4dff;
+  background: #f3e8ff;
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* CSV 매핑 안내 */
+.csv-mapping-hint {
+  margin-top: 6px;
+  padding: 4px 10px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #e67700;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* 진행률 바 */
+.progress-container {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #666;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .document-source-item {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .source-name {
+    font-size: 14px;
+  }
+
+  .source-meta {
+    font-size: 12px;
+  }
+}

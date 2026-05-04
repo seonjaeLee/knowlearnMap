@@ -1,0 +1,657 @@
+.db-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+}
+
+.db-modal-container {
+    background: #fff;
+    border-radius: 8px;
+    width: 780px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.db-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #d0d0d0;
+    background: #f0f0f0;
+    border-radius: 8px 8px 0 0;
+}
+
+.db-modal-header h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.db-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #666;
+    border-radius: 4px;
+}
+
+.db-modal-close:hover {
+    background: #e0e0e0;
+}
+
+.db-modal-body {
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Steps indicator */
+.db-steps {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 8px;
+}
+
+.db-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #999;
+}
+
+.db-step.active {
+    color: #1a73e8;
+    font-weight: 600;
+}
+
+.db-step.completed {
+    color: #4caf50;
+}
+
+.db-step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    background: #e0e0e0;
+    color: #666;
+}
+
+.db-step.active .db-step-num {
+    background: #1a73e8;
+    color: #fff;
+}
+
+.db-step.completed .db-step-num {
+    background: #4caf50;
+    color: #fff;
+}
+
+.db-step-arrow {
+    color: #ccc;
+    font-size: 14px;
+}
+
+/* =============================================
+   Split Panel Layout (HeidiSQL style)
+   ============================================= */
+.db-split-panel {
+    display: flex;
+    gap: 0;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+    overflow: hidden;
+    min-height: 360px;
+}
+
+/* Left panel - session list */
+.db-panel-left {
+    width: 240px;
+    min-width: 240px;
+    border-right: 1px solid #c0c0c0;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+.db-panel-left-header {
+    display: flex;
+    padding: 6px 8px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #d0d0d0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    gap: 4px;
+}
+
+.db-panel-col-name {
+    flex: 1;
+}
+
+.db-panel-col-host {
+    width: 70px;
+    text-align: right;
+}
+
+.db-session-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.db-session-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.1s;
+    gap: 4px;
+}
+
+.db-session-item:hover {
+    background: #e8f0fe;
+}
+
+.db-session-item.selected {
+    background: #1a73e8;
+    color: #fff;
+}
+
+.db-session-item.selected .db-session-host {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.db-session-item.selected svg {
+    opacity: 0.8 !important;
+}
+
+.db-session-name {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.db-session-host {
+    width: 70px;
+    text-align: right;
+    color: #888;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.db-session-empty {
+    padding: 20px;
+    text-align: center;
+    color: #aaa;
+    font-size: 12px;
+}
+
+/* Left panel action buttons */
+.db-panel-left-actions {
+    display: flex;
+    gap: 2px;
+    padding: 6px;
+    border-top: 1px solid #d0d0d0;
+    background: #f5f5f5;
+}
+
+.db-icon-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 8px;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    background: #fff;
+    font-size: 11px;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.db-icon-btn:hover {
+    background: #e8e8e8;
+}
+
+.db-icon-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.db-icon-btn-danger:hover:not(:disabled) {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* Right panel - connection form */
+.db-panel-right {
+    flex: 1;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    background: #fafafa;
+}
+
+.db-form-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.db-form-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.db-form-label {
+    width: 100px;
+    min-width: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #444;
+    text-align: right;
+}
+
+.db-form-value {
+    flex: 1;
+}
+
+.db-form-value input,
+.db-form-value select {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    font-size: 13px;
+    outline: none;
+    background: #fff;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+}
+
+.db-form-value input:focus,
+.db-form-value select:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 1px #1a73e8 inset;
+}
+
+.db-form-value input::placeholder {
+    color: #bbb;
+}
+
+.db-form-value-short {
+    max-width: 120px;
+}
+
+/* Test result indicator */
+.db-test-result {
+    margin-top: 12px;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.db-test-result.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.db-test-result.fail {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+/* =============================================
+   Step 2 - Table selection (unchanged)
+   ============================================= */
+.db-saved-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.db-table-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    background: #fff;
+    color: #888;
+}
+
+.db-table-filter:focus-within {
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 1px #1a73e8 inset;
+}
+
+.db-table-filter input {
+    border: none;
+    outline: none;
+    font-size: 13px;
+    flex: 1;
+    background: transparent;
+    color: #333;
+}
+
+.db-table-filter input::placeholder {
+    color: #bbb;
+}
+
+.db-table-list {
+    max-height: 310px;
+    overflow-y: auto;
+}
+
+.db-table-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.db-table-item:hover {
+    border-color: #1a73e8;
+    background: #f8f9ff;
+}
+
+.db-table-item.selected {
+    border-color: #1a73e8;
+    background: #e8f0fe;
+}
+
+.db-table-checkbox {
+    flex-shrink: 0;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+}
+
+.db-table-name-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.db-table-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.db-table-comment {
+    font-size: 11px;
+    color: #888;
+    padding-left: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.db-table-name svg {
+    color: #1a73e8;
+}
+
+.db-table-rows {
+    font-size: 12px;
+    color: #888;
+}
+
+/* Table detail (columns) */
+.db-columns-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+.db-columns-table th {
+    text-align: left;
+    padding: 8px 10px;
+    background: #f5f5f5;
+    border-bottom: 2px solid #e0e0e0;
+    font-weight: 600;
+    color: #555;
+    font-size: 12px;
+}
+
+.db-columns-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+
+.db-col-comment {
+    color: #888;
+    font-size: 12px;
+}
+
+.db-pk-badge {
+    background: #fff3e0;
+    color: #e65100;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* =============================================
+   Footer
+   ============================================= */
+.db-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid #d0d0d0;
+    background: #f0f0f0;
+    border-radius: 0 0 8px 8px;
+}
+
+.db-footer-left {
+    display: flex;
+    gap: 8px;
+}
+
+.db-footer-right {
+    display: flex;
+    gap: 8px;
+}
+
+.db-btn {
+    padding: 6px 16px;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    color: #333;
+}
+
+.db-btn:hover {
+    background: #e8e8e8;
+}
+
+.db-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.db-btn-primary {
+    background: #1a73e8;
+    color: #fff;
+    border-color: #1a73e8;
+}
+
+.db-btn-primary:hover {
+    background: #1557b0;
+}
+
+.db-btn-success {
+    background: #4caf50;
+    color: #fff;
+    border-color: #4caf50;
+}
+
+.db-btn-success:hover {
+    background: #388e3c;
+}
+
+/* Loading / Empty / Result */
+.db-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #888;
+    font-size: 14px;
+    gap: 8px;
+}
+
+.db-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e0e0e0;
+    border-top-color: #1a73e8;
+    border-radius: 50%;
+    animation: db-spin 0.8s linear infinite;
+}
+
+@keyframes db-spin {
+    to { transform: rotate(360deg); }
+}
+
+.db-import-result {
+    text-align: center;
+    padding: 30px;
+}
+
+.db-import-result svg {
+    color: #4caf50;
+    margin-bottom: 12px;
+}
+
+.db-import-result h3 {
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: #333;
+}
+
+.db-import-result p {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+}
+
+.db-empty {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-size: 13px;
+}
+
+/* Import progress */
+.db-import-progress-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.db-import-progress-box .db-spinner {
+    width: 24px;
+    height: 24px;
+    border-width: 3px;
+    flex-shrink: 0;
+}
+
+.db-progress-info {
+    flex: 1;
+}
+
+.db-progress-phase {
+    font-size: 11px;
+    color: #1565c0;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.db-progress-message {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+.db-progress-bar-wrap {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.db-progress-bar-fill {
+    height: 100%;
+    background: #1a73e8;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.db-progress-count {
+    font-size: 12px;
+    color: #1a73e8;
+    margin-top: 4px;
+}

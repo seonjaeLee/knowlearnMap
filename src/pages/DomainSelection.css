@@ -1,0 +1,154 @@
+.domain-selection-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    background-color: transparent;
+    padding: 0;
+}
+
+.domain-selection-content {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+}
+
+.domain-add-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #2563eb;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+}
+
+.domain-add-btn:hover {
+    background: #1d4ed8;
+}
+
+/* Grid/Card styles removed */
+
+.domain-list-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #e2e8f0;
+}
+
+.domain-list-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.domain-list-table th {
+    background: #f8fafc;
+    color: #4a5568;
+    text-align: left;
+    padding: 12px 18px;
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    line-height: 1.25;
+}
+
+.domain-list-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.domain-list-row {
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.domain-list-row:hover {
+    background: #f8fafc;
+}
+
+.domain-selected {
+    background: #ebf4ff;
+    box-shadow: inset 3px 0 0 #3b82f6;
+}
+
+.domain-list-name {
+    font-weight: 600;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.domain-current-badge {
+    background: #dbeafe;
+    color: #2563eb;
+    border-radius: 999px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.domain-list-desc {
+    color: #4a5568;
+}
+
+.domain-list-action {
+    text-align: right;
+}
+
+.error-message {
+    color: #e53e3e;
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+}
+
+.delete-btn-small {
+    padding: 4px 10px;
+    border: 1px solid #fca5a5;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s;
+}
+
+.delete-btn-small:hover {
+    background: #fecaca;
+}
+
+.delete-btn-small:disabled {
+    background-color: #fca5a5;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.user-info-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 16px;
+    color: #718096;
+    font-size: 0.9rem;
+    margin-top: 32px;
+}
+
+.domain-content-help {
+    margin: 0;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    color: #64748b;
+}

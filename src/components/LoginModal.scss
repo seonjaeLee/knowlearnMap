@@ -1,0 +1,229 @@
+// Colors
+$color-primary: #1a73e8;
+$color-primary-hover: #1557b0;
+$color-dark-text: #202124;
+$color-secondary-text: #5f6368;
+$color-border: #dadce0;
+$color-divider: #e0e0e0;
+$color-text: #3c4043;
+$color-background: #ffffff;
+$color-hover-background: #f8f9fa;
+$color-hover-border: #cce0fc;
+
+// Sizes
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1.25rem;
+$spacing-lg: 2rem;
+$spacing-xl: 2.5rem;
+
+$font-size-xs: 0.9rem;
+$font-size-sm: 0.95rem;
+$font-size-base: 1rem;
+$font-size-lg: 1.75rem;
+
+$border-radius: 4px;
+$border-radius-lg: 16px;
+
+// Shadows
+$shadow-md: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+// Mixins
+@mixin flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+@mixin button-base {
+    padding: $spacing-sm;
+    border-radius: $border-radius;
+    font-size: $font-size-base;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+@mixin input-border {
+    border: 1px solid $color-border;
+    border-radius: $border-radius;
+}
+
+// Styles
+.login-modal {
+    width: 400px;
+    max-width: 90%;
+    padding: $spacing-xl;
+    background-color: $color-background;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+
+    .login-header {
+        text-align: center;
+        margin-bottom: $spacing-lg;
+
+        .login-logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: $spacing-md;
+            filter: brightness(1.2);
+            transition: filter 0.3s ease;
+        }
+
+        h2 {
+            font-size: $font-size-lg;
+            color: $color-dark-text;
+            margin-bottom: $spacing-xs;
+        }
+
+        p {
+            color: $color-secondary-text;
+            font-size: $font-size-xs;
+        }
+    }
+
+    .login-form {
+        @include flex-column;
+        gap: $spacing-md;
+    }
+
+    .form-group {
+        @include flex-column;
+        gap: $spacing-xs;
+
+        label {
+            font-size: $font-size-xs;
+            font-weight: 500;
+            color: $color-dark-text;
+        }
+
+        input {
+            padding: $spacing-sm;
+            @include input-border;
+            font-size: $font-size-base;
+            transition: border-color 0.2s;
+
+            &:focus {
+                border-color: $color-primary;
+                outline: none;
+            }
+        }
+    }
+
+    .login-submit-btn {
+        @include button-base;
+        background-color: $color-primary;
+        color: white;
+        border: none;
+        margin-top: $spacing-xs;
+
+        &:hover {
+            background-color: $color-primary-hover;
+        }
+    }
+
+    .login-divider {
+        text-align: center;
+        position: relative;
+        color: $color-secondary-text;
+        font-size: $font-size-xs;
+        margin: $spacing-xs 0;
+
+        &::before,
+        &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background-color: $color-divider;
+        }
+
+        &::before {
+            left: 0;
+        }
+
+        &::after {
+            right: 0;
+        }
+    }
+
+    .google-login-btn {
+        @include flex-column;
+        align-items: center;
+        justify-content: center;
+        gap: $spacing-sm;
+        background-color: $color-background;
+        @include input-border;
+        color: $color-text;
+        @include button-base;
+        font-size: $font-size-sm;
+
+        &:hover {
+            background-color: $color-hover-background;
+            border-color: $color-hover-border;
+        }
+    }
+}
+
+// 다크모드 스타일
+@media (prefers-color-scheme: dark) {
+    .login-modal {
+        background-color: #2d2d2d;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
+        .login-header {
+            .login-logo {
+                filter: invert(1) brightness(0.95);
+            }
+
+            h2 {
+                color: #ffffff;
+            }
+
+            p {
+                color: #b0b0b0;
+            }
+        }
+
+        .form-group {
+            label {
+                color: #ffffff;
+            }
+
+            input {
+                background-color: #3d3d3d;
+                color: #ffffff;
+                border-color: #4d4d4d;
+
+                &:focus {
+                    border-color: $color-primary;
+                    background-color: #3d3d3d;
+                }
+
+                &::placeholder {
+                    color: #7d7d7d;
+                }
+            }
+        }
+
+        .google-login-btn {
+            background-color: #3d3d3d;
+            border-color: #4d4d4d;
+            color: #ffffff;
+
+            &:hover {
+                background-color: #4d4d4d;
+                border-color: #5d5d5d;
+            }
+        }
+
+        .login-divider {
+            color: #7d7d7d;
+
+            &::before,
+            &::after {
+                background-color: #4d4d4d;
+            }
+        }
+    }
+}

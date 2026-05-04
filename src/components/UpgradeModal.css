@@ -1,0 +1,296 @@
+.upgrade-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+}
+
+.upgrade-modal-content {
+    background-color: #fcfcfc;
+    width: auto;
+    min-width: 950px;
+    max-width: 1200px;
+    border-radius: 20px;
+    padding: 25px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    max-height: 95vh;
+    overflow-y: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.upgrade-modal-content.form-view {
+    width: auto;
+    min-width: 650px;
+    max-width: 700px;
+}
+
+.upgrade-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.upgrade-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.upgrade-title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.upgrade-toggle-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.upgrade-toggle {
+    background: #f0f0f0;
+    padding: 4px;
+    border-radius: 100px;
+    display: flex;
+    gap: 4px;
+}
+
+.toggle-btn {
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: none;
+    background: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.toggle-btn.active {
+    background: white;
+    color: #333;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.plans-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.plan-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Removed - Pro should use default gray border like Max */
+
+.plan-card.current-plan {
+    border-color: #4caf50;
+    background-color: #f9fff9;
+}
+
+.plan-card.current-plan-blue {
+    border-color: #2563eb;
+    background-color: #f0f7ff;
+}
+
+.plan-card.current-plan-blue .plan-btn {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+.plan-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #555;
+    background: #f8f9fa;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.plan-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.plan-desc {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 15px;
+    min-height: 30px;
+}
+
+.plan-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.plan-period {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 20px;
+    font-weight: 400;
+}
+
+.promo-box {
+    background-color: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.plan-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.95rem;
+    border: 1px solid #ccc;
+    /* Default border */
+    background-color: white;
+    /* Default bg */
+}
+
+.plan-btn:disabled {
+    cursor: default;
+    opacity: 0.6;
+    background-color: #eee;
+    color: #999;
+    border: 1px solid #eee;
+}
+
+.plan-btn.primary {
+    background-color: #212121;
+    color: white;
+    border: none;
+}
+
+.plan-btn.primary:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.plan-btn.accent {
+    background-color: #212121;
+    color: white;
+    border: none;
+}
+
+.plan-btn.accent:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+/* Hover effect for Pro plan card */
+.plan-card.highlight:hover {
+    border-color: #2563eb;
+}
+
+.plan-card.highlight:hover .plan-btn.primary {
+    background-color: #2563eb;
+}
+
+/* Hover effect for Max plan card */
+.plan-card:hover:has(.plan-btn.accent:not(:disabled)) {
+    border-color: #2563eb;
+}
+
+.plan-card:hover .plan-btn.accent:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.plan-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.plan-features-list li {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 20px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.plan-features-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #888;
+}
+
+.disclaimer {
+    text-align: center;
+    color: #999;
+    font-size: 0.8rem;
+    margin-top: 30px;
+}
+
+/* Form Styles */
+.upgrade-form-group {
+    margin-bottom: 15px;
+}
+
+.upgrade-form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.upgrade-form-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background-color: white;
+    color: #333;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.upgrade-form-input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
