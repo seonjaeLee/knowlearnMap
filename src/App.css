@@ -55,8 +55,8 @@
 }
 
 .profile-avatar {
-  width: 32px;
-  height: 32px;
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
@@ -122,26 +122,13 @@
   background-color: rgba(79, 70, 229, 0.1);
 }
 
-/* Toolbar */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: var(--spacing-xl);
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
+/* 워크스페이스: PageHeader 공통 여백은 PageHeader.css. 래퍼는 여백 없음 */
+.home-page-header {
+  margin-bottom: 0;
 }
 
-.page-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-}
-
-.toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
+.home-page-header .page-header {
+  margin-top: 0;
 }
 
 .view-toggle {
@@ -218,7 +205,7 @@
 /* Notebooks Container */
 .notebooks-container {
   display: grid;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   animation: fadeIn var(--transition-normal);
 }
 
@@ -272,7 +259,7 @@
 }
 
 .notebooks-container.list .notebook-icon {
-  font-size: 24px;
+  font-size: var(--font-size-2xl);
   flex: 0 0 auto;
 }
 
@@ -337,7 +324,7 @@
 }
 
 .header-icon {
-  width: 24px;
+  width: var(--spacing-lg);
   margin-right: var(--spacing-md);
   flex-shrink: 0;
 }
@@ -358,7 +345,7 @@
 }
 
 .header-actions {
-  width: 32px;
+  width: var(--spacing-xl);
   margin-left: auto;
   flex-shrink: 0;
 }
@@ -407,7 +394,7 @@
 
 .notebook-card:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-4px);
+  transform: translateY(calc(-1 * var(--spacing-xs)));
   border-color: var(--color-border-hover);
 }
 
@@ -492,20 +479,28 @@
   position: relative;
 }
 
+/* 그리드 뷰: more(⋯)을 카드 오른쪽에 더 붙임 */
+.notebooks-container.grid .notebook-card:not(.create-card) .more-btn-container {
+  margin-right: -10px;
+  margin-top: calc(-1 * var(--spacing-xs));
+}
+
 .more-btn {
-  width: 32px;
-  height: 32px;
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  border: none;
+  background: transparent;
   color: var(--color-text-secondary);
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
 .more-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: var(--color-text-primary);
+  background-color: transparent;
+  color: var(--color-accent);
 }
 
 /* Popup Menu */
@@ -529,7 +524,7 @@
 @keyframes popupFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(calc(-1 * var(--spacing-sm)));
   }
 
   to {
@@ -541,10 +536,10 @@
 .popup-menu .menu-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
   width: 100%;
   padding: 6px 12px;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
   color: var(--color-text-primary);
   background: none;
@@ -617,14 +612,15 @@
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 
-  .toolbar {
+  .home-page-header .page-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .toolbar-actions {
+  .home-page-header .page-header-actions {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 }
 
@@ -637,7 +633,4 @@
     display: none;
   }
 
-  .page-title {
-    font-size: var(--font-size-xl);
-  }
 }

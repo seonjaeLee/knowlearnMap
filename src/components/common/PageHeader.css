@@ -3,7 +3,8 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  /* 콘텐츠 타이틀 ~ 본문: 앱 전역 16px (--spacing-md) */
+  margin-bottom: var(--spacing-md);
   min-height: 40px;
 }
 
@@ -32,9 +33,10 @@
 .page-header-breadcrumb {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
   color: #64748b;
   font-size: 11px;
+  font-weight: 500;
   line-height: 1.4;
   white-space: nowrap;
   min-width: 0;
@@ -42,31 +44,33 @@
   text-overflow: ellipsis;
 }
 
-.page-header-separator {
-  color: #94a3b8;
+.page-header-breadcrumb .page-header-crumb {
+  font-weight: 500;
+  color: #64748b;
 }
 
-.page-header-breadcrumb .is-current {
-  color: #334155;
-  font-weight: 600;
+.page-header-breadcrumb .page-header-separator {
+  font-weight: 500;
+  user-select: none;
+  color: #ccc;
 }
 
 .page-header-description {
   margin: 6px 0 0;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: #64748b;
 }
 
 .page-header-actions {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
   flex-shrink: 0;
 }
 
 @media (max-width: 1023px) {
   .page-header {
-    margin-bottom: 8px;
+    margin-bottom: var(--spacing-md);
     min-height: 34px;
   }
 

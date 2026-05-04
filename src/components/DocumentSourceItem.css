@@ -75,19 +75,25 @@
   height: var(--document-menu-trigger-size);
   border: none;
   background: transparent;
-  color: var(--color-text-secondary, #666);
+  color: var(--color-text-secondary, #5f6368);
   cursor: pointer;
-  border-radius: 50%;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: all 0.15s;
+  transition: color var(--transition-fast, 0.15s);
 }
 
+/* 기본은 회색, 올렸을 때만 파란색(배경 동그라미 없음) */
 .menu-trigger:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: var(--color-text-primary, #333);
+  background-color: transparent;
+  color: var(--color-accent, #1a73e8);
+}
+
+.menu-trigger:active {
+  background-color: transparent;
+  color: var(--color-accent-hover, #1557b0);
 }
 
 .menu-trigger:focus {

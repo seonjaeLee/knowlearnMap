@@ -118,13 +118,13 @@
     color: #999;
 }
 
-/* 페이지 컨테이너 */
-.pages-container {
+/* 문서 뷰어 페이지 블록 (dv-doc-* = 공통 PageHeader .page-header 와 구분) */
+.document-viewer .pages-container {
     max-width: 800px;
     margin: 0 auto;
 }
 
-.page-section {
+.document-viewer .dv-doc-section {
     background: white;
     margin-bottom: 24px;
     padding: 24px;
@@ -132,11 +132,11 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.page-section:last-child {
+.document-viewer .dv-doc-section:last-child {
     margin-bottom: 0;
 }
 
-.page-header {
+.document-viewer .dv-doc-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -147,16 +147,16 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
-.page-number {
+.document-viewer .dv-doc-page-num {
     font-weight: 600;
     color: #2196f3;
 }
 
-.word-count {
+.document-viewer .dv-doc-word-count {
     color: #999;
 }
 
-.page-content {
+.document-viewer .dv-doc-body {
     line-height: 1.8;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -166,19 +166,19 @@
 
 /* 반응형 */
 @media (max-width: 768px) {
-    .viewer-content {
+    .document-viewer .viewer-content {
         padding: 16px;
     }
 
-    .pages-container {
+    .document-viewer .pages-container {
         max-width: 100%;
     }
 
-    .page-section {
+    .document-viewer .dv-doc-section {
         padding: 16px;
     }
 
-    .viewer-title {
+    .document-viewer .viewer-title {
         font-size: 18px;
     }
 }

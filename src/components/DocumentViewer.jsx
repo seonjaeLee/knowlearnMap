@@ -60,14 +60,14 @@ function DocumentViewer({ document, onClose }) {
                 ) : (
                     <div className="pages-container">
                         {pages.map((page) => (
-                            <div key={page.id} className="page-section">
-                                <div className="page-header">
-                                    <span className="page-number">Page {page.pageNumber}</span>
+                            <div key={page.id} className="dv-doc-section">
+                                <div className="dv-doc-head">
+                                    <span className="dv-doc-page-num">Page {page.pageNumber}</span>
                                     {page.wordCount > 0 && (
-                                        <span className="word-count">{page.wordCount} 단어</span>
+                                        <span className="dv-doc-word-count">{page.wordCount} 단어</span>
                                     )}
                                 </div>
-                                <div className="page-content">
+                                <div className="dv-doc-body">
                                     {page.content}
                                 </div>
                             </div>

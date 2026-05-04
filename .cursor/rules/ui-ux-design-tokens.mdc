@@ -1,0 +1,40 @@
+---
+description: UI/UX 정리 시 간격·반경·타이포 등은 index.css 디자인 토큰(var) 우선 사용
+globs: "**/*.{css,scss,module.scss}"
+alwaysApply: true
+---
+
+# UI/UX — 디자인 토큰 우선
+
+프로젝트는 `src/index.css`의 `:root` 변수로 간격·라운드·타이포를 통일한다. 사용자가 **숫자(px)로만** 말해도, **아래에 대응하는 토큰이 있으면 반드시 `var(--…)`로 반영**한다. 토큰이 없는 값(예: 6px, 10px, 12px spacing)은 그대로 두거나, 필요 시 `calc()`로 토큰 조합을 제안한다.
+
+## Spacing (`--spacing-*`)
+
+| 토큰 | 값 |
+|------|-----|
+| `--spacing-xs` | 4px |
+| `--spacing-sm` | 8px |
+| `--spacing-md` | 16px |
+| `--spacing-lg` | 24px |
+| `--spacing-xl` | 32px |
+| `--spacing-2xl` | 48px |
+
+**참고:** `12px` 전용 spacing 토큰은 없다. 12가 필요하면 리터럴 `12px` 또는 `calc(var(--spacing-sm) + var(--spacing-xs))` 등으로 표현한다.
+
+## Radius (`--radius-*`)
+
+| 토큰 | 값 |
+|------|-----|
+| `--radius-sm` | 4px |
+| `--radius-md` | 8px |
+| `--radius-lg` | 12px |
+| `--radius-xl` | 16px |
+
+## Typography
+
+| 토큰 | 값 |
+|------|-----|
+| `--font-size-xs` ~ `--font-size-2xl` | 12px ~ 24px (`index.css` 참고) |
+| `--font-weight-normal` / `--font-weight-medium` / `--font-weight-semibold` | 400 / 500 / 600 |
+
+색·그림자·전환은 `--color-*`, `--shadow-*`, `--transition-*`를 우선한다.

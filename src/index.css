@@ -115,6 +115,25 @@ a {
   text-decoration: none;
 }
 
+/*
+ * 공통: 한 줄 입력·선택 — 너비를 넘는 값은 말줄임(…)
+ * textarea는 여러 줄 편집용이라 제외. flex 레이아웃 자식은 min-width:0 필요.
+ */
+input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]):not([type="range"]):not([type="color"]):not([type="hidden"]) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+select {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Utility Classes */
 .flex {
   display: flex;

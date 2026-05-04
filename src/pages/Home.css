@@ -1,0 +1,184 @@
+/* 워크스페이스 목록 (Home.jsx) — 인라인 스타일 대체 */
+
+.home-loading-state {
+  padding: 60px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #999;
+}
+
+.home-loading-spinner {
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
+  border: 3px solid #e0e0e0;
+  border-top-color: #1a73e8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+.home-loading-text {
+  font-size: var(--font-size-base);
+  margin: 0;
+}
+
+.home-error-state {
+  padding: 40px;
+  text-align: center;
+  color: #d32f2f;
+}
+
+.home-error-retry {
+  margin-top: 10px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+}
+
+/* 카드 삭제 중 오버레이 */
+.notebook-card-overlay--deleting {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: inherit;
+  gap: var(--spacing-sm);
+}
+
+.notebook-card-overlay--deleting svg {
+  animation: spin 1s linear infinite;
+  color: #e53935;
+}
+
+.notebook-card-overlay-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: #e53935;
+}
+
+/* 그리드 카드 상단 공유 배지 */
+.notebook-share-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: #fff;
+  padding: var(--spacing-xs) 10px;
+  border-radius: var(--radius-lg);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.notebook-share-badge--all {
+  background: linear-gradient(135deg, #1a73e8, #4285f4);
+  box-shadow: 0 2px 4px rgba(26, 115, 232, 0.3);
+}
+
+.notebook-share-badge--individual {
+  background: linear-gradient(135deg, #059669, #10b981);
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
+}
+
+.menu-item-icon--success {
+  color: #137333;
+}
+
+/* 프롬프트 변경 모달 (Home.jsx) */
+.home-prompt-modal {
+  width: 680px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.home-prompt-modal-title {
+  text-align: center;
+}
+
+.home-prompt-modal-intro {
+  font-size: var(--font-size-sm);
+  color: #666;
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.home-prompt-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px var(--spacing-md);
+  margin-bottom: 12px;
+}
+
+.home-prompt-field {
+  margin-bottom: 0;
+}
+
+.home-prompt-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: #334155;
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+.home-prompt-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.home-prompt-select-flex {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.modal-input--chunk-none {
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+}
+
+.home-prompt-none-btn {
+  padding: var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs));
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  background-color: #fff;
+  color: #64748b;
+}
+
+.home-prompt-none-btn--active {
+  background-color: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+.home-prompt-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: var(--spacing-xs);
+}
+
+.home-prompt-hint--danger {
+  color: #dc2626;
+}
+
+.home-prompt-footer-note {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.5;
+}
+
+.home-prompt-reset-btn {
+  color: #dc2626;
+}

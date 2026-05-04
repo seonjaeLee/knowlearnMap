@@ -25,14 +25,18 @@ function PageHeader({
         <div className="page-header-title-row">
           <h1 className="page-header-title">{title}</h1>
           {displayBreadcrumbs.length > 0 && (
-            <div className="page-header-breadcrumb" aria-label="현재 위치">
+            <nav className="page-header-breadcrumb" aria-label="breadcrumb">
               {displayBreadcrumbs.map((item, idx) => (
                 <React.Fragment key={`${item}-${idx}`}>
-                  <span className={idx === displayBreadcrumbs.length - 1 ? 'is-current' : ''}>{item}</span>
-                  {idx < displayBreadcrumbs.length - 1 && <span className="page-header-separator">/</span>}
+                  <span className="page-header-crumb">{item}</span>
+                  {idx < displayBreadcrumbs.length - 1 && (
+                    <span className="page-header-separator" aria-hidden="true">
+                      &gt;
+                    </span>
+                  )}
                 </React.Fragment>
               ))}
-            </div>
+            </nav>
           )}
         </div>
         {description && <p className="page-header-description">{description}</p>}

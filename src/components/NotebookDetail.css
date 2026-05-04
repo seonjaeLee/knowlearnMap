@@ -5,7 +5,8 @@
     align-items: flex-end;
     justify-content: flex-start;
     gap: 12px;
-    margin-bottom: 12px;
+    /* PageHeader와 동일: 타이틀 ~ 본문 16px */
+    margin-bottom: var(--spacing-md);
     min-height: 40px;
 }
 
@@ -51,7 +52,7 @@
 
 @media (max-width: 1023px) {
     .notebook-page-header {
-        margin-bottom: 8px;
+        margin-bottom: var(--spacing-md);
         min-height: 34px;
     }
 
@@ -1760,24 +1761,25 @@
     -webkit-overflow-scrolling: touch;
 }
 
-.page-section {
+/* 좌측 문서/청크 목록 (nb-doc-* = PageHeader .page-header 와 구분) */
+.nb-doc-section {
     margin-bottom: 24px;
     padding-bottom: 24px;
     border-bottom: 1px solid #eee;
 }
 
-.page-section:last-child {
+.nb-doc-section:last-child {
     border-bottom: none;
 }
 
-.page-header {
+.nb-doc-block-head {
     font-size: 12px;
     color: #666;
     margin-bottom: 12px;
     font-weight: 500;
 }
 
-.page-content {
+.nb-doc-block-body {
     line-height: 1.6;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -1786,7 +1788,7 @@
 }
 
 /* Search Highlighting — 일반 일치(노랑) / 현재 일치(오렌지). 사전 용어는 .dict-highlight */
-.page-content mark.highlight,
+.nb-doc-block-body mark.highlight,
 .chunk-modal-body mark.highlight {
     background-color: #ffeb3b;
     padding: 2px 0;
@@ -1794,7 +1796,7 @@
 }
 
 /* 좌측 패널만: 검색 네비에서 선택된 일치 = 오렌지 */
-.page-content mark.highlight-current {
+.nb-doc-block-body mark.highlight-current {
     background-color: #ffa726;
     padding: 2px 0;
     border-radius: 2px;
@@ -1815,7 +1817,7 @@
 }
 
 /* Dictionary term highlight (개념/관계 사전 용어) */
-.page-content mark.dict-highlight,
+.nb-doc-block-body mark.dict-highlight,
 .chunk-modal-body mark.dict-highlight {
     background-color: #dbeafe;
     color: #1e3a8a;
@@ -1826,7 +1828,7 @@
 }
 
 /* Clickable page/chunk card */
-.page-section.clickable {
+.nb-doc-section--interactive {
     cursor: pointer;
     padding: 12px;
     border: 1px solid #e5e7eb;
@@ -1836,12 +1838,12 @@
     transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
-.page-section.clickable:hover {
+.nb-doc-section--interactive:hover {
     border-color: #2563eb;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
 }
 
-.page-section.clickable .page-content {
+.nb-doc-section--interactive .nb-doc-block-body {
     max-height: 220px;
     overflow: hidden;
     position: relative;

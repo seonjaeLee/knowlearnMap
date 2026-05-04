@@ -1176,3 +1176,53 @@
 - **원인**: `.panel-body`에 `overflow-y: auto`가 있어 **제목·탭·검색·페이지네이션**까지 전부 스크롤됨. **`source-list-section--viewer` 래퍼 자체는 결함이 아님** — dev와 DOM이 달라도, 스크롤이 풀린 직접 이유는 **바깥 컨테이너가 내용 높이만큼 늘어나며 스크롤**한 것.
 - **조치**: `viewer-active`일 때 `.panel-body`는 **`overflow: hidden`** + **flex column·`min-height: 0`**. `source-list-section--viewer` → `.source-list.viewer-mode` → `.document-viewer-panel`까지 **`flex: 1` / `min-height: 0` / `overflow: hidden`** 체인. **`.viewer-content`만** `overflow-y: auto` + **`min-height: 0`**(flex 자식 스크롤 필수).
 - **파일**: `src/components/NotebookDetail.css` (JSX 변경 없음)
+
+## 2026-05-04
+
+### 83) 워크스페이스(Home) 목록 레이아웃·인라인 제거
+
+- **목적**: 콘텐츠 타이틀~카드 영역 간격·카드 그리드 간격·그리드 more(⋯) 위치를 UI 기준에 맞추고, `Home.jsx`의 인라인 스타일을 CSS 클래스로 이전
+- **영향**: 상단 타이틀↔그리드 간 `16px` 톤(`--spacing-md`), 그리드 `gap` 토큰 사용, 홈·프롬프트 모달 관련 스타일은 `Home.css`로 응집
+
+#### CSS 변경
+- `src/App.css` — `.home-page-header` / `.notebooks-container` 그리드 간격·more 버튼 정렬(그리드 전용 음수 마진), `.more-btn` 호버(원형 배경 제거·액센트 색)
+- `src/pages/Home.css` — 로딩/에러/삭제 오버레이/공유 배지/프롬프트 변경 모달 블록
+
+#### JSX/JS 변경
+- `src/pages/Home.jsx` — `import './Home.css'`, 위 영역 `className` 전환, 프롬프트 모달 정적 인라인 제거, `기본값 초기화`에 `aggregationStrategyPrompt` 복원 포함
+
+### 84) 전역 콘텐츠 타이틀~본문 여백 16px 통일 (`PageHeader` + 노트북 상세)
+
+- **목적**: 워크스페이스만이 아니라 `PageHeader`를 쓰는 화면·노트북 상세 `.notebook-page-header`까지 **타이틀 아래 16px**을 동일 기준으로 맞춤
+- **영향**: 도메인 선택·고객센터·어드민(도메인 관리 등)·노트북 상세가 동일 리듬으로 본문과 이어짐
+
+#### CSS 변경
+- `src/components/common/PageHeader.css` — `.page-header` `margin-bottom: var(--spacing-md)` (반응형에서도 동일 토큰)
+- `src/components/NotebookDetail.css` — `.notebook-page-header` `margin-bottom: var(--spacing-md)`
+- `src/App.css` — `.home-page-header .page-header`에서 하단 여백 중복 제거(전역 `PageHeader`에 일원화), `margin-top: 0`만 유지
+
+### 85) `page-header` 클래스 전역 충돌 제거(노트북 문서·문서 뷰어)
+
+- **원인**: `NotebookDetail.css`의 **전역** `.page-header { margin-bottom: 12px; … }`가 청크 로딩 후 번들에 남으면, `PageHeader`의 `.page-header`를 덮어써 **도메인 관리** 등에서 `12px`가 `var(--spacing-md)`를 이김
+- **1차**: 문서/청크 목록 스타일을 `.notebook-layout .viewer-content`로 스코프
+- **2차(확정)**: 공용 이름 제거 — 노트북 좌측 청크·페이지 행을 `nb-doc-section` / `nb-doc-block-head` / `nb-doc-block-body` 등 **전용 클래스**로 재명명, `DocumentViewer`는 `dv-doc-section` / `dv-doc-head` / `dv-doc-body` / `dv-doc-page-num` / `dv-doc-word-count`로 분리, `.document-viewer` 루트로 스타일 스코프
+
+#### CSS / JSX
+- `src/components/NotebookDetail.css`, `NotebookDetail.jsx` — `nb-doc-*`
+- `src/components/DocumentViewer.css`, `DocumentViewer.jsx` — `dv-doc-*` + 내부 `.viewer-content` 반응형도 `.document-viewer` 하위로 한정
+
+### 86) 간격·타이포 토큰 정리(홈·헤더·앱 팝업) + AI 규칙
+
+- **목적**: UI/UX 정리 시 **숫자로만 지시해도** `src/index.css`에 대응 변수가 있으면 `var(--spacing-*)`, `var(--radius-*)`, `var(--font-size-*)` 등을 사용
+- **영향**: `Home.css` / `PageHeader.css` / `App.css` 일부 리터럴을 토큰으로 치환(예: `gap`·패딩·폰트·아이콘 박스 `32px`→`--spacing-xl`, `translateY(-8px)`→`calc(-1 * var(--spacing-sm))` 등). **12px 전용 spacing 변수 없음**은 규칙 문서에 명시
+
+#### 규칙·문서
+- `.cursor/rules/ui-ux-design-tokens.mdc` — `alwaysApply: true`, `**/*.{css,scss,module.scss}`에 spacing/radius/typography 매핑 표
+
+#### CSS 변경 (요약)
+- `src/pages/Home.css`, `src/components/common/PageHeader.css`, `src/App.css` — 토큰 치환
+
+### 87) 워크스페이스 그리드 `gap` 하드코딩 제거
+
+- **목적**: `.notebooks-container`의 `gap`을 리터럴 `16px`가 아닌 **`var(--spacing-md)`** 로 유지(값은 동일, 토큰 단일 소스)
+- **영향**: `App.css` 한 줄; 향후 `--spacing-md` 정의만 바꾸면 카드 간격 일괄 조정 가능

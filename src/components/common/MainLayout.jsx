@@ -143,13 +143,7 @@ function MainLayout() {
                     title="내 워크스페이스"
                   >
                     <Layers size={14} className="lnb-item-icon" />
-                    {!isLnbCollapsed && (
-                      <span>
-                        {isAdmin && localStorage.getItem('admin_selected_domain_name')
-                          ? `${localStorage.getItem('admin_selected_domain_name')} 워크스페이스`
-                          : '내 워크스페이스'}
-                      </span>
-                    )}
+                    {!isLnbCollapsed && <span>내 워크스페이스</span>}
                   </NavLink>
               </div>
             </div>

@@ -1273,9 +1273,12 @@ function NotebookDetail() {
                 <PageHeader
                     title={notebook.name || 'Untitled notebook'}
                     breadcrumbs={[
-                        localStorage.getItem('admin_selected_domain_name') || '워크스페이스',
+                        '워크스페이스',
                         '내 워크스페이스',
-                        notebook.name || 'Untitled notebook',
+                        localStorage.getItem('admin_selected_domain_name')
+                            || user?.domain
+                            || user?.email?.split('@')[0]
+                            || 'admin',
                     ]}
                 />
             )}
@@ -1558,7 +1561,7 @@ function NotebookDetail() {
                                                             .map(chunk => (
                                                                 <div
                                                                     key={chunk.id}
-                                                                    className="page-section clickable"
+                                                                    className="nb-doc-section nb-doc-section--interactive"
                                                                     onClick={() => setChunkModalPage({
                                                                         id: chunk.id,
                                                                         pageNumber: chunk.pageNumber,
@@ -1568,7 +1571,7 @@ function NotebookDetail() {
                                                                     })}
                                                                     title="클릭하여 전체 내용 보기"
                                                                 >
-                                                                    <div className="page-header">
+                                                                    <div className="nb-doc-block-head">
                                                                         <span>Chunk #{chunk.chunkIndex}</span>
                                                                         {chunk.pageNumber != null && (
                                                                             <span style={{
@@ -1595,7 +1598,7 @@ function NotebookDetail() {
                                                                             </span>
                                                                         )}
                                                                     </div>
-                                                                    <div className="page-content">
+                                                                    <div className="nb-doc-block-body">
                                                                         {highlightText(chunk.content, searchQuery, chunk.id)}
                                                                     </div>
                                                                 </div>
@@ -1609,11 +1612,11 @@ function NotebookDetail() {
                                                         .map(page => (
                                                             <div
                                                                 key={page.id}
-                                                                className="page-section clickable"
+                                                                className="nb-doc-section nb-doc-section--interactive"
                                                                 onClick={() => setChunkModalPage(page)}
                                                                 title="클릭하여 전체 내용 보기"
                                                             >
-                                                                <div className="page-header">
+                                                                <div className="nb-doc-block-head">
                                                                     <span>Page {page.pageNumber}</span>
                                                                     {page.contentType && page.contentType !== 'TEXT' && (
                                                                         <span style={{
@@ -1647,7 +1650,7 @@ function NotebookDetail() {
                                                                         </span>
                                                                     )}
                                                                 </div>
-                                                                <div className="page-content">
+                                                                <div className="nb-doc-block-body">
                                                                     {highlightText(page.content, searchQuery, page.id)}
                                                                 </div>
                                                             </div>

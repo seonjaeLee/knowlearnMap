@@ -5,8 +5,8 @@ import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import ShareSettingsModal from '../components/ShareSettingsModal';
-// CSS is imported globally or via MainLayout, but we keep Home specific tweaks if any
-// import './Home.css';
+import PageHeader from '../components/common/PageHeader';
+import './Home.css';
 
 function Home() {
     const [searchParams] = useSearchParams();
@@ -312,85 +312,86 @@ function Home() {
         navigate(`/notebook/${id}`);
     };
 
+    const pageTitle = filter === 'ALL' ? '전체 워크스페이스' : '내 워크스페이스';
+    const workspaceBreadcrumbs = (() => {
+        const domainName = localStorage.getItem('admin_selected_domain_name');
+        return domainName ? [domainName] : [];
+    })();
+
     return (
         <div className="home-container">
-            <div className="toolbar">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <h1 className="page-title">
-                        {filter === 'ALL' ? '전체 워크스페이스' : '내 워크스페이스'}
-                    </h1>
-                </div>
+            <div className="home-page-header">
+                <PageHeader
+                    title={pageTitle}
+                    breadcrumbs={workspaceBreadcrumbs}
+                    actions={(
+                        <>
+                            <div className="view-toggle">
+                                <button
+                                    type="button"
+                                    className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                                    onClick={() => setViewMode('grid')}
+                                    title="그리드 보기"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                        <rect x="2" y="2" width="7" height="7" />
+                                        <rect x="11" y="2" width="7" height="7" />
+                                        <rect x="2" y="11" width="7" height="7" />
+                                        <rect x="11" y="11" width="7" height="7" />
+                                    </svg>
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                                    onClick={() => setViewMode('list')}
+                                    title="리스트 보기"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                        <rect x="2" y="3" width="16" height="2" />
+                                        <rect x="2" y="8" width="16" height="2" />
+                                        <rect x="2" y="13" width="16" height="2" />
+                                    </svg>
+                                </button>
+                            </div>
 
+                            <select
+                                className="sort-select"
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                aria-label="정렬"
+                            >
+                                <option value="최신순">최신순</option>
+                                <option value="오래된순">오래된순</option>
+                                <option value="이름순">이름순</option>
+                            </select>
 
-                <div className="toolbar-actions">
-                    <div className="view-toggle">
-                        <button
-                            className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                            onClick={() => setViewMode('grid')}
-                            title="그리드 보기"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                <rect x="2" y="2" width="7" height="7" />
-                                <rect x="11" y="2" width="7" height="7" />
-                                <rect x="2" y="11" width="7" height="7" />
-                                <rect x="11" y="11" width="7" height="7" />
-                            </svg>
-                        </button>
-                        <button
-                            className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-                            onClick={() => setViewMode('list')}
-                            title="리스트 보기"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                <rect x="2" y="3" width="16" height="2" />
-                                <rect x="2" y="8" width="16" height="2" />
-                                <rect x="2" y="13" width="16" height="2" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <select
-                        className="sort-select"
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                    >
-                        <option value="최신순">최신순</option>
-                        <option value="오래된순">오래된순</option>
-                        <option value="이름순">이름순</option>
-                    </select>
-
-                    <button className="new-note-btn" onClick={handleCreateNew}>
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                        </svg>
-                        새 워크스페이스
-                    </button>
-                </div>
+                            <button type="button" className="new-note-btn" onClick={handleCreateNew}>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                    <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                                새 워크스페이스
+                            </button>
+                        </>
+                    )}
+                />
             </div>
 
             {/* 로딩 상태 */}
             {loading && (
-                <div style={{
-                    padding: '60px', textAlign: 'center',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#999'
-                }}>
-                    <div style={{
-                        width: '32px', height: '32px', border: '3px solid #e0e0e0',
-                        borderTopColor: '#1a73e8', borderRadius: '50%',
-                        animation: 'spin 0.8s linear infinite', marginBottom: '12px'
-                    }} />
-                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-                    <p style={{ fontSize: '14px', margin: 0 }}>워크스페이스를 불러오는 중...</p>
+                <div className="home-loading-state">
+                    <div className="home-loading-spinner" aria-hidden />
+                    <p className="home-loading-text">워크스페이스를 불러오는 중...</p>
                 </div>
             )}
 
             {/* 에러 상태 */}
             {error && (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#d32f2f' }}>
+                <div className="home-error-state">
                     <p>{error}</p>
                     <button
+                        type="button"
+                        className="home-error-retry"
                         onClick={() => window.location.reload()}
-                        style={{ marginTop: '10px', padding: '8px 16px', cursor: 'pointer' }}
                     >
                         다시 시도
                     </button>
@@ -431,62 +432,30 @@ function Home() {
                             key={notebook.id}
                             className={`notebook-card ${notebook.color || 'yellow'}`}
                             onClick={() => handleNotebookClick(notebook.id)}
-                            style={{ position: 'relative' }}
                         >
                             {/* 삭제 중 오버레이 */}
                             {deletingId === notebook.id && (
-                                <div style={{
-                                    position: 'absolute',
-                                    top: 0, left: 0, right: 0, bottom: 0,
-                                    background: 'rgba(255, 255, 255, 0.85)',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    zIndex: 10,
-                                    borderRadius: 'inherit',
-                                    gap: '8px'
-                                }}
+                                <div
+                                    className="notebook-card-overlay--deleting"
                                     onClick={(e) => e.stopPropagation()}
+                                    role="presentation"
                                 >
-                                    <Loader2 size={28} style={{ animation: 'spin 1s linear infinite', color: '#e53935' }} />
-                                    <span style={{ fontSize: '13px', fontWeight: '600', color: '#e53935' }}>삭제중...</span>
+                                    <Loader2 size={28} aria-hidden />
+                                    <span className="notebook-card-overlay-label">삭제중...</span>
                                 </div>
                             )}
                             <div className="card-header">
-                                <div className="notebook-icon" style={{ position: 'relative' }}>
+                                <div className="notebook-icon">
                                     {notebook.icon || '📄'}
                                 </div>
                                 {notebook.shareType === 'ALL' && (
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        background: 'linear-gradient(135deg, #1a73e8, #4285f4)',
-                                        color: 'white',
-                                        padding: '4px 10px',
-                                        borderRadius: '12px',
-                                        fontSize: '11px',
-                                        fontWeight: '600',
-                                        boxShadow: '0 2px 4px rgba(26, 115, 232, 0.3)'
-                                    }}>
+                                    <div className="notebook-share-badge notebook-share-badge--all">
                                         <Globe size={12} />
                                         <span>전체 공유</span>
                                     </div>
                                 )}
                                 {notebook.shareType === 'INDIVIDUAL' && (
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        background: 'linear-gradient(135deg, #059669, #10b981)',
-                                        color: 'white',
-                                        padding: '4px 10px',
-                                        borderRadius: '12px',
-                                        fontSize: '11px',
-                                        fontWeight: '600',
-                                        boxShadow: '0 2px 4px rgba(5, 150, 105, 0.3)'
-                                    }}>
+                                    <div className="notebook-share-badge notebook-share-badge--individual">
                                         <Users size={12} />
                                         <span>개별 공유</span>
                                     </div>
@@ -536,7 +505,7 @@ function Home() {
                                                                 onClick={(e) => handleOpenPromptModal(e, notebook.id)}
                                                             >
                                                                 {(notebook.ontologyPrompt || notebook.chatResultPrompt || notebook.chunkPrompt)
-                                                                    ? <Check size={14} style={{ color: '#137333' }} />
+                                                                    ? <Check size={14} className="menu-item-icon--success" />
                                                                     : <FileText size={14} />}
                                                                 <span>프롬프트 변경</span>
                                                             </button>
@@ -597,7 +566,7 @@ function Home() {
                                                             onClick={(e) => handleOpenPromptModal(e, notebook.id)}
                                                         >
                                                             {(notebook.ontologyPrompt || notebook.chatResultPrompt || notebook.chunkPrompt)
-                                                                ? <Check size={14} style={{ color: '#137333' }} />
+                                                                ? <Check size={14} className="menu-item-icon--success" />
                                                                 : <FileText size={14} />}
                                                             <span>프롬프트 변경</span>
                                                         </button>
@@ -658,26 +627,20 @@ function Home() {
             {/* Prompt Modal */}
             {promptModalOpen && (
                 <div className="modal-overlay" onClick={() => setPromptModalOpen(false)}>
-                    <div className="modal-content" style={{ width: '680px', maxWidth: '95vw', maxHeight: '90vh', overflowY: 'auto', textAlign: 'left' }} onClick={(e) => e.stopPropagation()}>
-                        <h2 className="modal-title" style={{ textAlign: 'center' }}>프롬프트 변경</h2>
-                        <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px', textAlign: 'center' }}>
+                    <div className="modal-content home-prompt-modal" onClick={(e) => e.stopPropagation()}>
+                        <h2 className="modal-title home-prompt-modal-title">프롬프트 변경</h2>
+                        <p className="home-prompt-modal-intro">
                             워크스페이스: {promptNotebook?.name}
                         </p>
 
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(2, 1fr)',
-                            gap: '12px 16px',
-                            marginBottom: '12px'
-                        }}>
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                        <div className="home-prompt-modal-grid">
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     청킹 프롬프트
                                 </label>
-                                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                <div className="home-prompt-row">
                                     <select
-                                        className="modal-input"
-                                        style={{ flex: 1, marginBottom: 0, ...(chunkPromptValue === 'NONE' ? { backgroundColor: '#fef2f2', borderColor: '#fca5a5', color: '#dc2626', fontWeight: '600' } : {}) }}
+                                        className={`modal-input home-prompt-select-flex ${chunkPromptValue === 'NONE' ? 'modal-input--chunk-none' : ''}`}
                                         value={chunkPromptValue}
                                         onChange={(e) => setChunkPromptValue(e.target.value)}
                                     >
@@ -688,30 +651,19 @@ function Home() {
                                     </select>
                                     <button
                                         type="button"
+                                        className={`home-prompt-none-btn ${chunkPromptValue === 'NONE' ? 'home-prompt-none-btn--active' : ''}`}
                                         onClick={() => setChunkPromptValue(chunkPromptValue === 'NONE' ? '' : 'NONE')}
-                                        style={{
-                                            padding: '8px 12px',
-                                            fontSize: '12px',
-                                            fontWeight: '600',
-                                            border: '1px solid',
-                                            borderRadius: '6px',
-                                            cursor: 'pointer',
-                                            whiteSpace: 'nowrap',
-                                            ...(chunkPromptValue === 'NONE'
-                                                ? { backgroundColor: '#dc2626', color: '#fff', borderColor: '#dc2626' }
-                                                : { backgroundColor: '#fff', color: '#64748b', borderColor: '#cbd5e1' })
-                                        }}
                                     >
                                         NONE
                                     </button>
                                 </div>
-                                <div style={{ fontSize: '11px', color: chunkPromptValue === 'NONE' ? '#dc2626' : '#94a3b8', marginTop: '4px' }}>
+                                <div className={`home-prompt-hint ${chunkPromptValue === 'NONE' ? 'home-prompt-hint--danger' : ''}`}>
                                     {chunkPromptValue === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     온톨로지 프롬프트
                                 </label>
                                 <select
@@ -724,13 +676,13 @@ function Home() {
                                         <option key={code} value={code}>{code}</option>
                                     ))}
                                 </select>
-                                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                                <div className="home-prompt-hint">
                                     Chunk → LLM 온톨로지 추출
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     채팅 프롬프트
                                 </label>
                                 <select
@@ -743,13 +695,13 @@ function Home() {
                                         <option key={code} value={code}>{code}</option>
                                     ))}
                                 </select>
-                                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                                <div className="home-prompt-hint">
                                     Chat 응답 생성
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     CONTENT 온톨로지
                                 </label>
                                 <select
@@ -762,13 +714,13 @@ function Home() {
                                         <option key={code} value={code}>{code}</option>
                                     ))}
                                 </select>
-                                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                                <div className="home-prompt-hint">
                                     정형 Chunk → LLM 온톨로지
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     스키마 분석
                                 </label>
                                 <select
@@ -781,13 +733,13 @@ function Home() {
                                         <option key={code} value={code}>{code}</option>
                                     ))}
                                 </select>
-                                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                                <div className="home-prompt-hint">
                                     CSV/DB 스키마 자동 분석
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     테이블 간 관계 분석
                                 </label>
                                 <select
@@ -800,13 +752,13 @@ function Home() {
                                         <option key={code} value={code}>{code}</option>
                                     ))}
                                 </select>
-                                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                                <div className="home-prompt-hint">
                                     다건 테이블 간 FK/관계 분석
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     AQL 생성
                                 </label>
                                 <select
@@ -819,13 +771,13 @@ function Home() {
                                         <option key={code} value={code}>{code}</option>
                                     ))}
                                 </select>
-                                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                                <div className="home-prompt-hint">
                                     자연어 → AQL 쿼리 생성
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     AQL 결과 해석
                                 </label>
                                 <select
@@ -838,13 +790,13 @@ function Home() {
                                         <option key={code} value={code}>{code}</option>
                                     ))}
                                 </select>
-                                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                                <div className="home-prompt-hint">
                                     AQL 쿼리 결과 자연어 해석
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: 0 }}>
-                                <label style={{ fontSize: '13px', fontWeight: '600', color: '#334155', display: 'block', marginBottom: '4px' }}>
+                            <div className="home-prompt-field">
+                                <label className="home-prompt-label">
                                     집계 전략
                                 </label>
                                 <select
@@ -857,13 +809,13 @@ function Home() {
                                         <option key={code} value={code}>{code}</option>
                                     ))}
                                 </select>
-                                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                                <div className="home-prompt-hint">
                                     대규모 정형 데이터 집계 전략
                                 </div>
                             </div>
                         </div>
 
-                        <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '16px', lineHeight: '1.5' }}>
+                        <div className="home-prompt-footer-note">
                             * 기본값: 상위 레벨(도메인 → 시스템) 설정을 따름 &nbsp;|&nbsp; NONE: 명시적 비활성화
                         </div>
                         <div className="modal-buttons">
@@ -874,7 +826,7 @@ function Home() {
                                 취소
                             </button>
                             <button
-                                className="modal-btn cancel-btn"
+                                className="modal-btn cancel-btn home-prompt-reset-btn"
                                 onClick={() => {
                                     const defChunk = promptNotebook?.defaultChunkPrompt || '';
                                     const defOntology = promptNotebook?.defaultOntologyPrompt || '';
@@ -884,6 +836,7 @@ function Home() {
                                     const defInterTable = promptNotebook?.defaultInterTableAnalysisPrompt || '';
                                     const defAqlGen = promptNotebook?.defaultAqlGenerationPrompt || '';
                                     const defAqlInterp = promptNotebook?.defaultAqlInterpretationPrompt || '';
+                                    const defAgg = promptNotebook?.defaultAggregationStrategyPrompt || '';
                                     setChunkPromptValue('');
                                     setOntologyPromptValue('');
                                     setChatResultPromptValue('');
@@ -892,6 +845,7 @@ function Home() {
                                     setInterTableAnalysisPromptValue('');
                                     setAqlGenerationPromptValue('');
                                     setAqlInterpretationPromptValue('');
+                                    setAggregationStrategyPromptValue('');
                                     setTimeout(() => {
                                         setChunkPromptValue(defChunk);
                                         setOntologyPromptValue(defOntology);
@@ -901,10 +855,10 @@ function Home() {
                                         setInterTableAnalysisPromptValue(defInterTable);
                                         setAqlGenerationPromptValue(defAqlGen);
                                         setAqlInterpretationPromptValue(defAqlInterp);
+                                        setAggregationStrategyPromptValue(defAgg);
                                     }, 0);
                                     showAlert('기본값으로 초기화되었습니다.');
                                 }}
-                                style={{ color: '#dc2626' }}
                             >
                                 기본값 초기화
                             </button>
