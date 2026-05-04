@@ -1313,3 +1313,22 @@
 - **목적**: 제목 input이 flex:1로 늘어나 토글 버튼에 바짝 붙어 보이는 문제 해소
 - **변경**: `.panel-toggle-btn`에 `margin-left: var(--spacing-xs)` (4px) + `flex-shrink: 0` 추가
 - **영향**: `src/components/NotebookDetail.css` — `.panel-toggle-btn`
+
+### 99) 노트북 상세 좌측 소스 패널 - 문서 없을 때 컨트롤 비활성 처리
+
+- **목적**: 등록된 문서가 없을 때 검색·모두선택·동기화가 활성 상태로 보여 혼란을 주던 문제 해소. 소스가 없으면 해당 컨트롤은 비활성(disabled) 처리
+- **기준 토큰**: index.css에 정의된 --form-control-disabled-*, --btn-disabled-* 토큰 활용
+- **변경 내용**
+  - 검색 input: disabled={documents.length === 0} + :disabled CSS (배경·텍스트·placeholder 비활성 톤)
+  - 모두 선택 label/checkbox: disabled 속성 + is-disabled 클래스 (cursor: not-allowed, 텍스트 회색)
+  - 동기화 버튼: disabled 조건에 documents.length === 0 추가 + is-disabled 클래스
+  - 동기화 텍스트: is-disabled 클래스 (텍스트 회색)
+- **영향 파일**
+  - src/components/NotebookDetail.jsx - 세 컨트롤에 disabled 조건/클래스 추가
+  - src/components/NotebookDetail.css - :disabled / .is-disabled 비활성 스타일 추가
+
+### 100) 워크스페이스 카드 제목 1줄 말줄임 처리
+
+- **목적**: 제목이 길 경우 카드 내에서 2줄로 넘치던 것을 1줄로 제한하고 말줄임(...) 처리
+- **변경**: `.notebook-title` — `-webkit-line-clamp: 2` 방식 제거, `white-space: nowrap` + `overflow: hidden` + `text-overflow: ellipsis` 1줄 말줄임으로 전환
+- **영향**: `src/App.css` — `.notebook-title`

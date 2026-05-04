@@ -485,6 +485,16 @@
     background-color: var(--color-bg-secondary, #fff);
 }
 
+.source-search-input:disabled {
+    background-color: var(--form-control-disabled-bg);
+    color: var(--form-control-disabled-text);
+    cursor: not-allowed;
+}
+
+.source-search-input:disabled::placeholder {
+    color: var(--form-control-disabled-placeholder);
+}
+
 .source-toolbar-row {
     display: flex;
     align-items: center;
@@ -499,6 +509,11 @@
     font-size: 12px;
     color: #666;
     cursor: pointer;
+}
+
+.source-select-all-label.is-disabled {
+    color: var(--form-control-disabled-text);
+    cursor: not-allowed;
 }
 
 .source-select-all-checkbox {
@@ -538,6 +553,17 @@
 .source-sync-btn:disabled {
     cursor: wait;
     opacity: 0.6;
+}
+
+.source-sync-btn.is-disabled,
+.source-sync-btn.is-disabled:disabled {
+    color: var(--btn-disabled-text);
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.source-sync-text.is-disabled {
+    color: var(--form-control-disabled-text);
 }
 
 .source-sync-btn.is-synced {

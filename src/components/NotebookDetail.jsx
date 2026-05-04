@@ -1371,6 +1371,7 @@ function NotebookDetail() {
                                                     type="text"
                                                     placeholder="찾아내 새 소스 검색하세요"
                                                     className="source-search-input"
+                                                    disabled={documents.length === 0}
                                                 />
                                             </div>
                                         </div>
@@ -1380,12 +1381,13 @@ function NotebookDetail() {
                                     {!viewerOpen && (
                                         <div className="source-panel-group source-panel-group--list-tools">
                                             <div className="source-toolbar-row">
-                                                <label className="source-select-all-label">
+                                                <label className={`source-select-all-label${documents.length === 0 ? ' is-disabled' : ''}`}>
                                                     <input
                                                         type="checkbox"
                                                         checked={documents.length > 0 && selectedDocumentIds.length === documents.length}
                                                         onChange={handleSelectAll}
                                                         className="source-select-all-checkbox"
+                                                        disabled={documents.length === 0}
                                                     />
                                                     모두 선택
                                                 </label>
@@ -1396,15 +1398,15 @@ function NotebookDetail() {
                                                                 type="button"
                                                                 onClick={handleSync}
                                                                 title="동기화 (ArangoDB)"
-                                                                disabled={isSyncing}
-                                                                className={`source-sync-btn ${syncStatus === 'SYNCED' ? 'is-synced' : 'is-needed'}`}
+                                                                disabled={isSyncing || documents.length === 0}
+                                                                className={`source-sync-btn ${syncStatus === 'SYNCED' ? 'is-synced' : 'is-needed'}${documents.length === 0 ? ' is-disabled' : ''}`}
                                                             >
                                                                 <RefreshCw
                                                                     size={16}
                                                                     className={syncStatus === 'SYNCING' ? "spin-animation" : ""}
                                                                 />
                                                             </button>
-                                                            <span className={`source-sync-text ${syncStatus === 'SYNCED' ? 'is-synced' : 'is-needed'}`}>
+                                                            <span className={`source-sync-text ${syncStatus === 'SYNCED' ? 'is-synced' : 'is-needed'}${documents.length === 0 ? ' is-disabled' : ''}`}>
                                                                 {syncStatus === 'SYNCED' && '동기화 완료'}
                                                                 {syncStatus === 'SYNC_NEEDED' && '동기화 필요'}
                                                                 {syncStatus === 'SYNCING' && '동기화 중'}
