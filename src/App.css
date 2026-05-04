@@ -379,6 +379,12 @@
   flex-direction: column;
 }
 
+/* 그리드: ⋮ 팝업이 `.notebook-card`의 overflow:hidden에 잘리지 않도록(열린 카드만) */
+.notebook-card.notebook-card--menu-open {
+  overflow: visible;
+  z-index: 5;
+}
+
 .notebook-card::before {
   content: '';
   position: absolute;
@@ -479,12 +485,13 @@
   position: relative;
 }
 
-/* 그리드 뷰: more(⋯)을 카드 오른쪽에 더 붙임 */
+/* 그리드 뷰: more(⋯)을 카드 우측 패딩선에 맞춰 더 붙임(카드 padding 대비 시각 정렬) */
 .notebooks-container.grid .notebook-card:not(.create-card) .more-btn-container {
-  margin-right: -10px;
+  margin-right: calc(-1 * var(--spacing-md));
   margin-top: calc(-1 * var(--spacing-xs));
 }
 
+/* 워크스페이스/리스트 ⋮ — 노트북 좌측 .menu-trigger(문서 행)와 효과 분리: 여기는 호버 시 연한 원형 배경 */
 .more-btn {
   width: var(--spacing-xl);
   height: var(--spacing-xl);
@@ -495,12 +502,12 @@
   border: none;
   background: transparent;
   color: var(--color-text-secondary);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .more-btn:hover {
-  background-color: transparent;
-  color: var(--color-accent);
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
 }
 
 /* Popup Menu */
@@ -519,6 +526,27 @@
   padding: 2px 0;
   /* High z-index to appear above all content */
   animation: popupFadeIn 0.15s ease-out;
+}
+
+/* 워크스페이스 등: 스크롤 영역 하단에서 잘릴 때 트리거 위로 표시 (Home.jsx workspaceMenuOpenUp) */
+.popup-menu.popup-menu--open-up {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: var(--spacing-xs);
+  animation: popupFadeInUp 0.15s ease-out;
+}
+
+@keyframes popupFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(var(--spacing-sm));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes popupFadeIn {

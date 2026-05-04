@@ -1226,3 +1226,37 @@
 
 - **목적**: `.notebooks-container`의 `gap`을 리터럴 `16px`가 아닌 **`var(--spacing-md)`** 로 유지(값은 동일, 토큰 단일 소스)
 - **영향**: `App.css` 한 줄; 향후 `--spacing-md` 정의만 바꾸면 카드 간격 일괄 조정 가능
+
+### 88) 워크스페이스 `.more-btn` 호버 복원 — `.menu-trigger`(노트북 소스 행)와 분리
+
+- **목적**: 카드/리스트의 `more-btn`(⋮)은 **이전 톤**으로 — 호버 시 `rgba(0,0,0,0.05)` 배경 + `var(--color-text-primary)`. 노트북 상세 문서 목록의 `.menu-trigger`는 **현행 유지**(배경 투명·액센트 글자색만)
+- **영향**: `src/App.css`의 `.more-btn` / `.more-btn:hover`만 조정. `src/components/DocumentSourceItem.css`의 `.menu-trigger`는 변경 없음
+
+### 89) 워크스페이스 그리드 카드 `more-btn` 우측 정렬 보강
+
+- **목적**: 그리드 카드에서 ⋮ 버튼이 우측 여백만큼 더 안쪽으로 보이던 간격을 줄여, 카드 패딩 기준으로 우측에 더 붙임
+- **영향**: `.notebooks-container.grid .more-btn-container`의 `margin-right`를 `-10px` → **`calc(-1 * var(--spacing-md))` (-16px)** 로 조정. 리스트 뷰·`menu-trigger`는 변경 없음
+
+### 90) 워크스페이스 `popup-menu` 하단 가림 시 위쪽으로 열기
+
+- **목적**: 스크롤로 리스트 하단에 있는 카드에서 ⋮ 메뉴가 `main-content` 아래로 잘리지 않도록, 트리거 아래 공간이 부족하면 메뉴를 **버튼 위**에 붙임
+- **영향**: `Home.jsx` — `useLayoutEffect`로 `.main-content`의 가시 하단·트리거 기준으로 여유 공간 계산, `popup-menu--open-up` 클래스. `App.css` — `top:100%` 대신 `bottom:100%` + `popupFadeInUp` 애니메이션. 그리드·리스트 공통
+
+### 91) 워크스페이스 그리드 카드 ⋮ 메뉴가 카드 박스에 잘리지 않게
+
+- **원인**: `.notebook-card`에 `overflow: hidden`(호버·높이 톤)이 있어, 그리드 뷰에서 `position:absolute`인 `.popup-menu`가 카드 경계로 클리핑됨
+- **해결**: `openMenuId === notebook.id`일 때 카드에 `notebook-card--menu-open` — 해당 상태에서만 `overflow: visible` + `z-index: 5`로 이웃 카드 위에 겹쳐 표시. 리스트 뷰는 기존에 `.notebooks-container.list .notebook-card { overflow: visible }`로 동일 목적이 이미 충족
+- **영향**: `Home.jsx` — 워크스페이스 카드 `className`에 조건부 클래스. `App.css` — `.notebook-card.notebook-card--menu-open`
+
+## 2026-05-02
+
+### 92) 워크스페이스 ⋮(more) 메뉴 항목 순서 변경
+
+- **목적**: 편집·설정 항목을 먼저 두고, 위험한 **삭제**를 맨 아래로 내려 실수 클릭을 줄임. 관리자 전용 항목의 읽기 순서를 **프롬프트 → 공유**로 정리
+- **순서(관리자·Owner)**: 제목 수정 → 프롬프트 변경 → 공유 설정 → 삭제. **비관리자 Owner**는 기존과 같이 제목 수정·삭제만(중간 항목 없음)
+- **영향**: `src/pages/Home.jsx` — 그리드·리스트 뷰 `popup-menu` 내부 버튼 JSX 순서 동일 반영
+
+### 93) UI 히스토리 필수 기록 — Cursor 규칙(`ui-history-always`) 보강
+
+- **목적**: 별도로 “히스토리에 적어줘”라고 하지 않아도, UI·화면 관련 변경 후 **`docs/ui-history.md` 갱신을 작업의 일부로 고정**해 나중에 검색·확인 가능하게 함
+- **영향**: `.cursor/rules/ui-history-always.mdc` — 무조건 수행·같은 세션 내 완료·검색 목적 명시

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2 } from 'lucide-react';
 import { workspaceApi } from '../services/api';
@@ -55,6 +55,8 @@ function Home() {
     const [shareNotebook, setShareNotebook] = useState(null);
 
     const menuRef = useRef(null);
+    /** 스크롤 영역 하단에서 팝업이 잘리지 않도록 위로 열기 */
+    const [workspaceMenuOpenUp, setWorkspaceMenuOpenUp] = useState(false);
     const navigate = useNavigate();
     const { isAdmin, isAuthenticated } = useAuth();
     const { showAlert, showConfirm } = useAlert();
@@ -105,6 +107,48 @@ function Home() {
                 document.removeEventListener('mousedown', handleClickOutside);
             };
         }
+    }, [openMenuId]);
+
+    useLayoutEffect(() => {
+        if (openMenuId === null) {
+            setWorkspaceMenuOpenUp(false);
+            return;
+        }
+
+        const updatePlacement = () => {
+            const root = menuRef.current;
+            if (!root) return;
+            const trigger = root.querySelector('.more-btn');
+            const menuEl = root.querySelector('.popup-menu');
+            if (!trigger || !menuEl) return;
+
+            const scrollParent = root.closest('.main-content');
+            const pr = (scrollParent || document.documentElement).getBoundingClientRect();
+            const tr = trigger.getBoundingClientRect();
+            const menuHeight = menuEl.offsetHeight;
+            const gap = 8;
+            const spaceBelow = pr.bottom - tr.bottom;
+            const spaceAbove = tr.top - pr.top;
+
+            let openUp = false;
+            if (spaceBelow < menuHeight + gap) {
+                openUp = spaceAbove >= menuHeight + gap || spaceAbove > spaceBelow;
+            }
+            setWorkspaceMenuOpenUp(openUp);
+        };
+
+        updatePlacement();
+        requestAnimationFrame(updatePlacement);
+
+        const root = menuRef.current;
+        const scrollParent = root?.closest('.main-content');
+        window.addEventListener('resize', updatePlacement);
+        scrollParent?.addEventListener('scroll', updatePlacement, true);
+
+        return () => {
+            window.removeEventListener('resize', updatePlacement);
+            scrollParent?.removeEventListener('scroll', updatePlacement, true);
+        };
     }, [openMenuId]);
 
     const handleMenuToggle = (e, notebookId) => {
@@ -430,7 +474,9 @@ function Home() {
                     {notebooks.map((notebook) => (
                         <div
                             key={notebook.id}
-                            className={`notebook-card ${notebook.color || 'yellow'}`}
+                            className={`notebook-card ${notebook.color || 'yellow'}${
+                                openMenuId === notebook.id ? ' notebook-card--menu-open' : ''
+                            }`}
                             onClick={() => handleNotebookClick(notebook.id)}
                         >
                             {/* 삭제 중 오버레이 */}
@@ -476,7 +522,9 @@ function Home() {
                                                 </svg>
                                             </button>
                                             {openMenuId === notebook.id && (
-                                                <div className="popup-menu">
+                                                <div
+                                                    className={`popup-menu${workspaceMenuOpenUp ? ' popup-menu--open-up' : ''}`}
+                                                >
                                                     <button
                                                         className="menu-item"
                                                         onClick={(e) => handleRename(e, notebook.id)}
@@ -484,22 +532,8 @@ function Home() {
                                                         <Edit2 size={14} />
                                                         <span>제목 수정</span>
                                                     </button>
-                                                    <button
-                                                        className="menu-item delete"
-                                                        onClick={(e) => handleDelete(e, notebook.id)}
-                                                    >
-                                                        <Trash2 size={14} />
-                                                        <span>삭제</span>
-                                                    </button>
                                                     {isAdmin && (
                                                         <>
-                                                            <button
-                                                                className="menu-item"
-                                                                onClick={(e) => handleOpenShareModal(e, notebook.id)}
-                                                            >
-                                                                <Share2 size={14} />
-                                                                <span>공유 설정</span>
-                                                            </button>
                                                             <button
                                                                 className="menu-item"
                                                                 onClick={(e) => handleOpenPromptModal(e, notebook.id)}
@@ -509,8 +543,22 @@ function Home() {
                                                                     : <FileText size={14} />}
                                                                 <span>프롬프트 변경</span>
                                                             </button>
+                                                            <button
+                                                                className="menu-item"
+                                                                onClick={(e) => handleOpenShareModal(e, notebook.id)}
+                                                            >
+                                                                <Share2 size={14} />
+                                                                <span>공유 설정</span>
+                                                            </button>
                                                         </>
                                                     )}
+                                                    <button
+                                                        className="menu-item delete"
+                                                        onClick={(e) => handleDelete(e, notebook.id)}
+                                                    >
+                                                        <Trash2 size={14} />
+                                                        <span>삭제</span>
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
@@ -537,7 +585,9 @@ function Home() {
                                             </svg>
                                         </button>
                                         {openMenuId === notebook.id && (
-                                            <div className="popup-menu">
+                                            <div
+                                                className={`popup-menu${workspaceMenuOpenUp ? ' popup-menu--open-up' : ''}`}
+                                            >
                                                 <button
                                                     className="menu-item"
                                                     onClick={(e) => handleRename(e, notebook.id)}
@@ -545,22 +595,8 @@ function Home() {
                                                     <Edit2 size={14} />
                                                     <span>제목 수정</span>
                                                 </button>
-                                                <button
-                                                    className="menu-item delete"
-                                                    onClick={(e) => handleDelete(e, notebook.id)}
-                                                >
-                                                    <Trash2 size={14} />
-                                                    <span>삭제</span>
-                                                </button>
                                                 {isAdmin && (
                                                     <>
-                                                        <button
-                                                            className="menu-item"
-                                                            onClick={(e) => handleOpenShareModal(e, notebook.id)}
-                                                        >
-                                                            <Share2 size={14} />
-                                                            <span>공유 설정</span>
-                                                        </button>
                                                         <button
                                                             className="menu-item"
                                                             onClick={(e) => handleOpenPromptModal(e, notebook.id)}
@@ -570,8 +606,22 @@ function Home() {
                                                                 : <FileText size={14} />}
                                                             <span>프롬프트 변경</span>
                                                         </button>
+                                                        <button
+                                                            className="menu-item"
+                                                            onClick={(e) => handleOpenShareModal(e, notebook.id)}
+                                                        >
+                                                            <Share2 size={14} />
+                                                            <span>공유 설정</span>
+                                                        </button>
                                                     </>
                                                 )}
+                                                <button
+                                                    className="menu-item delete"
+                                                    onClick={(e) => handleDelete(e, notebook.id)}
+                                                >
+                                                    <Trash2 size={14} />
+                                                    <span>삭제</span>
+                                                </button>
                                             </div>
                                         )}
                                     </div>
