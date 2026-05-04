@@ -61,26 +61,33 @@
   color: #e53935;
 }
 
+/* 그리드 카드 우상단: 배지 + more-btn 그룹 */
+.card-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-left: auto;
+}
+
 /* 그리드 카드 상단 공유 배지 */
 .notebook-share-badge {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: 3px;
   color: #fff;
-  padding: var(--spacing-xs) 10px;
-  border-radius: var(--radius-lg);
+  padding: 3px var(--spacing-sm);
+  border-radius: 2px;
   font-size: 11px;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
 }
 
 .notebook-share-badge--all {
-  background: linear-gradient(135deg, #1a73e8, #4285f4);
-  box-shadow: 0 2px 4px rgba(26, 115, 232, 0.3);
+  background-color: #1a73e8;
 }
 
 .notebook-share-badge--individual {
-  background: linear-gradient(135deg, #059669, #10b981);
-  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
+  background-color: #059669;
 }
 
 .menu-item-icon--success {

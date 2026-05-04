@@ -494,6 +494,7 @@ function Home() {
                                 <div className="notebook-icon">
                                     {notebook.icon || '📄'}
                                 </div>
+                                <div className="card-header-right">
                                 {notebook.shareType === 'ALL' && (
                                     <div className="notebook-share-badge notebook-share-badge--all">
                                         <Globe size={12} />
@@ -503,7 +504,7 @@ function Home() {
                                 {notebook.shareType === 'INDIVIDUAL' && (
                                     <div className="notebook-share-badge notebook-share-badge--individual">
                                         <Users size={12} />
-                                        <span>개별 공유</span>
+                                        <span>조직 공유</span>
                                     </div>
                                 )}
 
@@ -564,6 +565,7 @@ function Home() {
                                         </div>
                                     )
                                 )}
+                                </div>
                             </div>
                             <div className="card-body">
                                 {viewMode === 'list' && <div className="notebook-icon">{notebook.icon || '📄'}</div>}

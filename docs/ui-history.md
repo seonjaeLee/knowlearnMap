@@ -1260,3 +1260,19 @@
 
 - **목적**: 별도로 “히스토리에 적어줘”라고 하지 않아도, UI·화면 관련 변경 후 **`docs/ui-history.md` 갱신을 작업의 일부로 고정**해 나중에 검색·확인 가능하게 함
 - **영향**: `.cursor/rules/ui-history-always.mdc` — 무조건 수행·같은 세션 내 완료·검색 목적 명시
+
+### 94) 워크스페이스 그리드 카드 - 공유 배지 디자인 경량화 + 배지·more-btn 우측 그룹
+
+- **목적**: 공유 배지가 버튼처럼 주목도가 높아 카드 내 정보 위계를 흐리던 문제를 해소. 배지를 조용한 레이블 톤으로 낮추고, more-btn과 한 그룹으로 묶어 카드 우상단에 정렬
+- **변경 내용**
+  - 그림자 제거 (box-shadow 삭제)
+  - border-radius: var(--radius-lg) -> 2px
+  - 그라디언트 배경 -> 단색(#1a73e8 / #059669)
+  - 패딩·gap·font-weight 소폭 축소(조용한 레이블 톤)
+  - card-header-right 래퍼 신설 - 배지 + .more-btn-container를 flex 행으로 묶어 margin-left: auto로 우측 정렬
+  - card-header에서 justify-content: space-between 제거 (right 그룹이 스스로 우측 정렬)
+  - 그리드 .more-btn-container에서 불필요해진 margin-top 음수값 제거
+- **영향 파일**
+  - src/pages/Home.jsx - .card-header-right 래퍼로 배지·more-btn 감싸기
+  - src/pages/Home.css - .card-header-right, .notebook-share-badge 스타일
+  - src/App.css - .card-header / 그리드 .more-btn-container 조정

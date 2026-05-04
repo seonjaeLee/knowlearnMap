@@ -471,7 +471,6 @@
 .card-header {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   margin-bottom: var(--spacing-md);
 }
 
@@ -485,10 +484,9 @@
   position: relative;
 }
 
-/* 그리드 뷰: more(⋯)을 카드 우측 패딩선에 맞춰 더 붙임(카드 padding 대비 시각 정렬) */
+/* 그리드 뷰: more(⋯)을 카드 우측 패딩선에 맞춤 */
 .notebooks-container.grid .notebook-card:not(.create-card) .more-btn-container {
   margin-right: calc(-1 * var(--spacing-md));
-  margin-top: calc(-1 * var(--spacing-xs));
 }
 
 /* 워크스페이스/리스트 ⋮ — 노트북 좌측 .menu-trigger(문서 행)와 효과 분리: 여기는 호버 시 연한 원형 배경 */
