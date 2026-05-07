@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Button } from '@mui/material';
 import { workspaceApi } from '../services/api';
+import BaseModal from './common/modal/BaseModal';
+import { useDialog } from '../hooks/useDialog';
 import './ReportGenerationModal.css';
 import './ReportCreationModal.css';
 
 function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
-    const modalRef = useRef(null);
-    const editModalRef = useRef(null);
+    const { confirm } = useDialog();
     const [view, setView] = useState('list'); // 'list' | 'edit'
     const [roles, setRoles] = useState([]);
     const [editTarget, setEditTarget] = useState(null); // null | 'default' | role object
@@ -36,51 +38,6 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
             setLoading(false);
         }
     };
-
-    // Close modal when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            const ref = view === 'edit' ? editModalRef : modalRef;
-            if (ref.current && !ref.current.contains(event.target)) {
-                if (view === 'edit') {
-                    setView('list');
-                } else {
-                    onClose();
-                }
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose, view]);
-
-    // Close on Escape key
-    useEffect(() => {
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                if (view === 'edit') {
-                    setView('list');
-                } else {
-                    onClose();
-                }
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('keydown', handleEscape);
-        }
-
-        return () => {
-            document.removeEventListener('keydown', handleEscape);
-        };
-    }, [isOpen, onClose, view]);
 
     if (!isOpen) return null;
 
@@ -149,7 +106,8 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
 
     const handleDelete = async () => {
         if (!editTarget || editTarget === 'default' || !editTarget.id) return;
-        if (!window.confirm('이 페르소나를 삭제하시겠습니까?')) return;
+        const confirmed = await confirm('이 페르소나를 삭제하시겠습니까?');
+        if (!confirmed) return;
         setSaving(true);
         try {
             await workspaceApi.deleteRole(workspaceId, editTarget.id);
@@ -195,45 +153,27 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
         const isExistingRole = !isDefault && !isNew;
 
         return (
-            <div className="modal-overlay" style={{ zIndex: 1100 }}>
-                <div className="modal-container creation-modal" ref={editModalRef}>
-                    <div className="modal-header">
-                        <div className="modal-header-content">
-                            <button className="back-btn" onClick={() => setView('list')}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-                                </svg>
-                            </button>
-                            <span className="modal-icon">🎭</span>
-                            <h2 className="modal-title">페르소나 관리</h2>
-                        </div>
-                        <button className="modal-close-btn" onClick={onClose}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div className="modal-body">
+            <BaseModal
+                open={isOpen}
+                onClose={onClose}
+                title="페르소나 관리"
+                subtitle={isNew ? '신규 페르소나' : isDefault ? '기초값' : editTitle}
+                maxWidth="md"
+                fullWidth
+                contentClassName="report-generation-edit-modal-content"
+            >
+                    <div className="report-generation-edit-modal-body">
                         {/* 이름 */}
                         <div className="form-section">
                             <label className="form-label">이름</label>
                             {isDefault ? (
-                                <div style={{
-                                    padding: '12px 16px',
-                                    backgroundColor: '#f8f9fa',
-                                    borderRadius: '8px',
-                                    fontSize: '14px',
-                                    color: '#5f6368',
-                                    fontWeight: '500'
-                                }}>
+                                <div className="persona-default-name">
                                     기초값
                                 </div>
                             ) : (
                                 <input
                                     type="text"
-                                    className="form-textarea"
-                                    style={{ resize: 'none' }}
+                                    className="form-textarea persona-title-field"
                                     value={editTitle}
                                     onChange={(e) => setEditTitle(e.target.value)}
                                     placeholder="페르소나 이름"
@@ -253,14 +193,14 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                 readOnly={isDefault}
                                 placeholder="이 페르소나의 역할과 관점을 설명하세요"
                                 rows="8"
-                                style={isDefault ? { backgroundColor: '#f8f9fa', color: '#5f6368', cursor: 'default' } : {}}
+                                className={isDefault ? 'form-textarea persona-readonly-textarea' : 'form-textarea'}
                             />
                         </div>
 
                         {/* 사용안함 체크박스 (기초값 제외) */}
                         {!isDefault && (
                             <div className="form-section">
-                                <label className="persona-checkbox-label" style={{ borderTop: 'none', marginTop: 0, paddingTop: 0 }}>
+                                <label className="persona-checkbox-label persona-checkbox-inline">
                                     <input
                                         type="checkbox"
                                         checked={!editEnabled}
@@ -273,66 +213,48 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
 
                         {/* 버튼 */}
                         {!isDefault && (
-                            <div className="form-actions" style={{ gap: '12px' }}>
+                            <div className="form-actions report-generation-edit-actions">
                                 {/* 삭제 버튼: 기존 사용자 추가 페르소나만 */}
                                 {isExistingRole && !editTarget.isDefault && (
-                                    <button
+                                    <Button
                                         type="button"
                                         onClick={handleDelete}
                                         disabled={saving}
-                                        style={{
-                                            padding: '10px 24px',
-                                            backgroundColor: '#fff',
-                                            color: '#d93025',
-                                            border: '1px solid #d93025',
-                                            borderRadius: '24px',
-                                            fontSize: '14px',
-                                            fontWeight: '500',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
-                                            marginRight: 'auto'
-                                        }}
-                                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#fce8e6'}
-                                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                                        variant="outlined"
+                                        color="error"
+                                        className="persona-delete-btn"
                                     >
                                         삭제
-                                    </button>
+                                    </Button>
                                 )}
-                                <button
+                                <Button
                                     type="button"
-                                    className="btn-generate"
                                     onClick={isNew ? handleSaveNew : handleSave}
                                     disabled={saving || (!isDefault && !editTitle.trim())}
+                                    variant="contained"
                                 >
                                     {saving ? '저장 중...' : '저장'}
-                                </button>
+                                </Button>
                             </div>
                         )}
                     </div>
-                </div>
-            </div>
+            </BaseModal>
         );
     }
 
     // ========== List View ==========
     return (
-        <div className="modal-overlay">
-            <div className="modal-container report-modal" ref={modalRef}>
-                <div className="modal-header">
-                    <div className="modal-header-content">
-                        <span className="modal-icon">🎭</span>
-                        <h2 className="modal-title">페르소나 관리</h2>
-                    </div>
-                    <button className="modal-close-btn" onClick={onClose}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div className="modal-body">
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title="페르소나 관리"
+            maxWidth="lg"
+            fullWidth
+            contentClassName="report-generation-list-modal-content"
+        >
+                <div className="report-generation-list-modal-body">
                     {loading ? (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#5f6368' }}>
+                        <div className="report-generation-loading">
                             로딩 중...
                         </div>
                     ) : (
@@ -366,7 +288,7 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                         >
                                             <div className="format-header">
                                                 <h4 className="format-title">{role.roleName}</h4>
-                                                <span className="edit-icon-btn" style={{ pointerEvents: 'none' }}>
+                                                <span className="edit-icon-btn edit-icon-disabled">
                                                     ✏️
                                                 </span>
                                             </div>
@@ -400,8 +322,7 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                         </>
                     )}
                 </div>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

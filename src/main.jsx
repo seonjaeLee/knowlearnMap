@@ -2,8 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { CssBaseline } from '@mui/material'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import * as Sentry from '@sentry/react'
 import { AuthProvider } from './context/AuthContext'
+import { DialogProvider } from './context/DialogContext'
 import axios from 'axios'
 import './index.css'
 import App from './App.jsx'
@@ -40,13 +43,24 @@ const queryClient = new QueryClient({
   },
 })
 
+const theme = createTheme({
+  typography: {
+    fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif",
+  },
+})
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <DialogProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </DialogProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>,

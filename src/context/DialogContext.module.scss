@@ -1,0 +1,67 @@
+.message {
+  margin-bottom: var(--spacing-sm) !important;
+  white-space: pre-line;
+  font-family: 'Pretendard', sans-serif !important;
+  font-size: var(--font-size-sm) !important;
+  color: var(--color-text-primary) !important;
+  line-height: 1.5 !important;
+}
+
+.decisionPaper {
+  max-width: 488px !important;
+}
+
+.decisionTitle {
+  font-size: var(--font-size-xl) !important;
+}
+
+.decisionContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.decisionHeader {
+  padding-top: var(--spacing-lg) !important;
+  padding-bottom: 0 !important;
+}
+
+.decisionMessage {
+  margin-bottom: 0 !important;
+  text-align: center;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: 1.6 !important;
+}
+
+.decisionActions {
+  padding-top: 0 !important;
+  padding-bottom: var(--spacing-lg) !important;
+
+  :global(.MuiButton-root) {
+    border-radius: 999px !important;
+    min-width: 100px !important;
+    width: 100px !important;
+    max-width: 100px !important;
+    padding: 10px 28px !important;
+    font-size: var(--font-size-md) !important;
+    font-weight: var(--font-weight-medium) !important;
+  }
+}
+
+.decisionCancelButton {
+  background-color: #6b7280 !important;
+  color: #ffffff !important;
+  border-color: #6b7280 !important;
+}
+
+.decisionCancelButton:hover {
+  background-color: #4b5563 !important;
+  border-color: #4b5563 !important;
+}
+
+.promptInput :global(.MuiInputBase-root),
+.promptInput :global(.MuiFormHelperText-root) {
+  font-family: 'Pretendard', sans-serif !important;
+}

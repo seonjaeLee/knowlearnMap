@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button, Stack, TextField, Typography } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import axios from 'axios';
 import { API_URL } from '../config/api';
 import PageHeader from '../components/common/PageHeader';
+import BaseModal from '../components/common/modal/BaseModal';
 import './DomainSelection.css';
 
 const isLocalAuthEnabled = import.meta.env.VITE_ENABLE_LOCAL_AUTH === 'true';
@@ -63,7 +65,7 @@ function DomainSelection() {
     if (!user) return null;
 
     if (!isAdmin) {
-        return <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>Redirecting...</div>;
+        return <div className="domain-redirecting">Redirecting...</div>;
     }
 
     const handleAddDomain = async () => {
@@ -130,6 +132,11 @@ function DomainSelection() {
         }
     };
 
+    const closeAddModal = () => {
+        setShowAddModal(false);
+        setAddError('');
+    };
+
     const currentDomainId = localStorage.getItem('admin_selected_domain_id');
 
     const handleSelectDomain = (domainId) => {
@@ -182,14 +189,14 @@ function DomainSelection() {
                                     onClick={() => handleSelectDomain(domain.id)}
                                     className={`domain-list-row ${String(domain.id) === currentDomainId ? 'domain-selected' : ''}`}
                                 >
-                                    <td style={{ textAlign: 'center' }}>
+                                    <td className="domain-radio-cell">
                                         <input
                                             type="radio"
                                             name="domain-select"
                                             checked={String(domain.id) === currentDomainId}
                                             onChange={() => handleSelectDomain(domain.id)}
                                             onClick={(e) => e.stopPropagation()}
-                                            style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: '#2563eb' }}
+                                            className="domain-radio-input"
                                         />
                                     </td>
                                     <td className="domain-list-name">
@@ -213,86 +220,62 @@ function DomainSelection() {
                 </div>
             </div>
 
-            {/* 도메인 추가 모달 */}
-            {showAddModal && (
-                <div
-                    style={{
-                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                        background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-                    }}
-                    onClick={() => setShowAddModal(false)}
-                >
-                    <div
-                        style={{
-                            background: 'white', borderRadius: '12px', padding: '28px', width: '420px',
-                            boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+            <BaseModal
+                open={showAddModal}
+                title="새 도메인 추가"
+                onClose={closeAddModal}
+                maxWidth="xs"
+                contentClassName="domain-add-modal-content"
+                actions={(
+                    <Stack direction="row" spacing={1}>
+                        <Button variant="outlined" onClick={closeAddModal} disabled={adding}>
+                            취소
+                        </Button>
+                        <Button variant="contained" onClick={handleAddDomain} disabled={adding}>
+                            {adding ? '생성 중...' : '생성하기'}
+                        </Button>
+                    </Stack>
+                )}
+            >
+                <div className="domain-add-form">
+                    <TextField
+                        label="도메인명 *"
+                        value={addForm.name}
+                        onChange={(e) => setAddForm((p) => ({ ...p, name: e.target.value }))}
+                        placeholder="도메인 이름"
+                        autoFocus
+                        size="small"
+                        fullWidth
+                    />
+
+                    <TextField
+                        label="설명"
+                        value={addForm.description}
+                        onChange={(e) => setAddForm((p) => ({ ...p, description: e.target.value }))}
+                        placeholder="도메인 설명 (선택)"
+                        size="small"
+                        fullWidth
+                    />
+
+                    <TextField
+                        label="ArangoDB 데이터베이스명 *"
+                        value={addForm.arangoDbName}
+                        onChange={(e) => {
+                            const v = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+                            setAddForm((p) => ({ ...p, arangoDbName: v }));
                         }}
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <h3 style={{ margin: '0 0 20px', fontSize: '18px' }}>새 도메인 추가</h3>
+                        placeholder="예: my_domain-01"
+                        size="small"
+                        fullWidth
+                    />
 
-                        <div style={{ marginBottom: '14px' }}>
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '4px' }}>도메인명 *</label>
-                            <input
-                                type="text"
-                                value={addForm.name}
-                                onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))}
-                                placeholder="도메인 이름"
-                                style={{ width: '100%', padding: '8px 10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box' }}
-                                autoFocus
-                            />
-                        </div>
-                        <div style={{ marginBottom: '14px' }}>
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '4px' }}>설명</label>
-                            <input
-                                type="text"
-                                value={addForm.description}
-                                onChange={e => setAddForm(p => ({ ...p, description: e.target.value }))}
-                                placeholder="도메인 설명 (선택)"
-                                style={{ width: '100%', padding: '8px 10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box' }}
-                            />
-                        </div>
-                        <div style={{ marginBottom: '14px' }}>
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '4px' }}>ArangoDB 데이터베이스명 *</label>
-                            <input
-                                type="text"
-                                value={addForm.arangoDbName}
-                                onChange={e => {
-                                    const v = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
-                                    setAddForm(p => ({ ...p, arangoDbName: v }));
-                                }}
-                                placeholder="예: my_domain-01"
-                                style={{ width: '100%', padding: '8px 10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box' }}
-                            />
-                            <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                사용 가능: 영문 소문자, 숫자, 하이픈(-), 언더스코어(_) · 생성 후 변경 불가
-                            </div>
-                        </div>
+                    <Typography className="domain-add-help">
+                        사용 가능: 영문 소문자, 숫자, 하이픈(-), 언더스코어(_) · 생성 후 변경 불가
+                    </Typography>
 
-                        {addError && (
-                            <div style={{ padding: '8px 10px', background: '#fee2e2', color: '#dc2626', borderRadius: '6px', fontSize: '13px', marginBottom: '14px' }}>
-                                {addError}
-                            </div>
-                        )}
-
-                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                            <button
-                                onClick={() => setShowAddModal(false)}
-                                style={{ padding: '8px 20px', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', background: 'white', fontSize: '14px' }}
-                            >
-                                취소
-                            </button>
-                            <button
-                                onClick={handleAddDomain}
-                                disabled={adding}
-                                style={{ padding: '8px 20px', border: 'none', borderRadius: '6px', cursor: adding ? 'not-allowed' : 'pointer', background: '#2563eb', color: 'white', fontSize: '14px', fontWeight: '500', opacity: adding ? 0.6 : 1 }}
-                            >
-                                {adding ? '생성 중...' : '생성하기'}
-                            </button>
-                        </div>
-                    </div>
+                    {addError && <div className="domain-add-error">{addError}</div>}
                 </div>
-            )}
+            </BaseModal>
         </div>
     );
 }

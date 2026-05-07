@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Loader, Play, CheckCircle, RotateCcw, AlertCircle, Info, Clock, Layers, BarChart3 } from 'lucide-react';
 import { structuredApi } from '../services/api';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import './AggregationStrategyModal.css';
 
 const AGG_FUNCTIONS = [
@@ -23,7 +23,8 @@ const TIME_GRANULARITIES = [
 ];
 
 function AggregationStrategyModal({ docId, filename, workspaceId, onClose, onComplete }) {
-    const { showAlert } = useAlert();
+    const { alert } = useDialog();
+    const showAlert = (message) => { alert(message); };
     const [loading, setLoading] = useState(false);
     const [executing, setExecuting] = useState(false);
     const [strategy, setStrategy] = useState(null);

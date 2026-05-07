@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { adminConfigApi } from '../../services/api';
+import { Box, Button, Typography } from '@mui/material';
 import { useAlert } from '../../context/AlertContext';
-import { RotateCcw, Save, Settings, RefreshCw, HelpCircle, X } from 'lucide-react';
+import { RotateCcw, Settings, RefreshCw, HelpCircle } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import BaseModal from '../../components/common/modal/BaseModal';
 import './admin-common.css';
 
 const CATEGORY_LABELS = {
@@ -437,149 +439,74 @@ function AdminConfigManagement() {
                 </div>
             )}
 
-            {helpModal && (
-                <div
-                    onClick={closeHelp}
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'rgba(0, 0, 0, 0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1000,
-                        padding: '20px'
-                    }}
-                >
-                    <div
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                            background: 'white',
-                            borderRadius: '8px',
-                            maxWidth: '600px',
-                            width: '100%',
-                            maxHeight: '80vh',
-                            overflowY: 'auto',
-                            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
-                        }}
-                    >
-                        <div style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '16px 20px',
-                            borderBottom: '1px solid #e0e0e0',
-                            background: '#f8f9fa',
-                            borderTopLeftRadius: '8px',
-                            borderTopRightRadius: '8px'
-                        }}>
-                            <h3 style={{ margin: 0, fontSize: 'var(--admin-font-lg)', fontWeight: 600, color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <HelpCircle size={18} color="#1976d2" />
-                                {helpModal.type === 'category'
-                                    ? `카테고리 설명: ${CATEGORY_LABELS[helpModal.data] || helpModal.data}`
-                                    : '설정 항목 설명'}
-                            </h3>
-                            <button
-                                onClick={closeHelp}
-                                style={{
-                                    background: 'transparent',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    color: '#666',
-                                    padding: '4px',
-                                    display: 'flex'
-                                }}
-                            >
-                                <X size={18} />
-                            </button>
+            <BaseModal
+                open={Boolean(helpModal)}
+                title={(
+                    <span className="admin-config-help-title">
+                        <HelpCircle size={18} color="#1976d2" />
+                        {helpModal?.type === 'category'
+                            ? `카테고리 설명: ${CATEGORY_LABELS[helpModal?.data] || helpModal?.data || ''}`
+                            : '설정 항목 설명'}
+                    </span>
+                )}
+                onClose={closeHelp}
+                maxWidth="md"
+                contentClassName="admin-config-help-content"
+                showCloseButton={false}
+                actions={(
+                    <Button variant="outlined" onClick={closeHelp}>
+                        닫기
+                    </Button>
+                )}
+                actionsAlign="right"
+            >
+                {helpModal?.type === 'category' ? (
+                    (() => {
+                        const info = CATEGORY_DESCRIPTIONS[helpModal.data] || { summary: '설명이 없습니다.' };
+                        return (
+                            <Box className="admin-config-help-category-wrap">
+                                <Typography className="admin-config-help-summary">{info.summary}</Typography>
+                                {info.details && info.details.length > 0 && (
+                                    <ul className="admin-config-help-details">
+                                        {info.details.map((d, i) => (
+                                            <li key={i}>{d}</li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </Box>
+                        );
+                    })()
+                ) : (
+                    <Box className="admin-config-help-field-list">
+                        <div>
+                            <div className="admin-config-help-label">키</div>
+                            <div className="admin-config-help-code-block">{helpModal?.data?.configKey}</div>
                         </div>
-
-                        <div style={{ padding: '20px' }}>
-                            {helpModal.type === 'category' ? (
-                                (() => {
-                                    const info = CATEGORY_DESCRIPTIONS[helpModal.data] || { summary: '설명이 없습니다.' };
-                                    return (
-                                        <div>
-                                            <p style={{ margin: '0 0 12px 0', fontSize: 'var(--admin-font-md)', lineHeight: '1.6', color: '#333' }}>
-                                                {info.summary}
-                                            </p>
-                                            {info.details && info.details.length > 0 && (
-                                                <ul style={{ margin: '12px 0 0 0', paddingLeft: '20px', color: '#555', fontSize: 'var(--admin-font-base)', lineHeight: '1.8' }}>
-                                                    {info.details.map((d, i) => (
-                                                        <li key={i}>{d}</li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </div>
-                                    );
-                                })()
-                            ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    <div>
-                                        <div style={{ fontSize: 'var(--admin-font-sm)', color: '#888', marginBottom: '4px', fontWeight: 600 }}>키</div>
-                                        <div style={{
-                                            fontFamily: 'monospace',
-                                            fontSize: 'var(--admin-font-base)',
-                                            color: '#1976d2',
-                                            background: '#f5f5f5',
-                                            padding: '6px 10px',
-                                            borderRadius: '4px',
-                                            wordBreak: 'break-all'
-                                        }}>
-                                            {helpModal.data.configKey}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: '12px' }}>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontSize: 'var(--admin-font-sm)', color: '#888', marginBottom: '4px', fontWeight: 600 }}>카테고리</div>
-                                            <div style={{ fontSize: 'var(--admin-font-base)', color: '#333' }}>
-                                                {CATEGORY_LABELS[helpModal.data.category] || helpModal.data.category || '-'}
-                                            </div>
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontSize: 'var(--admin-font-sm)', color: '#888', marginBottom: '4px', fontWeight: 600 }}>타입</div>
-                                            <div style={{ fontSize: 'var(--admin-font-base)', color: '#333' }}>{helpModal.data.dataType || '-'}</div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: 'var(--admin-font-sm)', color: '#888', marginBottom: '4px', fontWeight: 600 }}>현재 값</div>
-                                        <div style={{
-                                            fontFamily: 'monospace',
-                                            fontSize: 'var(--admin-font-base)',
-                                            background: '#f5f5f5',
-                                            padding: '8px 10px',
-                                            borderRadius: '4px',
-                                            whiteSpace: 'pre-wrap',
-                                            maxHeight: '200px',
-                                            overflowY: 'auto',
-                                            color: '#333'
-                                        }}>
-                                            {helpModal.data.configValue || '(빈 값)'}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: 'var(--admin-font-sm)', color: '#888', marginBottom: '4px', fontWeight: 600 }}>설명</div>
-                                        <div style={{
-                                            fontSize: 'var(--admin-font-md)',
-                                            lineHeight: '1.6',
-                                            color: '#333',
-                                            background: '#fff9e6',
-                                            padding: '12px',
-                                            borderRadius: '4px',
-                                            border: '1px solid #ffe082'
-                                        }}>
-                                            {helpModal.data.description || '등록된 설명이 없습니다. 관리자에게 문의하세요.'}
-                                        </div>
-                                    </div>
+                        <div className="admin-config-help-split-row">
+                            <div>
+                                <div className="admin-config-help-label">카테고리</div>
+                                <div className="admin-config-help-text">
+                                    {CATEGORY_LABELS[helpModal?.data?.category] || helpModal?.data?.category || '-'}
                                 </div>
-                            )}
+                            </div>
+                            <div>
+                                <div className="admin-config-help-label">타입</div>
+                                <div className="admin-config-help-text">{helpModal?.data?.dataType || '-'}</div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                        <div>
+                            <div className="admin-config-help-label">현재 값</div>
+                            <div className="admin-config-help-value-block">{helpModal?.data?.configValue || '(빈 값)'}</div>
+                        </div>
+                        <div>
+                            <div className="admin-config-help-label">설명</div>
+                            <div className="admin-config-help-description">
+                                {helpModal?.data?.description || '등록된 설명이 없습니다. 관리자에게 문의하세요.'}
+                            </div>
+                        </div>
+                    </Box>
+                )}
+            </BaseModal>
         </div>
     );
 }

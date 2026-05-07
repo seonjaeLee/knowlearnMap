@@ -1,10 +1,12 @@
 import { createContext, useContext, useState, useCallback } from 'react';
+import { useDialog } from '../hooks/useDialog';
 
 const AlertContext = createContext();
 
 export const useAlert = () => useContext(AlertContext);
 
 export const AlertProvider = ({ children }) => {
+    const { alert, confirm } = useDialog();
     const [alertState, setAlertState] = useState({
         isOpen: false,
         message: '',
@@ -15,34 +17,25 @@ export const AlertProvider = ({ children }) => {
     });
 
     const showAlert = useCallback((message, options = {}) => {
-        setAlertState({
-            isOpen: true,
-            message,
-            title: options.title || '알림',
-            type: 'alert',
-            onConfirm: options.onConfirm || null,
-            onCancel: null
-        });
-    }, []);
+        (async () => {
+            await alert({
+                title: options.title || '알림',
+                message,
+            });
+            if (typeof options.onConfirm === 'function') {
+                options.onConfirm();
+            }
+        })();
+    }, [alert]);
 
     const showConfirm = useCallback((message, options = {}) => {
-        return new Promise((resolve) => {
-            setAlertState({
-                isOpen: true,
-                message,
-                title: options.title || '확인',
-                type: 'confirm',
-                onConfirm: () => {
-                    setAlertState(prev => ({ ...prev, isOpen: false }));
-                    resolve(true);
-                },
-                onCancel: () => {
-                    setAlertState(prev => ({ ...prev, isOpen: false }));
-                    resolve(false);
-                }
-            });
+        return confirm({
+            title: options.title || '확인',
+            message,
+            confirmText: options.confirmText || '확인',
+            cancelText: options.cancelText || '취소',
         });
-    }, []);
+    }, [confirm]);
 
     const closeAlert = useCallback(() => {
         if (alertState.onConfirm && alertState.type === 'alert') {

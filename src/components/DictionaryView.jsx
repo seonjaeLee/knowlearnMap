@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Button, Stack } from '@mui/material';
 import './DictionaryView.css';
 import { dictionaryApi } from '../services/api';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import { Edit2, ArrowRightCircle, ChevronLeft, ChevronRight, X, Plus, BookOpen } from 'lucide-react';
+import BaseModal from './common/modal/BaseModal';
 
 /** 카테고리 API 결과와 테이블 행의 category 값을 합침 — API가 빈 배열이거나 캐시에 categories만 ['All']일 때도 행에 나온 카테고리가 select에 남음 */
 function mergeDictionaryCategories(existingList, rows) {
@@ -21,7 +23,7 @@ function mergeDictionaryCategories(existingList, rows) {
 }
 
 function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, readOnly, cachedData = null, onDataLoaded = null }) {
-    const { showAlert, showConfirm } = useAlert();
+    const { alert, confirm } = useDialog();
     const [viewMode, setViewMode] = useState('concept'); // 'concept' | 'relation' | 'action'
     // 정렬: 'recent' (id,desc) | 'name' (termKo/relationKo/actionKo,asc) | 'oldest' (id,asc)
     const [sortOption, setSortOption] = useState('recent');
@@ -296,7 +298,7 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
             setEditSynonyms(prev => [...prev, result]);
             setNewSynonymText('');
         } catch (e) {
-            showAlert('유의어 추가에 실패했습니다. 다시 시도해주세요.');
+            await alert('유의어 추가에 실패했습니다. 다시 시도해주세요.');
         } finally {
             setSynonymLoading(false);
         }
@@ -310,7 +312,7 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
             else                             await dictionaryApi.deleteRelationSynonym(synId);
             setEditSynonyms(prev => prev.filter(s => s.id !== synId));
         } catch (e) {
-            showAlert('유의어 삭제에 실패했습니다. 다시 시도해주세요.');
+            await alert('유의어 삭제에 실패했습니다. 다시 시도해주세요.');
         } finally {
             setSynonymLoading(false);
         }
@@ -402,12 +404,12 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
             fetchData(false);
             if (onUpdate) onUpdate();
         } catch (error) {
-            showAlert("사전 항목 저장에 실패했습니다. 다시 시도해주세요.");
+            await alert("사전 항목 저장에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
     const handleDelete = async (id) => {
-        const confirmed = await showConfirm("정말로 삭제하시겠습니까?");
+        const confirmed = await confirm("정말로 삭제하시겠습니까?");
         if (!confirmed) return;
         try {
             if (viewMode === 'concept')      await dictionaryApi.deleteConcept(id);
@@ -416,7 +418,7 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
             fetchData(false);
             if (onUpdate) onUpdate();
         } catch (error) {
-            showAlert("사전 항목 삭제에 실패했습니다. 다시 시도해주세요.");
+            await alert("사전 항목 삭제에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -437,7 +439,7 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
             fetchData(false);
             if (onUpdate) onUpdate();
         } catch (error) {
-            showAlert("사전 항목 이동에 실패했습니다. 다시 시도해주세요.");
+            await alert("사전 항목 이동에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -466,7 +468,7 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
             <span key={i}>
                 {part}
                 {i < parts.length - 1 && (
-                    <span style={{ color: '#e53935', fontWeight: 800, margin: '0 3px' }}>:</span>
+                    <span className="dictionary-category-separator">:</span>
                 )}
             </span>
         ));
@@ -551,7 +553,7 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                                 </select>
                             </div>
 
-                            <div className="search-bar" ref={searchRef} style={{ position: 'relative' }}>
+                            <div className="search-bar dictionary-search-wrap" ref={searchRef}>
                                 <input
                                     type="text"
                                     placeholder="검색어 입력 후 Enter..."
@@ -563,34 +565,19 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
 
                                 {/* 자동완성 드롭다운 */}
                                 {showSuggestions && suggestions.length > 0 && (
-                                    <div style={{
-                                        position: 'absolute', top: '100%', left: 0, right: 0,
-                                        backgroundColor: 'white', border: '1px solid #ddd', borderTop: 'none',
-                                        borderRadius: '0 0 6px 6px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                        zIndex: 100, maxHeight: '240px', overflowY: 'auto'
-                                    }}>
+                                    <div className="dictionary-suggest-list">
                                         {suggestions.map(item => (
                                             <div
                                                 key={item.id}
                                                 onClick={() => handleSelectSuggestion(item.label)}
-                                                style={{
-                                                    padding: '8px 12px', cursor: 'pointer',
-                                                    borderBottom: '1px solid #f5f5f5',
-                                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                                    fontSize: '13px'
-                                                }}
-                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f7ff'}
-                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                                                className="dictionary-suggest-item"
                                             >
-                                                <span style={{
-                                                    fontSize: '10px', padding: '1px 6px', borderRadius: '3px',
-                                                    backgroundColor: '#e8eaf6', color: '#3949ab', flexShrink: 0
-                                                }}>
+                                                <span className="dictionary-suggest-category">
                                                     {renderCategory(item.category)}
                                                 </span>
-                                                <span style={{ fontWeight: 500 }}>{item.label}</span>
+                                                <span className="dictionary-suggest-label">{item.label}</span>
                                                 {item.labelEn && (
-                                                    <span style={{ color: '#999', fontSize: '11px' }}>({item.labelEn})</span>
+                                                    <span className="dictionary-suggest-label-en">({item.labelEn})</span>
                                                 )}
                                             </div>
                                         ))}
@@ -606,23 +593,18 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
 
                 <div className="data-table">
                     <div className="table-header">
-                        <div className="header-cell" style={{ flex: 1.5 }}>카테고리</div>
-                        <div className="header-cell" style={{ flex: 2 }}>용어(KR)</div>
-                        <div className="header-cell" style={{ flex: 2 }}>용어(EN)</div>
-                        <div className="header-cell" style={{ flex: 3 }}>설명</div>
-                        <div className="header-cell" style={{ flex: 2 }}>유의어</div>
-                        {!readOnly && <div className="header-cell action-column" style={{ justifyContent: 'center', flex: 0.8 }}>관리</div>}
+                        <div className="header-cell dict-col-category">카테고리</div>
+                        <div className="header-cell dict-col-label">용어(KR)</div>
+                        <div className="header-cell dict-col-label-en">용어(EN)</div>
+                        <div className="header-cell dict-col-desc">설명</div>
+                        <div className="header-cell dict-col-synonym">유의어</div>
+                        {!readOnly && <div className="header-cell action-column dict-col-action">관리</div>}
                     </div>
 
                     <div className="term-list">
                         {loading ? (
-                            <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
-                                <div style={{
-                                    width: '24px', height: '24px', border: '2px solid #e0e0e0',
-                                    borderTopColor: '#1a73e8', borderRadius: '50%',
-                                    animation: 'spin 0.8s linear infinite', margin: '0 auto 8px'
-                                }} />
-                                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                            <div className="dict-loading-wrap">
+                                <div className="dict-loading-spinner" />
                                 사전 데이터를 불러오는 중...
                             </div>
                         ) : filteredData.length === 0 ? (
@@ -644,21 +626,21 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                         ) : (
                             filteredData.map(item => (
                                 <div key={item.id} className="term-item">
-                                    <div className="term-cell" style={{ flex: 1.5 }}>
+                                    <div className="term-cell dict-col-category">
                                         <span className="category-tag">{renderCategory(item.category)}</span>
                                     </div>
-                                    <div className="term-cell" style={{ flex: 2, fontWeight: 'bold' }}>{item.label}</div>
-                                    <div className="term-cell" style={{ flex: 2, color: '#555' }}>{item.labelEn}</div>
-                                    <div className="term-cell" style={{ flex: 3, fontSize: '0.9em', color: '#666' }}>
+                                    <div className="term-cell dict-col-label dict-label-strong">{item.label}</div>
+                                    <div className="term-cell dict-col-label-en dict-text-secondary">{item.labelEn}</div>
+                                    <div className="term-cell dict-col-desc dict-text-desc">
                                         {item.description && item.description.length > 50
                                             ? item.description.substring(0, 50) + '...'
                                             : item.description}
                                     </div>
-                                    <div className="term-cell" style={{ flex: 2, color: '#888', fontStyle: 'italic' }}>
+                                    <div className="term-cell dict-col-synonym dict-synonym-cell">
                                         {item.synonym || '-'}
                                     </div>
                                     {!readOnly && (
-                                        <div className="term-cell action-column" style={{ justifyContent: 'center', gap: '4px', flex: 0.8 }}>
+                                        <div className="term-cell action-column dict-col-action dict-action-cell">
                                             <button className="icon-btn edit-btn" onClick={() => handleEditClick(item)} title="수정">
                                                 <Edit2 size={16} />
                                             </button>
@@ -694,11 +676,21 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
             </div>
 
             {/* Edit Modal */}
-            {isEditModalOpen && editingTerm && (
-                <div className="edit-modal-overlay">
-                    <div className="edit-modal" style={{ width: '480px' }}>
-                        <h3>항목 수정</h3>
-                        <div className="edit-form">
+            <BaseModal
+                open={isEditModalOpen && Boolean(editingTerm)}
+                title="항목 수정"
+                onClose={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}
+                maxWidth="sm"
+                contentClassName="dictionary-modal-content"
+                actions={(
+                    <Stack direction="row" spacing={1}>
+                        <Button variant="outlined" onClick={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}>취소</Button>
+                        <Button variant="contained" onClick={handleSaveEdit}>저장</Button>
+                    </Stack>
+                )}
+            >
+                {editingTerm ? (
+                    <div className="edit-form">
                             <div className="form-group">
                                 <label>라벨(KR)</label>
                                 <input
@@ -726,27 +718,18 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                             {/* 유의어 */}
                             <div className="form-group">
                                 <label>유의어</label>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px', minHeight: '28px' }}>
+                                <div className="dict-synonym-list">
                                     {editSynonyms.length === 0 && (
-                                        <span style={{ color: '#999', fontSize: '12px' }}>등록된 유의어가 없습니다.</span>
+                                        <span className="dict-synonym-empty">등록된 유의어가 없습니다.</span>
                                     )}
                                     {editSynonyms.map(syn => (
-                                        <span key={syn.id} style={{
-                                            display: 'inline-flex', alignItems: 'center', gap: '4px',
-                                            padding: '3px 8px 3px 10px', borderRadius: '14px',
-                                            backgroundColor: '#e3f2fd', color: '#1565c0', fontSize: '12px',
-                                            border: '1px solid #bbdefb'
-                                        }}>
+                                        <span key={syn.id} className="dict-synonym-chip">
                                             {syn.synonym}
                                             {!readOnly && (
                                                 <button
                                                     onClick={() => handleDeleteSynonym(syn.id)}
                                                     disabled={synonymLoading}
-                                                    style={{
-                                                        background: 'none', border: 'none', cursor: 'pointer',
-                                                        padding: '0', display: 'flex', alignItems: 'center',
-                                                        color: '#1565c0', opacity: synonymLoading ? 0.5 : 1
-                                                    }}
+                                                    className={`dict-synonym-delete-btn ${synonymLoading ? 'is-disabled' : ''}`}
                                                     title="삭제"
                                                 >
                                                     <X size={13} />
@@ -756,25 +739,20 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                                     ))}
                                 </div>
                                 {!readOnly && (
-                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                    <div className="dict-synonym-input-row">
                                         <input
                                             type="text"
                                             placeholder="유의어 입력 후 Enter 또는 + 클릭"
                                             value={newSynonymText}
                                             onChange={(e) => setNewSynonymText(e.target.value)}
                                             onKeyDown={handleSynonymKeyDown}
-                                            style={{ flex: 1 }}
+                                            className="dict-synonym-input"
                                             disabled={synonymLoading}
                                         />
                                         <button
                                             onClick={handleAddSynonym}
                                             disabled={!newSynonymText.trim() || synonymLoading}
-                                            style={{
-                                                padding: '4px 10px', border: '1px solid #1976d2', borderRadius: '4px',
-                                                backgroundColor: newSynonymText.trim() ? '#1976d2' : '#ccc',
-                                                color: 'white', cursor: newSynonymText.trim() ? 'pointer' : 'not-allowed',
-                                                display: 'flex', alignItems: 'center'
-                                            }}
+                                            className={`dict-synonym-add-btn ${newSynonymText.trim() ? 'is-enabled' : 'is-disabled'}`}
                                             title="유의어 추가"
                                         >
                                             <Plus size={16} />
@@ -782,36 +760,42 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                                     </div>
                                 )}
                             </div>
-                        </div>
-                        <div className="modal-buttons">
-                            <button className="cancel-btn" onClick={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}>취소</button>
-                            <button className="save-btn" onClick={handleSaveEdit}>저장</button>
-                        </div>
                     </div>
-                </div>
-            )}
+                ) : null}
+            </BaseModal>
 
             {/* Move Modal */}
-            {isMoveModalOpen && moveSourceItem && (
-                <div className="edit-modal-overlay">
-                    <div className="edit-modal" style={{ width: '500px' }}>
-                        <h3>{viewMode === 'concept' ? '개념' : '관계'} 이동 (병합)</h3>
-                        <p style={{ color: '#666', fontSize: '13px', marginBottom: '16px' }}>
+            <BaseModal
+                open={isMoveModalOpen && Boolean(moveSourceItem)}
+                title={`${viewMode === 'concept' ? '개념' : '관계'} 이동 (병합)`}
+                onClose={() => setIsMoveModalOpen(false)}
+                maxWidth="sm"
+                contentClassName="dictionary-modal-content"
+                actions={(
+                    <Stack direction="row" spacing={1}>
+                        <Button variant="outlined" onClick={() => setIsMoveModalOpen(false)}>취소</Button>
+                        <Button variant="contained" onClick={handleConfirmMove} disabled={!moveTargetId}>이동</Button>
+                    </Stack>
+                )}
+            >
+                {moveSourceItem ? (
+                    <>
+                        <p className="dict-move-desc">
                             <b>'{moveSourceItem.label}'</b> {viewMode === 'concept' ? '개념' : '관계'}을 다른 {viewMode === 'concept' ? '개념' : '관계'}으로 이동(병합)합니다. <br />
                             이동 후 원본 {viewMode === 'concept' ? '개념' : '관계'}은 삭제되며, 모든 문서 출처와 관계가 대상 {viewMode === 'concept' ? '개념' : '관계'}으로 이전됩니다.
                         </p>
 
-                        <div style={{ marginBottom: '16px' }}>
-                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>이동할 대상 검색</label>
+                        <div className="dict-move-section">
+                            <label className="dict-move-label">이동할 대상 검색</label>
                             <input
                                 type="text"
                                 placeholder="대상 검색..."
                                 value={moveSearchTerm}
                                 onChange={(e) => setMoveSearchTerm(e.target.value)}
-                                style={{ width: '100%', padding: '8px', marginBottom: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                                className="dict-move-search-input"
                             />
                             <div
-                                style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #ddd', borderRadius: '4px' }}
+                                className="dict-move-candidate-list"
                                 onScroll={(e) => {
                                     const { scrollTop, scrollHeight, clientHeight } = e.target;
                                     if (scrollHeight - scrollTop <= clientHeight + 50) {
@@ -825,55 +809,40 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                                         <div
                                             key={t.id}
                                             onClick={() => setMoveTargetId(t.id)}
-                                            style={{
-                                                padding: '8px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0',
-                                                backgroundColor: moveTargetId === t.id ? '#e3f2fd' : 'white',
-                                                display: 'flex', alignItems: 'center', gap: '8px'
-                                            }}
+                                            className={`dict-move-candidate-item ${moveTargetId === t.id ? 'is-selected' : ''}`}
                                         >
-                                            <span className="category-tag small" style={{ fontSize: '10px', padding: '2px 6px' }}>{t.category}</span>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{t.label}</div>
-                                                <div style={{ fontSize: '11px', color: '#666' }}>{t.labelEn}</div>
+                                            <span className="category-tag small dict-candidate-tag">{t.category}</span>
+                                            <div className="dict-candidate-main">
+                                                <div className="dict-candidate-label">{t.label}</div>
+                                                <div className="dict-candidate-label-en">{t.labelEn}</div>
                                             </div>
                                         </div>
                                     ))}
                                 {loadingCandidates && (
-                                    <div style={{ padding: '8px', color: '#666', textAlign: 'center' }}>목록 불러오는 중...</div>
+                                    <div className="dict-candidate-empty">목록 불러오는 중...</div>
                                 )}
                                 {!loadingCandidates && allCandidates.length === 0 && (
-                                    <div style={{ padding: '8px', color: '#666', textAlign: 'center' }}>검색 결과가 없습니다.</div>
+                                    <div className="dict-candidate-empty">검색 결과가 없습니다.</div>
                                 )}
                             </div>
                         </div>
 
-                        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+                        <div className="dict-keep-synonym-row">
                             <input
                                 type="checkbox"
                                 id="keepSourceAsSynonym"
                                 checked={keepSourceAsSynonym}
                                 onChange={(e) => setKeepSourceAsSynonym(e.target.checked)}
-                                style={{ marginRight: '8px' }}
+                                className="dict-keep-synonym-check"
                             />
-                            <label htmlFor="keepSourceAsSynonym" style={{ fontSize: '13px', color: '#333', cursor: 'pointer' }}>
+                            <label htmlFor="keepSourceAsSynonym" className="dict-keep-synonym-label">
                                 원본 용어를 유의어로 추가 (병합 후 검색 가능)
                             </label>
                         </div>
 
-                        <div className="modal-buttons">
-                            <button className="cancel-btn" onClick={() => setIsMoveModalOpen(false)}>취소</button>
-                            <button
-                                className="save-btn"
-                                onClick={handleConfirmMove}
-                                disabled={!moveTargetId}
-                                style={{ backgroundColor: moveTargetId ? '#1976d2' : '#ccc', cursor: moveTargetId ? 'pointer' : 'not-allowed' }}
-                            >
-                                이동
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    </>
+                ) : null}
+            </BaseModal>
         </div>
     );
 }

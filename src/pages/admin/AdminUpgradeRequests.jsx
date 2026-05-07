@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { Button, TextField, Typography } from '@mui/material';
 import { upgradeApi } from '../../services/api'; // Use centralized api service
-import { useAlert } from '../../context/AlertContext';
+import { useDialog } from '../../hooks/useDialog';
+import BaseModal from '../../components/common/modal/BaseModal';
 import PageHeader from '../../components/common/PageHeader';
 import './admin-common.css';
+import './AdminUpgradeRequests.css';
 
 const AdminUpgradeRequests = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { showAlert, showConfirm } = useAlert();
+    const { alert, confirm } = useDialog();
 
     // Reject Modal State
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
@@ -31,15 +34,15 @@ const AdminUpgradeRequests = () => {
     };
 
     const handleApprove = async (id) => {
-        const confirmed = await showConfirm('승인하시겠습니까? 해당 회원의 등급이 변경되며 승인 메일이 발송됩니다.');
+        const confirmed = await confirm('승인하시겠습니까? 해당 회원의 등급이 변경되며 승인 메일이 발송됩니다.');
         if (!confirmed) return;
 
         try {
             await upgradeApi.approveRequest(id);
-            showAlert('승인되었습니다.');
+            await alert('승인되었습니다.');
             fetchRequests(); // Refresh list
         } catch (err) {
-            showAlert(err.message);
+            await alert(err.message);
         }
     };
 
@@ -51,17 +54,17 @@ const AdminUpgradeRequests = () => {
 
     const handleRejectSubmit = async () => {
         if (!rejectReason.trim()) {
-            showAlert('거절 사유를 입력해주세요.');
+            await alert('거절 사유를 입력해주세요.');
             return;
         }
 
         try {
             await upgradeApi.rejectRequest(selectedRequestId, rejectReason);
-            showAlert('거절 처리되었습니다. 메일이 발송되었습니다.');
+            await alert('거절 처리되었습니다. 메일이 발송되었습니다.');
             setRejectModalOpen(false);
             fetchRequests();
         } catch (err) {
-            showAlert(err.message);
+            await alert(err.message);
         }
     };
 
@@ -75,91 +78,59 @@ const AdminUpgradeRequests = () => {
                 breadcrumbs={['어드민센터']}
             />
 
-            <div className="table-responsive" style={{ background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead style={{ background: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
+            <div className="table-responsive admin-upgrade-table-wrap">
+                <table className="admin-upgrade-table">
+                    <thead className="admin-upgrade-thead">
                         <tr>
-                            <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600, color: '#495057' }}>신청일</th>
-                            <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600, color: '#495057' }}>이메일</th>
-                            <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600, color: '#495057' }}>회사/소속</th>
-                            <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600, color: '#495057' }}>담당자</th>
-                            <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600, color: '#495057' }}>전화번호</th>
-                            <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600, color: '#495057' }}>유형</th>
-                            <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600, color: '#495057' }}>상태</th>
-                            <th style={{ padding: '12px', textAlign: 'left', fontWeight: 600, color: '#495057' }}>액션</th>
+                            <th className="admin-upgrade-th">신청일</th>
+                            <th className="admin-upgrade-th">이메일</th>
+                            <th className="admin-upgrade-th">회사/소속</th>
+                            <th className="admin-upgrade-th">담당자</th>
+                            <th className="admin-upgrade-th">전화번호</th>
+                            <th className="admin-upgrade-th">유형</th>
+                            <th className="admin-upgrade-th">상태</th>
+                            <th className="admin-upgrade-th">액션</th>
                         </tr>
                     </thead>
                     <tbody>
                         {requests.length === 0 ? (
                             <tr>
-                                <td colSpan="8" style={{ padding: '20px', textAlign: 'center', color: '#868e96' }}>
+                                <td colSpan="8" className="admin-upgrade-empty">
                                     대기 중인 요청이 없습니다.
                                 </td>
                             </tr>
                         ) : (
                             requests.map(req => (
-                                <tr key={req.id} style={{ borderBottom: '1px solid #f1f3f5' }}>
-                                    <td style={{ padding: '12px' }}>{new Date(req.createdAt).toLocaleDateString()}</td>
-                                    <td style={{ padding: '12px' }}>{req.email}</td>
-                                    <td style={{ padding: '12px' }}>{req.company}</td>
-                                    <td style={{ padding: '12px' }}>{req.name}</td>
-                                    <td style={{ padding: '12px' }}>{req.phone}</td>
-                                    <td style={{ padding: '12px' }}>
-                                        <span style={{
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            fontSize: 'var(--admin-font-sm)',
-                                            fontWeight: 600,
-                                            background: req.type === 'MAX_CONSULTATION' ? '#e9ecef' : '#e7f5ff',
-                                            color: req.type === 'MAX_CONSULTATION' ? '#495057' : '#228be6'
-                                        }}>
+                                <tr key={req.id} className="admin-upgrade-row">
+                                    <td className="admin-upgrade-td">{new Date(req.createdAt).toLocaleDateString()}</td>
+                                    <td className="admin-upgrade-td">{req.email}</td>
+                                    <td className="admin-upgrade-td">{req.company}</td>
+                                    <td className="admin-upgrade-td">{req.name}</td>
+                                    <td className="admin-upgrade-td">{req.phone}</td>
+                                    <td className="admin-upgrade-td">
+                                        <span className={`admin-upgrade-type-badge ${req.type === 'MAX_CONSULTATION' ? 'is-max' : 'is-pro'}`}>
                                             {req.type === 'PRO_UPGRADE' ? 'Pro 신청' : 'Max 상담'}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '12px' }}>
-                                        <span style={{
-                                            fontWeight: 600,
-                                            color: req.status === 'APPROVED' ? '#2b8a3e' : req.status === 'REJECTED' ? '#e03131' : '#f08c00'
-                                        }}>
+                                    <td className="admin-upgrade-td">
+                                        <span className={`admin-upgrade-status status-${req.status?.toLowerCase()}`}>
                                             {req.status}
                                         </span>
                                         {req.status === 'REJECTED' && req.rejectReason && (
-                                            <div style={{ fontSize: 'var(--admin-font-sm)', color: '#868e96', marginTop: '4px' }}>
+                                            <div className="admin-upgrade-reject-reason">
                                                 사유: {req.rejectReason}
                                             </div>
                                         )}
                                     </td>
-                                    <td style={{ padding: '12px' }}>
+                                    <td className="admin-upgrade-td">
                                         {req.status === 'PENDING' && (
-                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                <button
-                                                    onClick={() => handleApprove(req.id)}
-                                                    style={{
-                                                        padding: '6px 12px',
-                                                        background: '#20c997',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        fontSize: 'var(--admin-font-md)'
-                                                    }}
-                                                >
+                                            <div className="admin-upgrade-actions">
+                                                <Button size="small" variant="contained" color="success" onClick={() => handleApprove(req.id)}>
                                                     승인
-                                                </button>
-                                                <button
-                                                    onClick={() => openRejectModal(req.id)}
-                                                    style={{
-                                                        padding: '6px 12px',
-                                                        background: '#fa5252',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        fontSize: 'var(--admin-font-md)'
-                                                    }}
-                                                >
+                                                </Button>
+                                                <Button size="small" variant="contained" color="error" onClick={() => openRejectModal(req.id)}>
                                                     거절
-                                                </button>
+                                                </Button>
                                             </div>
                                         )}
                                     </td>
@@ -172,54 +143,38 @@ const AdminUpgradeRequests = () => {
 
             {/* Reject Modal */}
             {rejectModalOpen && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-                    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-                }} onClick={() => setRejectModalOpen(false)}>
-                    <div style={{
-                        background: 'white', padding: '24px', borderRadius: '8px', width: '400px', maxWidth: '90%'
-                    }} onClick={e => e.stopPropagation()}>
-                        <h3 style={{ marginTop: 0, marginBottom: '16px' }}>거절 사유 입력</h3>
-                        <p style={{ fontSize: 'var(--admin-font-md)', color: '#666', marginBottom: '12px' }}>
+                <BaseModal
+                    open={rejectModalOpen}
+                    onClose={() => setRejectModalOpen(false)}
+                    title="거절 사유 입력"
+                    maxWidth="sm"
+                    fullWidth
+                    contentClassName="admin-upgrade-reject-content"
+                    actions={(
+                        <>
+                            <Button variant="outlined" onClick={() => setRejectModalOpen(false)}>
+                                취소
+                            </Button>
+                            <Button variant="contained" color="error" onClick={handleRejectSubmit}>
+                                거절 처리
+                            </Button>
+                        </>
+                    )}
+                >
+                        <Typography className="admin-upgrade-reject-desc">
                             거절 사유를 입력하시면 해당 내용이 메일로 발송됩니다.
-                        </p>
-                        <textarea
-                            style={{ width: '100%', height: '100px', padding: '10px', borderRadius: '4px', border: '1px solid #ddd', marginBottom: '16px', resize: 'vertical' }}
+                        </Typography>
+                        <TextField
+                            multiline
+                            minRows={5}
+                            fullWidth
                             value={rejectReason}
                             onChange={(e) => setRejectReason(e.target.value)}
                             placeholder="거절 사유를 자세히 적어주세요."
                             autoFocus
+                            size="small"
                         />
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                            <button
-                                onClick={() => setRejectModalOpen(false)}
-                                style={{
-                                    padding: '8px 16px',
-                                    background: '#f1f3f5',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    color: '#495057'
-                                }}
-                            >
-                                취소
-                            </button>
-                            <button
-                                onClick={handleRejectSubmit}
-                                style={{
-                                    padding: '8px 16px',
-                                    background: '#fa5252',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    color: 'white'
-                                }}
-                            >
-                                거절 처리
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                </BaseModal>
             )}
         </div>
     );

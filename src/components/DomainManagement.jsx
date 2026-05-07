@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, X, Globe, CheckCircle, AlertCircle, Trash2, Edit2, Database, Layout, Info } from 'lucide-react';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import { apiCall } from '../services/api';
 import PageHeader from './common/PageHeader';
 import './DomainManagement.css';
 
 function DomainManagement() {
-    const { showAlert, showConfirm } = useAlert();
+    const { alert, confirm } = useDialog();
     const [domains, setDomains] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -193,7 +193,7 @@ function DomainManagement() {
     };
 
     const handleDelete = async (id, name) => {
-        const confirmed = await showConfirm(`정말 '${name}' 도메인을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없으며, 연결된 데이터가 모두 삭제됩니다 (워크스페이스가 없어야 삭제 가능).`);
+        const confirmed = await confirm(`정말 '${name}' 도메인을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없으며, 연결된 데이터가 모두 삭제됩니다 (워크스페이스가 없어야 삭제 가능).`);
         if (!confirmed) {
             return;
         }
@@ -202,7 +202,7 @@ function DomainManagement() {
             await apiCall(`/domains/${id}`, { method: 'DELETE' });
             fetchDomains();
         } catch (err) {
-            showAlert('삭제 실패: ' + (err.message || '오류가 발생했습니다.'), 'error');
+            await alert('삭제 실패: ' + (err.message || '오류가 발생했습니다.'));
             console.error(err);
         }
     };

@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, ImagePlus } from 'lucide-react';
+import { ImagePlus } from 'lucide-react';
+import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
+import BaseModal from './common/modal/BaseModal';
 import './FaqCreateModal.css';
 
 function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
@@ -14,7 +16,6 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
     const [isActive, setIsActive] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const modalRef = useRef(null);
     const textareaRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -36,32 +37,6 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
             }
         }
     }, [isOpen, editingFaq]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose]);
 
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
@@ -120,16 +95,29 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
     if (!isOpen) return null;
 
     return (
-        <div className="faq-modal-overlay">
-            <div className="faq-modal-container" ref={modalRef}>
-                <div className="faq-modal-header">
-                    <h2>{editingFaq ? 'FAQ 수정' : 'FAQ 작성'}</h2>
-                    <button className="faq-modal-close" onClick={onClose}>
-                        <X size={24} />
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="faq-modal-form">
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title={editingFaq ? 'FAQ 수정' : 'FAQ 작성'}
+            maxWidth="md"
+            fullWidth
+            contentClassName="faq-modal-content"
+            actionsClassName="faq-modal-actions"
+            actions={(
+                <>
+                    <Button variant="outlined" onClick={onClose}>취소</Button>
+                    <Button
+                        variant="contained"
+                        type="submit"
+                        form="faq-create-form"
+                        disabled={!title.trim() || !content.trim() || isSubmitting}
+                    >
+                        {isSubmitting ? '저장 중...' : (editingFaq ? '수정' : '등록')}
+                    </Button>
+                </>
+            )}
+        >
+                <form id="faq-create-form" onSubmit={handleSubmit} className="faq-modal-form">
                     <div className="faq-form-group">
                         <label htmlFor="faq-title">제목 *</label>
                         <input
@@ -191,7 +179,7 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                                 type="file"
                                 accept="image/jpeg,image/png,image/gif,image/webp"
                                 onChange={handleImageUpload}
-                                style={{ display: 'none' }}
+                                className="faq-hidden-file-input"
                             />
                         </div>
                         <textarea
@@ -228,21 +216,8 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                         </div>
                     </div>
 
-                    <div className="faq-modal-actions">
-                        <button type="button" className="btn-cancel" onClick={onClose}>
-                            취소
-                        </button>
-                        <button
-                            type="submit"
-                            className="btn-submit"
-                            disabled={!title.trim() || !content.trim() || isSubmitting}
-                        >
-                            {isSubmitting ? '저장 중...' : (editingFaq ? '수정' : '등록')}
-                        </button>
-                    </div>
                 </form>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

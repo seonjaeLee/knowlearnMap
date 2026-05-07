@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Button, Stack } from '@mui/material';
 import { adminSemanticApi } from '../../services/api';
-import { useAlert } from '../../context/AlertContext';
+import { useDialog } from '../../hooks/useDialog';
 import {
   Layers,
   Plus,
@@ -19,6 +20,7 @@ import {
   Minimize2,
 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import BaseModal from '../../components/common/modal/BaseModal';
 import './admin-common.css';
 
 /**
@@ -33,7 +35,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
   const [importing, setImporting] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [expandedIds, setExpandedIds] = useState(() => new Set());
-  const { showAlert, showConfirm } = useAlert();
+  const { alert, confirm } = useDialog();
   const fileInputRef = useRef(null);
 
   const fetchItems = async () => {
@@ -45,7 +47,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
       list.sort((a, b) => (a.path || a.nameEn).localeCompare(b.path || b.nameEn));
       setItems(list);
     } catch (err) {
-      showAlert('목록 조회 실패: ' + (err?.message || '알 수 없는 오류'));
+      await alert('목록 조회 실패: ' + (err?.message || '알 수 없는 오류'));
     } finally {
       setLoading(false);
     }
@@ -67,7 +69,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
 
   const handleSave = async () => {
     if (!editing.nameEn?.trim() || !editing.nameKo?.trim()) {
-      showAlert('영문명과 한글명은 필수입니다.');
+      await alert('영문명과 한글명은 필수입니다.');
       return;
     }
     try {
@@ -81,38 +83,38 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
       };
       if (editing.id) {
         await adminSemanticApi.updateCategory(editing.id, body);
-        showAlert('수정되었습니다.');
+        await alert('수정되었습니다.');
       } else {
         await adminSemanticApi.createCategory(body);
-        showAlert('생성되었습니다.');
+        await alert('생성되었습니다.');
       }
       setEditing(null);
       fetchItems();
     } catch (err) {
-      showAlert('저장 실패: ' + (err?.message || '알 수 없는 오류'));
+      await alert('저장 실패: ' + (err?.message || '알 수 없는 오류'));
     }
   };
 
   const handleDelete = async (item) => {
-    const ok = await showConfirm(`"${item.nameEn} (${item.nameKo})" 카테고리를 삭제하시겠습니까?\n하위 카테고리는 parent_id=NULL 로 변경됩니다.`);
+    const ok = await confirm(`"${item.nameEn} (${item.nameKo})" 카테고리를 삭제하시겠습니까?\n하위 카테고리는 parent_id=NULL 로 변경됩니다.`);
     if (!ok) return;
     try {
       await adminSemanticApi.deleteCategory(item.id);
-      showAlert('삭제되었습니다.');
+      await alert('삭제되었습니다.');
       fetchItems();
     } catch (err) {
-      showAlert('삭제 실패: ' + (err?.message || '알 수 없는 오류'));
+      await alert('삭제 실패: ' + (err?.message || '알 수 없는 오류'));
     }
   };
 
   const handleExport = async () => {
     try { await adminSemanticApi.exportCategories(type); }
-    catch (err) { showAlert('다운로드 실패: ' + (err?.message || '알 수 없는 오류')); }
+    catch (err) { await alert('다운로드 실패: ' + (err?.message || '알 수 없는 오류')); }
   };
 
   const handleTemplate = async () => {
     try { await adminSemanticApi.templateCategories(); }
-    catch (err) { showAlert('양식 다운로드 실패: ' + (err?.message || '알 수 없는 오류')); }
+    catch (err) { await alert('양식 다운로드 실패: ' + (err?.message || '알 수 없는 오류')); }
   };
 
   const handleImportClick = () => fileInputRef.current?.click();
@@ -121,16 +123,16 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    const replace = await showConfirm(
+    const replace = await confirm(
       `"${file.name}" 을(를) 업로드합니다.\n\n기존 ${type} 카테고리를 전부 삭제하고 교체하시겠습니까?\n(취소하면 업데이트 + 추가 모드로 진행)`
     );
     try {
       setImporting(true);
       const result = await adminSemanticApi.importCategories(file, replace, type);
-      showAlert(`가져오기 완료: ${result?.count ?? 0}건 처리`);
+      await alert(`가져오기 완료: ${result?.count ?? 0}건 처리`);
       fetchItems();
     } catch (err) {
-      showAlert('가져오기 실패: ' + (err?.message || '알 수 없는 오류'));
+      await alert('가져오기 실패: ' + (err?.message || '알 수 없는 오류'));
     } finally {
       setImporting(false);
     }
@@ -250,7 +252,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
       <span className="admin-semantic-count">
         {searchLower ? `검색 ${visibleItems.length} / 전체 ${items.length}` : `총 ${items.length}개`} {typeLabel} 카테고리
       </span>
-      <div style={{ display: 'flex', gap: 6 }}>
+      <div className="admin-inline-actions">
         <button className="admin-btn admin-btn-sm" onClick={fetchItems} title="새로고침"><RotateCcw size={13} /></button>
         <button className="admin-btn admin-btn-sm" onClick={expandAll} title="모두 펼침"><Maximize2 size={13} /></button>
         <button className="admin-btn admin-btn-sm" onClick={collapseAll} title="모두 접음"><Minimize2 size={13} /></button>
@@ -264,17 +266,16 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
           </>
         )}
         <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={openCreate}><Plus size={13} /> 추가</button>
-        <input ref={fileInputRef} type="file" accept=".xlsx,.xls" style={{ display: 'none' }} onChange={handleImportFile} />
+        <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="admin-hidden-file-input" onChange={handleImportFile} />
       </div>
     </div>
   );
 
   const searchBar = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
-      <Search size={13} style={{ color: '#94a3b8', marginLeft: 4 }} />
+    <div className="admin-semantic-search-row">
+      <Search size={13} className="admin-semantic-search-icon" />
       <input
-        className="admin-input"
-        style={{ flex: 1, fontSize: 12, padding: '4px 8px' }}
+        className="admin-input admin-semantic-search-input"
         placeholder="카테고리 검색 (경로/영문/한글/코드)"
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
@@ -305,11 +306,11 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
           <span>불러오는 중...</span>
         </div>
       ) : (
-        <div className="admin-table-wrap" style={{ maxHeight: '62vh', overflowY: 'auto', overflowX: 'hidden' }}>
+        <div className="admin-table-wrap admin-semantic-table-wrap">
           <table className="admin-table">
-            <thead style={{ position: 'sticky', top: 0, background: '#f8fafc', zIndex: 1 }}>
+            <thead className="admin-sticky-head">
               <tr>
-                {!collapsed && <th style={{ width: 60 }}>ID</th>}
+                {!collapsed && <th className="admin-col-id-narrow">ID</th>}
                 <th>이름</th>
                 <th>한글명</th>
                 {!collapsed && <th>코드</th>}
@@ -321,7 +322,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
               {visibleItems.length === 0 ? (
                 <tr>
                   <td colSpan={collapsed ? 3 : 6}>
-                    <div className="admin-empty-state" style={{ border: 'none', padding: '24px 0' }}>
+                    <div className="admin-empty-state admin-empty-state-compact">
                       <p className="admin-empty-state-title">
                         {searchLower ? '검색 결과 없음' : '등록된 카테고리가 없습니다'}
                       </p>
@@ -334,42 +335,44 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
                   const expandable = hasChildren(item.id);
                   const expanded = isExpanded(item.id);
                   return (
-                    <tr key={item.id} onClick={() => onSelectCategory?.(item)}
-                        style={{ cursor: onSelectCategory ? 'pointer' : 'default' }}>
+                    <tr
+                      key={item.id}
+                      onClick={() => onSelectCategory?.(item)}
+                      className={onSelectCategory ? 'admin-row-clickable' : ''}
+                    >
                       {!collapsed && <td className="admin-col-id">{item.id}</td>}
-                      <td style={{
-                        fontWeight: 500,
-                        paddingLeft: 4 + depth * 14,
-                        maxWidth: collapsed ? 180 : 'none',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: collapsed ? 'nowrap' : 'normal',
-                      }} title={collapsed ? (item.path || item.nameEn) : undefined}>
+                      <td
+                        className="admin-semantic-name-cell"
+                        style={{
+                          paddingLeft: 4 + depth * 14,
+                          maxWidth: collapsed ? 180 : undefined,
+                          whiteSpace: collapsed ? 'nowrap' : undefined,
+                        }}
+                        title={collapsed ? (item.path || item.nameEn) : undefined}
+                      >
                         <span
                           onClick={(e) => { e.stopPropagation(); if (expandable) toggleExpand(item.id); }}
-                          style={{
-                            display: 'inline-flex', alignItems: 'center',
-                            width: 16, height: 16, marginRight: 2,
-                            cursor: expandable ? 'pointer' : 'default',
-                            color: expandable ? '#64748b' : 'transparent',
-                          }}
+                          className={`admin-semantic-tree-toggle ${expandable ? 'admin-semantic-tree-toggle--active' : 'admin-semantic-tree-toggle--inactive'}`}
                         >
                           {expandable && (expanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />)}
                         </span>
                         {item.nameEn}
                       </td>
-                      <td style={{
-                        maxWidth: collapsed ? 120 : 'none',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: collapsed ? 'nowrap' : 'normal',
-                      }}>{item.nameKo}</td>
-                      {!collapsed && <td style={{ fontFamily: 'monospace', fontSize: 12, color: '#64748b' }}>{item.code || '-'}</td>}
-                      {!collapsed && <td style={{ color: 'var(--admin-text-secondary)' }}>{item.description || '-'}</td>}
+                      <td
+                        className="admin-semantic-name-ko-cell"
+                        style={{
+                          maxWidth: collapsed ? 120 : undefined,
+                          whiteSpace: collapsed ? 'nowrap' : undefined,
+                        }}
+                      >
+                        {item.nameKo}
+                      </td>
+                      {!collapsed && <td className="admin-code-mono">{item.code || '-'}</td>}
+                      {!collapsed && <td className="admin-text-secondary">{item.description || '-'}</td>}
                       <td className="admin-col-actions" onClick={(e) => e.stopPropagation()}>
                         <button className="admin-btn admin-btn-icon" onClick={() => openEdit(item)} title="수정"><Pencil size={14} /></button>
                         {!collapsed && (
-                          <button className="admin-btn admin-btn-icon admin-btn-danger-soft" onClick={() => handleDelete(item)} title="삭제" style={{ marginLeft: 4 }}>
+                          <button className="admin-btn admin-btn-icon admin-btn-danger-soft admin-action-gap-left" onClick={() => handleDelete(item)} title="삭제">
                             <Trash2 size={14} />
                           </button>
                         )}
@@ -383,62 +386,62 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
         </div>
       )}
 
-      {editing && (
-        <div className="admin-modal-overlay" onClick={() => setEditing(null)}>
-          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3 className="admin-modal-title">
-                {editing.id ? `${typeLabel} 카테고리 수정` : `${typeLabel} 카테고리 추가`}
-              </h3>
-              <button className="admin-modal-close" onClick={() => setEditing(null)}><X size={18} /></button>
+      <BaseModal
+        open={Boolean(editing)}
+        title={editing?.id ? `${typeLabel} 카테고리 수정` : `${typeLabel} 카테고리 추가`}
+        onClose={() => setEditing(null)}
+        maxWidth="sm"
+        contentClassName="admin-semantic-edit-content"
+        actions={(
+          <Stack direction="row" spacing={1}>
+            <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
+            <Button variant="contained" onClick={handleSave}>
+              <Save size={14} /> 저장
+            </Button>
+          </Stack>
+        )}
+      >
+        {editing ? (
+          <>
+            <div className="admin-field">
+              <label className="admin-field-label">영문명 (name_en) *</label>
+              <input className="admin-input" value={editing.nameEn || ''}
+                onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
+                placeholder="e.g. SkinType" />
             </div>
-            <div className="admin-modal-body">
-              <div className="admin-field">
-                <label className="admin-field-label">영문명 (name_en) *</label>
-                <input className="admin-input" value={editing.nameEn || ''}
-                  onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
-                  placeholder="e.g. SkinType" />
-              </div>
-              <div className="admin-field">
-                <label className="admin-field-label">한글명 (name_ko) *</label>
-                <input className="admin-input" value={editing.nameKo || ''}
-                  onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
-                  placeholder="예: 피부타입" />
-              </div>
-              <div className="admin-field">
-                <label className="admin-field-label">코드 (code) — 비우면 name_en 에서 자동 생성</label>
-                <input className="admin-input" value={editing.code || ''}
-                  onChange={(e) => setEditing({ ...editing, code: e.target.value })}
-                  placeholder="e.g. skin-type" />
-              </div>
-              <div className="admin-field">
-                <label className="admin-field-label">상위 카테고리 (parent)</label>
-                <select className="admin-input" value={editing.parentId ?? ''}
-                  onChange={(e) => setEditing({ ...editing, parentId: e.target.value ? Number(e.target.value) : null })}>
-                  <option value="">(루트 — 최상위)</option>
-                  {items.filter((it) => it.id !== editing.id).map((it) => (
-                    <option key={it.id} value={it.id}>
-                      {it.path || it.nameEn} — {it.nameKo}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="admin-field">
-                <label className="admin-field-label">설명</label>
-                <textarea className="admin-textarea" rows={3} value={editing.description || ''}
-                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                  placeholder="선택 사항" />
-              </div>
+            <div className="admin-field">
+              <label className="admin-field-label">한글명 (name_ko) *</label>
+              <input className="admin-input" value={editing.nameKo || ''}
+                onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
+                placeholder="예: 피부타입" />
             </div>
-            <div className="admin-modal-footer">
-              <button className="admin-btn" onClick={() => setEditing(null)}>취소</button>
-              <button className="admin-btn admin-btn-primary" onClick={handleSave}>
-                <Save size={14} /> 저장
-              </button>
+            <div className="admin-field">
+              <label className="admin-field-label">코드 (code) — 비우면 name_en 에서 자동 생성</label>
+              <input className="admin-input" value={editing.code || ''}
+                onChange={(e) => setEditing({ ...editing, code: e.target.value })}
+                placeholder="e.g. skin-type" />
             </div>
-          </div>
-        </div>
-      )}
+            <div className="admin-field">
+              <label className="admin-field-label">상위 카테고리 (parent)</label>
+              <select className="admin-input" value={editing.parentId ?? ''}
+                onChange={(e) => setEditing({ ...editing, parentId: e.target.value ? Number(e.target.value) : null })}>
+                <option value="">(루트 — 최상위)</option>
+                {items.filter((it) => it.id !== editing.id).map((it) => (
+                  <option key={it.id} value={it.id}>
+                    {it.path || it.nameEn} — {it.nameKo}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="admin-field">
+              <label className="admin-field-label">설명</label>
+              <textarea className="admin-textarea" rows={3} value={editing.description || ''}
+                onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                placeholder="선택 사항" />
+            </div>
+          </>
+        ) : null}
+      </BaseModal>
     </div>
   );
 }

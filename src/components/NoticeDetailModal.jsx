@@ -1,21 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
-import { X, Edit2, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import { noticeApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
+import BaseModal from './common/modal/BaseModal';
 import './NoticeDetailModal.css';
 
 function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
     const { user, isAdmin } = useAuth();
-    const { showConfirm } = useAlert();
+    const { confirm } = useDialog();
     const [notice, setNotice] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState('');
     const [editContent, setEditContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const modalRef = useRef(null);
 
     const fetchNotice = async () => {
         if (!noticeId) return;
@@ -36,32 +36,6 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
             setIsEditing(false);
         }
     }, [isOpen, noticeId]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -105,7 +79,7 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
     };
 
     const handleDeleteNotice = async () => {
-        const confirmed = await showConfirm('이 공지사항을 삭제하시겠습니까?');
+        const confirmed = await confirm('이 공지사항을 삭제하시겠습니까?');
         if (!confirmed) return;
 
         try {
@@ -120,15 +94,14 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
     if (!isOpen) return null;
 
     return (
-        <div className="notice-detail-modal-overlay">
-            <div className="notice-detail-modal-container" ref={modalRef}>
-                <div className="notice-detail-modal-header">
-                    <h2>공지사항</h2>
-                    <button className="notice-detail-modal-close" onClick={onClose}>
-                        <X size={24} />
-                    </button>
-                </div>
-
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title="공지사항"
+            maxWidth="xl"
+            fullWidth
+            contentClassName="notice-detail-modal-content"
+        >
                 <div className="notice-detail-modal-body">
                     {loading ? (
                         <div className="notice-detail-loading">
@@ -234,8 +207,7 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

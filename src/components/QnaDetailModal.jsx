@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Edit2, Trash2, User, Clock, Send, CheckCircle, ImagePlus } from 'lucide-react';
+import { Edit2, Trash2, ImagePlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import { qnaApi, imageApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
+import BaseModal from './common/modal/BaseModal';
 import './QnaDetailModal.css';
 
 function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
     const { user, isAdmin } = useAuth();
-    const { showAlert, showConfirm } = useAlert();
+    const { showAlert } = useAlert();
+    const { confirm } = useDialog();
     const [question, setQuestion] = useState(null);
     const [loading, setLoading] = useState(true);
     const [answerContent, setAnswerContent] = useState('');
@@ -19,7 +22,6 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
     const [editQuestionTitle, setEditQuestionTitle] = useState('');
     const [editQuestionContent, setEditQuestionContent] = useState('');
     const [isUploadingAnswer, setIsUploadingAnswer] = useState(false);
-    const modalRef = useRef(null);
     const answerTextareaRef = useRef(null);
     const answerFileInputRef = useRef(null);
 
@@ -41,32 +43,6 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
             fetchQuestion();
         }
     }, [isOpen, questionId]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -127,7 +103,7 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
     };
 
     const handleDeleteAnswer = async (answerId) => {
-        const confirmed = await showConfirm('이 답변을 삭제하시겠습니까?');
+        const confirmed = await confirm('이 답변을 삭제하시겠습니까?');
         if (!confirmed) return;
 
         try {
@@ -194,7 +170,7 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
     };
 
     const handleDeleteQuestion = async () => {
-        const confirmed2 = await showConfirm('이 질문을 삭제하시겠습니까? 모든 답변도 함께 삭제됩니다.');
+        const confirmed2 = await confirm('이 질문을 삭제하시겠습니까? 모든 답변도 함께 삭제됩니다.');
         if (!confirmed2) return;
 
         try {
@@ -209,15 +185,14 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
     if (!isOpen) return null;
 
     return (
-        <div className="qna-detail-modal-overlay">
-            <div className="qna-detail-modal-container" ref={modalRef}>
-                <div className="qna-detail-modal-header">
-                    <h2>질문 상세</h2>
-                    <button className="qna-detail-modal-close" onClick={onClose}>
-                        <X size={24} />
-                    </button>
-                </div>
-
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title="질문 상세"
+            maxWidth="xl"
+            fullWidth
+            contentClassName="qna-detail-modal-content"
+        >
                 <div className="qna-detail-modal-body">
                     {loading ? (
                         <div className="qna-detail-loading">
@@ -354,7 +329,7 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
                                                         type="file"
                                                         accept="image/jpeg,image/png,image/gif,image/webp"
                                                         onChange={handleAnswerImageUpload}
-                                                        style={{ display: 'none' }}
+                                                        className="qna-detail-hidden-file-input"
                                                     />
                                                 </div>
                                                 <textarea
@@ -421,8 +396,7 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

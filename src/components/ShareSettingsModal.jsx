@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Users, Globe, Lock } from 'lucide-react';
+import { Button } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
 import { useAuth } from '../context/AuthContext';
+import BaseModal from './common/modal/BaseModal';
 import './ShareSettingsModal.css';
 
 function ShareSettingsModal({ workspace, onClose, onSaved }) {
@@ -179,14 +181,30 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
     };
 
     return (
-        <div className="share-modal-overlay" onClick={onClose}>
-            <div className="share-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="share-modal-header">
-                    <h2>공유 설정</h2>
-                    <p>{workspace?.name}</p>
-                </div>
-
-                <div className="share-modal-body">
+        <BaseModal
+            open={Boolean(workspace)}
+            onClose={onClose}
+            title="공유 설정"
+            subtitle={`워크스페이스 - ${workspace?.name || '-'}`}
+            maxWidth="sm"
+            fullWidth
+            contentClassName="share-modal-content"
+            actionsClassName="share-modal-actions"
+            actionsAlign="right"
+            actions={(
+                <>
+                    <Button variant="outlined" onClick={onClose}>취소</Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleSave}
+                        disabled={loading}
+                    >
+                        {loading ? '저장 중...' : '저장'}
+                    </Button>
+                </>
+            )}
+        >
+            <div className="share-modal-body">
                     <div className="share-radio-group">
                         <label
                             className={`share-radio-item ${shareType === 'NONE' ? 'selected' : ''}`}
@@ -201,7 +219,7 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
                             />
                             <div className="share-radio-label">
                                 <div className="label-title">
-                                    <Lock size={14} style={{ marginRight: '6px', verticalAlign: '-2px' }} />
+                                    <Lock size={14} className="share-label-icon" />
                                     공유 없음
                                 </div>
                                 <div className="label-desc">소유자만 접근할 수 있습니다</div>
@@ -222,7 +240,7 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
                             />
                             <div className="share-radio-label">
                                 <div className="label-title">
-                                    <Globe size={14} style={{ marginRight: '6px', verticalAlign: '-2px' }} />
+                                    <Globe size={14} className="share-label-icon" />
                                     전체 공유
                                 </div>
                                 <div className="label-desc">모든 사용자가 읽기 전용으로 접근할 수 있습니다 (관리자 전용)</div>
@@ -243,7 +261,7 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
                             />
                             <div className="share-radio-label">
                                 <div className="label-title">
-                                    <Users size={14} style={{ marginRight: '6px', verticalAlign: '-2px' }} />
+                                    <Users size={14} className="share-label-icon" />
                                     개별 공유
                                 </div>
                                 <div className="label-desc">지정한 사용자만 접근할 수 있습니다</div>
@@ -254,7 +272,7 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
                     {shareType === 'INDIVIDUAL' && (
                         <div className="share-members-section">
                             <h3>공유 멤버 ({members.length})</h3>
-                            <div className="share-member-input-row" style={{ position: 'relative' }}>
+                            <div className="share-member-input-row">
                                 <input
                                     ref={inputRef}
                                     type="text"
@@ -296,7 +314,7 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
                                         <div key={m.memberId} className="share-member-item">
                                             <div>
                                                 <span className="member-email">{m.email}</span>
-                                                <span className="member-date" style={{ marginLeft: '8px' }}>
+                                                <span className="member-date share-member-date">
                                                     {formatDate(m.sharedAt)}
                                                 </span>
                                             </div>
@@ -317,20 +335,8 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
                             </div>
                         </div>
                     )}
-                </div>
-
-                <div className="share-modal-footer">
-                    <button className="btn-cancel" onClick={onClose}>취소</button>
-                    <button
-                        className="btn-save"
-                        onClick={handleSave}
-                        disabled={loading}
-                    >
-                        {loading ? '저장 중...' : '저장'}
-                    </button>
-                </div>
             </div>
-        </div>
+        </BaseModal>
     );
 }
 

@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, ImagePlus } from 'lucide-react';
+import { ImagePlus } from 'lucide-react';
+import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
+import BaseModal from './common/modal/BaseModal';
 import './QnaCreateModal.css';
 
 function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
@@ -13,7 +15,6 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
     const [privacyAgreement, setPrivacyAgreement] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const modalRef = useRef(null);
     const textareaRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -34,32 +35,6 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
             }
         }
     }, [isOpen, editingQuestion]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose]);
 
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
@@ -121,16 +96,29 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
     if (!isOpen) return null;
 
     return (
-        <div className="qna-create-modal-overlay">
-            <div className="qna-create-modal-container" ref={modalRef}>
-                <div className="qna-create-modal-header">
-                    <h2>{editingQuestion ? '질문 수정' : '새 질문 작성'}</h2>
-                    <button className="qna-create-modal-close" onClick={onClose}>
-                        <X size={24} />
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="qna-create-modal-form">
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title={editingQuestion ? '질문 수정' : '새 질문 작성'}
+            maxWidth="md"
+            fullWidth
+            contentClassName="qna-create-modal-content"
+            actionsClassName="qna-create-modal-actions"
+            actions={(
+                <>
+                    <Button variant="outlined" onClick={onClose}>취소</Button>
+                    <Button
+                        variant="contained"
+                        type="submit"
+                        form="qna-create-form"
+                        disabled={!title.trim() || !content.trim() || isSubmitting}
+                    >
+                        {isSubmitting ? '저장 중...' : (editingQuestion ? '수정' : '등록')}
+                    </Button>
+                </>
+            )}
+        >
+                <form id="qna-create-form" onSubmit={handleSubmit} className="qna-create-modal-form">
                     <div className="qna-form-group">
                         <label htmlFor="qna-contact">연락처 (선택 사항)</label>
                         <input
@@ -186,7 +174,7 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
                                 type="file"
                                 accept="image/jpeg,image/png,image/gif,image/webp"
                                 onChange={handleImageUpload}
-                                style={{ display: 'none' }}
+                                className="qna-hidden-file-input"
                             />
                         </div>
                         <textarea
@@ -215,21 +203,8 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
                         </p>
                     </div>
 
-                    <div className="qna-create-modal-actions">
-                        <button type="button" className="btn-cancel" onClick={onClose}>
-                            취소
-                        </button>
-                        <button
-                            type="submit"
-                            className="btn-submit"
-                            disabled={!title.trim() || !content.trim() || isSubmitting}
-                        >
-                            {isSubmitting ? '저장 중...' : (editingQuestion ? '수정' : '등록')}
-                        </button>
-                    </div>
                 </form>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

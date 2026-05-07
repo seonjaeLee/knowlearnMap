@@ -1,45 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { Button } from '@mui/material';
+import BaseModal from './common/modal/BaseModal';
 import './ReportCreationModal.css';
 
 function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
-    const modalRef = useRef(null);
-    const textAreaRef = useRef(null); // Added ref for textarea
-
-    // Close modal when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose]);
-
-    // Close on Escape key
-    useEffect(() => {
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('keydown', handleEscape);
-        }
-
-        return () => {
-            document.removeEventListener('keydown', handleEscape);
-        };
-    }, [isOpen, onClose]);
+    const textAreaRef = useRef(null);
 
     if (!isOpen) return null;
 
@@ -66,26 +31,15 @@ function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
     };
 
     return (
-        <div className="modal-overlay" style={{ zIndex: 1100 }}>
-            <div className="modal-container creation-modal" ref={modalRef}>
-                <div className="modal-header">
-                    <div className="modal-header-content">
-                        <button className="back-btn" onClick={onClose}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-                            </svg>
-                        </button>
-                        <span className="modal-icon">📄</span>
-                        <h2 className="modal-title">보고서 생성</h2>
-                    </div>
-                    <button className="modal-close-btn" onClick={onClose}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div className="modal-body">
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title="보고서 생성"
+            maxWidth="md"
+            fullWidth
+            contentClassName="report-creation-modal-content"
+        >
+                <div className="report-creation-modal-body">
                     {/* Template Info - only show if templateData has template info */}
                     {templateData?.title && (
                         <div className="template-info">
@@ -119,13 +73,12 @@ function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
 
                     {/* Generate Button */}
                     <div className="form-actions">
-                        <button type="button" className="btn-generate" onClick={handleGenerate}>
+                        <Button type="button" variant="contained" onClick={handleGenerate}>
                             생성
-                        </button>
+                        </Button>
                     </div>
                 </div>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

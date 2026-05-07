@@ -112,8 +112,13 @@
 /* Removed - Pro should use default gray border like Max */
 
 .plan-card.current-plan {
-    border-color: #4caf50;
-    background-color: #f9fff9;
+    border-color: #e0e0e0;
+    background-color: #ffffff;
+}
+
+.plan-card.current-plan:hover {
+    border-color: #e0e0e0;
+    background-color: #ffffff;
 }
 
 .plan-card.current-plan-blue {

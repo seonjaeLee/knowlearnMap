@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Loader, ArrowRight, CheckCircle, Trash2, RotateCcw, Play, AlertCircle, Info } from 'lucide-react';
 import { structuredApi } from '../services/api';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import './InterTableAnalysisModal.css';
 
 const RELATION_TYPES = [
@@ -11,7 +11,8 @@ const RELATION_TYPES = [
 ];
 
 function InterTableAnalysisModal({ workspaceId, onClose, onApplied }) {
-    const { showAlert } = useAlert();
+    const { alert } = useDialog();
+    const showAlert = (message) => { alert(message); };
     const [loading, setLoading] = useState(false);
     const [applying, setApplying] = useState(false);
     const [result, setResult] = useState(null);

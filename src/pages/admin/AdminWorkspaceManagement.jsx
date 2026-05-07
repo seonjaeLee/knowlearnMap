@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { workspaceApi } from '../../services/api';
-import { useAlert } from '../../context/AlertContext';
+import { useDialog } from '../../hooks/useDialog';
 import { Search, RotateCcw, Share2, Trash2 } from 'lucide-react';
 import ShareSettingsModal from '../../components/ShareSettingsModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import './admin-common.css';
+import './AdminWorkspaceManagement.css';
 
 function AdminWorkspaceManagement() {
     const [workspaces, setWorkspaces] = useState([]);
@@ -12,7 +13,7 @@ function AdminWorkspaceManagement() {
     const [searchTerm, setSearchTerm] = useState('');
     const [shareModalOpen, setShareModalOpen] = useState(false);
     const [shareWorkspace, setShareWorkspace] = useState(null);
-    const { showAlert, showConfirm } = useAlert();
+    const { alert, confirm } = useDialog();
 
     const fetchWorkspaces = async () => {
         try {
@@ -21,7 +22,7 @@ function AdminWorkspaceManagement() {
             setWorkspaces(data || []);
         } catch (error) {
             console.error('Failed to fetch workspaces:', error);
-            showAlert('워크스페이스 목록을 불러오는데 실패했습니다.', 'error');
+            await alert('워크스페이스 목록을 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
@@ -41,17 +42,17 @@ function AdminWorkspaceManagement() {
     };
 
     const handleDelete = async (id, name) => {
-        const confirmed = await showConfirm(`"${name}" 워크스페이스를 삭제하시겠습니까?\n관련된 모든 문서와 데이터가 삭제됩니다.`);
+        const confirmed = await confirm(`"${name}" 워크스페이스를 삭제하시겠습니까?\n관련된 모든 문서와 데이터가 삭제됩니다.`);
         if (!confirmed) {
             return;
         }
         try {
             await workspaceApi.delete(id);
-            showAlert('워크스페이스가 삭제되었습니다.', 'success');
+            await alert('워크스페이스가 삭제되었습니다.');
             fetchWorkspaces();
         } catch (error) {
             console.error('Failed to delete workspace:', error);
-            showAlert('워크스페이스 삭제에 실패했습니다.', 'error');
+            await alert('워크스페이스 삭제에 실패했습니다.');
         }
     };
 
@@ -102,99 +103,78 @@ function AdminWorkspaceManagement() {
             </div>
 
             {loading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
+                <div className="admin-workspace-loading">
                     데이터를 불러오는 중...
                 </div>
             ) : (
-                <div className="table-container" style={{ overflowX: 'auto', background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px' }}>
-                    <table style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse', fontSize: 'var(--admin-font-md)' }}>
+                <div className="table-container admin-workspace-table-wrap">
+                    <table className="admin-workspace-table">
                         <thead>
-                            <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #e0e0e0', textAlign: 'left' }}>
-                                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#555' }}>워크스페이스명</th>
-                                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#555' }}>도메인</th>
-                                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#555' }}>소유자</th>
-                                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#555', textAlign: 'center' }}>문서수</th>
-                                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#555', textAlign: 'center' }}>공유</th>
-                                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#555' }}>프롬프트</th>
-                                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#555' }}>생성일</th>
-                                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#555', textAlign: 'center' }}>액션</th>
+                            <tr className="admin-workspace-header-row">
+                                <th className="admin-workspace-th">워크스페이스명</th>
+                                <th className="admin-workspace-th">도메인</th>
+                                <th className="admin-workspace-th">소유자</th>
+                                <th className="admin-workspace-th admin-workspace-th-center">문서수</th>
+                                <th className="admin-workspace-th admin-workspace-th-center">공유</th>
+                                <th className="admin-workspace-th">프롬프트</th>
+                                <th className="admin-workspace-th">생성일</th>
+                                <th className="admin-workspace-th admin-workspace-th-center">액션</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredWorkspaces.length > 0 ? (
                                 filteredWorkspaces.map(ws => (
-                                    <tr key={ws.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                                        <td style={{ padding: '12px 16px', fontWeight: 500, color: '#333' }}>
-                                            <span style={{ marginRight: '6px' }}>{ws.icon || '📄'}</span>
+                                    <tr key={ws.id} className="admin-workspace-row">
+                                        <td className="admin-workspace-td admin-workspace-name-cell">
+                                            <span className="admin-workspace-icon">{ws.icon || '📄'}</span>
                                             {ws.name}
                                         </td>
-                                        <td style={{ padding: '12px 16px', color: '#666' }}>{ws.domainName || '-'}</td>
-                                        <td style={{ padding: '12px 16px', color: '#666' }}>{ws.createdBy || '-'}</td>
-                                        <td style={{ padding: '12px 16px', textAlign: 'center', color: '#666' }}>{ws.documentCount ?? 0}</td>
-                                        <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                                            <span style={{
-                                                padding: '4px 8px',
-                                                borderRadius: '12px',
-                                                fontSize: 'var(--admin-font-sm)',
-                                                backgroundColor: ws.shareType === 'ALL' ? '#e8f5e9' : ws.shareType === 'INDIVIDUAL' ? '#ede9fe' : '#f5f5f5',
-                                                color: ws.shareType === 'ALL' ? '#2e7d32' : ws.shareType === 'INDIVIDUAL' ? '#7c3aed' : '#9e9e9e',
-                                                fontWeight: 500
-                                            }}>
+                                        <td className="admin-workspace-td admin-workspace-muted">{ws.domainName || '-'}</td>
+                                        <td className="admin-workspace-td admin-workspace-muted">{ws.createdBy || '-'}</td>
+                                        <td className="admin-workspace-td admin-workspace-center admin-workspace-muted">{ws.documentCount ?? 0}</td>
+                                        <td className="admin-workspace-td admin-workspace-center">
+                                            <span className={`admin-workspace-share-badge share-${(ws.shareType || 'NONE').toLowerCase()}`}>
                                                 {ws.shareType === 'ALL' ? '전체' : ws.shareType === 'INDIVIDUAL' ? '개별' : 'OFF'}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '12px 16px' }}>
+                                        <td className="admin-workspace-td">
                                             <div className="prompt-tag-grid">
                                                 {[
-                                                    { label: 'chunk', value: ws.chunkPrompt, color: ws.chunkPrompt === 'NONE' ? '#dc2626' : '#7c3aed' },
-                                                    { label: 'ontology', value: ws.ontologyPrompt, color: '#1e40af' },
-                                                    { label: 'chat', value: ws.chatResultPrompt, color: '#047857' },
-                                                    { label: 'content', value: ws.contentOntologyPrompt, color: '#9333ea' },
-                                                    { label: 'schema', value: ws.schemaAnalysisPrompt, color: '#ea580c' },
-                                                    { label: 'interTable', value: ws.interTableAnalysisPrompt, color: '#0891b2' },
-                                                    { label: 'aqlGen', value: ws.aqlGenerationPrompt, color: '#4f46e5' },
-                                                    { label: 'aqlInterp', value: ws.aqlInterpretationPrompt, color: '#be185d' },
-                                                ].map(({ label, value, color }) => (
-                                                    <span key={label} className={`prompt-tag ${value ? 'prompt-tag--active' : ''}`}
-                                                        style={value ? { borderColor: color, color } : {}}>
+                                                    { label: 'chunk', value: ws.chunkPrompt, tone: ws.chunkPrompt === 'NONE' ? 'danger' : 'violet' },
+                                                    { label: 'ontology', value: ws.ontologyPrompt, tone: 'blue' },
+                                                    { label: 'chat', value: ws.chatResultPrompt, tone: 'green' },
+                                                    { label: 'content', value: ws.contentOntologyPrompt, tone: 'purple' },
+                                                    { label: 'schema', value: ws.schemaAnalysisPrompt, tone: 'orange' },
+                                                    { label: 'interTable', value: ws.interTableAnalysisPrompt, tone: 'cyan' },
+                                                    { label: 'aqlGen', value: ws.aqlGenerationPrompt, tone: 'indigo' },
+                                                    { label: 'aqlInterp', value: ws.aqlInterpretationPrompt, tone: 'pink' },
+                                                ].map(({ label, value, tone }) => (
+                                                    <span
+                                                        key={label}
+                                                        className={`prompt-tag ${value ? 'prompt-tag--active' : ''}`}
+                                                        data-active={Boolean(value)}
+                                                        data-tone={value ? tone : ''}
+                                                    >
                                                         <span className="prompt-tag__label">{label}</span>
                                                         <span className="prompt-tag__value">{value || '기본값'}</span>
                                                     </span>
                                                 ))}
                                             </div>
                                         </td>
-                                        <td style={{ padding: '12px 16px', color: '#666', fontSize: 'var(--admin-font-base)' }}>{formatDate(ws.createdAt)}</td>
-                                        <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                                            <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                                        <td className="admin-workspace-td admin-workspace-muted admin-workspace-date">{formatDate(ws.createdAt)}</td>
+                                        <td className="admin-workspace-td admin-workspace-center">
+                                            <div className="admin-workspace-action-group">
                                                 <button
                                                     onClick={() => handleOpenShareModal(ws)}
                                                     title="공유 설정"
-                                                    style={{
-                                                        padding: '6px',
-                                                        border: '1px solid #ddd',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        background: ws.shareType !== 'NONE' ? '#e8f5e9' : 'white',
-                                                        color: ws.shareType !== 'NONE' ? '#2e7d32' : '#666',
-                                                        display: 'flex',
-                                                        alignItems: 'center'
-                                                    }}
+                                                    className={`admin-workspace-icon-btn ${ws.shareType !== 'NONE' ? 'is-shared' : ''}`}
                                                 >
                                                     <Share2 size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(ws.id, ws.name)}
                                                     title="삭제"
-                                                    style={{
-                                                        padding: '6px',
-                                                        border: '1px solid #ffcdd2',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        background: 'white',
-                                                        color: '#e53935',
-                                                        display: 'flex',
-                                                        alignItems: 'center'
-                                                    }}
+                                                    className="admin-workspace-icon-btn is-danger"
                                                 >
                                                     <Trash2 size={14} />
                                                 </button>
@@ -204,7 +184,7 @@ function AdminWorkspaceManagement() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="8" style={{ padding: '32px', textAlign: 'center', color: '#888' }}>
+                                    <td colSpan="8" className="admin-workspace-empty">
                                         {searchTerm ? '검색 결과가 없습니다.' : '워크스페이스가 없습니다.'}
                                     </td>
                                 </tr>

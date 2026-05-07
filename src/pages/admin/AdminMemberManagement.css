@@ -1,0 +1,32 @@
+.admin-member-email {
+  font-weight: 500;
+}
+
+.admin-member-domain {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-member-locked-count {
+  color: var(--admin-color-danger-on-soft);
+  font-weight: 700;
+}
+
+.admin-member-locked-date {
+  color: var(--admin-color-danger-on-soft);
+}
+
+button[data-action-spacing='true'] {
+  margin-right: 4px;
+}
+
+.admin-member-empty {
+  border: none;
+  padding: 32px 0;
+}
+
+.admin-member-edit-content {
+  min-height: auto !important;
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { X, Table2, Play, RotateCcw, CheckCircle, AlertCircle, Loader, Sparkles, ChevronDown, ChevronUp, FileBarChart, AlertTriangle, Info, Save, FolderOpen, Trash2, Settings, Download, Upload, HelpCircle } from 'lucide-react';
 import { structuredApi, configApi } from '../services/api';
 import { documentApi } from '../services/documentApi';
+import { useDialog } from '../hooks/useDialog';
 import './ColumnMappingModal.css';
 
 const COLUMN_ROLES = [
@@ -19,6 +20,7 @@ const DEFAULT_CATEGORIES = [{ en: 'Person', ko: '사람' }, { en: 'Organization'
 const DEFAULT_RELATIONS = [{ en: 'Belongs_To', ko: '소속' }, { en: 'Works_On', ko: '참여함' }, { en: 'Has_Skill', ko: '보유기술' }, { en: 'Has_Role', ko: '역할' }, { en: 'Manages', ko: '관리' }, { en: 'Contains', ko: '포함' }, { en: 'Produces', ko: '생산' }, { en: 'Uses', ko: '사용' }, { en: 'Owns', ko: '소유' }, { en: 'Related_To', ko: '관련됨' }, { en: 'Has_Contract', ko: '계약' }, { en: 'Has_Level', ko: '등급' }, { en: 'Has_Status', ko: '상태' }, { en: 'Is_Defined_As', ko: '정의' }, { en: 'Has_Description', ko: '설명' }, { en: 'Is_Type_Of', ko: '유형' }];
 
 function ColumnMappingModal({ docId, filename, workspaceId, domainId, onClose, onProcessingComplete, initialTab }) {
+    const { confirm } = useDialog();
     const [columns, setColumns] = useState([]);
     const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -402,7 +404,7 @@ function ColumnMappingModal({ docId, filename, workspaceId, domainId, onClose, o
 
     // 매핑 변경 후 재처리 (기존 결과 삭제 → 전체 재처리)
     const handleReprocess = async () => {
-        if (!window.confirm('기존 처리 결과를 모두 삭제하고 다시 처리합니다. 진행하시겠습니까?')) return;
+        if (!(await confirm('기존 처리 결과를 모두 삭제하고 다시 처리합니다. 진행하시겠습니까?'))) return;
         setProcessing(true);
         setError('');
         try {
@@ -515,7 +517,7 @@ function ColumnMappingModal({ docId, filename, workspaceId, domainId, onClose, o
         // 동일 이름 템플릿 존재 확인
         const existing = templates.find(t => t.name === templateName.trim());
         if (existing) {
-            if (!window.confirm(`"${templateName.trim()}" 템플릿이 이미 존재합니다. 덮어쓰시겠습니까?`)) {
+            if (!(await confirm(`"${templateName.trim()}" 템플릿이 이미 존재합니다. 덮어쓰시겠습니까?`))) {
                 return;
             }
         }
@@ -599,7 +601,7 @@ function ColumnMappingModal({ docId, filename, workspaceId, domainId, onClose, o
             // API로 템플릿 저장 (현재 매핑을 먼저 저장한 뒤 save-as-template 호출이 아닌, 직접 DB 삽입 필요)
             // 기존 API는 docId 기반이므로, 업로드된 템플릿을 현재 매핑에 직접 적용
             const existing = templates.find(t => t.name === data.name);
-            if (existing && !window.confirm(`"${data.name}" 템플릿이 이미 존재합니다. 덮어쓰시겠습니까?`)) {
+            if (existing && !(await confirm(`"${data.name}" 템플릿이 이미 존재합니다. 덮어쓰시겠습니까?`))) {
                 return;
             }
             // 업로드된 JSON의 컬럼을 현재 columns에 적용
@@ -1606,8 +1608,8 @@ function ColumnMappingModal({ docId, filename, workspaceId, domainId, onClose, o
                                             </button>
                                             <button
                                                 className="cmm-template-delete-btn"
-                                                onClick={() => {
-                                                    if (window.confirm(`"${t.name}" 템플릿을 삭제하시겠습니까?`)) {
+                                                onClick={async () => {
+                                                    if (await confirm(`"${t.name}" 템플릿을 삭제하시겠습니까?`)) {
                                                         handleDeleteTemplate(t.id);
                                                     }
                                                 }}

@@ -8,7 +8,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ImageIcon from '@mui/icons-material/Image';
 import React, { useRef, useState, useEffect } from 'react';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -114,7 +114,8 @@ export default function PromptManagement() {
     const [stageDialogOpen, setStageDialogOpen] = useState(false);
     const [stageDetail, setStageDetail] = useState([]);
     const [stageLoading, setStageLoading] = useState(false);
-    const { showAlert } = useAlert();
+    const { alert } = useDialog();
+    const showAlert = (message) => { alert(message); };
 
     const fetchKnowledgeList = async () => {
         try {

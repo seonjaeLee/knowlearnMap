@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import './KnowledgeGraphModal.css';
 import { API_URL } from '../config/api';
 const isLocalAuthEnabled = import.meta.env.VITE_ENABLE_LOCAL_AUTH === 'true';
@@ -39,7 +39,7 @@ const getLocalGraphMap = () => {
 };
 
 export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, initialSelectedDocIds = [], documents = [], overrideData = null }) {
-    const { showAlert } = useAlert();
+    const { alert } = useDialog();
     const [fullGraphData, setFullGraphData] = useState({ nodes: [], links: [] });
     const [graphData, setGraphData] = useState({ nodes: [], links: [] });
     const graphRef = useRef();
@@ -166,10 +166,10 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
 
         } catch (error) {
             if (error.name === 'AbortError') {
-                showAlert("데이터 요청 시간이 초과되었습니다.");
+                alert("데이터 요청 시간이 초과되었습니다.");
             } else {
                 console.error("Failed to load initial graph data", error);
-                showAlert("그래프 데이터를 불러오는데 실패했습니다.");
+                alert("그래프 데이터를 불러오는데 실패했습니다.");
             }
         } finally {
             setIsLoading(false);
@@ -190,7 +190,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
         console.log('[expandNode] API 호출 시작 - workspaceId:', workspaceId);
         try {
             if (isLocalAuthEnabled) {
-                showAlert("로컬 모드에서는 기본 그래프만 표시됩니다.", 'info');
+                alert("로컬 모드에서는 기본 그래프만 표시됩니다.");
                 setExpandedNodes(prev => new Set([...prev, nodeId]));
                 return;
             }
@@ -257,9 +257,9 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                     };
                 });
 
-                showAlert(`${newTransformed.nodes.length}개의 연결된 노드를 확장했습니다.`, 'success');
+                alert(`${newTransformed.nodes.length}개의 연결된 노드를 확장했습니다.`);
             } else {
-                showAlert("더 이상 확장할 노드가 없습니다.", 'info');
+                alert("더 이상 확장할 노드가 없습니다.");
             }
 
             // 확장된 노드 기록
@@ -267,7 +267,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
 
         } catch (error) {
             console.error("Failed to expand node", error);
-            showAlert("노드 확장에 실패했습니다.");
+            alert("노드 확장에 실패했습니다.");
         } finally {
             setIsExpanding(false);
         }
@@ -312,7 +312,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                 loadedNodeIdsRef.current = new Set(transformed.nodes.map(n => n.id));
 
                 const matchedCount = data.matchedCount || transformed.nodes.filter(n => n.isSearchResult).length;
-                showAlert(`'${searchQuery}'에 대해 ${matchedCount}개 노드 검색됨 (연결 포함 ${transformed.nodes.length}개)`, 'success');
+                alert(`'${searchQuery}'에 대해 ${matchedCount}개 노드 검색됨 (연결 포함 ${transformed.nodes.length}개)`);
 
                 setTimeout(() => {
                     if (graphRef.current) {
@@ -320,12 +320,12 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                     }
                 }, 300);
             } else {
-                showAlert('검색 결과가 없습니다.');
+                alert('검색 결과가 없습니다.');
                 setGraphData({ nodes: [], links: [] });
             }
         } catch (error) {
             console.error("Search failed", error);
-            showAlert("검색에 실패했습니다.");
+            alert("검색에 실패했습니다.");
         } finally {
             setIsSearching(false);
         }
@@ -357,7 +357,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
         });
 
         if (startNodes.length === 0) {
-            showAlert('검색 결과가 없습니다.');
+            alert('검색 결과가 없습니다.');
             setIsSearching(false);
             return;
         }

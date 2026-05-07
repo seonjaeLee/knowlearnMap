@@ -1,46 +1,10 @@
-.share-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.share-modal {
-    background: white;
-    border-radius: 12px;
-    width: 480px;
-    max-width: 90vw;
-    max-height: 80vh;
+.share-modal-content {
+    max-height: min(70vh, 720px);
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.share-modal-header {
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.share-modal-header h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1f2937;
-    margin: 0;
-}
-
-.share-modal-header p {
-    font-size: 13px;
-    color: #6b7280;
-    margin: 4px 0 0;
 }
 
 .share-modal-body {
-    padding: 20px 24px;
+    padding: 0;
 }
 
 .share-radio-group {
@@ -84,6 +48,13 @@
     font-size: 14px;
     font-weight: 600;
     color: #1f2937;
+    display: flex;
+    align-items: center;
+}
+
+.share-label-icon {
+    margin-right: 6px;
+    transform: translateY(-1px);
 }
 
 .share-radio-label .label-desc {
@@ -95,7 +66,7 @@
 .share-members-section {
     margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px dashed var(--color-border);
 }
 
 .share-members-section h3 {
@@ -109,6 +80,7 @@
     display: flex;
     gap: 8px;
     margin-bottom: 12px;
+    position: relative;
 }
 
 .share-member-input-row input {
@@ -203,6 +175,10 @@
     font-size: 11px;
 }
 
+.share-member-date {
+    margin-left: var(--spacing-sm);
+}
+
 .share-member-item .remove-btn {
     background: none;
     border: none;
@@ -225,44 +201,6 @@
     font-size: 13px;
 }
 
-.share-modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-}
-
-.share-modal-footer .btn-cancel {
-    padding: 8px 20px;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    color: #374151;
-}
-
-.share-modal-footer .btn-cancel:hover {
-    background: #f3f4f6;
-}
-
-.share-modal-footer .btn-save {
-    padding: 8px 20px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.share-modal-footer .btn-save:hover {
-    background: #2563eb;
-}
-
-.share-modal-footer .btn-save:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
+.share-modal-actions {
+    padding-top: var(--spacing-md) !important;
 }

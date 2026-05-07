@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Play, Loader2, Clock } from 'lucide-react';
+import { Plus, Trash2, Play, Loader2 } from 'lucide-react';
+import { Button } from '@mui/material';
 import { structuredApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
+import BaseModal from './common/modal/BaseModal';
 import './ScheduledImportModal.css';
 
 function ScheduledImportModal({ workspaceId, documents, onClose }) {
-    const { showAlert, showConfirm } = useAlert();
+    const { showAlert } = useAlert();
+    const { confirm } = useDialog();
     const [configs, setConfigs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
@@ -62,7 +66,7 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
     };
 
     const handleDelete = async (id) => {
-        const confirmed = await showConfirm('이 스케줄 설정을 삭제하시겠습니까?');
+        const confirmed = await confirm('이 스케줄 설정을 삭제하시겠습니까?');
         if (!confirmed) return;
         try {
             await structuredApi.schedule.deleteConfig(id);
@@ -93,20 +97,34 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
         d.sourceType === 'CSV' || d.sourceType === 'DATABASE'
     );
 
-    return (
-        <div className="sched-modal-overlay" onClick={onClose}>
-            <div className="sched-modal" onClick={e => e.stopPropagation()}>
-                <div className="sched-modal-header">
-                    <h3><Clock size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />스케줄 임포트 관리</h3>
-                    <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-                        <X size={20} />
-                    </button>
-                </div>
+    const actions = (
+        <>
+            {!showForm && (
+                <Button onClick={() => setShowForm(true)} variant="contained" startIcon={<Plus size={16} />}>
+                    새 스케줄 추가
+                </Button>
+            )}
+            <Button onClick={onClose} variant="outlined">
+                닫기
+            </Button>
+        </>
+    );
 
+    return (
+        <BaseModal
+            open
+            onClose={onClose}
+            title="스케줄 임포트 관리"
+            maxWidth="md"
+            fullWidth
+            contentClassName="sched-modal-content"
+            actions={actions}
+            actionsClassName="sched-modal-actions"
+        >
                 <div className="sched-modal-body">
                     {loading ? (
-                        <div style={{ textAlign: 'center', padding: '40px' }}>
-                            <Loader2 size={32} style={{ color: '#3b82f6', animation: 'spin 1s linear infinite' }} />
+                        <div className="sched-loading">
+                            <Loader2 size={32} className="sched-loading-icon" />
                         </div>
                     ) : (
                         <>
@@ -117,13 +135,13 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                                             {config.sourceType}
                                             {config.sourceDocumentId && ` (문서 #${config.sourceDocumentId})`}
                                         </h4>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div className="sched-config-header-right">
                                             {config.lastRunStatus && (
                                                 <span className={`sched-status-badge ${getStatusClass(config.lastRunStatus)}`}>
                                                     {config.lastRunStatus}
                                                 </span>
                                             )}
-                                            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', fontSize: '12px' }}>
+                                            <label className="sched-enabled-label">
                                                 <input
                                                     type="checkbox"
                                                     checked={config.enabled}
@@ -133,35 +151,21 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                                             </label>
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>
+                                    <div className="sched-config-meta">
                                         <span>Cron: <code>{config.scheduleCron || '-'}</code></span>
                                         <span>마지막 실행: {config.lastRunAt ? new Date(config.lastRunAt).toLocaleString() : '-'}</span>
                                         <span>처리 건수: {config.lastRunCount || 0}</span>
                                     </div>
                                     {config.lastRunError && (
-                                        <div style={{ fontSize: '11px', color: '#dc2626', marginBottom: '8px' }}>
+                                        <div className="sched-config-error">
                                             오류: {config.lastRunError}
                                         </div>
                                     )}
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button
-                                            onClick={() => handleRunNow(config.id)}
-                                            style={{
-                                                padding: '4px 12px', background: '#3b82f6', color: '#fff',
-                                                border: 'none', borderRadius: '6px', cursor: 'pointer',
-                                                fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px'
-                                            }}
-                                        >
+                                    <div className="sched-config-actions">
+                                        <button onClick={() => handleRunNow(config.id)} className="sched-run-btn">
                                             <Play size={12} /> 지금 실행
                                         </button>
-                                        <button
-                                            onClick={() => handleDelete(config.id)}
-                                            style={{
-                                                padding: '4px 12px', background: '#fee2e2', color: '#dc2626',
-                                                border: 'none', borderRadius: '6px', cursor: 'pointer',
-                                                fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px'
-                                            }}
-                                        >
+                                        <button onClick={() => handleDelete(config.id)} className="sched-delete-btn">
                                             <Trash2 size={12} /> 삭제
                                         </button>
                                     </div>
@@ -169,14 +173,14 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                             ))}
 
                             {configs.length === 0 && !showForm && (
-                                <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
+                                <div className="sched-empty">
                                     등록된 스케줄 설정이 없습니다.
                                 </div>
                             )}
 
                             {showForm && (
-                                <div style={{ border: '2px dashed #3b82f6', borderRadius: '8px', padding: '20px', marginTop: '12px' }}>
-                                    <h4 style={{ margin: '0 0 16px', fontSize: '14px', color: '#1e293b' }}>새 스케줄 설정</h4>
+                                <div className="sched-form-panel">
+                                    <h4 className="sched-form-title">새 스케줄 설정</h4>
                                     <div className="sched-form-grid">
                                         <div className="sched-form-group">
                                             <label>소스 유형</label>
@@ -214,7 +218,7 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                                         </div>
                                         <div className="sched-form-group">
                                             <label>활성화</label>
-                                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '4px' }}>
+                                            <label className="sched-enabled-create-label">
                                                 <input
                                                     type="checkbox"
                                                     checked={formData.enabled}
@@ -224,23 +228,11 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                                             </label>
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                                        <button
-                                            onClick={handleCreate}
-                                            style={{
-                                                padding: '8px 20px', background: '#10b981', color: '#fff',
-                                                border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px'
-                                            }}
-                                        >
+                                    <div className="sched-form-actions">
+                                        <button onClick={handleCreate} className="sched-create-btn">
                                             생성
                                         </button>
-                                        <button
-                                            onClick={() => setShowForm(false)}
-                                            style={{
-                                                padding: '8px 20px', background: '#f1f5f9', color: '#475569',
-                                                border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px'
-                                            }}
-                                        >
+                                        <button onClick={() => setShowForm(false)} className="sched-cancel-btn">
                                             취소
                                         </button>
                                     </div>
@@ -249,32 +241,7 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                         </>
                     )}
                 </div>
-
-                <div className="sched-modal-footer">
-                    {!showForm && (
-                        <button
-                            onClick={() => setShowForm(true)}
-                            style={{
-                                padding: '10px 20px', background: '#3b82f6', color: '#fff',
-                                border: 'none', borderRadius: '8px', cursor: 'pointer',
-                                fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px'
-                            }}
-                        >
-                            <Plus size={16} /> 새 스케줄 추가
-                        </button>
-                    )}
-                    <button
-                        onClick={onClose}
-                        style={{
-                            padding: '10px 20px', background: '#f1f5f9', color: '#475569',
-                            border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
-                        }}
-                    >
-                        닫기
-                    </button>
-                </div>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

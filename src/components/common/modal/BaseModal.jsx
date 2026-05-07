@@ -1,0 +1,122 @@
+import PropTypes from 'prop-types';
+import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Typography, Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import styles from './BaseModal.module.scss';
+
+function BaseModal({
+  open,
+  title,
+  subtitle,
+  onClose,
+  children,
+  actions,
+  maxWidth = 'sm',
+  fullWidth = true,
+  disableBackdropClose = false,
+  disableEscapeKeyDown = false,
+  showCloseButton = true,
+  contentClassName = '',
+  paperClassName = '',
+  titleClassName = '',
+  headerClassName = '',
+  actionsClassName = '',
+  actionsAlign = 'right',
+  headerAlign = 'left',
+}) {
+  const handleClose = (_, reason) => {
+    if (disableBackdropClose && reason === 'backdropClick') {
+      return;
+    }
+    onClose?.();
+  };
+
+  const headerAlignClass = styles[`header${headerAlign[0].toUpperCase()}${headerAlign.slice(1)}`];
+  const titleRowAlignClass = styles[`titleRow${headerAlign[0].toUpperCase()}${headerAlign.slice(1)}`];
+  const actionsAlignClass = styles[`actions${actionsAlign[0].toUpperCase()}${actionsAlign.slice(1)}`];
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth={maxWidth}
+      fullWidth={fullWidth}
+      disableEscapeKeyDown={disableEscapeKeyDown}
+      PaperProps={{ className: [styles.dialogPaper, paperClassName, 'km-base-modal-paper'].filter(Boolean).join(' ') }}
+      BackdropProps={{ className: [styles.backdrop, 'km-base-modal-backdrop'].join(' ') }}
+    >
+      <DialogTitle className={[styles.header, headerAlignClass, headerClassName, 'km-base-modal-header'].filter(Boolean).join(' ')}>
+        <div className={[styles.titleRow, titleRowAlignClass, 'km-base-modal-title-row'].filter(Boolean).join(' ')}>
+          <Typography component="h2" className={[styles.title, titleClassName].filter(Boolean).join(' ')}>
+            {title}
+          </Typography>
+          {subtitle ? (
+            <>
+              <span className={styles.titleDivider}>|</span>
+              <Typography component="p" className={styles.subtitle}>
+                {subtitle}
+              </Typography>
+            </>
+          ) : null}
+        </div>
+        {showCloseButton && (
+          <IconButton aria-label="닫기" onClick={onClose} className={styles.closeButton}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        )}
+      </DialogTitle>
+
+      <DialogContent className={`${styles.content} km-base-modal-content ${contentClassName}`.trim()}>
+        <Box className={`${styles.contentInner} km-base-modal-content-inner`.trim()}>{children}</Box>
+      </DialogContent>
+
+      {actions ? (
+        <DialogActions className={[styles.actions, actionsAlignClass, actionsClassName, 'km-base-modal-actions'].filter(Boolean).join(' ')}>
+          {actions}
+        </DialogActions>
+      ) : null}
+    </Dialog>
+  );
+}
+
+BaseModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  title: PropTypes.node,
+  subtitle: PropTypes.node,
+  onClose: PropTypes.func,
+  children: PropTypes.node,
+  actions: PropTypes.node,
+  maxWidth: PropTypes.oneOf(['xs', 'sm', 'md', 'lg', 'xl', false]),
+  fullWidth: PropTypes.bool,
+  disableBackdropClose: PropTypes.bool,
+  disableEscapeKeyDown: PropTypes.bool,
+  showCloseButton: PropTypes.bool,
+  contentClassName: PropTypes.string,
+  paperClassName: PropTypes.string,
+  titleClassName: PropTypes.string,
+  headerClassName: PropTypes.string,
+  actionsClassName: PropTypes.string,
+  actionsAlign: PropTypes.oneOf(['left', 'center', 'right']),
+  headerAlign: PropTypes.oneOf(['left', 'center']),
+};
+
+BaseModal.defaultProps = {
+  title: '',
+  subtitle: null,
+  onClose: undefined,
+  children: null,
+  actions: null,
+  maxWidth: 'sm',
+  fullWidth: true,
+  disableBackdropClose: false,
+  disableEscapeKeyDown: false,
+  showCloseButton: true,
+  contentClassName: '',
+  paperClassName: '',
+  titleClassName: '',
+  headerClassName: '',
+  actionsClassName: '',
+  actionsAlign: 'right',
+  headerAlign: 'left',
+};
+
+export default BaseModal;

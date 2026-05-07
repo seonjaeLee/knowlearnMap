@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import { Button, Stack } from '@mui/material';
 import './AddSourceModal.css';
 import { API_URL } from '../config/api';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import { structuredApi } from '../services/api';
 import axios from 'axios';
 import DbConnectionModal from './DbConnectionModal';
+import BaseModal from './common/modal/BaseModal';
 
 function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComplete }) {
     const [currentView, setCurrentView] = useState('main'); // main, website, youtube, text, drive, csv
@@ -19,9 +21,9 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
     const [csvFileFilter, setCsvFileFilter] = useState(''); // 파일명 필터
     const [csvChecked, setCsvChecked] = useState({}); // 체크된 파일 인덱스
     const [csvUploadingIndex, setCsvUploadingIndex] = useState(-1); // 현재 업로드 중 인덱스
-    const modalRef = useRef(null);
     const csvPollRef = useRef(null);
-    const { showAlert } = useAlert();
+    const { alert } = useDialog();
+    const showAlert = (message) => { alert(message); };
 
     // Demo mode handler
     const handleDemoClick = (e) => {
@@ -285,26 +287,6 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
         };
     }, [isOpen]);
 
-    // Close modal when clicking outside (DB 모달이 열려있으면 무시)
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (showDbModal) return;
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose, showDbModal]);
-
     // Close on Escape key
     useEffect(() => {
         const handleEscape = (event) => {
@@ -339,36 +321,8 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
         onClose();
     };
 
-    const renderHeader = (title) => (
-        <div className="modal-header with-back">
-            <div className="header-left">
-                {currentView !== 'main' && (
-                    <button className="back-btn" onClick={handleBack}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
-                        </svg>
-                    </button>
-                )}
-                <h2 className="modal-title">{title}</h2>
-            </div>
-            <button className="modal-close-btn" onClick={onClose}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                </svg>
-            </button>
-        </div>
-    );
-
     const renderMainView = () => (
         <>
-            <div className="modal-header">
-                <h2 className="modal-title">소스 추가</h2>
-                <button className="modal-close-btn" onClick={onClose}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                    </svg>
-                </button>
-            </div>
             <div className="modal-body main-view">
                 <p className="modal-description">
                     소스를 추가하면 KNOWLEARN MAP이 가장 중요한 정보에 따라 응답을 제공합니다.
@@ -490,7 +444,14 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
 
     const renderInputView = (title, placeholder, description, notes) => (
         <>
-            {renderHeader(title)}
+            <div className="subview-title-row">
+                <button className="back-btn" onClick={handleBack}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </button>
+                <h3 className="subview-title">{title}</h3>
+            </div>
             <div className="modal-body sub-view">
                 <p className="input-description">{description}</p>
                 <div className="input-container">
@@ -532,7 +493,14 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
 
     const renderTextView = () => (
         <>
-            {renderHeader('복사한 텍스트 붙여넣기')}
+            <div className="subview-title-row">
+                <button className="back-btn" onClick={handleBack}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </button>
+                <h3 className="subview-title">복사한 텍스트 붙여넣기</h3>
+            </div>
             <div className="modal-body sub-view">
                 <p className="input-description">
                     KNOWLEARN MAP에 소스로 업로드할 복사한 텍스트를 아래에 붙여넣으세요.
@@ -618,7 +586,14 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
 
     const renderCsvSelectView = () => (
         <>
-            {renderHeader('CSV 파일 선택')}
+            <div className="subview-title-row">
+                <button className="back-btn" onClick={handleBack}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </button>
+                <h3 className="subview-title">CSV 파일 선택</h3>
+            </div>
             <div className="modal-body sub-view">
                 <p className="input-description">
                     업로드할 CSV 파일을 선택하세요. ({csvFiles.length}개 파일)
@@ -718,8 +693,28 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
 
     return (
         <>
-            <div className={`modal-overlay ${currentView === 'drive' ? 'drive-mode' : ''}`}>
-                <div className={`modal-container ${currentView}`} ref={modalRef}>
+            <BaseModal
+                open={isOpen}
+                title="소스 추가"
+                onClose={() => {
+                    if (showDbModal) return;
+                    if (currentView === 'main') {
+                        onClose();
+                    } else {
+                        handleBack();
+                    }
+                }}
+                maxWidth="md"
+                disableEscapeKeyDown
+                contentClassName="add-source-modal-content"
+                actions={currentView === 'main' ? (
+                    <Stack direction="row" spacing={1}>
+                        <Button variant="outlined" onClick={onClose}>취소</Button>
+                        <Button variant="contained" onClick={onClose}>저장</Button>
+                    </Stack>
+                ) : null}
+            >
+                <div className={`modal-container ${currentView}`}>
                     {currentView === 'main' && renderMainView()}
                     {currentView === 'website' && renderInputView(
                         '웹사이트 URL',
@@ -752,7 +747,7 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
                     {currentView === 'csv-select' && renderCsvSelectView()}
                     {currentView === 'drive' && renderDriveView()}
                 </div>
-            </div>
+            </BaseModal>
 
             <DbConnectionModal
                 isOpen={showDbModal}

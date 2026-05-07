@@ -63,10 +63,10 @@ const Login = () => {
     return (
         <div className="login-container">
             <div className="login-card">
-                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                    <img src="/knowlearn_logo_w.png" alt="KNOWLEARN MAP" style={{ height: '52px' }} />
+                <div className="login-logo-wrap">
+                    <img src="/knowlearn_logo_w.png" alt="KNOWLEARN MAP" className="login-logo-img" />
                 </div>
-                <h1 style={{ visibility: 'hidden', height: '64px', margin: 0 }}>SIGN IN</h1>
+                <h1 className="login-hidden-title">SIGN IN</h1>
                 {error && (
                     <div className="error-message">
                         {error}
@@ -74,17 +74,7 @@ const Login = () => {
                             <button
                                 type="button"
                                 onClick={() => setShowForgotModal(true)}
-                                style={{
-                                    display: 'block',
-                                    width: '100%',
-                                    marginTop: '10px',
-                                    padding: '8px',
-                                    background: '#646cff',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
+                                className="error-reset-btn"
                             >
                                 비밀번호 찾기
                             </button>
@@ -135,7 +125,7 @@ const Login = () => {
                     </button>
                 </form>
                 <div className="login-footer">
-                    <Link to="/signup" style={{ color: '#646cff' }}>Sign Up</Link>
+                    <Link to="/signup" className="login-signup-link">Sign Up</Link>
                     <span className="divider">|</span>
                     <button className="text-btn" onClick={() => setShowForgotModal(true)}>Forgot Password</button>
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, Save, RotateCcw, Layers } from 'lucide-react';
-import { useAlert } from '../../context/AlertContext';
+import { useDialog } from '../../hooks/useDialog';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import './admin-common.css';
 
@@ -14,7 +14,7 @@ import './admin-common.css';
  * @param itemLabel  "카테고리" | "관계"
  */
 export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn, itemLabel = '항목' }) {
-    const { showAlert, showConfirm } = useAlert();
+    const { alert, confirm } = useDialog();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -28,12 +28,12 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
             setItems(Array.isArray(data) ? data : []);
             setDirty(false);
         } catch (err) {
-            showAlert('불러오기 실패: ' + (err?.message || '알 수 없는 오류'));
+            await alert('불러오기 실패: ' + (err?.message || '알 수 없는 오류'));
             setItems([]);
         } finally {
             setLoading(false);
         }
-    }, [loadFn, showAlert]);
+    }, [loadFn, alert]);
 
     useEffect(() => { reload(); }, [reload]);
 
@@ -65,9 +65,9 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
             await saveFn(cleaned);
             setItems(cleaned);
             setDirty(false);
-            showAlert('저장되었습니다.');
+            await alert('저장되었습니다.');
         } catch (err) {
-            showAlert('저장 실패: ' + (err?.message || '알 수 없는 오류'));
+            await alert('저장 실패: ' + (err?.message || '알 수 없는 오류'));
         } finally {
             setSaving(false);
         }
@@ -75,7 +75,7 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
 
     const handleReset = async () => {
         if (dirty) {
-            const ok = await showConfirm('변경사항을 버리고 다시 불러오시겠습니까?');
+            const ok = await confirm('변경사항을 버리고 다시 불러오시겠습니까?');
             if (!ok) return;
         }
         reload();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import { Link2 } from 'lucide-react';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import './KnowledgeGraphModal.css';
 import { API_URL } from '../config/api';
 
@@ -11,7 +11,7 @@ function getCsrfToken() {
 }
 
 export default function KnowledgeMapView({ workspaceId, documents = [], initialSelectedDocIds = [], cachedData = null, onDataLoaded = null }) {
-    const { showAlert } = useAlert();
+    const { alert } = useDialog();
     const [fullGraphData, setFullGraphData] = useState({ nodes: [], links: [] });
     const [graphData, setGraphData] = useState({ nodes: [], links: [] });
     const graphRef = useRef();
@@ -175,15 +175,15 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
 
         } catch (error) {
             if (error.name === 'AbortError') {
-                showAlert("데이터 요청 시간이 초과되었습니다.");
+                alert("데이터 요청 시간이 초과되었습니다.");
             } else {
                 console.error("Failed to load initial graph data", error);
-                showAlert("그래프 데이터를 불러오는데 실패했습니다.");
+                alert("그래프 데이터를 불러오는데 실패했습니다.");
             }
         } finally {
             setIsLoading(false);
         }
-    }, [workspaceId, selectedDocumentIds, cachedData, transformGraphData, onDataLoaded, showAlert]);
+    }, [workspaceId, selectedDocumentIds, cachedData, transformGraphData, onDataLoaded, alert]);
 
     // [2] 노드 확장: 특정 노드의 이웃 로드 (on-demand)
     const expandNode = async (nodeId) => {
@@ -265,16 +265,16 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                     };
                 });
 
-                showAlert(`${newTransformed.nodes.length}개의 연결된 노드를 확장했습니다.`, 'success');
+                alert(`${newTransformed.nodes.length}개의 연결된 노드를 확장했습니다.`);
             } else {
-                showAlert("더 이상 확장할 노드가 없습니다.", 'info');
+                alert("더 이상 확장할 노드가 없습니다.");
             }
 
             setExpandedNodes(prev => new Set([...prev, nodeId]));
 
         } catch (error) {
             console.error("Failed to expand node", error);
-            showAlert("노드 확장에 실패했습니다.");
+            alert("노드 확장에 실패했습니다.");
         } finally {
             setIsExpanding(false);
         }
@@ -316,18 +316,18 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                 loadedNodeIdsRef.current = new Set(transformed.nodes.map(n => n.id));
 
                 const matchedCount = data.matchedCount || transformed.nodes.filter(n => n.isSearchResult).length;
-                showAlert(`'${searchQuery}'에 대해 ${matchedCount}개 노드 검색됨`, 'success');
+                alert(`'${searchQuery}'에 대해 ${matchedCount}개 노드 검색됨`);
 
                 setTimeout(() => {
                     if (graphRef.current) graphRef.current.zoomToFit(400);
                 }, 300);
             } else {
-                showAlert('검색 결과가 없습니다.');
+                alert('검색 결과가 없습니다.');
                 setGraphData({ nodes: [], links: [] });
             }
         } catch (error) {
             console.error("Search failed", error);
-            showAlert("검색에 실패했습니다.");
+            alert("검색에 실패했습니다.");
         } finally {
             setIsSearching(false);
         }
@@ -359,7 +359,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
         console.log('[handleLocalSearch] 매칭된 startNodes:', startNodes.length);
         if (startNodes.length === 0) {
             console.log('[handleLocalSearch] 검색 결과 없음');
-            showAlert('검색 결과가 없습니다.');
+            alert('검색 결과가 없습니다.');
             setIsSearching(false);
             return;
         }
@@ -461,7 +461,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
             // 선택한 Hub 이름 찾기
             const hubInfo = topHubs.find(h => h.nodeId === hubId);
             if (hubInfo) {
-                showAlert(`'${hubInfo.name}' Hub 중심으로 전환`, 'success');
+                alert(`'${hubInfo.name}' Hub 중심으로 전환`);
             }
 
             setTimeout(() => {
@@ -470,7 +470,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
 
         } catch (error) {
             console.error('Hub graph fetch failed', error);
-            showAlert('Hub 그래프 로딩 실패');
+            alert('Hub 그래프 로딩 실패');
         } finally {
             setIsLoading(false);
         }
@@ -587,7 +587,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
     // [5] 경로 찾기
     const handleFindPath = async () => {
         if (!fromNode.trim() || !toNode.trim()) {
-            showAlert('출발 노드와 도착 노드를 모두 입력해주세요.');
+            alert('출발 노드와 도착 노드를 모두 입력해주세요.');
             return;
         }
 
@@ -607,12 +607,12 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
             }
 
             if (!resolvedFromId) {
-                showAlert(`'${fromNode}' 노드를 찾을 수 없습니다. 자동완성에서 선택해주세요.`);
+                alert(`'${fromNode}' 노드를 찾을 수 없습니다. 자동완성에서 선택해주세요.`);
                 setIsPathFinding(false);
                 return;
             }
             if (!resolvedToId) {
-                showAlert(`'${toNode}' 노드를 찾을 수 없습니다. 자동완성에서 선택해주세요.`);
+                alert(`'${toNode}' 노드를 찾을 수 없습니다. 자동완성에서 선택해주세요.`);
                 setIsPathFinding(false);
                 return;
             }
@@ -656,18 +656,18 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                     .sort((a, b) => (a.pathOrder || 0) - (b.pathOrder || 0))
                     .map(n => n.name)
                     .join(' → ');
-                showAlert(`경로 발견: ${pathText}`, 'success');
+                alert(`경로 발견: ${pathText}`);
 
                 setTimeout(() => {
                     if (graphRef.current) graphRef.current.zoomToFit(400);
                 }, 300);
             } else {
                 setPathResult(null);
-                showAlert('두 노드 사이의 경로를 찾을 수 없습니다.', 'warning');
+                alert('두 노드 사이의 경로를 찾을 수 없습니다.');
             }
         } catch (error) {
             console.error('경로 찾기 실패:', error);
-            showAlert('경로 찾기에 실패했습니다.');
+            alert('경로 찾기에 실패했습니다.');
         } finally {
             setIsPathFinding(false);
         }
@@ -678,10 +678,10 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
         if (pathMode) {
             if (!fromNode) {
                 setFromNode(node.name);
-                showAlert(`출발 노드: ${node.name}`, 'info');
+                alert(`출발 노드: ${node.name}`);
             } else if (!toNode) {
                 setToNode(node.name);
-                showAlert(`도착 노드: ${node.name}`, 'info');
+                alert(`도착 노드: ${node.name}`);
             }
         }
     };

@@ -1,7 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { Button } from '@mui/material';
 import './DbConnectionModal.css';
 import { structuredApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
+import BaseModal from './common/modal/BaseModal';
 
 const DB_TYPES = [
     { value: 'MYSQL', label: 'MySQL', defaultPort: 3306 },
@@ -40,8 +43,8 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
     const [importing, setImporting] = useState(false);
     const [importResult, setImportResult] = useState(null);
     const [importProgress, setImportProgress] = useState(null);
-    const modalRef = useRef(null);
-    const { showAlert, showConfirm } = useAlert();
+    const { showAlert } = useAlert();
+    const { confirm } = useDialog();
 
     useEffect(() => {
         if (isOpen && domainId) {
@@ -59,23 +62,6 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
             setImportResult(null);
         }
     }, [isOpen, domainId]);
-
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen]);
-
-    useEffect(() => {
-        const handleEscape = (e) => {
-            if (e.key === 'Escape') onClose();
-        };
-        if (isOpen) document.addEventListener('keydown', handleEscape);
-        return () => document.removeEventListener('keydown', handleEscape);
-    }, [isOpen, onClose]);
 
     const loadConnections = async () => {
         try {
@@ -164,7 +150,7 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
             showAlert('삭제할 연결을 선택하세요.');
             return;
         }
-        const confirmed = await showConfirm('이 연결을 삭제하시겠습니까?');
+        const confirmed = await confirm('이 연결을 삭제하시겠습니까?');
         if (!confirmed) return;
         try {
             await structuredApi.db.deleteConnection(selectedConnectionId);
@@ -330,7 +316,7 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
                             onClick={() => handleSelectConnection(conn)}
                         >
                             <span className="db-session-name">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.5, flexShrink: 0 }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="db-session-icon">
                                     <path d="M12 2C6.48 2 2 5.6 2 10v4c0 4.4 4.48 8 10 8s10-3.6 10-8v-4c0-4.4-4.48-8-10-8z"/>
                                 </svg>
                                 {conn.connectionName}
@@ -513,8 +499,8 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
             ) : tables.length === 0 ? (
                 <div className="db-empty">테이블이 없습니다.</div>
             ) : (
-                <div style={{ display: 'flex', gap: '16px', opacity: importing ? 0.4 : 1, pointerEvents: importing ? 'none' : 'auto' }}>
-                    <div style={{ flex: '1' }}>
+                <div className={`db-step2-layout ${importing ? 'is-importing' : ''}`}>
+                    <div className="db-step2-column">
                         <div className="db-saved-title">테이블 목록 ({tables.length}개)</div>
                         <div className="db-table-filter">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -527,16 +513,16 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
                                 onChange={e => setTableFilter(e.target.value)}
                             />
                         </div>
-                        <div style={{ display: 'flex', gap: '6px', marginBottom: '6px' }}>
-                            <button className="db-btn" style={{ fontSize: '11px', padding: '2px 8px' }}
+                        <div className="db-table-select-actions">
+                            <button className="db-btn db-btn-sm"
                                 onClick={() => {
                                     const filtered = tables.filter(t => t.tableName.toLowerCase().includes(tableFilter.toLowerCase()));
                                     setSelectedTables(new Set(filtered.map(t => t.tableName)));
                                 }}>전체 선택</button>
-                            <button className="db-btn" style={{ fontSize: '11px', padding: '2px 8px' }}
+                            <button className="db-btn db-btn-sm"
                                 onClick={() => setSelectedTables(new Set())}>선택 해제</button>
                             {selectedTables.size > 0 && (
-                                <span style={{ fontSize: '11px', color: '#1a73e8', lineHeight: '24px' }}>
+                                <span className="db-selected-count">
                                     {selectedTables.size}개 선택됨
                                 </span>
                             )}
@@ -572,7 +558,7 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
                         </div>
                     </div>
                     {previewTable && (
-                        <div style={{ flex: '1' }}>
+                        <div className="db-step2-column">
                             <div className="db-saved-title">
                                 {previewTable} 컬럼 정보
                                 {tableInfo && ` (${tableInfo.rowCount.toLocaleString()}행)`}
@@ -623,90 +609,73 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
                         : `테이블 데이터가 성공적으로 임포트되었습니다.`}
                 </p>
             )}
-            <p style={{ marginTop: '8px', color: '#888' }}>
+            <p className="db-import-result-note">
                 소스 목록에서 해당 데이터를 클릭하여 컬럼 매핑을 진행하세요.
             </p>
         </div>
     );
 
-    return (
-        <div className="db-modal-overlay" onClick={onClose}>
-            <div className="db-modal-container" ref={modalRef} onClick={e => e.stopPropagation()}>
-                <div className="db-modal-header">
-                    <h2>
-                        {step === 1 ? 'DB 테이블 연결' :
-                         step === 2 ? '테이블 선택' : '임포트 완료'}
-                    </h2>
-                    <button className="db-modal-close" onClick={onClose}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div className="db-modal-body">
-                    {renderSteps()}
-                    {step === 1 && renderStep1()}
-                    {step === 2 && renderStep2()}
-                    {step === 3 && renderStep3()}
-                </div>
-
-                <div className="db-modal-footer">
-                    <div className="db-footer-left">
-                        {step === 2 && (
-                            <button className="db-btn" onClick={() => setStep(1)}>
-                                ← 이전
-                            </button>
-                        )}
-                    </div>
-                    <div className="db-footer-right">
-                        {step === 1 && (
-                            <>
-                                <button
-                                    className="db-btn"
-                                    onClick={handleTestConnection}
-                                    disabled={!isFormValid || testing}
-                                >
-                                    {testing ? '테스트 중...' : '연결 테스트'}
-                                    {testResult === true && ' ✓'}
-                                    {testResult === false && ' ✗'}
-                                </button>
-                                <button
-                                    className="db-btn db-btn-primary"
-                                    onClick={handleNextToTables}
-                                    disabled={!selectedConnectionId || loadingTables}
-                                >
-                                    {loadingTables ? '로딩...' : '열기'}
-                                </button>
-                                <button className="db-btn" onClick={onClose}>
-                                    취소
-                                </button>
-                            </>
-                        )}
-                        {step === 2 && (
-                            <button
-                                className="db-btn db-btn-success"
-                                onClick={handleImport}
-                                disabled={selectedTables.size === 0 || importing}
-                            >
-                                {importing
-                                    ? `임포트 중... (${importingTable || ''})`
-                                    : selectedTables.size > 1
-                                        ? `${selectedTables.size}개 테이블 임포트`
-                                        : selectedTables.size === 1
-                                            ? `'${[...selectedTables][0]}' 임포트`
-                                            : '테이블을 선택하세요'}
-                            </button>
-                        )}
-                        {step === 3 && (
-                            <button className="db-btn db-btn-primary" onClick={onClose}>
-                                닫기
-                            </button>
-                        )}
-                    </div>
-                </div>
+    const actions = (
+        <div className="db-modal-actions-layout">
+            <div className="db-footer-left">
+                {step === 2 && (
+                    <Button variant="outlined" onClick={() => setStep(1)}>
+                        이전
+                    </Button>
+                )}
+            </div>
+            <div className="db-footer-right">
+                {step === 1 && (
+                    <>
+                        <Button variant="outlined" onClick={handleTestConnection} disabled={!isFormValid || testing}>
+                            {testing ? '테스트 중...' : '연결 테스트'}{testResult === true && ' ✓'}{testResult === false && ' ✗'}
+                        </Button>
+                        <Button variant="contained" onClick={handleNextToTables} disabled={!selectedConnectionId || loadingTables}>
+                            {loadingTables ? '로딩...' : '열기'}
+                        </Button>
+                        <Button variant="outlined" onClick={onClose}>
+                            취소
+                        </Button>
+                    </>
+                )}
+                {step === 2 && (
+                    <Button variant="contained" onClick={handleImport} disabled={selectedTables.size === 0 || importing}>
+                        {importing
+                            ? `임포트 중... (${importingTable || ''})`
+                            : selectedTables.size > 1
+                                ? `${selectedTables.size}개 테이블 임포트`
+                                : selectedTables.size === 1
+                                    ? `'${[...selectedTables][0]}' 임포트`
+                                    : '테이블을 선택하세요'}
+                    </Button>
+                )}
+                {step === 3 && (
+                    <Button variant="contained" onClick={onClose}>
+                        닫기
+                    </Button>
+                )}
             </div>
         </div>
+    );
+
+    return (
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title={step === 1 ? 'DB 테이블 연결' : step === 2 ? '테이블 선택' : '임포트 완료'}
+            maxWidth="lg"
+            fullWidth
+            contentClassName="db-modal-content"
+            actions={actions}
+            actionsAlign="left"
+        >
+            <div className="db-modal-body">
+                {renderSteps()}
+                {step === 1 && renderStep1()}
+                {step === 2 && renderStep2()}
+                {step === 3 && renderStep3()}
+            </div>
+        </BaseModal>
     );
 }
 

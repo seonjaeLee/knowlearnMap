@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, ImagePlus } from 'lucide-react';
+import { ImagePlus } from 'lucide-react';
+import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
+import BaseModal from './common/modal/BaseModal';
 import './NoticeCreateModal.css';
 
 function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
@@ -11,7 +13,6 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
     const [category, setCategory] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const modalRef = useRef(null);
     const textareaRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -28,32 +29,6 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
             }
         }
     }, [isOpen, editingNotice]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose]);
 
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
@@ -109,16 +84,29 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
     if (!isOpen) return null;
 
     return (
-        <div className="notice-create-modal-overlay">
-            <div className="notice-create-modal-container" ref={modalRef}>
-                <div className="notice-create-modal-header">
-                    <h2>{editingNotice ? '공지사항 수정' : '공지사항 작성'}</h2>
-                    <button className="notice-create-modal-close" onClick={onClose}>
-                        <X size={24} />
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="notice-create-modal-form">
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title={editingNotice ? '공지사항 수정' : '공지사항 작성'}
+            maxWidth="md"
+            fullWidth
+            contentClassName="notice-create-modal-content"
+            actionsClassName="notice-create-modal-actions"
+            actions={(
+                <>
+                    <Button variant="outlined" onClick={onClose}>취소</Button>
+                    <Button
+                        variant="contained"
+                        type="submit"
+                        form="notice-create-form"
+                        disabled={!title.trim() || !content.trim() || isSubmitting}
+                    >
+                        {isSubmitting ? '저장 중...' : (editingNotice ? '수정' : '등록')}
+                    </Button>
+                </>
+            )}
+        >
+                <form id="notice-create-form" onSubmit={handleSubmit} className="notice-create-modal-form">
                     <div className="notice-form-group">
                         <label htmlFor="notice-title">제목 *</label>
                         <input
@@ -162,7 +150,7 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                                 type="file"
                                 accept="image/jpeg,image/png,image/gif,image/webp"
                                 onChange={handleImageUpload}
-                                style={{ display: 'none' }}
+                                className="notice-hidden-file-input"
                             />
                         </div>
                         <textarea
@@ -176,21 +164,8 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                         />
                     </div>
 
-                    <div className="notice-create-modal-actions">
-                        <button type="button" className="btn-cancel" onClick={onClose}>
-                            취소
-                        </button>
-                        <button
-                            type="submit"
-                            className="btn-submit"
-                            disabled={!title.trim() || !content.trim() || isSubmitting}
-                        >
-                            {isSubmitting ? '저장 중...' : (editingNotice ? '수정' : '등록')}
-                        </button>
-                    </div>
                 </form>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

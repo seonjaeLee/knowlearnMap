@@ -16,6 +16,12 @@
     text-align: left;
 }
 
+.domain-redirecting {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
 .domain-add-btn {
     padding: 6px 14px;
     font-size: 13px;
@@ -62,6 +68,17 @@
 .domain-list-table td {
     padding: 14px 16px;
     border-bottom: 1px solid #edf2f7;
+}
+
+.domain-radio-cell {
+    text-align: center;
+}
+
+.domain-radio-input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #2563eb;
 }
 
 .domain-list-row {
@@ -151,4 +168,28 @@
     white-space: nowrap;
     font-size: 0.9rem;
     color: #64748b;
+}
+
+.domain-add-modal-content {
+    min-height: auto !important;
+}
+
+.domain-add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.domain-add-help {
+    margin-top: -4px !important;
+    font-size: var(--font-size-xs) !important;
+    color: #94a3b8 !important;
+}
+
+.domain-add-error {
+    padding: var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs));
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
 }

@@ -1,6 +1,12 @@
 /* Report Creation Modal */
-.creation-modal {
-    max-width: 900px;
+.report-creation-modal-content {
+    max-height: min(80vh, 900px);
+}
+
+.report-creation-modal-body {
+    height: 100%;
+    overflow-y: auto;
+    padding: 0;
 }
 
 .back-btn {
@@ -109,44 +115,11 @@
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    padding-top: 16px;
-    border-top: 1px solid #e8eaed;
-}
-
-.btn-generate {
-    padding: 12px 32px;
-    background-color: #1a73e8;
-    color: #ffffff;
-    border: none;
-    border-radius: 24px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-generate:hover {
-    background-color: #1557b0;
-    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
-}
-
-.btn-generate:active {
-    transform: scale(0.98);
-}
-
-.btn-generate:disabled {
-    background-color: #dadce0;
-    color: #80868b;
-    cursor: not-allowed;
-    box-shadow: none;
+    padding-top: var(--spacing-md);
 }
 
 /* Responsive */
 @media (max-width: 640px) {
-    .creation-modal {
-        max-width: 95%;
-    }
-
     .form-textarea {
         min-height: 200px;
     }

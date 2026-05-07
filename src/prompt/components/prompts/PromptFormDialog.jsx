@@ -2,27 +2,20 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useAlert } from '../../../context/AlertContext';
 import { useAuth } from '../../../context/AuthContext';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   Button,
   Box,
   Typography,
-  Divider,
-  IconButton,
   Select,
   MenuItem
 } from '@mui/material';
-import {
-  Close as CloseIcon,
-} from '@mui/icons-material';
 import { useCreatePrompt, usePrompts } from '../../hooks/usePrompts';
 import { useVersions } from '../../hooks/useVersions';
 import { promptService } from '../../api/promptService';
 import { testService } from '../../api/testService';
 import PromptEditTabs from '../common/PromptEditTabs';
+import BaseModal from '../../../components/common/modal/BaseModal';
+import './PromptDialogs.css';
 
 const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }) => {
   const [formData, setFormData] = useState({
@@ -348,44 +341,73 @@ const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }
   };
 
   return (
-    <Dialog
+    <BaseModal
       open={open}
-      onClose={(event, reason) => {
-        if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
-          return; // 외부 클릭 및 ESC 키 무시
-        }
-        handleClose();
-      }}
+      title={mode === 'edit' ? '프롬프트 버전 생성' : '새 프롬프트 생성'}
+      onClose={handleClose}
       maxWidth="md"
-      fullWidth
+      disableBackdropClose
       disableEscapeKeyDown
-      PaperProps={{
-        sx: {
-          borderRadius: 2,
-        }
-      }}
-    >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {mode === 'edit' ? '프롬프트 버전 생성' : '새 프롬프트 생성'}
+      contentClassName="prompt-form-modal-content"
+      actions={(
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
+          {codeCheckStatus !== 'available' && (
+            <Typography variant="caption" color="error.main" sx={{ textAlign: 'center' }}>
+              ⚠️ 코드 중복 확인을 완료해주세요
+            </Typography>
+          )}
+          {variableCheckNeeded && (
+            <Typography variant="caption" color="error.main" sx={{ textAlign: 'center' }}>
+              ⚠️ 변수 체크를 완료해주세요
+            </Typography>
+          )}
+          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', mb: 1 }}>
+            💡 변수는 {`{{변수명}}`} 형태로 입력하세요. 변수 체크 버튼을 눌러 변수를 추출하세요.
           </Typography>
-          <IconButton
-            onClick={handleClose}
-            size="small"
-            sx={{
-              color: 'text.secondary',
-              '&:hover': { bgcolor: 'action.hover' }
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+            <Button
+              variant="outlined"
+              onClick={handleClose}
+              sx={{
+                color: 'text.secondary',
+                '&:hover': { bgcolor: 'action.hover' }
+              }}
+            >
+              취소
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              disabled={
+                codeCheckStatus !== 'available' ||
+                !formData.code ||
+                !formData.name ||
+                variableCheckNeeded ||
+                createPrompt.isPending
+              }
+              sx={{
+                minWidth: 100,
+                boxShadow: 'none',
+                '&:hover': {
+                  boxShadow: '0px 2px 8px rgba(0,0,0,0.15)',
+                },
+                '&.Mui-disabled': {
+                  bgcolor: 'action.disabledBackground',
+                  color: 'text.disabled',
+                }
+              }}
+            >
+              {createPrompt.isPending ? (mode === 'edit' ? '버전 생성 중...' : '생성 중...') :
+                codeCheckStatus !== 'available' ? '코드 확인 필요' :
+                  !formData.name ? '이름 입력 필요' :
+                    variableCheckNeeded ? '변수 체크 필요' :
+                      (mode === 'edit' ? '버전 생성' : '생성')}
+            </Button>
+          </Box>
         </Box>
-      </DialogTitle>
-
-      <Divider />
-
-      <DialogContent sx={{ pt: 3, pb: 2, overflow: 'auto' }}>
+      )}
+    >
+      <Box sx={{ pt: 1, pb: 1, overflow: 'auto' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
           {/* 코드, 버전, 이름, 카테고리 - 한 줄 배치 */}
           <Box display="flex" gap={2} alignItems="flex-start">
@@ -615,65 +637,8 @@ const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }
           </Box>
 
         </Box>
-      </DialogContent>
-
-      <Divider />
-
-      <DialogActions sx={{ px: 3, py: 2, flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
-        {codeCheckStatus !== 'available' && (
-          <Typography variant="caption" color="error.main" sx={{ textAlign: 'center' }}>
-            ⚠️ 코드 중복 확인을 완료해주세요
-          </Typography>
-        )}
-        {variableCheckNeeded && (
-          <Typography variant="caption" color="error.main" sx={{ textAlign: 'center' }}>
-            ⚠️ 변수 체크를 완료해주세요
-          </Typography>
-        )}
-        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', mb: 1 }}>
-          💡 변수는 {`{{변수명}}`} 형태로 입력하세요. 변수 체크 버튼을 눌러 변수를 추출하세요.
-        </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-          <Button
-            onClick={handleClose}
-            sx={{
-              color: 'text.secondary',
-              '&:hover': { bgcolor: 'action.hover' }
-            }}
-          >
-            취소
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            disabled={
-              codeCheckStatus !== 'available' ||
-              !formData.code ||
-              !formData.name ||
-              variableCheckNeeded ||
-              createPrompt.isPending
-            }
-            sx={{
-              minWidth: 100,
-              boxShadow: 'none',
-              '&:hover': {
-                boxShadow: '0px 2px 8px rgba(0,0,0,0.15)',
-              },
-              '&.Mui-disabled': {
-                bgcolor: 'action.disabledBackground',
-                color: 'text.disabled',
-              }
-            }}
-          >
-            {createPrompt.isPending ? (mode === 'edit' ? '버전 생성 중...' : '생성 중...') :
-              codeCheckStatus !== 'available' ? '코드 확인 필요' :
-                !formData.name ? '이름 입력 필요' :
-                  variableCheckNeeded ? '변수 체크 필요' :
-                    (mode === 'edit' ? '버전 생성' : '생성')}
-          </Button>
-        </Box>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </BaseModal>
   );
 };
 

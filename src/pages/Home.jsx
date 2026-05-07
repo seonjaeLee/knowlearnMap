@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2 } from 'lucide-react';
+import { Button, TextField } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
+import BaseModal from '../components/common/modal/BaseModal';
 import './Home.css';
 
 function Home() {
@@ -59,7 +62,8 @@ function Home() {
     const [workspaceMenuOpenUp, setWorkspaceMenuOpenUp] = useState(false);
     const navigate = useNavigate();
     const { isAdmin, isAuthenticated } = useAuth();
-    const { showAlert, showConfirm } = useAlert();
+    const { showAlert } = useAlert();
+    const { confirm, alert } = useDialog();
 
     // 워크스페이스 목록 불러오기
     useEffect(() => {
@@ -159,7 +163,14 @@ function Home() {
     const handleDelete = async (e, notebookId) => {
         e.stopPropagation();
 
-        const confirmed = await showConfirm('정말 삭제하시겠습니까?');
+        const confirmed = await confirm({
+            title: '워크스페이스 삭제',
+            message: '정말 삭제하시겠습니까?\n관련 문서와 데이터가 함께 삭제됩니다.',
+            confirmText: '삭제',
+            cancelText: '취소',
+            tone: 'danger',
+            disableBackdropClose: true,
+        });
         if (!confirmed) {
             return;
         }
@@ -171,7 +182,10 @@ function Home() {
             setNotebooks(prev => prev.filter(nb => nb.id !== notebookId));
         } catch (err) {
             console.error('삭제 실패:', err);
-            showAlert('삭제에 실패했습니다.');
+            await alert({
+                title: '삭제 실패',
+                message: '워크스페이스 삭제에 실패했습니다.',
+            });
         } finally {
             setDeletingId(null);
         }
@@ -287,6 +301,42 @@ function Home() {
         }
     };
 
+    const handleResetPromptToDefault = () => {
+        const defChunk = promptNotebook?.defaultChunkPrompt || '';
+        const defOntology = promptNotebook?.defaultOntologyPrompt || '';
+        const defChat = promptNotebook?.defaultChatResultPrompt || '';
+        const defContent = promptNotebook?.defaultContentOntologyPrompt || '';
+        const defSchema = promptNotebook?.defaultSchemaAnalysisPrompt || '';
+        const defInterTable = promptNotebook?.defaultInterTableAnalysisPrompt || '';
+        const defAqlGen = promptNotebook?.defaultAqlGenerationPrompt || '';
+        const defAqlInterp = promptNotebook?.defaultAqlInterpretationPrompt || '';
+        const defAgg = promptNotebook?.defaultAggregationStrategyPrompt || '';
+
+        setChunkPromptValue('');
+        setOntologyPromptValue('');
+        setChatResultPromptValue('');
+        setContentOntologyPromptValue('');
+        setSchemaAnalysisPromptValue('');
+        setInterTableAnalysisPromptValue('');
+        setAqlGenerationPromptValue('');
+        setAqlInterpretationPromptValue('');
+        setAggregationStrategyPromptValue('');
+
+        setTimeout(() => {
+            setChunkPromptValue(defChunk);
+            setOntologyPromptValue(defOntology);
+            setChatResultPromptValue(defChat);
+            setContentOntologyPromptValue(defContent);
+            setSchemaAnalysisPromptValue(defSchema);
+            setInterTableAnalysisPromptValue(defInterTable);
+            setAqlGenerationPromptValue(defAqlGen);
+            setAqlInterpretationPromptValue(defAqlInterp);
+            setAggregationStrategyPromptValue(defAgg);
+        }, 0);
+
+        showAlert('기본값으로 초기화되었습니다.');
+    };
+
     const handleRename = (e, notebookId) => {
         e.stopPropagation();
         const notebook = notebooks.find(nb => nb.id === notebookId);
@@ -300,7 +350,10 @@ function Home() {
 
     const handleRenameSubmit = async () => {
         if (!newName.trim()) {
-            showAlert('워크스페이스 이름을 입력해주세요.');
+            await alert({
+                title: '이름 변경',
+                message: '워크스페이스 이름을 입력해주세요.',
+            });
             return;
         }
 
@@ -319,7 +372,10 @@ function Home() {
             setNewName('');
         } catch (err) {
             console.error('이름 변경 실패:', err);
-            showAlert('이름 변경에 실패했습니다.');
+            await alert({
+                title: '이름 변경 실패',
+                message: '워크스페이스 이름 변경에 실패했습니다.',
+            });
         }
     };
 
@@ -635,57 +691,87 @@ function Home() {
             )}
 
             {/* Rename Modal */}
-            {renameModalOpen && (
-                <div className="modal-overlay" onClick={() => setRenameModalOpen(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-icon">
-                            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                                <circle cx="32" cy="32" r="28" fill="#4a5568" />
-                                <path d="M32 20v24M20 32h24" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                            </svg>
-                        </div>
-                        <h2 className="modal-title">워크스페이스 이름 변경</h2>
-                        <input
-                            type="text"
-                            className="modal-input"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleRenameSubmit();
-                                }
-                            }}
-                            placeholder="워크스페이스 이름"
-                            autoFocus
-                        />
-                        <div className="modal-buttons">
-                            <button
-                                className="modal-btn cancel-btn"
-                                onClick={() => setRenameModalOpen(false)}
-                            >
-                                취소
-                            </button>
-                            <button
-                                className="modal-btn confirm-btn"
-                                onClick={handleRenameSubmit}
-                            >
-                                저장
-                            </button>
-                        </div>
-                    </div>
+            <BaseModal
+                open={renameModalOpen}
+                onClose={() => setRenameModalOpen(false)}
+                title="워크스페이스 이름 변경"
+                maxWidth="xs"
+                disableBackdropClose
+                actions={(
+                    <>
+                        <Button
+                            variant="outlined"
+                            onClick={() => setRenameModalOpen(false)}
+                        >
+                            취소
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={handleRenameSubmit}
+                        >
+                            저장
+                        </Button>
+                    </>
+                )}
+            >
+                <div className="home-rename-modal-body">
+                    <TextField
+                        fullWidth
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleRenameSubmit();
+                            }
+                        }}
+                        placeholder="워크스페이스 이름"
+                        autoFocus
+                        size="small"
+                    />
                 </div>
-            )}
+            </BaseModal>
 
             {/* Prompt Modal */}
-            {promptModalOpen && (
-                <div className="modal-overlay" onClick={() => setPromptModalOpen(false)}>
-                    <div className="modal-content home-prompt-modal" onClick={(e) => e.stopPropagation()}>
-                        <h2 className="modal-title home-prompt-modal-title">프롬프트 변경</h2>
-                        <p className="home-prompt-modal-intro">
-                            워크스페이스: {promptNotebook?.name}
-                        </p>
-
-                        <div className="home-prompt-modal-grid">
+            <BaseModal
+                open={promptModalOpen}
+                onClose={() => setPromptModalOpen(false)}
+                title="프롬프트 변경"
+                subtitle={`워크스페이스 - ${promptNotebook?.name || '-'}`}
+                maxWidth="lg"
+                fullWidth
+                contentClassName="home-prompt-modal-content"
+                actionsClassName="home-prompt-modal-actions"
+                actionsAlign="left"
+                actions={(
+                    <div className="home-prompt-modal-action-layout">
+                        <div className="home-prompt-modal-action-left">
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={handleResetPromptToDefault}
+                            >
+                                기본값 초기화
+                            </Button>
+                        </div>
+                        <div className="home-prompt-modal-action-right">
+                            <Button
+                                variant="outlined"
+                                onClick={() => setPromptModalOpen(false)}
+                            >
+                                취소
+                            </Button>
+                            <Button
+                                variant="contained"
+                                onClick={handleSavePrompt}
+                            >
+                                저장
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            >
+                <div className="home-prompt-modal-shell">
+                    <div className="home-prompt-modal-grid">
                             <div className="home-prompt-field">
                                 <label className="home-prompt-label">
                                     청킹 프롬프트
@@ -865,65 +951,13 @@ function Home() {
                                     대규모 정형 데이터 집계 전략
                                 </div>
                             </div>
-                        </div>
+                    </div>
 
-                        <div className="home-prompt-footer-note">
-                            * 기본값: 상위 레벨(도메인 → 시스템) 설정을 따름 &nbsp;|&nbsp; NONE: 명시적 비활성화
-                        </div>
-                        <div className="modal-buttons">
-                            <button
-                                className="modal-btn cancel-btn"
-                                onClick={() => setPromptModalOpen(false)}
-                            >
-                                취소
-                            </button>
-                            <button
-                                className="modal-btn cancel-btn home-prompt-reset-btn"
-                                onClick={() => {
-                                    const defChunk = promptNotebook?.defaultChunkPrompt || '';
-                                    const defOntology = promptNotebook?.defaultOntologyPrompt || '';
-                                    const defChat = promptNotebook?.defaultChatResultPrompt || '';
-                                    const defContent = promptNotebook?.defaultContentOntologyPrompt || '';
-                                    const defSchema = promptNotebook?.defaultSchemaAnalysisPrompt || '';
-                                    const defInterTable = promptNotebook?.defaultInterTableAnalysisPrompt || '';
-                                    const defAqlGen = promptNotebook?.defaultAqlGenerationPrompt || '';
-                                    const defAqlInterp = promptNotebook?.defaultAqlInterpretationPrompt || '';
-                                    const defAgg = promptNotebook?.defaultAggregationStrategyPrompt || '';
-                                    setChunkPromptValue('');
-                                    setOntologyPromptValue('');
-                                    setChatResultPromptValue('');
-                                    setContentOntologyPromptValue('');
-                                    setSchemaAnalysisPromptValue('');
-                                    setInterTableAnalysisPromptValue('');
-                                    setAqlGenerationPromptValue('');
-                                    setAqlInterpretationPromptValue('');
-                                    setAggregationStrategyPromptValue('');
-                                    setTimeout(() => {
-                                        setChunkPromptValue(defChunk);
-                                        setOntologyPromptValue(defOntology);
-                                        setChatResultPromptValue(defChat);
-                                        setContentOntologyPromptValue(defContent);
-                                        setSchemaAnalysisPromptValue(defSchema);
-                                        setInterTableAnalysisPromptValue(defInterTable);
-                                        setAqlGenerationPromptValue(defAqlGen);
-                                        setAqlInterpretationPromptValue(defAqlInterp);
-                                        setAggregationStrategyPromptValue(defAgg);
-                                    }, 0);
-                                    showAlert('기본값으로 초기화되었습니다.');
-                                }}
-                            >
-                                기본값 초기화
-                            </button>
-                            <button
-                                className="modal-btn confirm-btn"
-                                onClick={handleSavePrompt}
-                            >
-                                저장
-                            </button>
-                        </div>
+                    <div className="home-prompt-footer-note">
+                        * 기본값: 상위 레벨(도메인 → 시스템) 설정을 따름 &nbsp;|&nbsp; NONE: 명시적 비활성화
                     </div>
                 </div>
-            )}
+            </BaseModal>
 
             {/* Share Settings Modal */}
             {shareModalOpen && shareNotebook && (

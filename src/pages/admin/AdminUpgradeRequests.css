@@ -1,0 +1,92 @@
+.admin-upgrade-table-wrap {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-upgrade-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-upgrade-thead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.admin-upgrade-th,
+.admin-upgrade-td {
+  padding: 12px;
+  text-align: left;
+}
+
+.admin-upgrade-th {
+  font-weight: 600;
+  color: #495057;
+}
+
+.admin-upgrade-row {
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.admin-upgrade-empty {
+  padding: 20px;
+  text-align: center;
+  color: #868e96;
+}
+
+.admin-upgrade-type-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: var(--admin-font-sm);
+  font-weight: 600;
+}
+
+.admin-upgrade-type-badge.is-max {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.admin-upgrade-type-badge.is-pro {
+  background: #e7f5ff;
+  color: #228be6;
+}
+
+.admin-upgrade-status {
+  font-weight: 600;
+}
+
+.admin-upgrade-status.status-approved {
+  color: #2b8a3e;
+}
+
+.admin-upgrade-status.status-rejected {
+  color: #e03131;
+}
+
+.admin-upgrade-status.status-pending {
+  color: #f08c00;
+}
+
+.admin-upgrade-reject-reason {
+  font-size: var(--admin-font-sm);
+  color: #868e96;
+  margin-top: 4px;
+}
+
+.admin-upgrade-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-upgrade-reject-content {
+  min-height: auto !important;
+}
+
+.admin-upgrade-reject-desc {
+  font-size: var(--admin-font-md) !important;
+  color: #666 !important;
+  margin-bottom: 12px !important;
+}

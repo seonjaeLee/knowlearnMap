@@ -1,21 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
-import { X, Edit2, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import { faqApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
+import BaseModal from './common/modal/BaseModal';
 import './FaqDetailModal.css';
 
 function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
     const { user, isAdmin } = useAuth();
-    const { showConfirm } = useAlert();
+    const { confirm } = useDialog();
     const [faq, setFaq] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState('');
     const [editContent, setEditContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const modalRef = useRef(null);
 
     const fetchFaq = async () => {
         if (!faqId) return;
@@ -36,32 +36,6 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
             setIsEditing(false);
         }
     }, [isOpen, faqId]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen, onClose]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -105,7 +79,7 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
     };
 
     const handleDeleteFaq = async () => {
-        const confirmed = await showConfirm('이 FAQ를 삭제하시겠습니까?');
+        const confirmed = await confirm('이 FAQ를 삭제하시겠습니까?');
         if (!confirmed) return;
 
         try {
@@ -120,15 +94,14 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
     if (!isOpen) return null;
 
     return (
-        <div className="faq-detail-modal-overlay">
-            <div className="faq-detail-modal-container" ref={modalRef}>
-                <div className="faq-detail-modal-header">
-                    <h2>FAQ 상세</h2>
-                    <button className="faq-detail-modal-close" onClick={onClose}>
-                        <X size={24} />
-                    </button>
-                </div>
-
+        <BaseModal
+            open={isOpen}
+            onClose={onClose}
+            title="FAQ 상세"
+            maxWidth="xl"
+            fullWidth
+            contentClassName="faq-detail-modal-content"
+        >
                 <div className="faq-detail-modal-body">
                     {loading ? (
                         <div className="faq-detail-loading">
@@ -234,8 +207,7 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
+        </BaseModal>
     );
 }
 

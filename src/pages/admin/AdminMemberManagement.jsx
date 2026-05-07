@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Button, Stack } from '@mui/material';
 import { memberApi } from '../../services/api';
-import { useAlert } from '../../context/AlertContext';
-import { Users, Search, RotateCcw, Pencil, Trash2, X, Unlock, Mail } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
+import { Users, Search, RotateCcw, Pencil, Trash2, Unlock, Mail } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import BaseModal from '../../components/common/modal/BaseModal';
 import './admin-common.css';
+import './AdminMemberManagement.css';
 
 const ROLE_BADGE = {
     ADMIN: 'admin-badge admin-badge-primary',
@@ -31,7 +34,7 @@ function AdminMemberManagement() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [editMember, setEditMember] = useState(null);
-    const { showAlert, showConfirm } = useAlert();
+    const { alert, confirm } = useDialog();
 
     const fetchMembers = async () => {
         try {
@@ -40,7 +43,7 @@ function AdminMemberManagement() {
             setMembers(data || []);
         } catch (error) {
             console.error('Failed to fetch members:', error);
-            showAlert('사용자 목록을 불러오는데 실패했습니다.');
+            await alert('사용자 목록을 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
@@ -68,38 +71,38 @@ function AdminMemberManagement() {
     };
 
     const handleDelete = async (member) => {
-        const ok = await showConfirm(`"${member.email}" 사용자를 삭제하시겠습니까?`);
+        const ok = await confirm(`"${member.email}" 사용자를 삭제하시겠습니까?`);
         if (!ok) return;
         try {
             await memberApi.delete(member.id);
-            showAlert('삭제되었습니다.');
+            await alert('삭제되었습니다.');
             fetchMembers();
         } catch (error) {
-            showAlert(error?.error || '삭제에 실패했습니다.');
+            await alert(error?.error || '삭제에 실패했습니다.');
         }
     };
 
     const handleUnlock = async (member) => {
-        const ok = await showConfirm(`"${member.email}" 계정 잠금을 해제하시겠습니까?`);
+        const ok = await confirm(`"${member.email}" 계정 잠금을 해제하시겠습니까?`);
         if (!ok) return;
         try {
             await memberApi.update(member.id, { failedLoginAttempts: '0' });
-            showAlert('잠금이 해제되었습니다.');
+            await alert('잠금이 해제되었습니다.');
             fetchMembers();
         } catch (error) {
-            showAlert('잠금 해제에 실패했습니다.');
+            await alert('잠금 해제에 실패했습니다.');
         }
     };
 
     const handleResendVerification = async (member) => {
-        const ok = await showConfirm(`"${member.email}"에게 인증 메일을 재발송하시겠습니까?`);
+        const ok = await confirm(`"${member.email}"에게 인증 메일을 재발송하시겠습니까?`);
         if (!ok) return;
         try {
             await memberApi.resendVerification(member.id);
-            showAlert('인증 메일이 재발송되었습니다.');
+            await alert('인증 메일이 재발송되었습니다.');
             fetchMembers();
         } catch (error) {
-            showAlert(error?.error || '인증 메일 재발송에 실패했습니다.');
+            await alert(error?.error || '인증 메일 재발송에 실패했습니다.');
         }
     };
 
@@ -111,11 +114,11 @@ function AdminMemberManagement() {
                 grade: editMember.grade,
                 status: editMember.status,
             });
-            showAlert('수정되었습니다.');
+            await alert('수정되었습니다.');
             setEditMember(null);
             fetchMembers();
         } catch (error) {
-            showAlert(error?.error || '수정에 실패했습니다.');
+            await alert(error?.error || '수정에 실패했습니다.');
         }
     };
 
@@ -179,7 +182,7 @@ function AdminMemberManagement() {
                                     return (
                                         <tr key={member.id}>
                                             <td className="admin-col-id">{member.id}</td>
-                                            <td style={{ fontWeight: 500 }}>{member.email}</td>
+                                            <td className="admin-member-email">{member.email}</td>
                                             <td>
                                                 <span className={ROLE_BADGE[member.role] || 'admin-badge admin-badge-neutral'}>
                                                     {member.role}
@@ -195,16 +198,13 @@ function AdminMemberManagement() {
                                                     {member.status}
                                                 </span>
                                             </td>
-                                            <td
-                                                style={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-                                                title={member.domain || ''}
-                                            >
+                                            <td className="admin-member-domain" title={member.domain || ''}>
                                                 {member.domain || '-'}
                                             </td>
-                                            <td className="admin-col-center" style={isLocked ? { color: 'var(--admin-color-danger-on-soft)', fontWeight: 700 } : undefined}>
+                                            <td className={`admin-col-center ${isLocked ? 'admin-member-locked-count' : ''}`}>
                                                 {member.failedLoginAttempts || 0}
                                             </td>
-                                            <td className="admin-col-date" style={isLocked ? { color: 'var(--admin-color-danger-on-soft)' } : undefined}>
+                                            <td className={`admin-col-date ${isLocked ? 'admin-member-locked-date' : ''}`}>
                                                 {member.accountLockedAt ? formatDate(member.accountLockedAt) : '-'}
                                             </td>
                                             <td className="admin-col-date">
@@ -217,7 +217,7 @@ function AdminMemberManagement() {
                                                         className="admin-btn admin-btn-icon admin-btn-info"
                                                         onClick={() => handleResendVerification(member)}
                                                         title="인증 메일 재발송"
-                                                        style={{ marginRight: 4 }}
+                                                        data-action-spacing="true"
                                                     >
                                                         <Mail size={14} />
                                                     </button>
@@ -227,7 +227,7 @@ function AdminMemberManagement() {
                                                         className="admin-btn admin-btn-icon admin-btn-warn"
                                                         onClick={() => handleUnlock(member)}
                                                         title="잠금 해제"
-                                                        style={{ marginRight: 4 }}
+                                                        data-action-spacing="true"
                                                     >
                                                         <Unlock size={14} />
                                                     </button>
@@ -236,7 +236,7 @@ function AdminMemberManagement() {
                                                     className="admin-btn admin-btn-icon"
                                                     onClick={() => setEditMember({ ...member })}
                                                     title="수정"
-                                                    style={{ marginRight: 4 }}
+                                                    data-action-spacing="true"
                                                 >
                                                     <Pencil size={14} />
                                                 </button>
@@ -254,7 +254,7 @@ function AdminMemberManagement() {
                             ) : (
                                 <tr>
                                     <td colSpan="11">
-                                        <div className="admin-empty-state" style={{ border: 'none', padding: '32px 0' }}>
+                                        <div className="admin-empty-state admin-member-empty">
                                             <p className="admin-empty-state-title">검색 결과가 없습니다</p>
                                         </div>
                                     </td>
@@ -265,66 +265,70 @@ function AdminMemberManagement() {
                 </div>
             )}
 
-            {editMember && (
-                <div className="admin-modal-overlay" onClick={() => setEditMember(null)}>
-                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="admin-modal-header">
-                            <h3 className="admin-modal-title">사용자 수정</h3>
-                            <button className="admin-modal-close" onClick={() => setEditMember(null)}>
-                                <X size={18} />
-                            </button>
-                        </div>
-                        <div className="admin-modal-body">
-                            <div className="admin-modal-email-display">{editMember.email}</div>
+            <BaseModal
+                open={Boolean(editMember)}
+                title="사용자 수정"
+                onClose={() => setEditMember(null)}
+                maxWidth="xs"
+                contentClassName="admin-member-edit-content"
+                actions={(
+                    <Stack direction="row" spacing={1}>
+                        <Button variant="outlined" onClick={() => setEditMember(null)}>
+                            취소
+                        </Button>
+                        <Button variant="contained" onClick={handleEditSave}>
+                            저장
+                        </Button>
+                    </Stack>
+                )}
+            >
+                {editMember ? (
+                    <>
+                        <div className="admin-modal-email-display">{editMember.email}</div>
 
-                            <div className="admin-field">
-                                <label className="admin-field-label">권한 (Role)</label>
-                                <select
-                                    className="admin-select"
-                                    value={editMember.role}
-                                    onChange={(e) => setEditMember({ ...editMember, role: e.target.value })}
-                                >
-                                    <option value="USER">USER</option>
-                                    <option value="SYSOP">SYSOP</option>
-                                    <option value="ADMIN">ADMIN</option>
-                                </select>
-                            </div>
-
-                            <div className="admin-field">
-                                <label className="admin-field-label">등급 (Grade)</label>
-                                <select
-                                    className="admin-select"
-                                    value={editMember.grade}
-                                    onChange={(e) => setEditMember({ ...editMember, grade: e.target.value })}
-                                >
-                                    <option value="FREE">FREE</option>
-                                    <option value="PRO">PRO</option>
-                                    <option value="MAX">MAX</option>
-                                    <option value="SPECIAL">SPECIAL (무제한)</option>
-                                </select>
-                            </div>
-
-                            <div className="admin-field">
-                                <label className="admin-field-label">상태 (Status)</label>
-                                <select
-                                    className="admin-select"
-                                    value={editMember.status}
-                                    onChange={(e) => setEditMember({ ...editMember, status: e.target.value })}
-                                >
-                                    <option value="ACTIVE">ACTIVE</option>
-                                    <option value="VERIFYING_EMAIL">VERIFYING_EMAIL</option>
-                                    <option value="WAITING_APPROVAL">WAITING_APPROVAL</option>
-                                    <option value="APPROVED_WAITING_PASSWORD">APPROVED_WAITING_PASSWORD</option>
-                                </select>
-                            </div>
+                        <div className="admin-field">
+                            <label className="admin-field-label">권한 (Role)</label>
+                            <select
+                                className="admin-select"
+                                value={editMember.role}
+                                onChange={(e) => setEditMember({ ...editMember, role: e.target.value })}
+                            >
+                                <option value="USER">USER</option>
+                                <option value="SYSOP">SYSOP</option>
+                                <option value="ADMIN">ADMIN</option>
+                            </select>
                         </div>
-                        <div className="admin-modal-footer">
-                            <button className="admin-btn" onClick={() => setEditMember(null)}>취소</button>
-                            <button className="admin-btn admin-btn-primary" onClick={handleEditSave}>저장</button>
+
+                        <div className="admin-field">
+                            <label className="admin-field-label">등급 (Grade)</label>
+                            <select
+                                className="admin-select"
+                                value={editMember.grade}
+                                onChange={(e) => setEditMember({ ...editMember, grade: e.target.value })}
+                            >
+                                <option value="FREE">FREE</option>
+                                <option value="PRO">PRO</option>
+                                <option value="MAX">MAX</option>
+                                <option value="SPECIAL">SPECIAL (무제한)</option>
+                            </select>
                         </div>
-                    </div>
-                </div>
-            )}
+
+                        <div className="admin-field">
+                            <label className="admin-field-label">상태 (Status)</label>
+                            <select
+                                className="admin-select"
+                                value={editMember.status}
+                                onChange={(e) => setEditMember({ ...editMember, status: e.target.value })}
+                            >
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="VERIFYING_EMAIL">VERIFYING_EMAIL</option>
+                                <option value="WAITING_APPROVAL">WAITING_APPROVAL</option>
+                                <option value="APPROVED_WAITING_PASSWORD">APPROVED_WAITING_PASSWORD</option>
+                            </select>
+                        </div>
+                    </>
+                ) : null}
+            </BaseModal>
         </div>
     );
 }

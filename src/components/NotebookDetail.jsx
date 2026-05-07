@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { Button, Stack } from '@mui/material';
 import { useParams, useNavigate, useLocation, useOutletContext } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm'; // Added import for GFM support (tables)
@@ -8,7 +9,7 @@ import { API_URL } from '../config/api';
 import { documentApi } from '../services/documentApi';
 import { chatApi } from '../services/chatApi';
 import { useAuth } from '../context/AuthContext';
-import { useAlert } from '../context/AlertContext';
+import { useDialog } from '../hooks/useDialog';
 import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, MessageSquare, Network, Book, Plus, Trash2, Search, RefreshCw, Users, Pen, X, Save, Copy, ChevronDown, ChevronRight, FileText, Upload, BookOpen, Database, ExternalLink } from 'lucide-react';
 
 import DocumentSourceItem from './DocumentSourceItem';
@@ -22,6 +23,7 @@ import RenameDialog from './RenameDialog';
 import ReportGenerationModal from './ReportGenerationModal';
 import ReportResultModal from './ReportResultModal';
 import PageHeader from './common/PageHeader';
+import BaseModal from './common/modal/BaseModal';
 
 import './NotebookDetail.css';
 
@@ -56,7 +58,9 @@ function NotebookDetail() {
 
         window.open(`${expBase}/dashboard${qs ? `?${qs}` : ''}`, '_blank');
     };
-    const { showAlert, showConfirm } = useAlert();
+    const { alert, confirm } = useDialog();
+    const showAlert = (message) => { alert(message); };
+    const showConfirm = (message) => confirm(message);
 
     // --- State: Layout & Tabs ---
     const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
@@ -1334,7 +1338,7 @@ function NotebookDetail() {
                                         <span>🔄</span>
                                         <span>동기화 진행 중... ({syncProgress}%)</span>
                                         <div className="sync-progress-track">
-                                            <div className="sync-progress-fill" style={{ width: `${syncProgress}%` }} />
+                                            <progress className="sync-progress-fill" value={syncProgress} max="100" />
                                         </div>
                                     </div>
                                 )}
@@ -1576,26 +1580,12 @@ function NotebookDetail() {
                                                                     <div className="nb-doc-block-head">
                                                                         <span>Chunk #{chunk.chunkIndex}</span>
                                                                         {chunk.pageNumber != null && (
-                                                                            <span style={{
-                                                                                fontSize: '10px',
-                                                                                padding: '1px 6px',
-                                                                                borderRadius: '3px',
-                                                                                marginLeft: '6px',
-                                                                                background: '#e3f2fd',
-                                                                                color: '#1565c0'
-                                                                            }}>
+                                                                            <span className="nb-badge nb-badge-page">
                                                                                 p.{chunk.pageNumber}
                                                                             </span>
                                                                         )}
                                                                         {chunk.ontologyStatus === 'COMPLETED' && (
-                                                                            <span style={{
-                                                                                fontSize: '10px',
-                                                                                padding: '1px 6px',
-                                                                                borderRadius: '3px',
-                                                                                marginLeft: '4px',
-                                                                                background: '#e8f5e9',
-                                                                                color: '#2e7d32'
-                                                                            }}>
+                                                                            <span className="nb-badge nb-badge-ontology">
                                                                                 온톨로지 추출됨
                                                                             </span>
                                                                         )}
@@ -1621,32 +1611,22 @@ function NotebookDetail() {
                                                                 <div className="nb-doc-block-head">
                                                                     <span>Page {page.pageNumber}</span>
                                                                     {page.contentType && page.contentType !== 'TEXT' && (
-                                                                        <span style={{
-                                                                            fontSize: '10px',
-                                                                            padding: '1px 6px',
-                                                                            borderRadius: '3px',
-                                                                            marginLeft: '6px',
-                                                                            background: page.contentType === 'IMAGE' ? '#e8f5e9'
-                                                                                : page.contentType === 'TABLE' ? '#e3f2fd'
-                                                                                : '#f3e5f5',
-                                                                            color: page.contentType === 'IMAGE' ? '#2e7d32'
-                                                                                : page.contentType === 'TABLE' ? '#1565c0'
-                                                                                : '#7b1fa2'
-                                                                        }}>
+                                                                        <span
+                                                                            className={`nb-badge ${
+                                                                                page.contentType === 'IMAGE'
+                                                                                    ? 'nb-badge-type-image'
+                                                                                    : page.contentType === 'TABLE'
+                                                                                        ? 'nb-badge-type-table'
+                                                                                        : 'nb-badge-type-mixed'
+                                                                            }`}
+                                                                        >
                                                                             {page.contentType === 'IMAGE' ? '이미지'
                                                                                 : page.contentType === 'TABLE' ? '표'
                                                                                 : page.contentType === 'MIXED' ? '혼합' : ''}
                                                                         </span>
                                                                     )}
                                                                     {page.layoutZone && page.layoutZone !== 'BODY' && (
-                                                                        <span style={{
-                                                                            fontSize: '10px',
-                                                                            padding: '1px 6px',
-                                                                            borderRadius: '3px',
-                                                                            marginLeft: '4px',
-                                                                            background: '#fff3e0',
-                                                                            color: '#e65100'
-                                                                        }}>
+                                                                        <span className="nb-badge nb-badge-layout-zone">
                                                                             {page.layoutZone === 'HEADER' ? '헤더'
                                                                                 : page.layoutZone === 'FOOTER' ? '푸터' : page.layoutZone}
                                                                         </span>
@@ -1747,18 +1727,10 @@ function NotebookDetail() {
                                     </div>
                                 </div>
                                 {messages.length > 0 && (
-                                    <div style={{
-                                        display: 'flex', justifyContent: 'flex-end',
-                                        padding: '4px 8px', borderBottom: '1px solid #eee'
-                                    }}>
+                                    <div className="chat-clear-row">
                                         <button
                                             onClick={handleClearHistory}
-                                            style={{
-                                                display: 'flex', alignItems: 'center', gap: '4px',
-                                                padding: '4px 10px', fontSize: '12px', color: '#888',
-                                                background: 'none', border: '1px solid #ddd', borderRadius: '4px',
-                                                cursor: 'pointer'
-                                            }}
+                                            className="chat-clear-btn"
                                             title="대화 초기화"
                                         >
                                             <Trash2 size={13} /> 대화 초기화
@@ -1853,14 +1825,11 @@ function NotebookDetail() {
 
                                                 {/* 출처 인용 */}
                                                 {msg.sources && msg.sources.length > 0 && (
-                                                    <div style={{ marginTop: '12px', borderTop: '1px solid #e8e8e8', paddingTop: '10px' }}>
-                                                        <div style={{
-                                                            fontSize: '11px', color: '#888', marginBottom: '6px',
-                                                            display: 'flex', alignItems: 'center', gap: '4px'
-                                                        }}>
+                                                    <div className="chat-sources-wrap">
+                                                        <div className="chat-sources-title">
                                                             <FileText size={12} /> 출처
                                                         </div>
-                                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                        <div className="chat-sources-list">
                                                             {(() => {
                                                                 const seen = new Set();
                                                                 return msg.sources
@@ -1872,15 +1841,9 @@ function NotebookDetail() {
                                                                     })
                                                                     .slice(0, 5)
                                                                     .map((s, i) => (
-                                                                        <span key={i} style={{
-                                                                            padding: '2px 8px',
-                                                                            backgroundColor: s.type === 'RAG' ? '#e8f0fe' : '#fef7e0',
-                                                                            borderRadius: '12px',
-                                                                            fontSize: '11px',
-                                                                            color: s.type === 'RAG' ? '#1967d2' : '#b06000',
-                                                                            cursor: s.documentId ? 'pointer' : 'default',
-                                                                            whiteSpace: 'nowrap'
-                                                                        }}
+                                                                        <span
+                                                                        key={i}
+                                                                        className={`chat-source-chip ${s.type === 'RAG' ? 'is-rag' : 'is-link'} ${s.documentId ? 'is-clickable' : ''}`}
                                                                         title={s.page ? `${s.documentName} - ${s.page}페이지` : (s.documentName || s.label)}
                                                                         onClick={() => {
                                                                             if (s.documentId) {
@@ -1892,7 +1855,8 @@ function NotebookDetail() {
                                                                                     if (s.page) setCurrentPageNum(s.page);
                                                                                 }
                                                                             }
-                                                                        }}>
+                                                                        }}
+                                                                        >
                                                                             {s.type === 'RAG' ? '📄' : '🔗'} {s.documentName || s.label}{s.page ? ` p.${s.page}` : ''}
                                                                         </span>
                                                                     ));
@@ -2120,33 +2084,25 @@ function NotebookDetail() {
                 />
 
                 {/* Chunk(Page) 전체 내용 모달 */}
-                {chunkModalPage && (
-                    <div className="chunk-modal-overlay" onClick={() => setChunkModalPage(null)}>
-                        <div className="chunk-modal" onClick={e => e.stopPropagation()}>
-                            <div className="chunk-modal-header">
-                                <div className="chunk-modal-title">
-                                    <FileText size={16} />
-                                    <span>
-                                        {selectedDocument?.filename}
-                                        {chunkModalPage.__isChunk
-                                            ? ` - Chunk #${chunkModalPage.chunkIndex}${chunkModalPage.pageNumber != null ? ` (p.${chunkModalPage.pageNumber})` : ''}`
-                                            : ` - Page ${chunkModalPage.pageNumber}`}
-                                    </span>
-                                </div>
-                                <button
-                                    className="chunk-modal-close"
-                                    onClick={() => setChunkModalPage(null)}
-                                    aria-label="닫기"
-                                >
-                                    <X size={18} />
-                                </button>
-                            </div>
-                            <div className="chunk-modal-body">
-                                {highlightText(chunkModalPage.content, searchQuery, chunkModalPage.id)}
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <BaseModal
+                    open={Boolean(chunkModalPage)}
+                    title={(
+                        <span className="chunk-modal-title">
+                            <FileText size={16} />
+                            <span>
+                                {selectedDocument?.filename}
+                                {chunkModalPage?.__isChunk
+                                    ? ` - Chunk #${chunkModalPage?.chunkIndex}${chunkModalPage?.pageNumber != null ? ` (p.${chunkModalPage?.pageNumber})` : ''}`
+                                    : ` - Page ${chunkModalPage?.pageNumber}`}
+                            </span>
+                        </span>
+                    )}
+                    onClose={() => setChunkModalPage(null)}
+                    maxWidth="md"
+                    contentClassName="chunk-modal-body"
+                >
+                    {chunkModalPage ? highlightText(chunkModalPage.content, searchQuery, chunkModalPage.id) : null}
+                </BaseModal>
 
 
 
@@ -2180,150 +2136,150 @@ function NotebookDetail() {
                 )}
 
                 {/* BizMeta Modal */}
-                {bizMetaOpen && (
-                    <div className="meta-modal-overlay" onClick={() => setBizMetaOpen(false)}>
-                        <div className="meta-modal-content" onClick={e => e.stopPropagation()}>
-                            <div className="meta-modal-header">
-                                <h3 className="meta-modal-title">비즈니스 용어사전</h3>
-                                <button onClick={() => setBizMetaOpen(false)} className="meta-modal-close-btn">
-                                    <X size={20} />
-                                </button>
-                            </div>
-                            <p className="meta-modal-description">
-                                도메인 용어를 등록하면 AQL 생성 및 채팅 답변 품질이 향상됩니다.<br />
-                                CSV 파일(이름, 설명) 업로드 또는 직접 편집할 수 있습니다.
-                            </p>
-                            <div className="meta-modal-actions">
-                                <input
-                                    ref={bizMetaFileRef}
-                                    type="file"
-                                    accept=".csv"
-                                    className="meta-modal-hidden-input"
-                                    onChange={async (e) => {
-                                        const file = e.target.files?.[0];
-                                        if (!file) return;
-                                        try {
-                                            setBizMetaSaving(true);
-                                            const result = await workspaceApi.uploadBizMeta(id, file);
-                                            setBizMetaText(result.data || '');
-                                            showAlert('CSV 업로드 완료', 'success');
-                                            fetchNotebook();
-                                        } catch (err) {
-                                            showAlert('CSV 파일 업로드에 실패했습니다. 파일 형식을 확인해주세요.', 'error');
-                                        } finally {
-                                            setBizMetaSaving(false);
-                                            e.target.value = '';
-                                        }
-                                    }}
-                                />
-                                <button
-                                    onClick={() => bizMetaFileRef.current?.click()}
-                                    disabled={bizMetaSaving}
-                                    className="meta-modal-btn meta-modal-btn-secondary"
-                                >
-                                    <Upload size={14} /> CSV 업로드
-                                </button>
-                                <button
-                                    onClick={async () => {
-                                        try {
-                                            setBizMetaSaving(true);
-                                            await workspaceApi.saveBizMeta(id, bizMetaText);
-                                            showAlert('용어사전 저장 완료', 'success');
-                                            fetchNotebook();
-                                        } catch (err) {
-                                            showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
-                                        } finally {
-                                            setBizMetaSaving(false);
-                                        }
-                                    }}
-                                    disabled={bizMetaSaving}
-                                    className="meta-modal-btn meta-modal-btn-primary"
-                                >
-                                    <Save size={14} /> 저장
-                                </button>
-                            </div>
-                            <textarea
-                                value={bizMetaText}
-                                onChange={e => setBizMetaText(e.target.value)}
-                                placeholder='[&#10;  {"name":"공통코드","desc":"공통코드 그룹의 분류 안에서 실제 사용할 번호","owner":"홍길동","keyword":"공통코드, 코드"},&#10;  ...&#10;]'
-                                className="meta-modal-textarea"
-                            />
-                        </div>
-                    </div>
-                )}
+                <BaseModal
+                    open={bizMetaOpen}
+                    title="비즈니스 용어사전"
+                    onClose={() => setBizMetaOpen(false)}
+                    maxWidth="md"
+                    contentClassName="meta-modal-content"
+                    actions={(
+                        <Stack direction="row" spacing={1}>
+                            <Button
+                                variant="outlined"
+                                onClick={() => bizMetaFileRef.current?.click()}
+                                disabled={bizMetaSaving}
+                                startIcon={<Upload size={14} />}
+                            >
+                                CSV 업로드
+                            </Button>
+                            <Button
+                                variant="contained"
+                                onClick={async () => {
+                                    try {
+                                        setBizMetaSaving(true);
+                                        await workspaceApi.saveBizMeta(id, bizMetaText);
+                                        showAlert('용어사전 저장 완료', 'success');
+                                        fetchNotebook();
+                                    } catch (err) {
+                                        showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                                    } finally {
+                                        setBizMetaSaving(false);
+                                    }
+                                }}
+                                disabled={bizMetaSaving}
+                                startIcon={<Save size={14} />}
+                            >
+                                저장
+                            </Button>
+                        </Stack>
+                    )}
+                >
+                    <p className="meta-modal-description">
+                        도메인 용어를 등록하면 AQL 생성 및 채팅 답변 품질이 향상됩니다.<br />
+                        CSV 파일(이름, 설명) 업로드 또는 직접 편집할 수 있습니다.
+                    </p>
+                    <input
+                        ref={bizMetaFileRef}
+                        type="file"
+                        accept=".csv"
+                        className="meta-modal-hidden-input"
+                        onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            try {
+                                setBizMetaSaving(true);
+                                const result = await workspaceApi.uploadBizMeta(id, file);
+                                setBizMetaText(result.data || '');
+                                showAlert('CSV 업로드 완료', 'success');
+                                fetchNotebook();
+                            } catch (err) {
+                                showAlert('CSV 파일 업로드에 실패했습니다. 파일 형식을 확인해주세요.', 'error');
+                            } finally {
+                                setBizMetaSaving(false);
+                                e.target.value = '';
+                            }
+                        }}
+                    />
+                    <textarea
+                        value={bizMetaText}
+                        onChange={e => setBizMetaText(e.target.value)}
+                        placeholder='[&#10;  {"name":"공통코드","desc":"공통코드 그룹의 분류 안에서 실제 사용할 번호","owner":"홍길동","keyword":"공통코드, 코드"},&#10;  ...&#10;]'
+                        className="meta-modal-textarea"
+                    />
+                </BaseModal>
 
                 {/* ItMeta Modal */}
-                {itMetaOpen && (
-                    <div className="meta-modal-overlay" onClick={() => setItMetaOpen(false)}>
-                        <div className="meta-modal-content" onClick={e => e.stopPropagation()}>
-                            <div className="meta-modal-header">
-                                <h3 className="meta-modal-title">IT 용어사전 (컬럼 정보)</h3>
-                                <button onClick={() => setItMetaOpen(false)} className="meta-modal-close-btn">
-                                    <X size={20} />
-                                </button>
-                            </div>
-                            <p className="meta-modal-description">
-                                CSV 컬럼명과 의미를 등록하면 컬럼 매핑 및 AQL 생성 품질이 향상됩니다.<br />
-                                CSV 파일(컬럼명, 설명) 업로드 또는 직접 편집할 수 있습니다.
-                            </p>
-                            <div className="meta-modal-actions">
-                                <input
-                                    ref={itMetaFileRef}
-                                    type="file"
-                                    accept=".csv"
-                                    className="meta-modal-hidden-input"
-                                    onChange={async (e) => {
-                                        const file = e.target.files?.[0];
-                                        if (!file) return;
-                                        try {
-                                            setItMetaSaving(true);
-                                            const result = await workspaceApi.uploadItMeta(id, file);
-                                            setItMetaText(result.data || '');
-                                            showAlert('CSV 업로드 완료', 'success');
-                                            fetchNotebook();
-                                        } catch (err) {
-                                            showAlert('CSV 파일 업로드에 실패했습니다. 파일 형식을 확인해주세요.', 'error');
-                                        } finally {
-                                            setItMetaSaving(false);
-                                            e.target.value = '';
-                                        }
-                                    }}
-                                />
-                                <button
-                                    onClick={() => itMetaFileRef.current?.click()}
-                                    disabled={itMetaSaving}
-                                    className="meta-modal-btn meta-modal-btn-secondary"
-                                >
-                                    <Upload size={14} /> CSV 업로드
-                                </button>
-                                <button
-                                    onClick={async () => {
-                                        try {
-                                            setItMetaSaving(true);
-                                            await workspaceApi.saveItMeta(id, itMetaText);
-                                            showAlert('IT 용어사전 저장 완료', 'success');
-                                            fetchNotebook();
-                                        } catch (err) {
-                                            showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
-                                        } finally {
-                                            setItMetaSaving(false);
-                                        }
-                                    }}
-                                    disabled={itMetaSaving}
-                                    className="meta-modal-btn meta-modal-btn-primary"
-                                >
-                                    <Save size={14} /> 저장
-                                </button>
-                            </div>
-                            <textarea
-                                value={itMetaText}
-                                onChange={e => setItMetaText(e.target.value)}
-                                placeholder='[&#10;  {"table_name":"cls_m_code","table_desc":"코드마스터","column_name":"code_group","column_type":"varchar(50)","column_biz_meta":"공통코드그룹"},&#10;  ...&#10;]'
-                                className="meta-modal-textarea"
-                            />
-                        </div>
-                    </div>
-                )}
+                <BaseModal
+                    open={itMetaOpen}
+                    title="IT 용어사전 (컬럼 정보)"
+                    onClose={() => setItMetaOpen(false)}
+                    maxWidth="md"
+                    contentClassName="meta-modal-content"
+                    actions={(
+                        <Stack direction="row" spacing={1}>
+                            <Button
+                                variant="outlined"
+                                onClick={() => itMetaFileRef.current?.click()}
+                                disabled={itMetaSaving}
+                                startIcon={<Upload size={14} />}
+                            >
+                                CSV 업로드
+                            </Button>
+                            <Button
+                                variant="contained"
+                                onClick={async () => {
+                                    try {
+                                        setItMetaSaving(true);
+                                        await workspaceApi.saveItMeta(id, itMetaText);
+                                        showAlert('IT 용어사전 저장 완료', 'success');
+                                        fetchNotebook();
+                                    } catch (err) {
+                                        showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                                    } finally {
+                                        setItMetaSaving(false);
+                                    }
+                                }}
+                                disabled={itMetaSaving}
+                                startIcon={<Save size={14} />}
+                            >
+                                저장
+                            </Button>
+                        </Stack>
+                    )}
+                >
+                    <p className="meta-modal-description">
+                        CSV 컬럼명과 의미를 등록하면 컬럼 매핑 및 AQL 생성 품질이 향상됩니다.<br />
+                        CSV 파일(컬럼명, 설명) 업로드 또는 직접 편집할 수 있습니다.
+                    </p>
+                    <input
+                        ref={itMetaFileRef}
+                        type="file"
+                        accept=".csv"
+                        className="meta-modal-hidden-input"
+                        onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            try {
+                                setItMetaSaving(true);
+                                const result = await workspaceApi.uploadItMeta(id, file);
+                                setItMetaText(result.data || '');
+                                showAlert('CSV 업로드 완료', 'success');
+                                fetchNotebook();
+                            } catch (err) {
+                                showAlert('CSV 파일 업로드에 실패했습니다. 파일 형식을 확인해주세요.', 'error');
+                            } finally {
+                                setItMetaSaving(false);
+                                e.target.value = '';
+                            }
+                        }}
+                    />
+                    <textarea
+                        value={itMetaText}
+                        onChange={e => setItMetaText(e.target.value)}
+                        placeholder='[&#10;  {"table_name":"cls_m_code","table_desc":"코드마스터","column_name":"code_group","column_type":"varchar(50)","column_biz_meta":"공통코드그룹"},&#10;  ...&#10;]'
+                        className="meta-modal-textarea"
+                    />
+                </BaseModal>
 
             </div>
         </>

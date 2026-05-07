@@ -1332,3 +1332,1087 @@
 - **목적**: 제목이 길 경우 카드 내에서 2줄로 넘치던 것을 1줄로 제한하고 말줄임(...) 처리
 - **변경**: `.notebook-title` — `-webkit-line-clamp: 2` 방식 제거, `white-space: nowrap` + `overflow: hidden` + `text-overflow: ellipsis` 1줄 말줄임으로 전환
 - **영향**: `src/App.css` — `.notebook-title`
+
+## 2026-05-08
+
+### 101) 공통 모달 1차 인프라 및 인수인계 문서 초안
+
+- **목적**: 제각각 구성된 팝업/다이얼로그를 공통 규격으로 정리하기 위한 1차 기반(`BaseModal`, `DialogProvider/useDialog`)과 인수인계 문서 확립
+- **영향**: 공통 모달 컴포넌트 및 전역 다이얼로그 API가 준비되어, 이후 팝업을 단계적으로 통일 가능
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss` (신규)
+  - 공통 모달 `Dialog`의 헤더/본문/푸터 간격, 라운드, 타이포를 토큰 기반으로 정의
+- `src/context/DialogContext.module.scss` (신규)
+  - 전역 다이얼로그 본문 문구/입력 스타일의 폰트 및 간격 기준 정의
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/BaseModal.jsx` (신규)
+  - MUI `Dialog` 기반 공통 모달 컴포넌트 추가
+  - `disableBackdropClose`, `disableEscapeKeyDown`, `actions` 등 공통 옵션 제공
+- `src/context/DialogContext.jsx` (신규)
+  - 전역 `alert`, `confirm`, `prompt` Promise API 제공
+  - prompt 검증(`validator`) 및 danger tone 지원
+- `src/hooks/useDialog.js` (신규)
+  - `useDialog` 훅 export 추가
+- `src/main.jsx`
+  - 앱 루트에 `DialogProvider` 연결
+
+#### 문서 변경
+- `docs/modal-architecture.md` (신규)
+  - 1차 아키텍처, 구성 요소, 설계 원칙 정의
+- `docs/modal-spec.md` (신규)
+  - 모달 규격 초안 및 1차 전환 대상 정리
+- `docs/modal-migration-plan.md` (신규)
+  - 단계별 전환 계획, 리스크, 인수인계 체크리스트 정리
+
+### 102) Home 워크스페이스 이름 변경/삭제 다이얼로그 공통화 1차
+
+- **목적**: 워크스페이스 카드 메뉴의 핵심 액션(이름 변경, 삭제 확인)을 신규 공통 모달 인프라(`BaseModal`, `useDialog`)로 먼저 이관
+- **영향**: 이름 변경은 커스텀 오버레이에서 `BaseModal` 기반으로 전환, 삭제 확인은 전역 `confirm` 다이얼로그로 통일
+
+#### CSS 변경
+- `src/pages/Home.css`
+  - 이름 변경 모달 전용 클래스(`.home-rename-modal-body`, `.home-rename-modal-icon`) 추가
+  - 아이콘 크기/간격/타이포를 토큰(`--spacing-*`, `--font-*`) 기반으로 구성
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx`
+  - `useDialog`(`confirm`, `alert`) 및 `BaseModal` 도입
+  - `handleDelete`를 `showConfirm` → `confirm({ tone: 'danger' })`로 전환
+  - 삭제 실패 안내를 공통 `alert`로 전환
+  - 이름 변경 UI를 기존 `.modal-overlay/.modal-content` 마크업에서 `BaseModal + TextField + MUI Button` 구조로 교체
+  - 이름 검증/실패 메시지를 공통 `alert` 흐름으로 전환
+
+### 103) BaseModal 정렬 옵션 추가 + Home 프롬프트 변경 모달 공통화
+
+- **목적**: 모달별로 달랐던 헤더/푸터 정렬을 공통 컴포넌트 옵션으로 통일하고, Home의 `프롬프트 변경` 모달도 `BaseModal` 패턴으로 이관
+- **영향**: 제목은 좌측, 닫기 버튼은 우측으로 일관화되고, 하단 버튼 정렬은 `actionsAlign`으로 화면별 선택 가능
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss`
+  - 푸터 정렬 변형 클래스(`.actionsLeft`, `.actionsCenter`, `.actionsRight`) 추가
+- `src/pages/Home.css`
+  - 프롬프트 모달용 `BaseModal` 연동 클래스(`.home-prompt-modal-content`, `.home-prompt-modal-shell`, `.home-prompt-modal-actions`) 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/BaseModal.jsx`
+  - `actionsAlign` prop 추가(`left`/`center`/`right`, 기본 `right`)
+  - `DialogActions` 정렬 클래스를 옵션 기반으로 바인딩
+- `src/pages/Home.jsx`
+  - 프롬프트 변경 모달을 기존 커스텀 오버레이 구조에서 `BaseModal` 구조로 전환
+  - 푸터 버튼을 `MUI Button` 기반으로 통일(취소/기본값 초기화/저장)
+  - 기본값 초기화 로직을 `handleResetPromptToDefault` 함수로 분리
+
+#### 문서 변경
+- `docs/modal-spec.md`
+  - 헤더 정렬 규칙(제목 좌측, 닫기 우측) 추가
+  - `actionsAlign` 옵션 표준 추가
+- `docs/modal-architecture.md`
+  - `BaseModal` 기능 및 props에 정렬 옵션 설명 보강
+
+### 104) 프롬프트 변경 모달 샘플 디자인 1안(컨펌용) 적용
+
+- **목적**: 전체 전환 전 샘플 1개(`프롬프트 변경`)에서 레이아웃/정렬 규칙을 먼저 확정해 중복 수정 방지
+- **영향**: 헤더는 `제목 좌측 + X 우측`, 푸터 버튼은 `우측 정렬` 기준으로 시각 톤을 정돈하고 입력 필드 그룹화 적용
+
+#### CSS 변경
+- `src/pages/Home.css`
+  - `home-prompt-modal-content` 배경을 공통 라이트 톤으로 정리
+  - `home-prompt-modal-intro`를 좌측 정렬로 변경
+  - `home-prompt-field`를 박스 그룹(테두리/라운드/패딩)으로 변경
+  - 힌트/푸터 노트 색상 및 경계선(`dashed`) 정리
+  - NONE 버튼/필드의 보더·라운드·텍스트 톤을 토큰 기준으로 조정
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx`
+  - `BaseModal`의 `actionsAlign`을 `center` → `right`로 변경해 샘플 기준 정렬 확정
+
+#### 문서 변경
+- `docs/modal-spec.md`
+  - Footer 정렬 규칙을 `기본 우측, 예외만 가운데`로 명시 강화
+
+### 105) 프롬프트 변경 샘플 2차 보정(버튼 그룹/라인 제거/가로 활용)
+
+- **목적**: 샘플 모달에서 실제 피드백(버튼 그룹 분리, 파란 버튼 확장, 라인 제거, 본문 가로 활용)을 즉시 반영해 최종 공통 규격 후보로 고정
+- **영향**: `기본값 초기화`는 좌측, `취소/저장`은 우측으로 분리되고, 저장 버튼은 모달 내 최소 폭 150px을 확보
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss`
+  - 공통 본문 상/하 경계선 제거
+  - 공통 `contained` 버튼 최소 폭 `150px` 적용
+- `src/pages/Home.css`
+  - 프롬프트 모달 푸터 경계선 제거
+  - 액션 영역을 좌/우 그룹(`home-prompt-modal-action-*`)으로 재구성
+  - 콘텐츠 내부 패딩/그리드 폭(`minmax(0, 1fr)`) 조정으로 가로 활용 개선
+  - 인트로/푸터 노트의 좌우 여백 및 경계선 제거
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/BaseModal.jsx`
+  - `DialogContent dividers` 제거로 타이틀/푸터 라인 없는 레이아웃 기본화
+- `src/pages/Home.jsx`
+  - 프롬프트 모달 액션 JSX를 좌/우 그룹 구조로 변경
+  - `actionsAlign`을 `left`로 두고 내부 `space-between` 레이아웃 적용
+
+#### 문서 변경
+- `docs/modal-spec.md`
+  - 버튼 그룹 규칙(좌측 단독 액션 / 우측 주 흐름 액션) 추가
+  - contained 버튼 최소 폭(150px) 규칙 추가
+
+### 106) 프롬프트 모달 푸터 상단 여백 보정(라인 제거 유지)
+
+- **목적**: 푸터 구분선을 제거한 상태에서도 버튼 상단 여백이 하단 여백과 균형을 이루도록 시각 리듬 보정
+- **영향**: 버튼 줄이 콘텐츠에 붙어 보이지 않고, 상하 여백 균형이 맞는 푸터 레이아웃으로 정리
+
+#### CSS 변경
+- `src/pages/Home.css`
+  - `.home-prompt-modal-actions`의 `padding-top`을 `var(--spacing-md)`로 조정
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 107) Home 공유 설정 모달 공통 `BaseModal` 전환
+
+- **목적**: Home 팝업(이름 변경/프롬프트 변경/공유 설정)을 같은 공통 모달 규칙(헤더 좌측 타이틀 + 우측 닫기, 라인 제거, 우측 액션 그룹)으로 통일
+- **영향**: 공유 설정 팝업이 커스텀 오버레이 구조에서 `BaseModal` 구조로 전환되어 버튼 크기/정렬/여백 정책을 공통으로 상속
+
+#### CSS 변경
+- `src/components/ShareSettingsModal.css`
+  - 오버레이/커스텀 헤더/푸터 스타일 제거 및 `BaseModal` 연동 클래스(`share-modal-content`, `share-modal-actions`) 추가
+  - 워크스페이스명 보조 텍스트, 멤버 영역 구분선(`dashed`) 등 본문 스타일만 유지/정리
+  - 인라인 스타일 대체용 `.share-member-date` 클래스 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ShareSettingsModal.jsx`
+  - 루트 마크업을 `BaseModal`로 전환
+  - 푸터 액션을 `MUI Button`(`취소`/`저장`)으로 교체
+  - 기존 커스텀 footer 버튼 제거
+  - 워크스페이스명 문구를 본문 상단 보조 텍스트로 이동
+
+### 108) 작성형 팝업(공지/QnA/FAQ) 공통 모달 패턴 전환
+
+- **목적**: 홈 외 주요 작성형 팝업들도 동일한 모달 규칙(헤더 좌측 타이틀/우측 닫기, 라인 없는 구조, 우측 액션 버튼, 파란 버튼 최소폭)을 적용해 일관성 확보
+- **영향**: Notice/QnA/FAQ 작성 모달이 커스텀 오버레이에서 `BaseModal` 기반 구조로 전환되고, 액션 버튼은 MUI 기반으로 통일
+
+#### CSS 변경
+- `src/components/NoticeCreateModal.css`
+  - 오버레이/컨테이너/헤더/개별 버튼 스타일 제거
+  - `BaseModal` 연동 클래스(`notice-create-modal-content`, `notice-create-modal-actions`) 추가
+  - 폼 내부 패딩을 `0`으로 조정(공통 콘텐츠 패딩 사용)
+- `src/components/QnaCreateModal.css`
+  - 오버레이/컨테이너/헤더/개별 버튼 스타일 제거
+  - `qna-create-modal-content`, `qna-create-modal-actions` 추가
+  - 폼 내부 패딩 `0`으로 조정
+- `src/components/FaqCreateModal.css`
+  - 오버레이/컨테이너/헤더/개별 버튼 스타일 제거
+  - `faq-modal-content`, `faq-modal-actions` 추가
+  - 폼 내부 패딩 `0`으로 조정
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/NoticeCreateModal.jsx`
+  - 모달 루트를 `BaseModal`로 변경
+  - 푸터 액션을 `MUI Button` + `form` submit 연결 방식으로 변경
+  - 기존 바깥 클릭/ESC 직접 처리 로직 및 커스텀 헤더 제거
+- `src/components/QnaCreateModal.jsx`
+  - `BaseModal` 기반으로 전환
+  - 액션 버튼을 `MUI Button`으로 교체 및 `form` submit 연결
+  - 기존 오버레이 이벤트/헤더 제거
+- `src/components/FaqCreateModal.jsx`
+  - `BaseModal` 기반으로 전환
+  - 액션 버튼을 `MUI Button`으로 교체 및 `form` submit 연결
+  - 기존 오버레이 이벤트/헤더 제거
+
+### 109) 이름 변경 모달 본문 `+` 아이콘 제거
+
+- **목적**: 워크스페이스 이름 변경은 입력 중심 동작이므로 본문 `+` 아이콘을 제거해 의미 없는 시각 요소 축소
+- **영향**: 이름 변경 모달 본문이 입력 필드 중심으로 단순화되어 의도 전달이 명확해짐
+
+#### CSS 변경
+- `src/pages/Home.css`
+  - `.home-rename-modal-icon` 스타일 블록 제거
+  - `.home-rename-modal-body` 간격을 입력 중심 레이아웃에 맞게 조정
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx`
+  - 이름 변경 모달 본문의 `+` 아이콘 마크업 제거
+
+### 110) 공통 모달 콘텐츠 최소 높이 + 팝업 인라인 스타일 클래스화
+
+- **목적**: 모달 본문 최소 높이를 공통으로 보장하고, 유지보수성을 위해 팝업 영역 인라인 스타일을 클래스 기반으로 정리
+- **영향**: 모든 `BaseModal` 기반 팝업의 콘텐츠 최소 높이가 `150px`로 통일되며, 파일 입력/아이콘/입력행 위치 스타일이 CSS로 이관됨
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss`
+  - `.content`에 `min-height: 150px` 추가
+- `src/components/ShareSettingsModal.css`
+  - 라디오 라벨 아이콘 정렬 클래스(`.share-label-icon`) 추가
+  - 멤버 입력행의 `position: relative`를 클래스화
+- `src/components/NoticeCreateModal.css`
+  - 숨김 파일 입력 클래스(`.notice-hidden-file-input`) 추가
+- `src/components/QnaCreateModal.css`
+  - 숨김 파일 입력 클래스(`.qna-hidden-file-input`) 추가
+- `src/components/FaqCreateModal.css`
+  - 숨김 파일 입력 클래스(`.faq-hidden-file-input`) 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ShareSettingsModal.jsx`
+  - 라디오 아이콘의 인라인 style 제거, 클래스 적용
+  - 멤버 입력행 인라인 style 제거
+- `src/components/NoticeCreateModal.jsx`
+  - 파일 input 인라인 `display:none` 제거, 클래스 적용
+- `src/components/QnaCreateModal.jsx`
+  - 파일 input 인라인 `display:none` 제거, 클래스 적용
+- `src/components/FaqCreateModal.jsx`
+  - 파일 input 인라인 `display:none` 제거, 클래스 적용
+
+### 111) 헤더/푸터 완전 공통화 + 헤더 인라인 보조타이틀 도입
+
+- **목적**: 인수인계 시 예외를 줄이기 위해 헤더/푸터 스타일을 모달별 커스터마이징 없이 공통 `BaseModal` 규칙으로 통일
+- **영향**: `공유 설정`, `프롬프트 변경` 모두 동일한 헤더/푸터 톤으로 맞춰지고, 워크스페이스 정보는 헤더 보조타이틀로 이동해 본문 높이를 확보
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss`
+  - 헤더 패딩/푸터 패딩을 공통값으로 통일
+  - 헤더 타이틀 행(`.titleRow`)과 보조타이틀(`.subtitle`) 스타일 추가
+  - 보조타이틀 앞 구분자(`.titleDivider`) 스타일 추가
+- `src/pages/Home.css`
+  - 프롬프트 모달의 헤더/푸터 배경 오버라이드 제거
+  - 본문 상단 인트로 스타일 블록 제거(헤더 보조타이틀로 대체)
+- `src/components/ShareSettingsModal.css`
+  - 본문 워크스페이스명 스타일 제거(헤더 보조타이틀로 대체)
+  - 푸터 상단 패딩 오버라이드 완화(공통 규칙 우선)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/BaseModal.jsx`
+  - `subtitle` prop 추가
+  - 헤더 렌더를 `title | subtitle` 인라인 구조로 확장
+- `src/pages/Home.jsx`
+  - `프롬프트 변경` 모달에 `subtitle="워크스페이스 - ..."` 적용
+  - 본문 상단 워크스페이스 텍스트 제거
+- `src/components/ShareSettingsModal.jsx`
+  - `공유 설정` 모달에 `subtitle="워크스페이스 - ..."` 적용
+  - 본문 상단 워크스페이스 텍스트 제거
+
+### 112) Confirm 다이얼로그 전용 정렬 규칙 적용
+
+- **목적**: 확인창은 일반 모달과 구분해 중앙 집중형 레이아웃(타이틀/본문/버튼 중앙)으로 통일하고, 닫기(X) 제거 및 버튼 색상은 일반 모달과 동일(primary)로 정렬
+- **영향**: 삭제 확인 포함 `confirm` 계열 다이얼로그가 공통적으로 `센터 타이틀 + 센터 버튼 + 본문 중앙 정렬` 구조로 동작
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss`
+  - `header` 중앙 정렬 변형(`.headerCenter`) 추가
+  - 타이틀 행 중앙 정렬 변형(`.titleRowCenter`) 추가
+- `src/context/DialogContext.module.scss`
+  - confirm 본문 중앙 정렬 클래스(`.confirmContent`) 추가
+  - confirm 메시지 정렬 클래스(`.confirmMessage`) 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/context/DialogContext.jsx`
+  - confirm 타입일 때 `showCloseButton=false`, `headerAlign='center'`, `actionsAlign='center'` 적용
+  - confirm 본문에 중앙 정렬 클래스 주입
+  - confirm 버튼 컬러를 danger 분기 없이 `primary`로 통일
+
+### 113) 일반 모달 푸터 상단 여백 재보정
+
+- **목적**: 일부 모달에서 푸터 상단 여백 오버라이드(`0`)로 인해 콘텐츠와 버튼이 붙어 보이던 시각 문제 해소
+- **영향**: 일반 모달의 푸터가 공통 여백 규칙(`var(--spacing-md)`)을 유지해 콘텐츠와 버튼 간 시각적 간격이 안정화
+
+#### CSS 변경
+- `src/pages/Home.css`
+  - `.home-prompt-modal-actions` `padding-top`을 `var(--spacing-md)`로 복구
+- `src/components/ShareSettingsModal.css`
+  - `.share-modal-actions` `padding-top`을 `var(--spacing-md)`로 복구
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 114) 워크스페이스 상세 팝업 3종 `BaseModal` 공통 프레임 전환
+
+- **목적**: `NoticeDetail`, `QnaDetail`, `FaqDetail` 팝업의 헤더/닫기/오버레이 구현을 개별 커스텀에서 제거하고 `BaseModal` 공통 프레임으로 통일
+- **영향**: 상세 팝업들도 일반 모달 규칙(좌측 타이틀/우측 X, 공통 헤더·푸터 스타일)을 동일하게 적용하며, confirm 동작은 `useDialog` 기반으로 일관화
+
+#### CSS 변경
+- `src/components/NoticeDetailModal.css`
+  - 커스텀 오버레이/컨테이너/헤더 스타일 제거
+  - `BaseModal` 콘텐츠 래퍼 클래스(`.notice-detail-modal-content`) 추가
+  - 본문 높이/스크롤을 공통 프레임 기준으로 재설정
+- `src/components/QnaDetailModal.css`
+  - 커스텀 오버레이/컨테이너/헤더 스타일 제거
+  - `BaseModal` 콘텐츠 래퍼 클래스(`.qna-detail-modal-content`) 추가
+  - 숨김 파일 인풋 인라인 스타일을 클래스(`.qna-detail-hidden-file-input`)로 전환
+- `src/components/FaqDetailModal.css`
+  - 커스텀 오버레이/컨테이너/헤더 스타일 제거
+  - `BaseModal` 콘텐츠 래퍼 클래스(`.faq-detail-modal-content`) 추가
+  - 본문 높이/스크롤을 공통 프레임 기준으로 재설정
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/NoticeDetailModal.jsx`
+  - 루트 구조를 커스텀 마크업에서 `BaseModal`로 전환
+  - 삭제 confirm 호출을 `useAlert.showConfirm`에서 `useDialog.confirm`으로 전환
+  - 바깥클릭/ESC/`body overflow` 수동 제어 로직 제거
+- `src/components/QnaDetailModal.jsx`
+  - 루트 구조를 `BaseModal`로 전환
+  - 답변/질문 삭제 confirm 호출을 `useDialog.confirm`으로 전환
+  - 파일 인풋 인라인 `style` 제거 및 클래스 연결
+  - 바깥클릭/ESC/`body overflow` 수동 제어 로직 제거
+- `src/components/FaqDetailModal.jsx`
+  - 루트 구조를 `BaseModal`로 전환
+  - 삭제 confirm 호출을 `useDialog.confirm`으로 전환
+  - 바깥클릭/ESC/`body overflow` 수동 제어 로직 제거
+
+### 115) 워크스페이스 Report 팝업 3종 공통 모달 규격 정렬
+
+- **목적**: `ReportResult`, `ReportCreation`, `ReportGeneration`의 레거시 오버레이/헤더 구조를 `BaseModal` 공통 프레임으로 통일해 예외 케이스 축소
+- **영향**: 보고서/페르소나 관련 팝업도 일반 모달 공통 규칙(헤더/푸터/닫기 동작, 버튼 규칙)을 동일하게 상속
+
+#### CSS 변경
+- `src/components/ReportResultModal.css`
+  - 커스텀 컨테이너/푸터 스타일 제거
+  - `BaseModal` 콘텐츠 래퍼(`.report-result-modal-content`) 및 바디(`.report-result-modal-body`) 클래스 추가
+- `src/components/ReportCreationModal.css`
+  - `BaseModal` 콘텐츠/바디 래퍼(`.report-creation-modal-content`, `.report-creation-modal-body`) 추가
+  - 생성 버튼 레거시 스타일 제거 후 MUI 버튼 기준으로 정리
+- `src/components/ReportGenerationModal.css`
+  - 커스텀 오버레이/컨테이너/헤더 공통 스타일 제거
+  - 리스트/편집 뷰 전용 바디 클래스 및 스크롤 스타일로 재구성
+  - 기존 인라인 스타일 대체 클래스(`.persona-default-name`, `.persona-readonly-textarea`, `.persona-delete-btn` 등) 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ReportResultModal.jsx`
+  - 루트 구조를 `BaseModal`로 전환
+  - 상태별 닫기 허용(`COMPLETED`/`FAILED`)에 맞춰 `showCloseButton`, backdrop/ESC 제어를 공통 prop으로 이관
+  - 푸터 버튼을 MUI `Button` 기반 액션 슬롯으로 전환
+- `src/components/ReportCreationModal.jsx`
+  - 루트 구조를 `BaseModal`로 전환
+  - 바깥클릭/ESC/`body overflow` 수동 처리 제거
+  - 생성 액션을 MUI `Button`으로 전환
+- `src/components/ReportGenerationModal.jsx`
+  - 리스트/편집 뷰 모두 `BaseModal` 구조로 전환
+  - 바깥클릭/ESC/`body overflow` 수동 처리 제거
+  - `window.confirm` 삭제 확인을 `useDialog.confirm`으로 전환
+  - 인라인 스타일 구간을 CSS 클래스 기반으로 치환
+
+### 116) 어드민 관리형 팝업(`DB/스케줄/업그레이드`) 공통 프레임 정렬
+
+- **목적**: 어드민 영역의 레거시 팝업(커스텀 오버레이/헤더/푸터)을 `BaseModal` 기준으로 통일해 공통 규칙 예외를 축소
+- **영향**: `DbConnection`, `ScheduledImport`, `Upgrade` 팝업이 공통 헤더/푸터/닫기 정책과 MUI 버튼 규칙을 동일하게 상속
+
+#### CSS 변경
+- `src/components/DbConnectionModal.css`
+  - 커스텀 오버레이/헤더/푸터 스타일 제거 후 `BaseModal` 콘텐츠 클래스(`.db-modal-content`)로 전환
+  - Step2 레이아웃/선택 상태/노트 등 인라인 대체 클래스(`.db-step2-layout`, `.db-selected-count`, `.db-import-result-note`) 추가
+- `src/components/ScheduledImportModal.css`
+  - 커스텀 오버레이/헤더/푸터 스타일 제거 후 `BaseModal` 연동 클래스(`.sched-modal-content`, `.sched-modal-actions`)로 전환
+  - 카드 헤더/메타/오류/폼 영역의 인라인 대체 클래스(`.sched-config-header-right`, `.sched-config-meta`, `.sched-form-panel` 등) 추가
+- `src/components/UpgradeModal.css`
+  - `BaseModal` 기준 콘텐츠 폭/높이/스크롤로 재정렬
+  - 폼/파일 업로드/동의 영역 인라인 대체 클래스(`.upgrade-form`, `.upgrade-file-dropzone`, `.upgrade-consent-label` 등) 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/DbConnectionModal.jsx`
+  - 루트 구조를 `BaseModal`로 전환
+  - 바깥클릭/ESC/`body overflow` 수동 처리 제거
+  - 삭제 확인을 `useAlert.showConfirm`에서 `useDialog.confirm`으로 전환
+  - 하단 액션을 MUI `Button` 기반으로 전환
+- `src/components/ScheduledImportModal.jsx`
+  - 루트 구조를 `BaseModal`로 전환
+  - 삭제 확인을 `useDialog.confirm`으로 전환
+  - 푸터 액션을 `BaseModal actions` + MUI `Button`으로 정리
+  - 다수 인라인 스타일을 클래스 기반으로 치환
+- `src/components/UpgradeModal.jsx`
+  - 루트 구조를 `BaseModal`로 전환
+  - 플랜/신청 폼 영역 인라인 스타일 다수를 클래스 기반으로 치환
+  - 폼 하단 액션을 MUI `Button`으로 정리
+
+### 117) 공통 dim 블러 통일 + confirm 시각 톤 보정
+
+- **목적**: 팝업 배경 dim의 블러 강도를 공통으로 고정하고, confirm 다이얼로그의 텍스트/버튼 스타일을 공지 알림 톤에 맞춰 일관성 강화
+- **영향**: 모든 `BaseModal` 기반 팝업에서 dim 아래 본문이 동일한 블러로 표시되며, confirm은 더 명확한 메시지 타이포와 라운드 버튼 형태로 통일
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss`
+  - MUI Dialog 백드롭 클래스(`.backdrop`) 추가
+  - `background-color: rgba(0, 0, 0, 0.5)` + `backdrop-filter: blur(2px)` 공통 적용
+- `src/context/DialogContext.module.scss`
+  - confirm 메시지 타이포 상향(`font-size: var(--font-size-md)`, `font-weight: var(--font-weight-medium)`)
+  - confirm 액션 버튼 라운드/크기/패딩 전용 스타일(`.confirmActions`) 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/BaseModal.jsx`
+  - `Dialog`에 `BackdropProps` 연결하여 공통 백드롭 스타일 적용
+- `src/context/DialogContext.jsx`
+  - confirm 타입일 때 `actionsClassName`으로 전용 버튼 스타일 클래스 주입
+
+### 118) 승인 관리(AdminUpgradeRequests) 확인/거절 흐름 공통화
+
+- **목적**: 승인 관리 화면의 인라인 스타일과 커스텀 거절 팝업을 정리하고, 승인/알림 흐름을 공통 다이얼로그(`useDialog`, `BaseModal`) 기준으로 통일
+- **영향**: 승인/거절 UX가 다른 모달과 동일한 dim/블러/버튼 규칙을 따르며, 유지보수 시 화면별 예외가 감소
+
+#### CSS 변경
+- `src/pages/admin/AdminUpgradeRequests.css` (신규)
+  - 테이블/상태배지/액션 버튼/거절 모달 본문 설명 스타일 분리
+  - 기존 JSX 인라인 스타일 대체 클래스 정의
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminUpgradeRequests.jsx`
+  - `useAlert` 기반 승인 확인/알림을 `useDialog`(`confirm`, `alert`)로 전환
+  - 거절 사유 입력 팝업을 커스텀 오버레이에서 `BaseModal` + MUI(`Button`, `TextField`, `Typography`) 구조로 변경
+  - 승인 관리 테이블의 인라인 스타일 제거 및 클래스 기반 렌더링으로 정리
+
+### 119) 사용자/워크스페이스 관리 화면 알림 흐름 및 인라인 스타일 정리
+
+- **목적**: 어드민 주요 목록 화면(`AdminMemberManagement`, `AdminWorkspaceManagement`)의 확인/알림 흐름을 공통 `useDialog`로 맞추고, 남아있던 인라인 스타일을 클래스 기반으로 치환
+- **영향**: 삭제/잠금해제/인증재발송/워크스페이스 삭제 등의 confirm/alert 동작이 공통 다이얼로그 규칙을 따르며, 화면별 스타일 유지보수성이 향상
+
+#### CSS 변경
+- `src/pages/admin/AdminMemberManagement.css` (신규)
+  - 이메일 강조/도메인 ellipsis/잠금 상태 강조/액션 간격/빈 상태 여백 스타일 분리
+- `src/pages/admin/AdminWorkspaceManagement.css` (신규)
+  - 테이블 래퍼/헤더/행/공유 배지/아이콘 버튼/빈 상태 스타일 분리
+  - 프롬프트 태그 활성색을 `data-tone` 기반 클래스로 매핑해 인라인 색상 스타일 제거
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminMemberManagement.jsx`
+  - `useAlert` -> `useDialog`(`alert`, `confirm`) 전환
+  - 액션/상태 셀의 인라인 스타일을 클래스 기반으로 정리
+- `src/pages/admin/AdminWorkspaceManagement.jsx`
+  - `useAlert` -> `useDialog`(`alert`, `confirm`) 전환
+  - 로딩/테이블/배지/버튼/빈 상태 인라인 스타일 제거
+  - 프롬프트 태그 색상 표현을 `data-tone` 속성 기반으로 변경
+
+### 120) 시멘틱 관리 페이지 confirm/alert 공통 다이얼로그 통일
+
+- **목적**: 어드민 시멘틱 관리군(`Category/Object/Relation/Action/Options`)의 확인/알림 흐름을 `useAlert`에서 `useDialog`로 일원화
+- **영향**: 삭제/저장/가져오기/오류 알림이 모두 동일한 공통 confirm/alert UX를 사용해 화면 간 체감 일관성이 향상
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminSemanticCategoryPage.jsx`
+  - `useAlert` -> `useDialog` 전환 및 `showAlert/showConfirm` 호출을 `alert/confirm`으로 변경
+- `src/pages/admin/AdminSemanticObjectPage.jsx`
+  - `useAlert` -> `useDialog` 전환 및 관련 알림/확인 호출 변경
+- `src/pages/admin/AdminSemanticRelationPage.jsx`
+  - `useAlert` -> `useDialog` 전환 및 관련 알림/확인 호출 변경
+- `src/pages/admin/AdminSemanticActionPage.jsx`
+  - `useAlert` -> `useDialog` 전환 및 관련 알림/확인 호출 변경
+- `src/pages/admin/SemanticOptionsEditor.jsx`
+  - `useAlert` -> `useDialog` 전환
+  - 불러오기/저장/리셋 확인 흐름을 `alert/confirm` 호출로 통일
+
+### 121) 일반 컴포넌트 잔여 confirm/alert 통일 (Domain/Dictionary/ColumnMapping)
+
+- **목적**: 어드민 외 주요 작업 화면에서 남아 있던 `useAlert` 및 `window.confirm` 호출을 공통 `useDialog` 기반으로 정리
+- **영향**: 도메인 삭제, 사전 항목 편집/이동/삭제, 컬럼 매핑 재처리/템플릿 덮어쓰기/삭제 확인까지 동일 confirm/alert UI를 사용
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/DomainManagement.jsx`
+  - `useAlert` -> `useDialog` 전환
+  - 도메인 삭제 확인/실패 알림을 `confirm/alert`로 통일
+- `src/components/DictionaryView.jsx`
+  - `useAlert` -> `useDialog` 전환
+  - 유의어 추가/삭제 실패, 사전 저장/삭제/이동 실패 알림 및 삭제 확인을 `alert/confirm`으로 통일
+- `src/components/ColumnMappingModal.jsx`
+  - `window.confirm` 4개 지점을 `useDialog.confirm`으로 전환
+  - 재처리, 템플릿 덮어쓰기 확인, 템플릿 삭제 확인 흐름을 공통 다이얼로그로 통일
+
+### 122) 그래프/노트북 영역 공통 다이얼로그 전환 (KnowledgeMap/Graph/Notebook)
+
+- **목적**: 사용 빈도가 높은 그래프/노트북 화면의 알림·확인 UX를 공통 `useDialog` 체계로 맞춰 모달 일관성 강화
+- **영향**: 그래프 검색/확장/경로찾기 및 노트북 상세 작업에서 표시되는 알림·확인창이 동일한 공통 스타일/동작을 사용
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/KnowledgeMapView.jsx`
+  - `useAlert` -> `useDialog` 전환
+  - 그래프 로딩/검색/경로찾기 관련 알림 호출을 `alert`로 통일
+- `src/components/KnowledgeGraphModal.jsx`
+  - `useAlert` -> `useDialog` 전환
+  - 그래프 로딩/확장/검색 관련 알림 호출을 `alert`로 통일
+- `src/components/NotebookDetail.jsx`
+  - `useAlert` -> `useDialog` 전환
+  - 기존 `showAlert/showConfirm` 호출부는 유지하고, `useDialog` 기반 어댑터(`showAlert`, `showConfirm`)를 주입해 안전하게 호환 전환
+
+### 123) 일반 컴포넌트 추가 전환 (AddSource/Prompt/InterTable/Aggregation)
+
+- **목적**: 잔여 `useAlert` 의존 컴포넌트를 단계적으로 `useDialog`로 전환해 공통 모달/알림 체계 일원화
+- **영향**: 소스 업로드/프롬프트 관리/테이블 관계 분석/집계 전략 화면의 알림이 공통 다이얼로그 스타일로 일치
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/AddSourceModal.jsx`
+  - `useAlert` -> `useDialog` 전환, 기존 `showAlert` 호출은 어댑터로 호환 유지
+- `src/components/PromptManagement.jsx`
+  - `useAlert` -> `useDialog` 전환, `showAlert` 호출부 호환 유지
+- `src/components/InterTableAnalysisModal.jsx`
+  - `useAlert` -> `useDialog` 전환, `showAlert` 호출부 호환 유지
+- `src/components/AggregationStrategyModal.jsx`
+  - `useAlert` -> `useDialog` 전환, `showAlert` 호출부 호환 유지
+
+### 124) AlertContext 브릿지화로 잔여 `useAlert` 전역 공통화
+
+- **목적**: 아직 `useAlert` API를 사용하는 화면까지 한 번에 공통 모달 체계를 적용하기 위해 `AlertContext`를 `useDialog` 브릿지로 전환
+- **영향**: `useAlert.showAlert/showConfirm` 호출 화면도 내부적으로 `DialogProvider`의 공통 `alert/confirm` UI를 사용
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/context/AlertContext.jsx`
+  - `showAlert`를 `useDialog.alert` 위임 방식으로 변경
+  - `showConfirm`를 `useDialog.confirm` 위임 방식으로 변경
+  - 기존 `onConfirm` 콜백 옵션(예: 세션 만료 후 라우팅) 호환 유지
+- 전역 확인 결과
+  - `src/` 내 `window.confirm` 사용 0건으로 정리
+
+### 125) 알림(alert) 디자인을 confirm 구도로 통일
+
+- **목적**: 알림 팝업을 confirm과 동일한 중심 정렬 구조(타이틀/본문/버튼)로 맞추고, 닫기(X) 제거 및 라운드 버튼 규칙을 전 팝업 액션 영역에 일괄 적용
+- **영향**: alert/confirm 모두 `custom-alert-container` 톤에 가까운 동일 시각 구조를 사용하며, 팝업 하단 버튼이 전부 pill 형태로 일관
+
+#### CSS 변경
+- `src/context/DialogContext.module.scss`
+  - decision(alert/confirm) 메시지 타이포를 상향(`font-size: var(--font-size-lg)`)
+  - decision 액션 버튼 최소폭/패딩/폰트 크기 보정으로 커스텀 알림 버튼 비율에 맞춤
+- `src/components/common/modal/BaseModal.module.scss`
+  - 팝업 액션 영역의 모든 MUI 버튼(`.MuiButton-root`)에 `border-radius: 999px` 공통 적용
+
+#### JSX/JS 변경 (예외 기록)
+- `src/context/DialogContext.jsx`
+  - alert를 confirm과 같은 decision 그룹으로 취급
+  - alert/confirm 공통으로 `showCloseButton=false`, `headerAlign='center'`, `actionsAlign='center'` 적용
+  - alert/confirm 공통 콘텐츠/액션 클래스 적용으로 동일 레이아웃 보장
+
+### 126) 클래스 네이밍 단순화 및 DevTools 식별성 개선
+
+- **목적**: 보이는 영역 기준의 빠른 유지보수를 위해 클래스 의미를 단순화하고, 브라우저 DevTools에서 공통 모달 구조를 즉시 식별할 수 있도록 고정 클래스명 추가
+- **영향**: alert/confirm 관련 스타일 클래스가 역할 중심 이름으로 통일되고, MUI 해시 클래스와 별개로 `km-*` 고정 클래스 기준 디버깅 가능
+
+#### CSS 변경
+- `src/context/DialogContext.module.scss`
+  - `confirmContent`/`confirmMessage`/`confirmActions`를 `decisionContent`/`decisionMessage`/`decisionActions`로 리네이밍
+
+#### JSX/JS 변경 (예외 기록)
+- `src/context/DialogContext.jsx`
+  - 리네이밍된 decision 클래스 참조로 교체
+- `src/components/common/modal/BaseModal.jsx`
+  - 주요 슬롯에 DevTools 식별용 고정 클래스 추가
+    - `km-base-modal-paper`
+    - `km-base-modal-backdrop`
+    - `km-base-modal-header`
+    - `km-base-modal-title-row`
+    - `km-base-modal-content`
+    - `km-base-modal-content-inner`
+    - `km-base-modal-actions`
+
+### 127) 로그인 영역 비밀번호 찾기 팝업 공통 모달로 정리
+
+- **목적**: 인라인 스타일/개별 오버레이 방식으로 남아 있던 비밀번호 찾기 팝업을 공통 `BaseModal` 체계로 통일해 유지보수성과 일관성을 확보
+- **영향**: 로그인 화면의 비밀번호 찾기 팝업도 전역 모달 규칙(헤더/콘텐츠/푸터 구조, 공통 dim/backdrop, 버튼 라운드)과 동일하게 동작
+
+#### CSS 변경
+- `src/components/ForgotPasswordModal.module.scss` (신규)
+  - 설명 문구/폼 영역 스타일을 모듈로 분리
+  - `content` 최소높이를 `auto`로 조정해 단순 입력 팝업 밀도 최적화
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ForgotPasswordModal.jsx`
+  - 커스텀 오버레이 DOM을 제거하고 `BaseModal`로 교체
+  - 인라인 스타일 제거 후 MUI `Typography`, `TextField`, `Button`, `Stack` 기반으로 구성
+  - 액션 버튼을 `form` submit 연결 방식으로 정리하여 푸터 공통 버튼 레이아웃 유지
+
+### 128) 로그인 페이지 인라인 스타일 제거 및 클래스 정리
+
+- **목적**: 로그인 화면의 보이는 영역 유지보수를 쉽게 하기 위해 남아 있던 인라인 스타일을 클래스 기반으로 치환
+- **영향**: 로고 영역/숨김 타이틀/에러 박스 내 비밀번호 찾기 버튼/회원가입 링크 스타일을 CSS 파일에서 일괄 관리 가능
+
+#### CSS 변경
+- `src/pages/Login.css`
+  - `login-logo-wrap`, `login-logo-img`, `login-hidden-title`, `error-reset-btn`, `login-signup-link` 클래스 추가
+  - 간격/라운드는 토큰(`var(--spacing-lg)`, `var(--spacing-sm)`, `var(--radius-sm)`) 기반으로 정리
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Login.jsx`
+  - 로고 래퍼/이미지, 숨김 제목, 잠금 에러 버튼, 회원가입 링크의 인라인 스타일을 클래스 참조로 교체
+
+### 129) 로그인 CSS 토큰화 및 불필요 모달 스타일 제거
+
+- **목적**: 로그인 화면의 유지보수성을 높이기 위해 간격·타이포·라운드 값을 디자인 토큰으로 통일하고, 이미 `BaseModal`로 대체된 레거시 모달 스타일을 정리
+- **영향**: 로그인 화면 스타일 변경 시 토큰 기준으로 일괄 조정이 가능해졌고, 미사용 `.modal-*` 규칙 제거로 CSS 혼선 감소
+
+#### CSS 변경
+- `src/pages/Login.css`
+  - `h1`, 폼 라벨/입력, 버튼, 푸터, 체크박스 라벨 영역의 rem/px 값을 `--spacing-*`, `--font-size-*`, `--font-weight-*`, `--radius-*` 토큰으로 치환
+  - `options-group` 간격을 12px로 정리
+  - `ForgotPasswordModal` 레거시 `.modal-overlay`, `.modal-content` 계열 스타일 블록 제거
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 130) 어드민 도메인 선택의 "도메인 추가" 팝업 공통 모달 전환
+
+- **목적**: `어드민센터 > 도메인 선택 > 도메인 추가` 팝업에 남아 있던 대량 인라인 스타일을 제거하고 공통 `BaseModal` 구조로 통일
+- **영향**: 도메인 추가 팝업이 전역 모달 룰(백드롭/헤더/푸터/버튼 라운드/액션 정렬)을 그대로 사용해 다른 팝업과 일관된 UX 제공
+
+#### CSS 변경
+- `src/pages/DomainSelection.css`
+  - `domain-redirecting`, `domain-radio-cell`, `domain-radio-input` 추가로 인라인 스타일 제거
+  - 도메인 추가 모달용 `domain-add-modal-content`, `domain-add-form`, `domain-add-help`, `domain-add-error` 클래스 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/DomainSelection.jsx`
+  - 커스텀 오버레이 div 기반 모달을 제거하고 `BaseModal`로 교체
+  - 모달 입력 UI를 MUI `TextField`, `Typography`, `Button`, `Stack`으로 구성
+  - 닫기 동작을 `closeAddModal`로 통일해 에러 상태 초기화까지 함께 처리
+
+### 131) 시스템 설정 관리 도움말 팝업 공통 모달 전환
+
+- **목적**: `어드민센터 > 시스템 설정 관리`의 도움말 팝업(카테고리/항목 설명)에 남아 있던 인라인 오버레이 모달을 공통 `BaseModal` 체계로 통일
+- **영향**: 도움말 팝업도 전역 모달 규칙(백드롭/헤더/콘텐츠/푸터 버튼)을 따르게 되어 모달 UX와 유지보수 포인트가 일관화됨
+
+#### CSS 변경
+- `src/pages/admin/admin-common.css`
+  - 도움말 팝업 콘텐츠 전용 클래스(`admin-config-help-*`) 추가
+  - 본문 요약/리스트/코드 블록/설명 박스 레이아웃을 인라인 스타일 없이 클래스 기반으로 정리
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminConfigManagement.jsx`
+  - 커스텀 `position: fixed` 오버레이 마크업을 제거하고 `BaseModal`로 교체
+  - 타이틀 아이콘/본문/닫기 액션을 공통 모달 props + 클래스 조합으로 재구성
+
+### 132) 사용자 관리 "사용자 수정" 팝업 공통 모달 전환
+
+- **목적**: `어드민센터 > 사용자 관리`의 사용자 수정 팝업을 레거시 `admin-modal-*` 오버레이 구조에서 공통 `BaseModal` 구조로 통일
+- **영향**: 사용자 수정 팝업도 전역 모달 헤더/콘텐츠/푸터 규칙 및 공통 버튼 스타일을 사용해 팝업 UX가 일관화됨
+
+#### CSS 변경
+- `src/pages/admin/AdminMemberManagement.css`
+  - `admin-member-edit-content` 클래스 추가로 수정 팝업 콘텐츠 최소 높이 최적화
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminMemberManagement.jsx`
+  - `editMember` 조건 렌더링 블록을 `BaseModal` 기반으로 교체
+  - 액션 버튼을 MUI `Button` + `Stack`으로 구성(취소/저장)
+
+### 133) 시멘틱 관리 4종 편집 팝업 공통 모달 전환
+
+- **목적**: `어드민센터 > 시멘틱(카테고리/객체/관계/액션)` 화면의 편집/추가 팝업을 레거시 `admin-modal-*` 오버레이 구조에서 공통 `BaseModal` 구조로 일괄 통일
+- **영향**: 시멘틱 관리 전 구간에서 팝업 레이아웃/백드롭/버튼 스타일이 동일한 공통 규칙으로 동작
+
+#### CSS 변경
+- `src/pages/admin/admin-common.css`
+  - `admin-semantic-edit-content` 클래스 추가(시멘틱 편집 모달 콘텐츠 최소 높이 최적화)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminSemanticCategoryPage.jsx`
+  - 카테고리 추가/수정 팝업을 `BaseModal` + MUI `Button/Stack`으로 교체
+- `src/pages/admin/AdminSemanticObjectPage.jsx`
+  - Object 추가/수정 팝업을 `BaseModal` + MUI `Button/Stack`으로 교체
+- `src/pages/admin/AdminSemanticRelationPage.jsx`
+  - 관계 추가/수정 팝업을 `BaseModal` + MUI `Button/Stack`으로 교체
+- `src/pages/admin/AdminSemanticActionPage.jsx`
+  - Action 추가/수정 팝업을 `BaseModal` + MUI `Button/Stack`으로 교체
+
+### 134) DictionaryView 편집/이동 팝업 공통 모달 전환
+
+- **목적**: 사전 화면(`DictionaryView`)의 편집/이동 팝업에서 레거시 오버레이 마크업을 제거하고 공통 `BaseModal`로 통일
+- **영향**: 사전 화면 팝업도 전역 모달 백드롭/헤더/푸터 규칙을 사용하게 되어 다른 화면과 동작/디자인 일관성 확보
+
+#### CSS 변경
+- `src/components/DictionaryView.css`
+  - `dictionary-modal-content` 클래스 추가(사전 팝업 콘텐츠 최소 높이 최적화)
+  - 편집 폼 하단 여백을 공통 모달 푸터 간격과 맞도록 정리
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/DictionaryView.jsx`
+  - `isEditModalOpen` 편집 팝업을 `BaseModal` + MUI `Button/Stack`으로 교체
+  - `isMoveModalOpen` 이동(병합) 팝업을 `BaseModal` + MUI `Button/Stack`으로 교체
+
+### 135) NotebookDetail chunk/meta 팝업 공통 모달 전환
+
+- **목적**: `NotebookDetail`의 chunk 전체보기 및 용어사전(meta) 팝업에서 레거시 오버레이 마크업을 제거하고 공통 `BaseModal` 구조로 통일
+- **영향**: 노트북 상세 화면의 주요 팝업도 전역 모달 백드롭/헤더/푸터 규칙을 사용해 다른 화면과 동일한 팝업 UX를 제공
+
+#### CSS 변경
+- `src/components/NotebookDetail.css`
+  - `meta-modal-content`를 공통 모달 콘텐츠 컨테이너 기준으로 정리(레이아웃/간격 중심)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/NotebookDetail.jsx`
+  - chunk(Page) 전체 내용 팝업을 `BaseModal`로 교체
+  - 비즈니스 용어사전(BizMeta) 팝업을 `BaseModal` + MUI `Button/Stack`으로 교체
+  - IT 용어사전(ItMeta) 팝업을 `BaseModal` + MUI `Button/Stack`으로 교체
+
+### 136) 시멘틱 관리 4개 페이지 인라인 스타일 공통 클래스화(1차)
+
+- **목적**: 시멘틱 관리 화면(`Category/Object/Relation/Action`)에 남아 있던 반복 인라인 스타일을 공통 CSS 클래스로 치환해 유지보수 난이도를 낮춤
+- **영향**: 액션 버튼 그룹, 숨김 파일 input, sticky 헤더, 빈 상태, 보조 텍스트, 삭제 버튼 간격 등 공통 UI 패턴을 `admin-common.css` 한 곳에서 제어 가능
+
+#### CSS 변경
+- `src/pages/admin/admin-common.css`
+  - 공통 유틸 클래스 추가
+    - `admin-inline-actions`, `admin-hidden-file-input`
+    - `admin-sticky-head`, `admin-col-id-narrow`
+    - `admin-empty-state-compact`, `admin-empty-state-default`
+    - `admin-col-strong`, `admin-text-secondary`, `admin-text-tertiary`
+    - `admin-action-gap-left`
+    - `admin-semantic-search-row`, `admin-semantic-search-icon`, `admin-semantic-search-input`, `admin-semantic-table-wrap`
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminSemanticCategoryPage.jsx`
+  - 검색행/테이블/업로드 input/빈상태/삭제버튼 간격 인라인 스타일을 공통 클래스로 치환
+- `src/pages/admin/AdminSemanticObjectPage.jsx`
+  - 액션 그룹/업로드 input/테이블 헤더/빈상태/열 텍스트/삭제버튼 간격 인라인 스타일 치환
+- `src/pages/admin/AdminSemanticRelationPage.jsx`
+  - Object 페이지와 동일 패턴 인라인 스타일 치환
+- `src/pages/admin/AdminSemanticActionPage.jsx`
+  - Object 페이지와 동일 패턴 인라인 스타일 치환
+
+### 137) 시멘틱 관리 인라인 스타일 공통 클래스화(2차)
+
+- **목적**: 1차 이후 남아 있던 시멘틱 페이지 레이아웃/테이블 인라인 스타일을 추가로 정리하여, 동적 계산값을 제외한 정적 스타일을 최대한 CSS로 이관
+- **영향**: 좌우 분할 레이아웃/패널 헤더/테이블 래퍼/트리 셀 표현의 공통 규칙이 `admin-common.css`로 모여 화면별 수정 편차 감소
+
+#### CSS 변경
+- `src/pages/admin/admin-common.css`
+  - 시멘틱 분할 레이아웃 관련 클래스 추가
+    - `admin-semantic-split-layout`, `admin-semantic-left-panel`, `admin-semantic-right-panel`
+    - `admin-semantic-panel-head`, `admin-semantic-panel-title`, `admin-semantic-panel-head-actions`
+  - 트리/텍스트 셀 클래스 추가
+    - `admin-row-clickable`, `admin-semantic-name-cell`, `admin-semantic-name-ko-cell`
+    - `admin-semantic-tree-toggle`, `admin-semantic-tree-toggle--active`, `admin-semantic-tree-toggle--inactive`
+    - `admin-code-mono`
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminSemanticObjectPage.jsx`
+  - 좌우 분할/패널 헤더/우측 테이블 래퍼 인라인 스타일을 공통 클래스 참조로 치환
+- `src/pages/admin/AdminSemanticRelationPage.jsx`
+  - Object 페이지와 동일 패턴으로 인라인 스타일 치환
+- `src/pages/admin/AdminSemanticActionPage.jsx`
+  - Object 페이지와 동일 패턴으로 인라인 스타일 치환
+- `src/pages/admin/AdminSemanticCategoryPage.jsx`
+  - 행 cursor, 트리 토글 스타일, 이름/한글명/코드/설명 셀의 정적 인라인 스타일을 공통 클래스로 치환
+  - depth 및 collapsed 상태에 따른 계산값(`paddingLeft`, `maxWidth`, `whiteSpace`)만 인라인으로 유지
+
+### 138) Dictionary/Notebook 본문 인라인 스타일 공통 클래스화
+
+- **목적**: 팝업 전환 이후 남아 있던 `DictionaryView`, `NotebookDetail` 본문 영역의 인라인 스타일을 CSS 클래스로 이전해 유지보수성 개선
+- **영향**: 검색 자동완성, 테이블 컬럼 폭/텍스트 표현, 유의어 편집 UI, 채팅 출처 칩/초기화 버튼, 문서 뱃지 표현을 CSS 기준으로 일관 관리 가능
+
+#### CSS 변경
+- `src/components/DictionaryView.css`
+  - 자동완성 드롭다운/항목/카테고리 배지 클래스 추가
+  - 테이블 컬럼 폭/텍스트 스타일 클래스(`dict-col-*`, `dict-text-*`) 추가
+  - 유의어 편집/이동 모달 내부 UI 클래스(`dict-synonym-*`, `dict-move-*`, `dict-candidate-*`) 추가
+  - 로딩 스피너를 스타일 태그 인라인 방식에서 클래스(`dict-loading-spinner`)로 치환
+- `src/components/NotebookDetail.css`
+  - 문서 뷰어 뱃지 클래스(`nb-badge*`) 추가
+  - 채팅 초기화/출처 영역 클래스(`chat-clear-*`, `chat-sources-*`, `chat-source-chip`) 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/DictionaryView.jsx`
+  - 자동완성 드롭다운, 테이블 헤더/본문 셀, 유의어 편집/이동 블록의 인라인 스타일을 클래스 참조로 치환
+- `src/components/NotebookDetail.jsx`
+  - chunk/page 상태 뱃지, 채팅 초기화 행, 출처 표시 칩의 인라인 스타일을 클래스 참조로 치환
+
+### 139) NotebookDetail JSX 문법 오류(Unexpected token) 긴급 수정
+
+- **목적**: `NotebookDetail.jsx` 빌드 시 발생한 `Unexpected token` 오류를 즉시 복구해 화면 진입/개발 서버 실행이 가능하도록 수정
+- **영향**: 채팅 출처 칩 렌더링 구간에서 JSX 파서 오류가 해소되어 런타임 컴파일 실패가 제거됨
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/NotebookDetail.jsx`
+  - 출처 칩 `<span>`의 `onClick` 핸들러 종료 구문 누락(`}}`)을 보완하여 JSX 태그 문법 정상화
+
+### 140) DictionaryView 잔여 인라인 스타일 0건 정리
+
+- **목적**: `DictionaryView`에 마지막으로 남아 있던 단일 인라인 스타일(`카테고리 ':' 구분자`)을 클래스 기반으로 치환해 파일 내 인라인 스타일 0건 달성
+- **영향**: 사전 화면 카테고리 구분자 스타일도 CSS에서 일괄 관리 가능해져 유지보수 포인트 단순화
+
+#### CSS 변경
+- `src/components/DictionaryView.css`
+  - `dictionary-category-separator` 클래스 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/DictionaryView.jsx`
+  - `renderCategory()` 내부 `:` 구분자 인라인 스타일을 `dictionary-category-separator` 클래스로 교체
+
+### 141) NotebookDetail 잔여 인라인 스타일 0건 정리
+
+- **목적**: `NotebookDetail.jsx`에 마지막으로 남아 있던 동기화 진행바 width 인라인 스타일을 제거해 파일 내 인라인 스타일 0건 달성
+- **영향**: 동기화 진행 UI가 인라인 스타일 없이도 동일하게 동작하며, 스타일 정의가 CSS로 일원화됨
+
+#### CSS 변경
+- `src/components/NotebookDetail.css`
+  - `sync-progress-fill`을 `progress` 요소 기준으로 스타일링
+  - WebKit/Firefox progress value 스타일(`::-webkit-progress-value`, `::-moz-progress-bar`) 추가
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/NotebookDetail.jsx`
+  - 동기화 진행바를 `div` width 인라인 방식에서 `<progress value={syncProgress} max="100" />` 방식으로 전환
+
+### 142) 프롬프트 생성/수정 다이얼로그 공통 BaseModal 전환
+
+- **목적**: `새 프롬프트 생성`, `프롬프트 정보 수정` 팝업이 개별 MUI `Dialog` 스타일로 표시되던 문제를 해결하고 공통 모달 규칙(백드롭/헤더/푸터/버튼)으로 통일
+- **영향**: 프롬프트 관리 화면 팝업도 기존 공통 팝업 디자인 기준(dim/blur, 헤더 구조, 버튼 라운드)을 동일하게 적용
+
+#### CSS 변경
+- `src/prompt/components/prompts/PromptDialogs.css` (신규)
+  - `prompt-form-modal-content` 클래스 추가(프롬프트 팝업 콘텐츠 최소 높이 최적화)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/prompt/components/prompts/PromptFormDialog.jsx`
+  - MUI `Dialog`/`DialogTitle`/`DialogContent`/`DialogActions` 구조를 `BaseModal` 구조로 교체
+  - 외부 클릭/ESC 닫기 방지 옵션을 `BaseModal` props로 이관
+- `src/prompt/components/prompts/EditPromptDialog.jsx`
+  - MUI `Dialog` 기반 구조를 `BaseModal` 구조로 교체
+  - 기존 저장/취소 액션을 공통 모달 액션 영역으로 이관
+
+### 143) 프롬프트 팝업 취소 버튼 스타일 회귀 수정
+
+- **목적**: `BaseModal` 전환 후 프롬프트 팝업 취소 버튼이 텍스트형으로 보여 기존 공통 취소 버튼 톤(외곽선형)과 달라진 회귀를 수정
+- **영향**: 프롬프트 생성/수정 팝업의 `취소` 버튼이 공통 모달 버튼 룰(outlined + 라운드)로 다시 일치
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/prompt/components/prompts/PromptFormDialog.jsx`
+  - 하단 `취소` 버튼을 `variant="outlined"`로 변경
+- `src/prompt/components/prompts/EditPromptDialog.jsx`
+  - 하단 `취소` 버튼을 `variant="outlined"`로 변경
+
+### 144) 공통 모달 여백 확대(타이틀/본문/푸터 2배)
+
+- **목적**: 공통 팝업의 타이틀/본문/푸터 여백이 촘촘해 답답해 보이던 이슈를 해소하기 위해, 공통 모달 내부 패딩을 기존 대비 2배로 확대
+- **영향**: `BaseModal`을 사용하는 전체 팝업에서 헤더/콘텐츠/푸터 여백이 더 넓어져 시각적 밀도가 완화되고 읽기성이 개선
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss`
+  - `header` 패딩: `var(--spacing-md)` → `var(--spacing-xl)`
+  - `content` 패딩: `var(--spacing-md)` → `var(--spacing-xl)`
+  - `actions` 패딩: `var(--spacing-md)` → `var(--spacing-xl)`
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 145) 공통 모달 여백 24px로 재조정 + 스크롤 트랙 라인 정리
+
+- **목적**: 공통 모달 여백 32px가 과하다는 피드백을 반영해 24px로 완화하고, 콘텐츠 스크롤 주변에 보이던 세로 라인 노이즈를 제거
+- **영향**: 팝업 밀도는 이전보다 여유를 유지하면서도 과도한 여백이 줄어들고, 스크롤 영역 시각 노이즈가 감소
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss`
+  - `header/content/actions` 패딩: `var(--spacing-xl)` → `var(--spacing-lg)`
+  - `.content` 스크롤바 트랙 배경을 투명 처리하고, thumb 스타일을 별도로 지정해 스크롤 좌측 라인 노출 최소화
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 146) `AddSourceModal` 공통 팝업 룰 시각 정렬(여백/딤/스크롤 라인)
+
+- **목적**: `새 워크스페이스 추가/노트북 상세 > 소스 추가` 팝업이 공통 팝업 룰과 다르게 보이던 문제(여백, dim, 스크롤 라인 노이즈)를 빠르게 정렬
+- **영향**: 소스 추가 팝업도 공통 팝업과 유사한 밀도(24px)·딤/블러·스크롤 트랙 표현을 사용해 이질감 감소
+
+#### CSS 변경
+- `src/components/AddSourceModal.css`
+  - 오버레이 dim을 `rgba(0,0,0,0.5)`로 조정하고 `backdrop-filter: blur(2px)` 추가
+  - 모달 컨테이너 라운드/그림자/보더를 공통 토큰 톤에 맞게 보정
+  - `modal-header`/`modal-body` 패딩을 `var(--spacing-lg)`(24px)로 통일
+  - `modal-body` 스크롤 트랙을 투명화하고 thumb 스타일을 별도 지정해 좌측 라인 노이즈 완화
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 147) `AddSourceModal` 하단 액션 영역(취소/저장) 추가
+
+- **목적**: 공통 팝업 포맷에 맞춰 `소스 추가` 메인 팝업에도 하단 버튼 영역을 명시적으로 제공
+- **영향**: `소스 추가` 팝업이 다른 폼형 모달과 동일하게 `취소/저장` 액션 행을 가지며 시각적 일관성 강화
+
+#### CSS 변경
+- `src/components/AddSourceModal.css`
+  - `modal-footer`, `modal-footer-actions`, `modal-footer-btn*` 클래스 추가
+  - 버튼을 pill 라운드/최소폭 150px 규칙으로 구성
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/AddSourceModal.jsx`
+  - 메인 뷰(`renderMainView`) 하단에 `취소`/`저장` 버튼 영역 추가
+
+### 148) `AddSourceModal` 공통 `BaseModal` 완전 전환(기능 유지)
+
+- **목적**: `소스 추가` 팝업의 임시 개별 CSS 보정 방식에서 벗어나 공통 `BaseModal` 규칙을 직접 상속하도록 구조를 일원화
+- **영향**: 헤더/푸터/딤/블러/버튼 스타일이 공통 모달과 동일한 기준으로 렌더링되어 유지보수성이 향상되고, 서브뷰 전환/ESC 처리 동작은 기존 흐름을 유지
+
+#### CSS 변경
+- `src/components/AddSourceModal.css`
+  - 기존 오버레이/컨테이너 카드 스타일 의존을 제거하고 `BaseModal` 콘텐츠 영역 기준으로 정리
+  - `add-source-modal-content`, `subview-title-row`, `subview-title` 클래스 추가
+  - 더 이상 사용하지 않는 `modal-footer*` 커스텀 버튼 스타일 제거(공통 액션 버튼 규칙 사용)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/AddSourceModal.jsx`
+  - 루트 렌더를 커스텀 오버레이 구조에서 `BaseModal` 컴포넌트 기반으로 교체
+  - 메인 뷰 하단 액션을 `BaseModal`의 `actions` 슬롯(`취소` outlined, `저장` contained)으로 이관
+  - ESC/서브뷰 뒤로가기 동작을 유지하기 위해 `disableEscapeKeyDown` + 기존 키 핸들러 조합 유지
+  - 서브뷰(`website/text/csv`) 상단 뒤로가기 행을 콘텐츠 내부 공통 구조로 정리
+
+### 149) `소스 추가` 메인 뷰 중복 패딩 제거
+
+- **목적**: `BaseModal` 공통 본문 패딩(24px)과 `AddSourceModal` 내부 본문 패딩이 중복되어 빈 공간이 과도하게 보이던 이슈를 해소
+- **영향**: 메인 뷰 카드 영역이 컨테이너를 더 넓게 사용하고, 상하/좌우 여백이 공통 모달 기준으로 자연스럽게 정리
+
+#### CSS 변경
+- `src/components/AddSourceModal.css`
+  - `.modal-body.main-view`에 `padding: 0` 적용으로 메인 뷰 내부 중복 패딩 제거
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 150) 전역 폰트 기준 정합화(`Pretendard` 우선, MUI 포함)
+
+- **목적**: 전역 CSS는 `Pretendard`를 사용하지만 MUI 기본 타이포그래피가 별도 테마 없이 동작해 일부 화면에서 `Roboto`가 노출될 수 있는 상태를 해소
+- **영향**: MUI `Typography`/`Button`/`TextField` 등 컴포넌트 기본 폰트가 앱 전반에서 `Pretendard` 우선 스택으로 일관 적용
+
+#### CSS 변경
+- `src/components/UpgradeModal.css`
+  - `font-family` 스택에서 `Roboto`를 제거하고 공통 `Pretendard` 우선 스택으로 정리
+
+#### JSX/JS 변경 (예외 기록)
+- `src/main.jsx`
+  - 전역 `ThemeProvider(createTheme)` 도입 및 `typography.fontFamily`를 `Pretendard` 우선 스택으로 지정
+  - `CssBaseline` 적용으로 MUI 컴포넌트 기본 타이포그래피를 전역 기준과 정합
+
+### 151) 알림 계열(`alert/confirm`) 헤더·푸터 세로 여백 축소
+
+- **목적**: 알림 팝업에서 헤더/푸터 세로 여백이 과하다는 피드백을 반영해, 본문 24px은 유지하고 헤더·푸터는 한쪽 방향만 24px로 조정
+- **영향**: `alert/confirm` 팝업에서 상단·하단 공백이 줄어들고 본문 가용 높이가 늘어나며, 일반 모달 레이아웃은 기존과 동일하게 유지
+
+#### CSS 변경
+- `src/context/DialogContext.module.scss`
+  - `decisionHeader` 추가: `padding-top: var(--spacing-lg)`, `padding-bottom: 0`
+  - `decisionActions` 조정: `padding-top: 0`, `padding-bottom: var(--spacing-lg)`
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/BaseModal.jsx`
+  - `headerClassName` prop 추가(모달별 헤더 패딩 커스터마이징 지원)
+- `src/context/DialogContext.jsx`
+  - `alert/confirm` 렌더 시 `headerClassName={styles.decisionHeader}` 적용
+
+### 152) `confirm` 취소 버튼 회색 pill 스타일 정합
+
+- **목적**: 알림/컨펌 계열에서 `취소` 버튼이 파란 외곽선으로 보이던 이질감을 제거하고, 요구된 회색 pill 버튼 톤으로 통일
+- **영향**: `confirm` 다이얼로그의 `취소` 버튼이 회색 채움형으로 렌더링되어 `확인` 버튼과 짝을 이루는 시각 규칙이 안정화
+
+#### CSS 변경
+- `src/context/DialogContext.module.scss`
+  - `decisionCancelButton` 및 hover 상태 색상 추가(회색 채움형)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/context/DialogContext.jsx`
+  - 결정형 다이얼로그에서 `취소` 버튼 variant를 `contained`로 전환하고 `decisionCancelButton` 클래스를 조건부 적용
+
+### 153) 알림/컨펌 액션 버튼 가로폭 100px 고정
+
+- **목적**: 알림/컨펌 하단 버튼 폭을 균일하게 맞춰 시각 리듬을 단순화
+- **영향**: `alert/confirm`의 `취소/확인` 버튼이 동일한 100px 고정 폭으로 표시되어 정렬감이 향상
+
+#### CSS 변경
+- `src/context/DialogContext.module.scss`
+  - `decisionActions .MuiButton-root`를 `min-width/width/max-width: 100px`으로 고정
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 154) 알림/컨펌 팝업 폭 488px + 타이틀 `xl` 상향
+
+- **목적**: 결정형 팝업(`alert/confirm`)의 시각 밀도를 맞추기 위해 최대폭을 축소하고 제목 위계를 한 단계 강화
+- **영향**: `alert/confirm`은 `max-width: 488px`로 표시되고, 타이틀은 `lg`에서 `xl`로 커져 가독성이 개선
+
+#### CSS 변경
+- `src/context/DialogContext.module.scss`
+  - `decisionPaper` 추가(`max-width: 488px`)
+  - `decisionTitle` 추가(`font-size: var(--font-size-xl)`)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/BaseModal.jsx`
+  - 모달별 paper/title 커스터마이징을 위한 `paperClassName`, `titleClassName` prop 추가
+- `src/context/DialogContext.jsx`
+  - `alert/confirm` 렌더 시 `paperClassName={styles.decisionPaper}`, `titleClassName={styles.decisionTitle}` 적용
+
+### 155) 이용서비스 팝업 분리(요금제 정보 보존 + 신청 폼 분리)
+
+- **목적**: `이용서비스`에서 보이는 요금제 카드 디자인/정보를 dev 기준 그대로 유지하면서, 신청 폼 전환으로 인한 정보 유실 인상을 없애기 위해 별도 팝업으로 분리
+- **영향**: 상단 `이용 서비스` 클릭 시 요금제 전용 팝업이 먼저 열리고, Pro/Max 신청 버튼 클릭 시 신청 폼 팝업이 별도로 열려 콘텐츠 가시성과 흐름이 안정화
+
+#### CSS 변경
+- 없음(기존 `src/components/UpgradeModal.css` 스타일 재사용)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ServicePlanModal.jsx` (신규)
+  - 요금제 카드 전용 팝업 컴포넌트 분리
+  - 기존 `UpgradeModal`의 계획(Free/Pro/Max) 렌더 구조와 상태 표시/문구/제약 로직(`hasPendingRequest`, `gradeLimits`) 유지
+- `src/components/UpgradeModal.jsx`
+  - `view` 기반 다중 화면 구조를 제거하고 신청 폼 전용 팝업으로 역할 분리
+  - `targetType` prop(`PRO_UPGRADE`/`MAX_CONSULTATION`) 기반 제목/설명/업로드 필드 조건 렌더 유지
+- `src/components/common/MainLayout.jsx`
+  - `이용 서비스` 버튼을 요금제 전용 팝업 오픈으로 변경
+  - 요금제 팝업에서 업그레이드 요청 타입을 전달받아 신청 폼 팝업을 후속 오픈하도록 연결
+
+### 156) 요금제 팝업(dev 디자인 정합) 헤더/폭/호버 보정
+
+- **목적**: 분리 후 요금제 팝업이 dev 화면과 다르게 보이던 간격·헤더 톤·호버 체감 차이를 줄이고, 카드 호버 효과를 명시적으로 보장
+- **영향**: 요금제 팝업은 dev와 유사한 헤더 밀도/폭으로 표시되며 Pro/Max 카드에서 마우스 호버 시 보더/버튼 톤 변화가 안정적으로 반영
+
+#### CSS 변경
+- `src/components/UpgradeModal.css`
+  - 요금제 팝업 전용 클래스(`service-plan-modal-paper`, `service-plan-modal-header`, `service-plan-modal-title`, `service-plan-modal-content`) 추가
+  - `:has()` 의존 보더 호버 규칙을 제거하고 `.plan-card.interactive:hover`로 대체해 호버 동작 안정화
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ServicePlanModal.jsx`
+  - `BaseModal`에 요금제 전용 `paper/header/title/content` 클래스 연결
+  - Pro/Max 카드에 `interactive` 클래스 부여(hover 대상 명시)
+
+### 157) 이용서비스 모달 연결 dev 단일 구조로 복귀
+
+- **목적**: `UpgradeModal` 원본(dev) 덮어쓰기 이후 `MainLayout`이 분리형 모달 연결을 유지해 동작/디자인이 어긋나는 문제를 해소
+- **영향**: 우측 상단 `이용 서비스` 클릭 시 dev 원본 단일 `UpgradeModal`이 직접 열리며, 요금제→신청 전환/호버 동작이 한 컴포넌트 안에서 원래 흐름대로 동작
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/MainLayout.jsx`
+  - `ServicePlanModal` import/상태/렌더 제거
+  - `이용 서비스` 클릭 핸들러를 `setUpgradeModalOpen(true)`로 복귀
+  - `UpgradeModal`에 전달하던 분리형 props(`targetType`) 제거
+- `src/components/ServicePlanModal.jsx`
+  - 분리형 요금제 전용 모달 파일 제거(미사용 정리)
+
+### 158) 요금제 `Free` 카드 녹색 하이라이트 제거 + `_old` 임시 파일 정리
+
+- **목적**: 원본 스타일 대비 `Free` 카드 hover/기본 상태에서 연녹색이 보이던 이질감을 제거하고, 작업 완료된 임시 백업 파일을 정리
+- **영향**: `Free` 카드는 기본/hover 모두 중립 톤(화이트/그레이 보더)으로 표시되며, 프로젝트 내 혼동 가능한 `_old` 레이아웃 파일이 제거됨
+
+#### CSS 변경
+- `src/components/UpgradeModal.css`
+  - `.plan-card.current-plan`을 녹색 스타일에서 중립 스타일로 변경
+  - `.plan-card.current-plan:hover`를 추가해 hover 시에도 녹색이 재노출되지 않도록 고정
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+#### 기타 파일 정리
+- `src/components/common/MainLayout_old.jsx` 삭제
+- `src/components/common/MainLayout_old.css` 삭제

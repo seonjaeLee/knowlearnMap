@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   Button,
   Box,
   Typography,
   Select,
   MenuItem,
-  IconButton,
-  Divider,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
+import BaseModal from '../../../components/common/modal/BaseModal';
+import './PromptDialogs.css';
 
 const securityLevels = [
   { value: 'TEMP', label: '임시', color: '#9e9e9e' },
@@ -49,29 +44,28 @@ const EditPromptDialog = ({ open, prompt, categories, purposes, onClose, onSave,
   };
 
   return (
-    <Dialog
+    <BaseModal
       open={open}
+      title="프롬프트 정보 수정"
       onClose={onClose}
       maxWidth="sm"
-      fullWidth
-      PaperProps={{ sx: { borderRadius: 2 } }}
-    >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            프롬프트 정보 수정
-          </Typography>
-          <IconButton
-            onClick={onClose}
-            size="small"
-            sx={{ color: 'text.secondary' }}
+      contentClassName="prompt-form-modal-content"
+      actions={(
+        <>
+          <Button variant="outlined" onClick={onClose} sx={{ color: 'text.secondary' }}>
+            취소
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSave}
+            disabled={!formData.name || isUpdating}
           >
-            <CloseIcon />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-      <Divider />
-      <DialogContent sx={{ pt: 3 }}>
+            {isUpdating ? '저장 중...' : '저장'}
+          </Button>
+        </>
+      )}
+    >
+      <Box sx={{ pt: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
           {/* 코드 (읽기 전용) */}
           <Box>
@@ -175,21 +169,8 @@ const EditPromptDialog = ({ open, prompt, categories, purposes, onClose, onSave,
             />
           </Box>
         </Box>
-      </DialogContent>
-      <Divider />
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} sx={{ color: 'text.secondary' }}>
-          취소
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          disabled={!formData.name || isUpdating}
-        >
-          {isUpdating ? '저장 중...' : '저장'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </BaseModal>
   );
 };
 
