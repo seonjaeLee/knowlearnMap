@@ -1344,3 +1344,19 @@
 - Git Remote
   - `origin` URL: `https://github.com/seonjaeLee/knowlearns.git` → `https://github.com/seonjaeLee/knowlearnMap.git`
   - `git push --dry-run` 결과 `Everything up-to-date`로 푸시 경로 정상 확인
+
+### 102) 메뉴 연동용 사용자 가이드 라우트 추가
+
+- **목적**: 앱 메뉴의 `사용 가이드` 항목이 열 수 있는 고정 경로를 제공하고, 설치 안내(`README`)와 사용자 조작 안내(`user-guide`)를 분리
+- **영향**: `/user-guide` 경로에서 `docs/user-guide.md` 내용을 앱 화면으로 확인 가능
+
+#### CSS 변경
+- `src/pages/UserGuide.css` (신규)
+  - 사용자 가이드 페이지 컨테이너, 문서 본문 카드, 헤딩/리스트/코드 블록 스타일 정의
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/UserGuide.jsx` (신규)
+  - `ReactMarkdown`으로 `docs/user-guide.md`를 렌더링하는 페이지 추가
+  - 상단 `PageHeader`(`고객센터 > 사용 가이드`) 적용
+- `src/App.jsx`
+  - 라우트 추가: `/user-guide`

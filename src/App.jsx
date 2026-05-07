@@ -22,6 +22,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Faq = lazy(() => import('./pages/Faq'));
 const QnaBoard = lazy(() => import('./pages/QnaBoard'));
 const NoticeList = lazy(() => import('./pages/NoticeList'));
+const UserGuide = lazy(() => import('./pages/UserGuide'));
 
 function PageFallback() {
   return (
@@ -80,6 +81,7 @@ function App() {
                 <Route path="/notices" element={<NoticeList />} />
                 <Route path="/faq" element={<Faq />} />
                 <Route path="/qna" element={<QnaBoard />} />
+                <Route path="/user-guide" element={<UserGuide />} />
               </Route>
             </Route>
           </Routes>
