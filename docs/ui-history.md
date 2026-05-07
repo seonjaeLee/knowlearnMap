@@ -2416,3 +2416,15 @@
 #### 기타 파일 정리
 - `src/components/common/MainLayout_old.jsx` 삭제
 - `src/components/common/MainLayout_old.css` 삭제
+
+### 159) ReportGenerationModal textarea 중복 `className` 제거(esbuild 경고 해소)
+
+- **목적**: 동일 JSX 요소에 `className`이 두 번 선언되어 Vite/esbuild가 `Duplicate "className" attribute in JSX element` 경고를 내는 문제를 제거
+- **영향**: 로컬·원격 동일 코드에서는 빌드/개발 로그 경고가 사라지며, 스타일 적용은 기존과 동일(`기초값`일 때 `persona-readonly-textarea` 유지)
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ReportGenerationModal.jsx`
+  - 페르소나 지시문 `textarea`의 상충 속성 제거 — 조건부 `className` 하나로 통합

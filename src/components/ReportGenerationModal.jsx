@@ -187,13 +187,16 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                 {isDefault ? '기본 지시문 (읽기 전용)' : '지시문'}
                             </label>
                             <textarea
-                                className="form-textarea"
                                 value={editPromptText}
                                 onChange={(e) => setEditPromptText(e.target.value)}
                                 readOnly={isDefault}
                                 placeholder="이 페르소나의 역할과 관점을 설명하세요"
                                 rows="8"
-                                className={isDefault ? 'form-textarea persona-readonly-textarea' : 'form-textarea'}
+                                className={
+                                    isDefault
+                                        ? 'form-textarea persona-readonly-textarea'
+                                        : 'form-textarea'
+                                }
                             />
                         </div>
 
