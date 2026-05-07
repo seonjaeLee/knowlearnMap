@@ -1332,3 +1332,15 @@
 - **목적**: 제목이 길 경우 카드 내에서 2줄로 넘치던 것을 1줄로 제한하고 말줄임(...) 처리
 - **변경**: `.notebook-title` — `-webkit-line-clamp: 2` 방식 제거, `white-space: nowrap` + `overflow: hidden` + `text-overflow: ellipsis` 1줄 말줄임으로 전환
 - **영향**: `src/App.css` — `.notebook-title`
+
+## 2026-05-07
+
+### 101) 저장소명 변경 후 원격(origin) 경로 정합성 점검 및 반영
+
+- **목적**: 저장소명 변경 이후 로컬 프로젝트의 푸시 대상이 기존 이름으로 남아 혼동될 가능성을 제거하고, 실제 푸시 경로를 `knowlearnMap`으로 고정
+- **영향**: 이 디렉토리에서 수행하는 `git push`의 기본 대상이 `seonjaeLee/knowlearnMap`으로 일치
+
+#### 운영/설정 변경
+- Git Remote
+  - `origin` URL: `https://github.com/seonjaeLee/knowlearns.git` → `https://github.com/seonjaeLee/knowlearnMap.git`
+  - `git push --dry-run` 결과 `Everything up-to-date`로 푸시 경로 정상 확인
