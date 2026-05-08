@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2 } from 'lucide-react';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Typography } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
@@ -715,7 +715,11 @@ function Home() {
                 )}
             >
                 <div className="home-rename-modal-body">
+                    <Typography className="home-rename-modal-hint" component="p">
+                        변경하고자 하는 이름을 입력해주세요
+                    </Typography>
                     <TextField
+                        label="워크스페이스 이름"
                         fullWidth
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
@@ -724,7 +728,8 @@ function Home() {
                                 handleRenameSubmit();
                             }
                         }}
-                        placeholder="워크스페이스 이름"
+                        placeholder="이름 입력"
+                        variant="outlined"
                         autoFocus
                         size="small"
                     />

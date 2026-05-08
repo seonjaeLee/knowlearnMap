@@ -1,5 +1,7 @@
 # UI 작업 히스토리
 
+> **구조 안내:** `### N)` 번호는 **파일 전역에서 한 줄로만** 이어집니다. 상단은 과거 날짜부터 시간순이며, **가장 최근 날짜 섹션은 파일 하단**에 추가되는 형태입니다. **`## 2026-05-09`** 작업은 **맨 아래** 해당 헤더 아래에서 확인하세요.
+
 ## 2026-04-30
 
 ### 1) 앱형 레이아웃 기준 재정의
@@ -2428,3 +2430,97 @@
 #### JSX/JS 변경 (예외 기록)
 - `src/components/ReportGenerationModal.jsx`
   - 페르소나 지시문 `textarea`의 상충 속성 제거 — 조건부 `className` 하나로 통합
+
+## 2026-05-09
+
+### 160) 일반 BaseModal 본문 min-height 120px·도메인 추가·워크스페이스 이름 변경 폼 정렬
+
+- **목적**: 짧은 폼 팝업의 불필요한 세로 여백을 줄이고, 도메인 추가·이름 변경 입력 정렬을 통일
+- **영향**: `BaseModal` 기본 본문 최소 높이가 200px → 120px; 공지/QnA/보고서 생성 모달 내 오버라이드 `min-height`도 120px로 통일; 워크스페이스 이름 변경 모달에 안내 문구·라벨 적용
+
+#### CSS 변경
+- `src/components/common/modal/BaseModal.module.scss` — `.content` fallback `min-height` 120px
+- `src/pages/Home.css` — `.home-rename-modal-hint` 추가
+- `src/components/NoticeCreateModal.css`, `src/components/QnaCreateModal.css`, `src/components/ReportCreationModal.css` — 본문 `min-height` 120px
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx` — 이름 변경 모달에 안내 `Typography`, 입력 라벨·Outlined 적용
+
+### 161) 도메인 추가 모달 본문만 FAQ형 레이아웃(라벨 상단·네이티브 입력)
+
+- **목적**: 공통 `BaseModal` 헤더·푸터·버튼 레이아웃은 유지한 채, 본문 입력만 라벨 위·입력 아래·기존 플레이스홀더 문구로 정리
+- **영향**: 어드민 도메인 선택 「새 도메인 추가」는 FAQ 작성과 동일한 마크업(`label` + `input`)·포커스 링·도움말 위치로 표시
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — `.domain-add-form`, `.domain-add-form-group` 입력 스타일 추가, `.domain-add-help`·`.domain-add-error` 간격 보정
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/DomainSelection.jsx` — 도메인 추가 본문을 네이티브 폼 필드로 전환
+
+### 162) 공통 BaseModal Dialog 페이드·Y축 간섭 억제
+
+- **목적**: 팝업 전환 시 아래에서 위로 슬라이드되는 것처럼 보이는 현상 완화(`Fade`는 opacity만 사용하되 DOM에서 `transform` 간섭 방지)
+- **영향**: `BaseModal` 기반 모달
+
+#### CSS/JSX 변경
+- `src/components/common/modal/BaseModal.jsx` — `TransitionProps.style.transform: 'none'`
+
+### 163) 시맨틱 관리 모달 저장 버튼 아이콘 제거
+
+- **목적**: 하단 주행동은 텍스트만 유지
+- **영향**: AdminSemantic Category/Object/Relation/Action 편집 모달
+
+#### JSX/JS 변경 (예외 기록)
+- 위 4개 페이지에서 Lucide `Save` 아이콘 및 import 제거
+
+### 164) 도메인 관리 페이지 진입 애니메이션(전역 `fadeIn` 이름 충돌)
+
+- **목적**: 미정의 `animation: fadeIn`이 `CustomAlert`의 scale 키프레임을 물려 팝업처럼 커지던 현상 제거
+- **영향**: `DomainManagement.css` 페이지 컨테이너 진입 애니메이션 제거, 모달은 로컬 키프레임만 사용
+
+### 165) 전역 `@keyframes fadeIn` 충돌 제거
+
+- **목적**: `App.css` / `CustomAlert.css` 동명 키프레임이 번들 순서로 덮어씌워 본문·어드민 탭까지 스케일 페이드되는 문제 제거
+- **영향**: `CustomAlert.css` → `custom-alert-panel-in`, `App.css` → `app-main-fade-in`(opacity 전용), `Admin.css` 참조 갱신
+
+### 166) 공유 설정 모달 라디오 정렬·간격
+
+- **목적**: 라디오 세로 중앙·라벨과 간격 정리
+- **영향**: `ShareSettingsModal.css`
+
+### 167) 공유 설정 모달 콘텐츠 레이아웃 추가 조정
+
+- **목적**: 옵션 카드 패딩·라벨 가로 배치 등 사용자 시안 반영
+- **영향**: `ShareSettingsModal.css`
+
+### 168) Decision(alert/confirm/prompt) 하단 버튼 패딩을 일반 모달과 통일
+
+- **목적**: Decision 전용 8px 세로 패딩 제거, `4px 16px` 공통화·가로 `min-width: 100px` 유지
+- **영향**: `DialogContext.module.scss`
+
+#### 문서 변경
+- `docs/modal-spec.md` §4 — 일반·Decision 공통 버튼 패딩·Decision `min-width`/정렬 명시
+
+### 169) Decision 타이틀·본문 타이포를 공통 BaseModal과 통일
+
+- **목적**: `decisionTitle`/`decisionMessage` 확대 제거 — 제목 `lg`, 본문 `sm` (`BaseModal`·`.message`와 동일 계층)
+- **영향**: `DialogContext.jsx` / `DialogContext.module.scss`
+
+#### 문서 변경
+- `docs/modal-spec.md` §3 A — Decision 타이틀·본문 글자 크기 공통 기준 추가
+
+### 170) Decision 버튼 글자 크기 `font-size-base`(높이 정렬)
+
+- **목적**: `font-size-sm`만 강제되어 일반 모달 버튼(~14px)보다 높이가 낮게 보이던 문제 제거
+- **영향**: `DialogContext.module.scss` `.decisionActions`
+
+#### 문서 변경
+- `docs/modal-spec.md` §4 — 버튼 글자 크기 `--font-size-base`(14px) 통일 문구
+
+### 171) 필수 항목 별표 색상 전역 통일(`#ff0000`)
+
+- **목적**: MUI `required` 별표·수동 라벨 `*` 동색 처리
+- **영향**: `src/index.css` 토큰 `--color-required-asterisk`, `.MuiFormLabel-asterisk` / `.MuiInputLabel-asterisk` / `.required-asterisk`
+
+#### JSX/JS 변경 (예외 기록)
+- `AdminSemanticCategoryPage.jsx`, `AdminSemanticObjectPage.jsx`, `AdminSemanticRelationPage.jsx`, `AdminSemanticActionPage.jsx`, `FaqCreateModal.jsx`, `NoticeCreateModal.jsx`, `PromptFormDialog.jsx`, `EditPromptDialog.jsx` — 라벨 내 `*`를 `<span className="required-asterisk">`로 분리

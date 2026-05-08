@@ -159,7 +159,6 @@ export function DialogProvider({ children }) {
         headerAlign={isDecisionDialog ? 'center' : 'left'}
         actionsAlign={isDecisionDialog ? 'center' : 'right'}
         paperClassName={isDecisionDialog ? styles.decisionPaper : ''}
-        titleClassName={isDecisionDialog ? styles.decisionTitle : ''}
         headerClassName={isDecisionDialog ? styles.decisionHeader : ''}
         contentClassName={isDecisionDialog ? styles.decisionContent : ''}
         actionsClassName={isDecisionDialog ? styles.decisionActions : ''}
@@ -167,7 +166,7 @@ export function DialogProvider({ children }) {
           <Stack direction="row" spacing={1}>
             {dialogState.type !== 'alert' && (
               <Button
-                variant={isDecisionDialog ? 'contained' : 'outlined'}
+                variant="outlined"
                 onClick={handleCancel}
                 className={isDecisionDialog ? styles.decisionCancelButton : ''}
               >

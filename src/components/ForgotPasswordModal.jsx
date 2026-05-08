@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import axios from 'axios';
-import { Button, Stack, TextField, Typography } from '@mui/material';
+import { Button, TextField, Typography } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { API_URL } from '../config/api';
 import BaseModal from './common/modal/BaseModal';
@@ -47,14 +47,14 @@ const ForgotPasswordModal = memo(({ isOpen, onClose, initialEmail = '' }) => {
             maxWidth="xs"
             contentClassName={styles.content}
             actions={(
-                <Stack direction="row" spacing={1}>
+                <>
                     <Button variant="outlined" onClick={onClose} disabled={loading}>
                         취소
                     </Button>
                     <Button type="submit" form="forgot-password-form" variant="contained" disabled={loading}>
                         {loading ? '전송 중...' : '메일 전송'}
                     </Button>
-                </Stack>
+                </>
             )}
         >
             <Typography className={styles.description}>

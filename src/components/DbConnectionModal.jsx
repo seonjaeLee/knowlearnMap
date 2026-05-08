@@ -618,6 +618,11 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
     const actions = (
         <div className="db-modal-actions-layout">
             <div className="db-footer-left">
+                {step === 1 && (
+                    <Button variant="outlined" onClick={handleTestConnection} disabled={!isFormValid || testing}>
+                        {testing ? '테스트 중...' : '연결 테스트'}{testResult === true && ' ✓'}{testResult === false && ' ✗'}
+                    </Button>
+                )}
                 {step === 2 && (
                     <Button variant="outlined" onClick={() => setStep(1)}>
                         이전
@@ -627,14 +632,11 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
             <div className="db-footer-right">
                 {step === 1 && (
                     <>
-                        <Button variant="outlined" onClick={handleTestConnection} disabled={!isFormValid || testing}>
-                            {testing ? '테스트 중...' : '연결 테스트'}{testResult === true && ' ✓'}{testResult === false && ' ✗'}
+                        <Button variant="outlined" onClick={onClose}>
+                            취소
                         </Button>
                         <Button variant="contained" onClick={handleNextToTables} disabled={!selectedConnectionId || loadingTables}>
                             {loadingTables ? '로딩...' : '열기'}
-                        </Button>
-                        <Button variant="outlined" onClick={onClose}>
-                            취소
                         </Button>
                     </>
                 )}

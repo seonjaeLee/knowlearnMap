@@ -38,6 +38,17 @@ function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
             maxWidth="md"
             fullWidth
             contentClassName="report-creation-modal-content"
+            actionsClassName="report-creation-modal-actions"
+            actions={(
+                <>
+                    <Button type="button" variant="outlined" onClick={onClose}>
+                        취소
+                    </Button>
+                    <Button type="button" variant="contained" onClick={handleGenerate}>
+                        생성
+                    </Button>
+                </>
+            )}
         >
                 <div className="report-creation-modal-body">
                     {/* Template Info - only show if templateData has template info */}
@@ -71,12 +82,6 @@ function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
                         ></textarea>
                     </div>
 
-                    {/* Generate Button */}
-                    <div className="form-actions">
-                        <Button type="button" variant="contained" onClick={handleGenerate}>
-                            생성
-                        </Button>
-                    </div>
                 </div>
         </BaseModal>
     );

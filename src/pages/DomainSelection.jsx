@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Stack, TextField, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import axios from 'axios';
@@ -227,51 +227,63 @@ function DomainSelection() {
                 maxWidth="xs"
                 contentClassName="domain-add-modal-content"
                 actions={(
-                    <Stack direction="row" spacing={1}>
+                    <>
                         <Button variant="outlined" onClick={closeAddModal} disabled={adding}>
                             취소
                         </Button>
                         <Button variant="contained" onClick={handleAddDomain} disabled={adding}>
                             {adding ? '생성 중...' : '생성하기'}
                         </Button>
-                    </Stack>
+                    </>
                 )}
             >
                 <div className="domain-add-form">
-                    <TextField
-                        label="도메인명 *"
-                        value={addForm.name}
-                        onChange={(e) => setAddForm((p) => ({ ...p, name: e.target.value }))}
-                        placeholder="도메인 이름"
-                        autoFocus
-                        size="small"
-                        fullWidth
-                    />
+                    <div className="domain-add-form-group">
+                        <label htmlFor="domain-add-name">
+                            도메인명 <span className="required-asterisk" aria-hidden="true">*</span>
+                        </label>
+                        <input
+                            id="domain-add-name"
+                            type="text"
+                            value={addForm.name}
+                            onChange={(e) => setAddForm((p) => ({ ...p, name: e.target.value }))}
+                            placeholder="도메인 이름"
+                            autoFocus
+                            autoComplete="off"
+                        />
+                    </div>
 
-                    <TextField
-                        label="설명"
-                        value={addForm.description}
-                        onChange={(e) => setAddForm((p) => ({ ...p, description: e.target.value }))}
-                        placeholder="도메인 설명 (선택)"
-                        size="small"
-                        fullWidth
-                    />
+                    <div className="domain-add-form-group">
+                        <label htmlFor="domain-add-desc">설명</label>
+                        <input
+                            id="domain-add-desc"
+                            type="text"
+                            value={addForm.description}
+                            onChange={(e) => setAddForm((p) => ({ ...p, description: e.target.value }))}
+                            placeholder="도메인 설명 (선택)"
+                            autoComplete="off"
+                        />
+                    </div>
 
-                    <TextField
-                        label="ArangoDB 데이터베이스명 *"
-                        value={addForm.arangoDbName}
-                        onChange={(e) => {
-                            const v = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
-                            setAddForm((p) => ({ ...p, arangoDbName: v }));
-                        }}
-                        placeholder="예: my_domain-01"
-                        size="small"
-                        fullWidth
-                    />
-
-                    <Typography className="domain-add-help">
-                        사용 가능: 영문 소문자, 숫자, 하이픈(-), 언더스코어(_) · 생성 후 변경 불가
-                    </Typography>
+                    <div className="domain-add-form-group">
+                        <label htmlFor="domain-add-arango">
+                            ArangoDB 데이터베이스명 <span className="required-asterisk" aria-hidden="true">*</span>
+                        </label>
+                        <input
+                            id="domain-add-arango"
+                            type="text"
+                            value={addForm.arangoDbName}
+                            onChange={(e) => {
+                                const v = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+                                setAddForm((p) => ({ ...p, arangoDbName: v }));
+                            }}
+                            placeholder="예: my_domain-01"
+                            autoComplete="off"
+                        />
+                        <p className="domain-add-help">
+                            사용 가능: 영문 소문자, 숫자, 하이픈(-), 언더스코어(_) · 생성 후 변경 불가
+                        </p>
+                    </div>
 
                     {addError && <div className="domain-add-error">{addError}</div>}
                 </div>

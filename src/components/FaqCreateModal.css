@@ -130,5 +130,5 @@
 }
 
 .faq-modal-actions {
-    padding-top: var(--spacing-md) !important;
+    padding: var(--spacing-lg) var(--spacing-lg) !important;
 }

@@ -18,6 +18,13 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const isRoleDisabled = (role) => (
+        role?.enabled === false
+        || role?.enabled === 0
+        || role?.enabled === '0'
+        || role?.enabled === 'N'
+    );
+
     // Load roles when modal opens
     useEffect(() => {
         if (isOpen && workspaceId) {
@@ -64,13 +71,13 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
         setEditTarget(role);
         setEditTitle(role.roleName);
         setEditPromptText(role.promptText || '');
-        setEditEnabled(role.enabled !== false);
+        setEditEnabled(!isRoleDisabled(role));
         setView('edit');
     };
 
     const handleToggleEnabled = async (role, e) => {
         e.stopPropagation();
-        const newEnabled = role.enabled === false;
+        const newEnabled = isRoleDisabled(role);
         // Optimistic UI update
         setRoles(prev => prev.map(r =>
             r.id === role.id ? { ...r, enabled: newEnabled } : r
@@ -95,7 +102,10 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                 promptText: editPromptText,
                 enabled: editEnabled,
             });
-            setRoles(prev => prev.map(r => r.id === editTarget.id ? updated : r));
+            const nextRole = (updated && typeof updated === 'object')
+                ? { ...editTarget, ...updated, enabled: editEnabled, roleName: editTitle, promptText: editPromptText }
+                : { ...editTarget, enabled: editEnabled, roleName: editTitle, promptText: editPromptText };
+            setRoles(prev => prev.map(r => r.id === editTarget.id ? nextRole : r));
             setView('list');
         } catch (error) {
             console.error('Error saving role:', error);
@@ -146,115 +156,126 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
         }
     };
 
-    // ========== Edit View ==========
-    if (view === 'edit' && editTarget) {
-        const isDefault = editTarget === 'default';
-        const isNew = editTarget === 'new';
-        const isExistingRole = !isDefault && !isNew;
+    const isEdit = view === 'edit' && Boolean(editTarget);
+    const isDefault = isEdit && editTarget === 'default';
+    const isNew = isEdit && editTarget === 'new';
+    const isExistingRole = isEdit && !isDefault && !isNew;
 
-        return (
-            <BaseModal
-                open={isOpen}
-                onClose={onClose}
-                title="페르소나 관리"
-                subtitle={isNew ? '신규 페르소나' : isDefault ? '기초값' : editTitle}
-                maxWidth="md"
-                fullWidth
-                contentClassName="report-generation-edit-modal-content"
+    const editActions = !isEdit ? null : isDefault ? (
+        <div className="persona-actions-left">
+            <Button
+                type="button"
+                onClick={() => setView('list')}
+                variant="outlined"
+                className="persona-list-move-btn"
             >
-                    <div className="report-generation-edit-modal-body">
-                        {/* 이름 */}
-                        <div className="form-section">
-                            <label className="form-label">이름</label>
-                            {isDefault ? (
-                                <div className="persona-default-name">
-                                    기초값
-                                </div>
-                            ) : (
-                                <input
-                                    type="text"
-                                    className="form-textarea persona-title-field"
-                                    value={editTitle}
-                                    onChange={(e) => setEditTitle(e.target.value)}
-                                    placeholder="페르소나 이름"
-                                />
-                            )}
-                        </div>
+                목록이동
+            </Button>
+        </div>
+    ) : (
+        <>
+            <div className="persona-actions-left">
+                <Button
+                    type="button"
+                    onClick={() => setView('list')}
+                    disabled={saving}
+                    variant="outlined"
+                    className="persona-list-move-btn"
+                >
+                    목록이동
+                </Button>
+                {isExistingRole && !editTarget.isDefault && (
+                    <Button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={saving}
+                        variant="outlined"
+                        color="error"
+                        className="persona-delete-btn"
+                    >
+                        삭제
+                    </Button>
+                )}
+            </div>
+            <Button
+                type="button"
+                onClick={isNew ? handleSaveNew : handleSave}
+                disabled={saving || !editTitle.trim()}
+                variant="contained"
+            >
+                {saving ? '저장 중...' : '저장'}
+            </Button>
+        </>
+    );
 
-                        {/* 지시문 */}
-                        <div className="form-section">
-                            <label className="form-label">
-                                {isDefault ? '기본 지시문 (읽기 전용)' : '지시문'}
-                            </label>
-                            <textarea
-                                value={editPromptText}
-                                onChange={(e) => setEditPromptText(e.target.value)}
-                                readOnly={isDefault}
-                                placeholder="이 페르소나의 역할과 관점을 설명하세요"
-                                rows="8"
-                                className={
-                                    isDefault
-                                        ? 'form-textarea persona-readonly-textarea'
-                                        : 'form-textarea'
-                                }
-                            />
-                        </div>
-
-                        {/* 사용안함 체크박스 (기초값 제외) */}
-                        {!isDefault && (
-                            <div className="form-section">
-                                <label className="persona-checkbox-label persona-checkbox-inline">
-                                    <input
-                                        type="checkbox"
-                                        checked={!editEnabled}
-                                        onChange={(e) => setEditEnabled(!e.target.checked)}
-                                    />
-                                    <span>사용안함</span>
-                                </label>
-                            </div>
-                        )}
-
-                        {/* 버튼 */}
-                        {!isDefault && (
-                            <div className="form-actions report-generation-edit-actions">
-                                {/* 삭제 버튼: 기존 사용자 추가 페르소나만 */}
-                                {isExistingRole && !editTarget.isDefault && (
-                                    <Button
-                                        type="button"
-                                        onClick={handleDelete}
-                                        disabled={saving}
-                                        variant="outlined"
-                                        color="error"
-                                        className="persona-delete-btn"
-                                    >
-                                        삭제
-                                    </Button>
-                                )}
-                                <Button
-                                    type="button"
-                                    onClick={isNew ? handleSaveNew : handleSave}
-                                    disabled={saving || (!isDefault && !editTitle.trim())}
-                                    variant="contained"
-                                >
-                                    {saving ? '저장 중...' : '저장'}
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-            </BaseModal>
-        );
-    }
-
-    // ========== List View ==========
     return (
         <BaseModal
             open={isOpen}
             onClose={onClose}
             title="페르소나 관리"
-            maxWidth="lg"
+            subtitle={
+                isEdit
+                    ? (isNew ? '신규 페르소나' : isDefault ? '기초값' : editTitle)
+                    : '페르소나'
+            }
+            maxWidth="md"
             fullWidth
-            contentClassName="report-generation-list-modal-content"
+            headerVariant={isEdit ? 'default' : 'filled'}
+            headerClassName="report-generation-modal-header"
+            contentClassName={
+                isEdit
+                    ? 'report-generation-edit-modal-content report-generation-modal-content'
+                    : 'report-generation-list-modal-content report-generation-modal-content'
+            }
+            actionsClassName="report-generation-modal-actions"
+            actions={editActions}
         >
+            {isEdit ? (
+                <div className="report-generation-edit-modal-body">
+                    <div className="form-section">
+                        <label className="form-label">이름</label>
+                        {isDefault ? (
+                            <div className="persona-default-name">
+                                기초값
+                            </div>
+                        ) : (
+                            <input
+                                type="text"
+                                className="form-textarea persona-title-field"
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                placeholder="페르소나 이름"
+                            />
+                        )}
+                    </div>
+
+                    <div className="form-section">
+                        <label className="form-label">지시문</label>
+                        <textarea
+                            value={editPromptText}
+                            onChange={(e) => setEditPromptText(e.target.value)}
+                            readOnly={isDefault}
+                            placeholder="이 페르소나의 역할과 관점을 설명하세요"
+                            rows="8"
+                            className={
+                                isDefault
+                                    ? 'form-textarea persona-readonly-textarea'
+                                    : 'form-textarea'
+                            }
+                        />
+                        {!isDefault && (
+                            <label className="persona-checkbox-label persona-checkbox-inline">
+                                <input
+                                    type="checkbox"
+                                    checked={!editEnabled}
+                                    onChange={(e) => setEditEnabled(!e.target.checked)}
+                                />
+                                <span>사용안함</span>
+                            </label>
+                        )}
+                    </div>
+                </div>
+            ) : (
                 <div className="report-generation-list-modal-body">
                     {loading ? (
                         <div className="report-generation-loading">
@@ -263,9 +284,7 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                     ) : (
                         <>
                             <div className="format-section">
-                                <h3 className="section-title">페르소나</h3>
                                 <div className="format-grid">
-                                    {/* 기초값 카드 — 항상 첫 번째, 하드코딩 */}
                                     <div
                                         className="format-card default-persona-card"
                                         onClick={handleDefaultCardClick}
@@ -280,11 +299,10 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                         </p>
                                     </div>
 
-                                    {/* workspace_role에서 로드된 역할 카드들 */}
                                     {roles.map(role => (
                                         <div
                                             key={role.id}
-                                            className={`format-card ${role.enabled === false ? 'disabled-persona-card' : ''}`}
+                                            className={`format-card ${isRoleDisabled(role) ? 'disabled-persona-card' : ''}`}
                                             onClick={() => handleRoleCardClick(role)}
                                             role="button"
                                             tabIndex={0}
@@ -300,10 +318,15 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                                     ? (role.promptText.length > 50 ? role.promptText.substring(0, 50) + '...' : role.promptText)
                                                     : ''}
                                             </p>
-                                            <label className="persona-checkbox-label" onClick={(e) => e.stopPropagation()}>
+                                            <label
+                                                className="persona-checkbox-label"
+                                                onMouseDown={(e) => e.stopPropagation()}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
                                                 <input
                                                     type="checkbox"
-                                                    checked={role.enabled === false}
+                                                    checked={isRoleDisabled(role)}
+                                                    onClick={(e) => e.stopPropagation()}
                                                     onChange={(e) => handleToggleEnabled(role, e)}
                                                 />
                                                 <span>사용안함</span>
@@ -313,9 +336,8 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                 </div>
                             </div>
 
-                            {/* 페르소나 추가 버튼 */}
                             <div className="format-section">
-                                <button className="add-persona-btn" onClick={handleAddPersona}>
+                                <button type="button" className="add-persona-btn" onClick={handleAddPersona}>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                                     </svg>
@@ -325,6 +347,7 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                         </>
                     )}
                 </div>
+            )}
         </BaseModal>
     );
 }

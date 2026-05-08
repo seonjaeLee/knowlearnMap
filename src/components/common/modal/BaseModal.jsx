@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Typography, Box } from '@mui/material';
+import Fade from '@mui/material/Fade';
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './BaseModal.module.scss';
 
@@ -22,6 +23,7 @@ function BaseModal({
   actionsClassName = '',
   actionsAlign = 'right',
   headerAlign = 'left',
+  headerVariant = 'default',
 }) {
   const handleClose = (_, reason) => {
     if (disableBackdropClose && reason === 'backdropClick') {
@@ -30,6 +32,7 @@ function BaseModal({
     onClose?.();
   };
 
+  const headerVariantClass = headerVariant === 'filled' ? styles.headerFilled : '';
   const headerAlignClass = styles[`header${headerAlign[0].toUpperCase()}${headerAlign.slice(1)}`];
   const titleRowAlignClass = styles[`titleRow${headerAlign[0].toUpperCase()}${headerAlign.slice(1)}`];
   const actionsAlignClass = styles[`actions${actionsAlign[0].toUpperCase()}${actionsAlign.slice(1)}`];
@@ -41,21 +44,23 @@ function BaseModal({
       maxWidth={maxWidth}
       fullWidth={fullWidth}
       disableEscapeKeyDown={disableEscapeKeyDown}
+      TransitionComponent={Fade}
+      transitionDuration={{ enter: 200, exit: 175 }}
+      TransitionProps={{
+        style: { transform: 'none' },
+      }}
       PaperProps={{ className: [styles.dialogPaper, paperClassName, 'km-base-modal-paper'].filter(Boolean).join(' ') }}
       BackdropProps={{ className: [styles.backdrop, 'km-base-modal-backdrop'].join(' ') }}
     >
-      <DialogTitle className={[styles.header, headerAlignClass, headerClassName, 'km-base-modal-header'].filter(Boolean).join(' ')}>
+      <DialogTitle className={[styles.header, headerVariantClass, headerAlignClass, headerClassName, 'km-base-modal-header'].filter(Boolean).join(' ')}>
         <div className={[styles.titleRow, titleRowAlignClass, 'km-base-modal-title-row'].filter(Boolean).join(' ')}>
           <Typography component="h2" className={[styles.title, titleClassName].filter(Boolean).join(' ')}>
             {title}
           </Typography>
           {subtitle ? (
-            <>
-              <span className={styles.titleDivider}>|</span>
-              <Typography component="p" className={styles.subtitle}>
-                {subtitle}
-              </Typography>
-            </>
+            <Typography component="p" className={styles.subtitle}>
+              {subtitle}
+            </Typography>
           ) : null}
         </div>
         {showCloseButton && (
@@ -97,6 +102,7 @@ BaseModal.propTypes = {
   actionsClassName: PropTypes.string,
   actionsAlign: PropTypes.oneOf(['left', 'center', 'right']),
   headerAlign: PropTypes.oneOf(['left', 'center']),
+  headerVariant: PropTypes.oneOf(['default', 'filled']),
 };
 
 BaseModal.defaultProps = {
@@ -117,6 +123,7 @@ BaseModal.defaultProps = {
   actionsClassName: '',
   actionsAlign: 'right',
   headerAlign: 'left',
+  headerVariant: 'default',
 };
 
 export default BaseModal;

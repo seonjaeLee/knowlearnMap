@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Stack } from '@mui/material';
+import { Button } from '@mui/material';
 import { adminSemanticApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import {
@@ -7,7 +7,6 @@ import {
   Plus,
   Pencil,
   Trash2,
-  Save,
   X,
   Download,
   Upload,
@@ -393,24 +392,24 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
         maxWidth="sm"
         contentClassName="admin-semantic-edit-content"
         actions={(
-          <Stack direction="row" spacing={1}>
+          <>
             <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
             <Button variant="contained" onClick={handleSave}>
-              <Save size={14} /> 저장
+              저장
             </Button>
-          </Stack>
+          </>
         )}
       >
         {editing ? (
           <>
             <div className="admin-field">
-              <label className="admin-field-label">영문명 (name_en) *</label>
+              <label className="admin-field-label">영문명 (name_en) <span className="required-asterisk" aria-hidden="true">*</span></label>
               <input className="admin-input" value={editing.nameEn || ''}
                 onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
                 placeholder="e.g. SkinType" />
             </div>
             <div className="admin-field">
-              <label className="admin-field-label">한글명 (name_ko) *</label>
+              <label className="admin-field-label">한글명 (name_ko) <span className="required-asterisk" aria-hidden="true">*</span></label>
               <input className="admin-input" value={editing.nameKo || ''}
                 onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
                 placeholder="예: 피부타입" />

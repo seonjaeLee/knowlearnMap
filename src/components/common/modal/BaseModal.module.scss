@@ -16,11 +16,22 @@
   align-items: center !important;
   justify-content: space-between !important;
   gap: var(--spacing-sm) !important;
-  padding: var(--spacing-lg) var(--spacing-lg) !important;
+  padding: var(--spacing-md) var(--spacing-lg) !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
 }
 
 .headerCenter {
   justify-content: center !important;
+}
+
+.headerFilled {
+  background-color: var(--color-bg-subtle) !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+  padding: var(--spacing-md) var(--spacing-lg) !important;
+}
+
+.headerFilled + .content {
+  background-color: var(--color-bg-secondary) !important;
 }
 
 .titleRow {
@@ -43,11 +54,6 @@
   flex-shrink: 0;
 }
 
-.titleDivider {
-  color: var(--color-text-tertiary);
-  flex-shrink: 0;
-}
-
 .subtitle {
   font-family: 'Pretendard', sans-serif !important;
   font-size: var(--font-size-sm) !important;
@@ -61,11 +67,14 @@
 
 .closeButton {
   color: var(--color-text-secondary) !important;
+  align-self: center !important;
+  margin: 0 !important;
+  display: inline-flex !important;
 }
 
 .content {
-  padding: var(--spacing-lg) !important;
-  min-height: 150px !important;
+  padding: var(--spacing-lg) var(--spacing-xl) !important;
+  min-height: var(--base-modal-content-min-height, 120px) !important;
   scrollbar-width: thin;
   scrollbar-color: rgba(95, 99, 104, 0.45) transparent;
 }
@@ -96,6 +105,10 @@
   padding: var(--spacing-lg) var(--spacing-lg) !important;
 }
 
+.actions > :global(:not(style) ~ :not(style)) {
+  margin-left: 0 !important;
+}
+
 .actionsLeft {
   justify-content: flex-start !important;
 }
@@ -110,8 +123,104 @@
 
 .actions :global(.MuiButton-contained) {
   min-width: 150px !important;
+  background-color: var(--color-accent) !important;
+  border: 1px solid var(--color-accent) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.actions :global(.MuiButton-contained:hover) {
+  background-color: var(--color-accent-hover) !important;
+  border-color: var(--color-accent-hover) !important;
+  box-shadow: none !important;
+}
+
+.actions :global(.MuiButton-contained:active) {
+  background-color: var(--color-accent-hover) !important;
+  border-color: var(--color-accent-hover) !important;
+  box-shadow: none !important;
+}
+
+.actions :global(.MuiButton-contained.Mui-disabled) {
+  background-color: var(--btn-disabled-bg) !important;
+  border-color: var(--btn-disabled-bg) !important;
+  color: var(--btn-disabled-text) !important;
+  box-shadow: none !important;
+}
+
+.dialogPaper :global(.MuiButton-outlinedPrimary) {
+  border-color: var(--color-accent) !important;
+  color: var(--color-accent) !important;
+  background-color: var(--color-bg-secondary) !important;
+}
+
+.dialogPaper :global(.MuiButton-outlinedPrimary:hover) {
+  border-color: var(--color-accent-hover) !important;
+  color: var(--color-accent-hover) !important;
+  background-color: #f0f7ff !important;
+}
+
+.dialogPaper :global(.MuiButton-outlinedPrimary:active) {
+  border-color: var(--color-accent-hover) !important;
+  color: var(--color-accent-hover) !important;
+  background-color: #e8f0fe !important;
+}
+
+.dialogPaper :global(.MuiButton-outlinedPrimary.Mui-disabled) {
+  border-color: var(--btn-disabled-bg) !important;
+  color: var(--btn-disabled-text) !important;
+  background-color: var(--color-bg-secondary) !important;
+}
+
+.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn)) {
+  border-color: #6b7280 !important;
+  color: #6b7280 !important;
+  background-color: #f3f4f6 !important;
+}
+
+.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):hover) {
+  border-color: #4b5563 !important;
+  color: #4b5563 !important;
+  background-color: #f9fafb !important;
+}
+
+.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):active) {
+  border-color: #4b5563 !important;
+  color: #4b5563 !important;
+  background-color: #f3f4f6 !important;
+}
+
+.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn).Mui-disabled) {
+  border-color: var(--btn-disabled-bg) !important;
+  color: var(--btn-disabled-text) !important;
+  background-color: #f3f4f6 !important;
+}
+
+.actions :global(.MuiButton-outlined.persona-delete-btn) {
+  border-color: #dc2626 !important;
+  color: #dc2626 !important;
+  background-color: #fef2f2 !important;
+}
+
+.actions :global(.MuiButton-outlined.persona-delete-btn:hover) {
+  border-color: #b91c1c !important;
+  color: #b91c1c !important;
+  background-color: #fee2e2 !important;
+}
+
+.actions :global(.MuiButton-outlined.persona-delete-btn:active) {
+  border-color: #b91c1c !important;
+  color: #b91c1c !important;
+  background-color: #fecaca !important;
+}
+
+.actions :global(.MuiButton-outlined.persona-delete-btn.Mui-disabled) {
+  border-color: var(--btn-disabled-bg) !important;
+  color: var(--btn-disabled-text) !important;
+  background-color: #fef2f2 !important;
 }
 
 .actions :global(.MuiButton-root) {
-  border-radius: 999px !important;
+  border-radius: var(--radius-sm) !important;
+  padding: var(--spacing-xs) var(--spacing-md) !important;
 }

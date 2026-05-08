@@ -47,7 +47,7 @@
 }
 
 .admin-tab-content {
-    animation: fadeIn var(--transition-normal);
+    animation: app-main-fade-in var(--transition-normal);
 }
 
 .admin-section {

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { Button, Stack } from '@mui/material';
 import './AddSourceModal.css';
 import { API_URL } from '../config/api';
 import { useDialog } from '../hooks/useDialog';
@@ -706,13 +705,8 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
                 }}
                 maxWidth="md"
                 disableEscapeKeyDown
+                headerVariant="filled"
                 contentClassName="add-source-modal-content"
-                actions={currentView === 'main' ? (
-                    <Stack direction="row" spacing={1}>
-                        <Button variant="outlined" onClick={onClose}>취소</Button>
-                        <Button variant="contained" onClick={onClose}>저장</Button>
-                    </Stack>
-                ) : null}
             >
                 <div className={`modal-container ${currentView}`}>
                     {currentView === 'main' && renderMainView()}

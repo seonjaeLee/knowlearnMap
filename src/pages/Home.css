@@ -98,7 +98,15 @@
 .home-rename-modal-body {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
+}
+
+.home-rename-modal-hint {
+  margin: 0 !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-normal) !important;
+  color: var(--color-text-secondary) !important;
+  line-height: 1.5 !important;
 }
 
 /* 프롬프트 변경 모달 (Home.jsx) */
@@ -113,7 +121,7 @@
 .home-prompt-modal-content {
   max-height: min(70vh, 760px);
   overflow-y: auto;
-  padding: var(--spacing-sm) !important;
+  padding: var(--spacing-lg) var(--spacing-xl) !important;
 }
 
 .home-prompt-modal-shell {
@@ -122,7 +130,7 @@
 }
 
 .home-prompt-modal-actions {
-  padding-top: var(--spacing-md) !important;
+  padding: var(--spacing-lg) var(--spacing-lg) !important;
 }
 
 .home-prompt-modal-action-layout {

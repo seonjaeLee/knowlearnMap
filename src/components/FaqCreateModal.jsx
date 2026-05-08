@@ -119,7 +119,7 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
         >
                 <form id="faq-create-form" onSubmit={handleSubmit} className="faq-modal-form">
                     <div className="faq-form-group">
-                        <label htmlFor="faq-title">제목 *</label>
+                        <label htmlFor="faq-title">제목 <span className="required-asterisk" aria-hidden="true">*</span></label>
                         <input
                             id="faq-title"
                             type="text"
@@ -162,7 +162,7 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                     </div>
 
                     <div className="faq-form-group">
-                        <label htmlFor="faq-content">내용 *</label>
+                        <label htmlFor="faq-content">내용 <span className="required-asterisk" aria-hidden="true">*</span></label>
                         <div className="faq-content-toolbar">
                             <button
                                 type="button"

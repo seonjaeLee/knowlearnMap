@@ -3,6 +3,10 @@
     overflow: hidden;
 }
 
+.report-result-modal-actions {
+    padding: var(--spacing-lg) var(--spacing-lg) !important;
+}
+
 .report-result-modal-body {
     height: 100%;
     overflow-y: auto;

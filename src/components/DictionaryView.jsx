@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Button, Stack } from '@mui/material';
+import { Button } from '@mui/material';
 import './DictionaryView.css';
 import { dictionaryApi } from '../services/api';
 import { useDialog } from '../hooks/useDialog';
@@ -683,10 +683,10 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                 maxWidth="sm"
                 contentClassName="dictionary-modal-content"
                 actions={(
-                    <Stack direction="row" spacing={1}>
+                    <>
                         <Button variant="outlined" onClick={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}>취소</Button>
                         <Button variant="contained" onClick={handleSaveEdit}>저장</Button>
-                    </Stack>
+                    </>
                 )}
             >
                 {editingTerm ? (
@@ -772,10 +772,10 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                 maxWidth="sm"
                 contentClassName="dictionary-modal-content"
                 actions={(
-                    <Stack direction="row" spacing={1}>
+                    <>
                         <Button variant="outlined" onClick={() => setIsMoveModalOpen(false)}>취소</Button>
                         <Button variant="contained" onClick={handleConfirmMove} disabled={!moveTargetId}>이동</Button>
-                    </Stack>
+                    </>
                 )}
             >
                 {moveSourceItem ? (

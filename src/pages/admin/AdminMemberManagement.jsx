@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Stack } from '@mui/material';
+import { Button } from '@mui/material';
 import { memberApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { Users, Search, RotateCcw, Pencil, Trash2, Unlock, Mail } from 'lucide-react';
@@ -272,14 +272,14 @@ function AdminMemberManagement() {
                 maxWidth="xs"
                 contentClassName="admin-member-edit-content"
                 actions={(
-                    <Stack direction="row" spacing={1}>
+                    <>
                         <Button variant="outlined" onClick={() => setEditMember(null)}>
                             취소
                         </Button>
                         <Button variant="contained" onClick={handleEditSave}>
                             저장
                         </Button>
-                    </Stack>
+                    </>
                 )}
             >
                 {editMember ? (

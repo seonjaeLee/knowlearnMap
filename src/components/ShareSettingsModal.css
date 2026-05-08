@@ -5,20 +5,23 @@
 
 .share-modal-body {
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
 }
 
 .share-radio-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .share-radio-item {
     display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 14px;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: 24px 16px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     cursor: pointer;
@@ -36,12 +39,16 @@
 }
 
 .share-radio-item input[type="radio"] {
-    margin-top: 2px;
+    flex-shrink: 0;
+    margin: 0;
     accent-color: #3b82f6;
 }
 
 .share-radio-label {
     flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-sm);
 }
 
 .share-radio-label .label-title {
@@ -64,8 +71,8 @@
 }
 
 .share-members-section {
-    margin-top: 16px;
-    padding-top: 16px;
+    margin-top: 0;
+    padding-top: var(--spacing-md);
     border-top: 1px dashed var(--color-border);
 }
 
@@ -202,5 +209,5 @@
 }
 
 .share-modal-actions {
-    padding-top: var(--spacing-md) !important;
+    padding: var(--spacing-lg) var(--spacing-lg) !important;
 }

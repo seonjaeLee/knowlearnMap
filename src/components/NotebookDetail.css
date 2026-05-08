@@ -803,15 +803,14 @@
 .meta-modal-content {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: 0;
     min-height: auto !important;
+    padding: var(--spacing-lg) var(--spacing-xl) !important;
 }
 
 .meta-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
+    padding-top: var(--spacing-md) !important;
+    padding-bottom: var(--spacing-md) !important;
 }
 
 .meta-modal-title {
@@ -828,15 +827,32 @@
 }
 
 .meta-modal-description {
-    font-size: 13px;
-    color: #666;
-    margin: 0 0 12px 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin: 0;
 }
 
 .meta-modal-actions {
+    padding: var(--spacing-lg) var(--spacing-xl) !important;
+}
+
+.meta-modal-top-row {
     display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.meta-modal-top-row .meta-modal-description {
+    flex: 1;
+    min-width: 0;
+}
+
+.meta-modal-top-row :global(.MuiButton-root) {
+    flex-shrink: 0;
+    align-self: flex-start;
 }
 
 .meta-modal-hidden-input {
@@ -870,20 +886,28 @@
 }
 
 .meta-modal-textarea {
+    width: 100%;
     flex: 1;
     min-height: 300px;
     padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 13px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
     font-family: monospace;
     resize: vertical;
     line-height: 1.6;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-secondary);
 }
 
 .meta-modal-textarea::placeholder {
     font-size: 11px;
     color: #8a9099;
+}
+
+.meta-modal-textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
 }
 
 .panel-toggle-btn {

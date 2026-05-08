@@ -1,10 +1,10 @@
+/* 전역 `fadeIn` 키프레임과 이름이 겹치면(CustomAlert의 scale 등) 본문이 팝업처럼 보일 수 있어 진입 애니메이션 없음 */
 .domain-management-container {
     padding: 0;
     max-width: 100%;
     width: 100%;
     min-width: 0;
     margin: 0;
-    animation: fadeIn 0.3s ease-out;
 }
 
 .domain-header {
@@ -148,7 +148,25 @@
     font-size: 15px;
 }
 
-/* Modal Styles */
+/* Modal Styles — 전역 fadeIn/slideUp 미정의·충돌 방지용 로컬 키프레임 */
+@keyframes domain-mgmt-modal-overlay-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes domain-mgmt-modal-card-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -161,7 +179,7 @@
     justify-content: center;
     z-index: 1000;
     backdrop-filter: blur(4px);
-    animation: fadeIn 0.2s ease-out;
+    animation: domain-mgmt-modal-overlay-in 0.2s ease-out;
 }
 
 .modal-card {
@@ -172,7 +190,7 @@
     overflow-y: auto;
     border-radius: var(--radius-lg);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    animation: slideUp 0.3s ease-out;
+    animation: domain-mgmt-modal-card-in 0.3s ease-out;
 }
 
 @media (max-width: 700px) {

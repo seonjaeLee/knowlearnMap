@@ -2099,6 +2099,7 @@ function NotebookDetail() {
                     )}
                     onClose={() => setChunkModalPage(null)}
                     maxWidth="md"
+                    headerVariant="filled"
                     contentClassName="chunk-modal-body"
                 >
                     {chunkModalPage ? highlightText(chunkModalPage.content, searchQuery, chunkModalPage.id) : null}
@@ -2141,16 +2142,17 @@ function NotebookDetail() {
                     title="비즈니스 용어사전"
                     onClose={() => setBizMetaOpen(false)}
                     maxWidth="md"
+                    headerClassName="meta-modal-header"
                     contentClassName="meta-modal-content"
+                    actionsClassName="meta-modal-actions"
                     actions={(
-                        <Stack direction="row" spacing={1}>
+                        <>
                             <Button
                                 variant="outlined"
-                                onClick={() => bizMetaFileRef.current?.click()}
+                                onClick={() => setBizMetaOpen(false)}
                                 disabled={bizMetaSaving}
-                                startIcon={<Upload size={14} />}
                             >
-                                CSV 업로드
+                                취소
                             </Button>
                             <Button
                                 variant="contained"
@@ -2167,17 +2169,26 @@ function NotebookDetail() {
                                     }
                                 }}
                                 disabled={bizMetaSaving}
-                                startIcon={<Save size={14} />}
                             >
                                 저장
                             </Button>
-                        </Stack>
+                        </>
                     )}
                 >
-                    <p className="meta-modal-description">
-                        도메인 용어를 등록하면 AQL 생성 및 채팅 답변 품질이 향상됩니다.<br />
-                        CSV 파일(이름, 설명) 업로드 또는 직접 편집할 수 있습니다.
-                    </p>
+                    <div className="meta-modal-top-row">
+                        <p className="meta-modal-description">
+                            도메인 용어를 등록하면 AQL 생성 및 채팅 답변 품질이 향상됩니다.<br />
+                            CSV 파일(이름, 설명) 업로드 또는 직접 편집할 수 있습니다.
+                        </p>
+                        <Button
+                            variant="outlined"
+                            onClick={() => bizMetaFileRef.current?.click()}
+                            disabled={bizMetaSaving}
+                            startIcon={<Upload size={14} />}
+                        >
+                            CSV 업로드
+                        </Button>
+                    </div>
                     <input
                         ref={bizMetaFileRef}
                         type="file"
@@ -2214,16 +2225,17 @@ function NotebookDetail() {
                     title="IT 용어사전 (컬럼 정보)"
                     onClose={() => setItMetaOpen(false)}
                     maxWidth="md"
+                    headerClassName="meta-modal-header"
                     contentClassName="meta-modal-content"
+                    actionsClassName="meta-modal-actions"
                     actions={(
-                        <Stack direction="row" spacing={1}>
+                        <>
                             <Button
                                 variant="outlined"
-                                onClick={() => itMetaFileRef.current?.click()}
+                                onClick={() => setItMetaOpen(false)}
                                 disabled={itMetaSaving}
-                                startIcon={<Upload size={14} />}
                             >
-                                CSV 업로드
+                                취소
                             </Button>
                             <Button
                                 variant="contained"
@@ -2240,17 +2252,26 @@ function NotebookDetail() {
                                     }
                                 }}
                                 disabled={itMetaSaving}
-                                startIcon={<Save size={14} />}
                             >
                                 저장
                             </Button>
-                        </Stack>
+                        </>
                     )}
                 >
-                    <p className="meta-modal-description">
-                        CSV 컬럼명과 의미를 등록하면 컬럼 매핑 및 AQL 생성 품질이 향상됩니다.<br />
-                        CSV 파일(컬럼명, 설명) 업로드 또는 직접 편집할 수 있습니다.
-                    </p>
+                    <div className="meta-modal-top-row">
+                        <p className="meta-modal-description">
+                            CSV 컬럼명과 의미를 등록하면 컬럼 매핑 및 AQL 생성 품질이 향상됩니다.<br />
+                            CSV 파일(컬럼명, 설명) 업로드 또는 직접 편집할 수 있습니다.
+                        </p>
+                        <Button
+                            variant="outlined"
+                            onClick={() => itMetaFileRef.current?.click()}
+                            disabled={itMetaSaving}
+                            startIcon={<Upload size={14} />}
+                        >
+                            CSV 업로드
+                        </Button>
+                    </div>
                     <input
                         ref={itMetaFileRef}
                         type="file"

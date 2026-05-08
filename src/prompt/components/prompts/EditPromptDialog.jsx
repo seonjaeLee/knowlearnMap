@@ -142,7 +142,7 @@ const EditPromptDialog = ({ open, prompt, categories, purposes, onClose, onSave,
           {/* 이름 */}
           <Box>
             <Typography variant="body2" sx={{ mb: 0.75, fontWeight: 500 }}>
-              이름 <Typography component="span" color="error.main">*</Typography>
+              이름 <Typography component="span" className="required-asterisk">*</Typography>
             </Typography>
             <TextField
               value={formData.name}

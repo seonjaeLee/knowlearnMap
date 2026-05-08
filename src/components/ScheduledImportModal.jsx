@@ -119,7 +119,6 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
             fullWidth
             contentClassName="sched-modal-content"
             actions={actions}
-            actionsClassName="sched-modal-actions"
         >
                 <div className="sched-modal-body">
                     {loading ? (

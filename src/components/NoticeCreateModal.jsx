@@ -108,7 +108,7 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
         >
                 <form id="notice-create-form" onSubmit={handleSubmit} className="notice-create-modal-form">
                     <div className="notice-form-group">
-                        <label htmlFor="notice-title">제목 *</label>
+                        <label htmlFor="notice-title">제목 <span className="required-asterisk" aria-hidden="true">*</span></label>
                         <input
                             id="notice-title"
                             type="text"
@@ -133,7 +133,7 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                     </div>
 
                     <div className="notice-form-group">
-                        <label htmlFor="notice-content">내용 *</label>
+                        <label htmlFor="notice-content">내용 <span className="required-asterisk" aria-hidden="true">*</span></label>
                         <div className="notice-content-toolbar">
                             <button
                                 type="button"

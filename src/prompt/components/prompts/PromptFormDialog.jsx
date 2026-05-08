@@ -417,7 +417,7 @@ const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }
                 variant="body2"
                 sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
               >
-                코드 <Typography component="span" color="error.main">*</Typography>
+                코드 <Typography component="span" className="required-asterisk">*</Typography>
               </Typography>
               <Box display="flex" gap={1}>
                 {/* ... existing code textfield ... */}
@@ -496,7 +496,7 @@ const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }
                 variant="body2"
                 sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
               >
-                이름 <Typography component="span" color="error.main">*</Typography>
+                이름 <Typography component="span" className="required-asterisk">*</Typography>
               </Typography>
               <TextField
                 value={formData.name}

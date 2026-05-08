@@ -1,63 +1,71 @@
-# Modal Spec (초안)
+# Modal Spec (확정 v1)
 
-이 문서는 현재 팝업을 공통 규격으로 정리하기 위한 인수인계용 스펙 초안입니다.
+이 문서는 모달 UI 작업을 반복 보정 방식이 아니라 규격 기반으로 진행하기 위한 확정 기준이다.
 
-## 1) 공통 UX 규격
+## 1) 핵심 원칙
 
-- 레이아웃: Header / Body / Footer
-- Header 정렬: 제목 좌측, 닫기(X) 버튼 우측
-- Footer 버튼 정렬: 기본 우측(`actionsAlign='right'`), 예외 케이스만 가운데 정렬 허용
-- 버튼 그룹: 성격이 다른 단독 액션(예: 기본값 초기화)은 좌측, 취소/저장 같은 주 흐름 액션은 우측 그룹
-- 파란 채움 버튼(`contained`): 팝업 내부 기본 `min-width: 150px`
-- 닫기 정책:
-  - 기본: ESC 허용, backdrop 클릭 허용
-  - 데이터 손실 위험 모달: backdrop 닫기 비활성화
-- 스크롤 정책:
-  - 모달 전체가 아닌 Body 영역 스크롤 우선
+- 모달 구조는 `BaseModal` 기준으로 통일한다.
+- 헤더(타이틀) 규격은 하단 버튼 유무와 무관하게 동일하게 적용한다.
+- 화면별 CSS는 도메인 콘텐츠 레이아웃만 담당하고, 버튼/상태/헤더 기본 톤은 공통 규격을 따른다.
+- 본 규격은 `닫기(X) 버튼이 있는 팝업`에만 적용한다.
+- `alert / confirm / prompt`(Decision)는 본 일괄 정리 범위에서 제외한다.
 
-## 2) 버튼 계층
+## 2) 레이아웃 규격 (고정)
 
-- Primary: 확정/저장/적용
-- Secondary: 취소/닫기
-- Danger: 삭제/파기 (`confirm`의 `tone: 'danger'`)
+- 헤더: `16px 24px`, 제목 좌측 + 닫기 버튼 우측, 하단 라인 1px
+- 콘텐츠 기본 패딩: `24px 32px`
+- 하단 액션 패딩: `24px 24px`
+- 모달 내부 기본 섹션 간격: `16px`
 
-## 3) 타입 분류
+## 3) 타입 분류 (운영 기준)
 
-- 시스템 다이얼로그: `alert`, `confirm`, `prompt`
-- 도메인 폼 모달: 생성/수정(공지, FAQ, QnA, 워크스페이스명 변경 등)
-- 대형 작업 모달: 문서 뷰어/그래프/DB 연결 등
+### A. Decision (`alert` / `confirm` / `prompt`)
+- 호출: `useDialog`
+- 정렬: 제목/액션 중앙 정렬 허용
+- 타이틀·본문 글자 크기: 공통 팝업과 동일 — 제목은 `BaseModal` `.title`(`--font-size-lg`), 본문은 `.contentInner`와 동일(`--font-size-sm`)
+- 버튼: 취소(보조) + 확인(주행동)
+- 본 스펙의 Form/No-Footer 일괄 리팩터링 대상에서 제외
 
-## 4) 1차 전환 대상 (제안)
+### B. Form (편집/생성)
+- 레이아웃: Header / Content / Footer(actions)
+- 버튼: 취소(Outlined), 저장/확인(Contained), 삭제는 필요 시 좌측 그룹
 
-| 팝업 | 유형 | 우선순위 | 전환 방식 |
-|---|---|---|---|
-| 워크스페이스 이름 변경 | prompt 성격 | 상 | `useDialog().prompt` 우선 적용 |
-| 삭제 확인(공통) | confirm 성격 | 상 | `useDialog().confirm` 공통화 |
-| 공지사항 작성 | 폼 모달 | 중 | `BaseModal` 기반 도메인 래퍼 |
-| QnA 작성 | 폼 모달 | 중 | `BaseModal` 기반 도메인 래퍼 |
-| FAQ 상세/수정 | 폼 모달 | 중 | `BaseModal` 기반 도메인 래퍼 |
+### C. No-Footer (뷰어/읽기형)
+- 레이아웃: Header / Content
+- 하단 actions 없음
+- 단, 헤더 규격은 A/B와 동일
 
-## 5) 옵션 표준(안)
+## 4) 버튼 규격
 
-| 옵션 | 설명 | 기본값 |
+- 공통 radius: `4px` (`var(--radius-sm)`)
+- **일반 모달·Decision(alert / confirm / prompt) 공통** 버튼 패딩: `4px 16px` (`var(--spacing-xs)` × `var(--spacing-md)`), 글자 크기는 `--font-size-base`(14px)로 일반 액션 버튼과 통일
+- Decision만 actions **가운데 정렬**, 버튼 **`min-width: 100px`**(일반 폼 모달의 contained `min-width: 150px`와 구분)
+- Contained 기본/hover/active/disabled 색상은 공통 토큰으로 상태별 명시
+- 취소 버튼은 파란 contained 사용 금지(기본 Outlined)
+
+## 5) 업로드 버튼 배치 규칙
+
+- "팝업 내부 업로드 버튼"은 콘텐츠 우상단에 배치한다.
+- 하단 actions에는 취소/저장 등 주행동 버튼만 둔다.
+
+## 6) 현재 우선 관리 대상 (팝업 매핑)
+
+| 팝업 | 타입 | 비고 |
 |---|---|---|
-| `title` | 모달 타이틀 | 타입별 기본값 |
-| `message` | 설명/본문 텍스트 | `''` |
-| `confirmText` | 확인 버튼 문구 | `확인` |
-| `cancelText` | 취소 버튼 문구 | `취소` |
-| `disableBackdropClose` | 바깥 클릭 닫기 차단 | `false` (`prompt`는 `true` 권장) |
-| `disableEscapeKeyDown` | ESC 닫기 차단 | `false` |
-| `tone` | 버튼 톤 (`primary`/`danger`) | `primary` |
-| `actionsAlign` | 하단 버튼 정렬 (`left`/`center`/`right`) | `right` |
+| 워크스페이스 삭제 확인 | Decision | 취소/삭제 색상 상태 고정 |
+| 페르소나 관리(목록) | No-Footer | 카드/추가 버튼 중심 |
+| 페르소나 관리(편집/신규/기초값) | Form | 하단 액션 규격 적용 |
+| 소스 추가 | No-Footer | 헤더 + 콘텐츠 중심 |
+| 비즈니스/IT 용어사전 | Form | 업로드 버튼 콘텐츠 우상단, 하단 취소/저장 |
 
-## 6) 검증/에러 처리 기준
+## 7) 예외 처리 원칙
 
-- `prompt`는 `validator` 함수로 즉시 검증
-- API 에러는 원문 노출보다 사용자 메시지 우선
-- 성공/실패 안내 문구 템플릿을 도메인별로 통일
+- `headerClassName`, `contentClassName`, `actionsClassName`는 간격 보정 목적만 허용한다.
+- 공통 규격을 깨는 색상/버튼 상태 오버라이드는 금지한다.
+- 예외가 필요한 경우 반드시 이 문서에 항목을 추가한 뒤 적용한다.
 
-## 7) 완료 기준 (Definition of Done)
+## 8) 완료 기준 (DoD)
 
-- 동일 유형 모달의 헤더/푸터/버튼 톤 일치
-- 안내/확인성 다이얼로그는 `useDialog`로만 처리
-- 신규 모달은 `BaseModal` 미사용 시 사유 기록
+- 동일 타입 모달끼리 헤더/콘텐츠/액션 간격이 동일하다.
+- 버튼 상태(기본/hover/active/disabled)가 타입 내에서 동일하다.
+- 신규 모달은 생성 시 타입(A/B/C)을 문서화하고 시작한다.

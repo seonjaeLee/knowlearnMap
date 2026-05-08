@@ -11,11 +11,8 @@
   max-width: 488px !important;
 }
 
-.decisionTitle {
-  font-size: var(--font-size-xl) !important;
-}
-
 .decisionContent {
+  --base-modal-content-min-height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,28 +22,31 @@
 .decisionHeader {
   padding-top: var(--spacing-lg) !important;
   padding-bottom: 0 !important;
+  border-bottom: none !important;
 }
 
+/* 본문 타이포는 `.message` + BaseModal `.contentInner`와 동일(--font-size-sm) */
 .decisionMessage {
   margin-bottom: 0 !important;
   text-align: center;
-  font-size: var(--font-size-lg) !important;
-  font-weight: var(--font-weight-medium) !important;
-  line-height: 1.6 !important;
 }
 
 .decisionActions {
   padding-top: 0 !important;
   padding-bottom: var(--spacing-lg) !important;
 
+  /* 일반 BaseModal `.actions` 버튼과 동일 패딩·타이포(MUI 기본 글자 크기 ≈14px). 가로는 Decision 전용 min-width 100px 유지 */
   :global(.MuiButton-root) {
-    border-radius: 999px !important;
+    border-radius: var(--radius-sm) !important;
     min-width: 100px !important;
-    width: 100px !important;
-    max-width: 100px !important;
-    padding: 10px 28px !important;
-    font-size: var(--font-size-md) !important;
+    padding: var(--spacing-xs) var(--spacing-md) !important;
+    font-size: var(--font-size-base) !important;
     font-weight: var(--font-weight-medium) !important;
+  }
+
+  /* BaseModal `.actions .MuiButton-contained`의 min-width 150px보다 우선 — Decision 가로 규격 유지 */
+  :global(.MuiButton-root.MuiButton-contained) {
+    min-width: 100px !important;
   }
 }
 
@@ -54,11 +54,26 @@
   background-color: #6b7280 !important;
   color: #ffffff !important;
   border-color: #6b7280 !important;
+  box-shadow: none !important;
 }
 
 .decisionCancelButton:hover {
   background-color: #4b5563 !important;
   border-color: #4b5563 !important;
+  box-shadow: none !important;
+}
+
+.decisionActions .decisionCancelButton:active {
+  background-color: #4b5563 !important;
+  border-color: #4b5563 !important;
+  box-shadow: none !important;
+}
+
+.decisionActions .decisionCancelButton.Mui-disabled {
+  background-color: var(--btn-disabled-bg) !important;
+  border-color: var(--btn-disabled-bg) !important;
+  color: var(--btn-disabled-text) !important;
+  box-shadow: none !important;
 }
 
 .promptInput :global(.MuiInputBase-root),

@@ -44,7 +44,7 @@
 
 .qna-form-group textarea {
     resize: vertical;
-    min-height: 200px;
+    min-height: 120px;
     font-family: inherit;
 }
 
@@ -117,5 +117,5 @@
 }
 
 .qna-create-modal-actions {
-    padding-top: var(--spacing-md) !important;
+    padding: var(--spacing-lg) var(--spacing-lg) !important;
 }
