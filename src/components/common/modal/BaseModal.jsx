@@ -24,6 +24,8 @@ function BaseModal({
   actionsAlign = 'right',
   headerAlign = 'left',
   headerVariant = 'default',
+  /** MUI Dialog Paper `sx` — 가로·세로 등 페이지별 크기 지정 시 사용 (`maxWidth={false}`·`fullWidth={false}` 와 함께 쓰는 경우 많음) */
+  paperSx,
 }) {
   const handleClose = (_, reason) => {
     if (disableBackdropClose && reason === 'backdropClick') {
@@ -49,7 +51,10 @@ function BaseModal({
       TransitionProps={{
         style: { transform: 'none' },
       }}
-      PaperProps={{ className: [styles.dialogPaper, paperClassName, 'km-base-modal-paper'].filter(Boolean).join(' ') }}
+      PaperProps={{
+        className: [styles.dialogPaper, paperClassName, 'km-base-modal-paper'].filter(Boolean).join(' '),
+        sx: paperSx,
+      }}
       BackdropProps={{ className: [styles.backdrop, 'km-base-modal-backdrop'].join(' ') }}
     >
       <DialogTitle className={[styles.header, headerVariantClass, headerAlignClass, headerClassName, 'km-base-modal-header'].filter(Boolean).join(' ')}>
@@ -103,6 +108,7 @@ BaseModal.propTypes = {
   actionsAlign: PropTypes.oneOf(['left', 'center', 'right']),
   headerAlign: PropTypes.oneOf(['left', 'center']),
   headerVariant: PropTypes.oneOf(['default', 'filled']),
+  paperSx: PropTypes.object,
 };
 
 BaseModal.defaultProps = {
@@ -124,6 +130,7 @@ BaseModal.defaultProps = {
   actionsAlign: 'right',
   headerAlign: 'left',
   headerVariant: 'default',
+  paperSx: undefined,
 };
 
 export default BaseModal;

@@ -101,26 +101,12 @@
   gap: var(--spacing-sm);
 }
 
-.home-rename-modal-hint {
-  margin: 0 !important;
-  font-size: var(--font-size-sm) !important;
-  font-weight: var(--font-weight-normal) !important;
-  color: var(--color-text-secondary) !important;
-  line-height: 1.5 !important;
-}
-
-/* 프롬프트 변경 모달 (Home.jsx) */
-.home-prompt-modal {
-  width: 680px;
-  max-width: 95vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  text-align: left;
-}
+/* 프롬프트 변경 모달 — Paper 크기는 Home.jsx `PROMPT_MODAL_PAPER_SX` */
 
 .home-prompt-modal-content {
-  max-height: min(70vh, 760px);
-  overflow-y: auto;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
   padding: var(--spacing-lg) var(--spacing-xl) !important;
 }
 
@@ -129,8 +115,10 @@
   margin: 0 auto;
 }
 
-.home-prompt-modal-actions {
-  padding: var(--spacing-lg) var(--spacing-lg) !important;
+/* BaseModal `.actions`(세로 lg)와 충돌 시에도 프롬프트 모달만 얇게 유지 */
+.km-base-modal-actions.home-prompt-modal-actions {
+  padding: var(--spacing-md) var(--spacing-lg) !important;
+  min-height: 0 !important;
 }
 
 .home-prompt-modal-action-layout {
@@ -151,16 +139,17 @@
 .home-prompt-modal-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--spacing-sm) var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
+  /* gap: 행간(row) 열간(column) — 32px · 48px (토큰 xl · 2xl) */
+  gap: var(--spacing-xl) var(--spacing-2xl);
+  margin-bottom: var(--spacing-md);
 }
 
 .home-prompt-field {
   margin-bottom: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-bg-primary);
-  padding: var(--spacing-sm);
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  padding: 0;
 }
 
 .home-prompt-label {
@@ -182,15 +171,11 @@
   margin-bottom: 0;
 }
 
-.modal-input--chunk-none {
-  background-color: #fef2f2 !important;
-  border-color: #fca5a5 !important;
-  color: #dc2626 !important;
-  font-weight: var(--font-weight-semibold) !important;
-}
-
 .home-prompt-none-btn {
-  padding: var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs));
+  box-sizing: border-box;
+  align-self: stretch;
+  min-height: 38px;
+  padding: var(--spacing-xs) calc(var(--spacing-sm) + var(--spacing-xs));
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   border: 1px solid var(--color-border);
@@ -211,6 +196,7 @@
   font-size: 11px;
   color: var(--color-text-tertiary);
   margin-top: var(--spacing-xs);
+  margin-left: var(--spacing-sm);
   min-height: 16px;
 }
 

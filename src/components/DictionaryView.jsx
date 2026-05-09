@@ -681,7 +681,7 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                 title="항목 수정"
                 onClose={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}
                 maxWidth="sm"
-                contentClassName="dictionary-modal-content"
+                contentClassName="dictionary-modal-content km-modal-form"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}>취소</Button>
@@ -770,7 +770,7 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                 title={`${viewMode === 'concept' ? '개념' : '관계'} 이동 (병합)`}
                 onClose={() => setIsMoveModalOpen(false)}
                 maxWidth="sm"
-                contentClassName="dictionary-modal-content"
+                contentClassName="dictionary-modal-content km-modal-form"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={() => setIsMoveModalOpen(false)}>취소</Button>

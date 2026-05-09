@@ -191,7 +191,7 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
             title="질문 상세"
             maxWidth="xl"
             fullWidth
-            contentClassName="qna-detail-modal-content"
+            contentClassName="qna-detail-modal-content km-modal-form"
         >
                 <div className="qna-detail-modal-body">
                     {loading ? (

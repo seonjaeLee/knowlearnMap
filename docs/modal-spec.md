@@ -60,6 +60,7 @@
 
 ## 7) 예외 처리 원칙
 
+- **`paperSx`**: MUI Dialog **Paper**에 넘기는 `sx` 객체. 모달 **가로·세로·`maxHeight`** 등을 페이지에서 지정할 때 사용한다. 보통 **`maxWidth={false}`** · **`fullWidth={false}`** 와 함께 쓴다. 콘텐츠 스크롤은 Paper를 `display: flex` / `flexDirection: column` 으로 두고 `DialogContent`에 `flex: 1`·`minHeight: 0`·`overflow: auto` 를 맞춘다.
 - `headerClassName`, `contentClassName`, `actionsClassName`는 간격 보정 목적만 허용한다.
 - 공통 규격을 깨는 색상/버튼 상태 오버라이드는 금지한다.
 - 예외가 필요한 경우 반드시 이 문서에 항목을 추가한 뒤 적용한다.
@@ -69,3 +70,8 @@
 - 동일 타입 모달끼리 헤더/콘텐츠/액션 간격이 동일하다.
 - 버튼 상태(기본/hover/active/disabled)가 타입 내에서 동일하다.
 - 신규 모달은 생성 시 타입(A/B/C)을 문서화하고 시작한다.
+
+## 9) 팝업 본문 폼 컨트롤 (입력·선택·체크 등)
+
+- 상세 규격·클래스·적용 방법은 **[`modal-form-spec.md`](./modal-form-spec.md)** 를 따른다.
+- 요약: `BaseModal` **`contentClassName`** 에 **`km-modal-form`** 추가, 필드 블록은 **`ModalFormField`** 또는 동일 의미의 `km-modal-form-*` 클래스.

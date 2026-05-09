@@ -14,6 +14,9 @@
   --color-accent-hover: #1557b0;
   --color-accent-light: #e8f0fe;
 
+  /* 네이티브·팝업 폼 포커스 링 — accent와 동일 색상 계열(MUI `palette.primary.main`과 맞춤, 아래 §참고) */
+  --shadow-focus-input: 0 0 0 2px color-mix(in srgb, var(--color-accent) 32%, transparent);
+
   --color-border: #dadce0;
   --color-border-subtle: #e5e7eb;
   --color-border-hover: #bdc1c6;
@@ -149,6 +152,40 @@ select {
   white-space: nowrap;
 }
 
+/*
+ * BaseModal 본문 등 — 라벨 상단 + 네이티브 한 줄 입력
+ * (도메인 추가 `.domain-add-form-group`·FAQ 폼과 동일 토큰·포커스 링)
+ */
+.modal-native-field label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.modal-native-field input[type='text'],
+.modal-native-field input[type='password'],
+.modal-native-field input[type='email'] {
+  width: 100%;
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.modal-native-field input[type='text']:focus,
+.modal-native-field input[type='password']:focus,
+.modal-native-field input[type='email']:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+}
+
 /* Utility Classes */
 .flex {
   display: flex;
@@ -219,8 +256,8 @@ select {
   width: 100%;
   padding: 0.75rem 1rem;
   font-size: 1rem;
-  border: 1px solid #dadce0;
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   margin-bottom: 1.5rem;
   transition: border-color 0.2s;
 }

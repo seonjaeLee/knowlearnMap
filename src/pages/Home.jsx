@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2 } from 'lucide-react';
-import { Button, TextField, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
@@ -9,7 +9,29 @@ import { useDialog } from '../hooks/useDialog';
 import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
 import BaseModal from '../components/common/modal/BaseModal';
+import KmModalSelect from '../components/common/modal/KmModalSelect';
 import './Home.css';
+
+/**
+ * API에서 가져온 프롬프트 코드가 적을 때도 셀렉트 목록·열기 목록을 확인할 수 있도록 샘플 코드를 보강합니다.
+ * 저장 시 서버에 존재하지 않는 코드를 넣으면 오류가 날 수 있으니 UI 검증용 옵션 선택은 피해 주세요.
+ */
+const PROMPT_SELECT_UI_SAMPLES = ['SAMPLE_PROMPT_ALPHA', 'SAMPLE_PROMPT_BETA', 'SAMPLE_PROMPT_GAMMA'];
+
+function mergePromptCodesForSelectUi(apiCodes) {
+    const base = Array.isArray(apiCodes) ? [...apiCodes] : [];
+    if (base.length >= 3) return base;
+    return Array.from(new Set([...base, ...PROMPT_SELECT_UI_SAMPLES]));
+}
+
+/** 프롬프트 변경 모달 Paper 크기 — 조정 시 여기만 수정 */
+const PROMPT_MODAL_PAPER_SX = {
+    width: 900,
+    maxWidth: 'min(900px, calc(100vw - 64px))',
+    maxHeight: 'min(850px, 90vh)',
+    display: 'flex',
+    flexDirection: 'column',
+};
 
 function Home() {
     const [searchParams] = useSearchParams();
@@ -220,15 +242,15 @@ function Home() {
                 const content = res?.data?.content || res?.content || [];
                 return Array.isArray(content) ? content.map(p => p.code) : [];
             };
-            setChunkPromptCodes(extractCodes(results[0]));
-            setOntologyPromptCodes(extractCodes(results[1]));
-            setChatPromptCodes(extractCodes(results[2]));
-            setContentOntologyPromptCodes(extractCodes(results[3]));
-            setSchemaAnalysisPromptCodes(extractCodes(results[4]));
-            setInterTableAnalysisPromptCodes(extractCodes(results[5]));
-            setAqlGenerationPromptCodes(extractCodes(results[6]));
-            setAqlInterpretationPromptCodes(extractCodes(results[7]));
-            setAggregationStrategyPromptCodes(extractCodes(results[8]));
+            setChunkPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[0])));
+            setOntologyPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[1])));
+            setChatPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[2])));
+            setContentOntologyPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[3])));
+            setSchemaAnalysisPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[4])));
+            setInterTableAnalysisPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[5])));
+            setAqlGenerationPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[6])));
+            setAqlInterpretationPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[7])));
+            setAggregationStrategyPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[8])));
         } catch (err) {
             console.error('프롬프트 코드 목록 조회 실패:', err);
         }
@@ -697,6 +719,7 @@ function Home() {
                 title="워크스페이스 이름 변경"
                 maxWidth="xs"
                 disableBackdropClose
+                contentClassName="km-modal-form"
                 actions={(
                     <>
                         <Button
@@ -715,24 +738,23 @@ function Home() {
                 )}
             >
                 <div className="home-rename-modal-body">
-                    <Typography className="home-rename-modal-hint" component="p">
-                        변경하고자 하는 이름을 입력해주세요
-                    </Typography>
-                    <TextField
-                        label="워크스페이스 이름"
-                        fullWidth
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleRenameSubmit();
-                            }
-                        }}
-                        placeholder="이름 입력"
-                        variant="outlined"
-                        autoFocus
-                        size="small"
-                    />
+                    <div className="modal-native-field">
+                        <label htmlFor="workspace-rename-input">워크스페이스 이름</label>
+                        <input
+                            id="workspace-rename-input"
+                            type="text"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleRenameSubmit();
+                                }
+                            }}
+                            placeholder="이름 입력"
+                            autoComplete="off"
+                            autoFocus
+                        />
+                    </div>
                 </div>
             </BaseModal>
 
@@ -742,9 +764,10 @@ function Home() {
                 onClose={() => setPromptModalOpen(false)}
                 title="프롬프트 변경"
                 subtitle={`워크스페이스 - ${promptNotebook?.name || '-'}`}
-                maxWidth="lg"
-                fullWidth
-                contentClassName="home-prompt-modal-content"
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={PROMPT_MODAL_PAPER_SX}
+                contentClassName="home-prompt-modal-content km-modal-form"
                 actionsClassName="home-prompt-modal-actions"
                 actionsAlign="left"
                 actions={(
@@ -782,16 +805,14 @@ function Home() {
                                     청킹 프롬프트
                                 </label>
                                 <div className="home-prompt-row">
-                                    <select
-                                        className={`modal-input home-prompt-select-flex ${chunkPromptValue === 'NONE' ? 'modal-input--chunk-none' : ''}`}
+                                    <KmModalSelect
+                                        className="home-prompt-select-flex"
                                         value={chunkPromptValue}
                                         onChange={(e) => setChunkPromptValue(e.target.value)}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {chunkPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
+                                        options={chunkPromptCodes}
+                                        includeNoneOption
+                                        warn={chunkPromptValue === 'NONE'}
+                                    />
                                     <button
                                         type="button"
                                         className={`home-prompt-none-btn ${chunkPromptValue === 'NONE' ? 'home-prompt-none-btn--active' : ''}`}
@@ -809,16 +830,11 @@ function Home() {
                                 <label className="home-prompt-label">
                                     온톨로지 프롬프트
                                 </label>
-                                <select
-                                    className="modal-input"
+                                <KmModalSelect
                                     value={ontologyPromptValue}
                                     onChange={(e) => setOntologyPromptValue(e.target.value)}
-                                >
-                                    <option value="">-- 기본값 --</option>
-                                    {ontologyPromptCodes.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
+                                    options={ontologyPromptCodes}
+                                />
                                 <div className="home-prompt-hint">
                                     Chunk → LLM 온톨로지 추출
                                 </div>
@@ -828,16 +844,11 @@ function Home() {
                                 <label className="home-prompt-label">
                                     채팅 프롬프트
                                 </label>
-                                <select
-                                    className="modal-input"
+                                <KmModalSelect
                                     value={chatResultPromptValue}
                                     onChange={(e) => setChatResultPromptValue(e.target.value)}
-                                >
-                                    <option value="">-- 기본값 --</option>
-                                    {chatPromptCodes.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
+                                    options={chatPromptCodes}
+                                />
                                 <div className="home-prompt-hint">
                                     Chat 응답 생성
                                 </div>
@@ -847,16 +858,11 @@ function Home() {
                                 <label className="home-prompt-label">
                                     CONTENT 온톨로지
                                 </label>
-                                <select
-                                    className="modal-input"
+                                <KmModalSelect
                                     value={contentOntologyPromptValue}
                                     onChange={(e) => setContentOntologyPromptValue(e.target.value)}
-                                >
-                                    <option value="">-- 기본값 --</option>
-                                    {contentOntologyPromptCodes.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
+                                    options={contentOntologyPromptCodes}
+                                />
                                 <div className="home-prompt-hint">
                                     정형 Chunk → LLM 온톨로지
                                 </div>
@@ -866,16 +872,11 @@ function Home() {
                                 <label className="home-prompt-label">
                                     스키마 분석
                                 </label>
-                                <select
-                                    className="modal-input"
+                                <KmModalSelect
                                     value={schemaAnalysisPromptValue}
                                     onChange={(e) => setSchemaAnalysisPromptValue(e.target.value)}
-                                >
-                                    <option value="">-- 기본값 --</option>
-                                    {schemaAnalysisPromptCodes.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
+                                    options={schemaAnalysisPromptCodes}
+                                />
                                 <div className="home-prompt-hint">
                                     CSV/DB 스키마 자동 분석
                                 </div>
@@ -885,16 +886,11 @@ function Home() {
                                 <label className="home-prompt-label">
                                     테이블 간 관계 분석
                                 </label>
-                                <select
-                                    className="modal-input"
+                                <KmModalSelect
                                     value={interTableAnalysisPromptValue}
                                     onChange={(e) => setInterTableAnalysisPromptValue(e.target.value)}
-                                >
-                                    <option value="">-- 기본값 --</option>
-                                    {interTableAnalysisPromptCodes.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
+                                    options={interTableAnalysisPromptCodes}
+                                />
                                 <div className="home-prompt-hint">
                                     다건 테이블 간 FK/관계 분석
                                 </div>
@@ -904,16 +900,11 @@ function Home() {
                                 <label className="home-prompt-label">
                                     AQL 생성
                                 </label>
-                                <select
-                                    className="modal-input"
+                                <KmModalSelect
                                     value={aqlGenerationPromptValue}
                                     onChange={(e) => setAqlGenerationPromptValue(e.target.value)}
-                                >
-                                    <option value="">-- 기본값 --</option>
-                                    {aqlGenerationPromptCodes.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
+                                    options={aqlGenerationPromptCodes}
+                                />
                                 <div className="home-prompt-hint">
                                     자연어 → AQL 쿼리 생성
                                 </div>
@@ -923,16 +914,11 @@ function Home() {
                                 <label className="home-prompt-label">
                                     AQL 결과 해석
                                 </label>
-                                <select
-                                    className="modal-input"
+                                <KmModalSelect
                                     value={aqlInterpretationPromptValue}
                                     onChange={(e) => setAqlInterpretationPromptValue(e.target.value)}
-                                >
-                                    <option value="">-- 기본값 --</option>
-                                    {aqlInterpretationPromptCodes.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
+                                    options={aqlInterpretationPromptCodes}
+                                />
                                 <div className="home-prompt-hint">
                                     AQL 쿼리 결과 자연어 해석
                                 </div>
@@ -942,16 +928,11 @@ function Home() {
                                 <label className="home-prompt-label">
                                     집계 전략
                                 </label>
-                                <select
-                                    className="modal-input"
+                                <KmModalSelect
                                     value={aggregationStrategyPromptValue}
                                     onChange={(e) => setAggregationStrategyPromptValue(e.target.value)}
-                                >
-                                    <option value="">-- 기본값 --</option>
-                                    {aggregationStrategyPromptCodes.map(code => (
-                                        <option key={code} value={code}>{code}</option>
-                                    ))}
-                                </select>
+                                    options={aggregationStrategyPromptCodes}
+                                />
                                 <div className="home-prompt-hint">
                                     대규모 정형 데이터 집계 전략
                                 </div>

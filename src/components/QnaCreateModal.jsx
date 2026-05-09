@@ -102,7 +102,7 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
             title={editingQuestion ? '질문 수정' : '새 질문 작성'}
             maxWidth="md"
             fullWidth
-            contentClassName="qna-create-modal-content"
+            contentClassName="qna-create-modal-content km-modal-form"
             actionsClassName="qna-create-modal-actions"
             actions={(
                 <>

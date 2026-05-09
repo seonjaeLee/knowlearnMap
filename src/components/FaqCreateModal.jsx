@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
+import KmModalSelect from './common/modal/KmModalSelect';
 import './FaqCreateModal.css';
 
 function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
@@ -101,7 +102,7 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
             title={editingFaq ? 'FAQ 수정' : 'FAQ 작성'}
             maxWidth="md"
             fullWidth
-            contentClassName="faq-modal-content"
+            contentClassName="faq-modal-content km-modal-form"
             actionsClassName="faq-modal-actions"
             actions={(
                 <>
@@ -134,19 +135,17 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                     <div className="faq-form-group">
                         <label htmlFor="faq-category">카테고리</label>
                         <div className="faq-category-input">
-                            <select
+                            <KmModalSelect
                                 id="faq-category"
+                                placeholder="카테고리 선택"
                                 value={category}
                                 onChange={(e) => {
-                                    setCategory(e.target.value);
-                                    if (e.target.value) setNewCategory('');
+                                    const v = e.target.value;
+                                    setCategory(v);
+                                    if (v) setNewCategory('');
                                 }}
-                            >
-                                <option value="">카테고리 선택</option>
-                                {categories.map((cat, index) => (
-                                    <option key={index} value={cat}>{cat}</option>
-                                ))}
-                            </select>
+                                options={categories || []}
+                            />
                             <span className="or-divider">또는</span>
                             <input
                                 type="text"

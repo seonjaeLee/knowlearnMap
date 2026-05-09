@@ -100,7 +100,7 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
             title="FAQ 상세"
             maxWidth="xl"
             fullWidth
-            contentClassName="faq-detail-modal-content"
+            contentClassName="faq-detail-modal-content km-modal-form"
         >
                 <div className="faq-detail-modal-body">
                     {loading ? (

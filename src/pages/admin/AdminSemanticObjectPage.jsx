@@ -9,6 +9,7 @@ import {
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import AdminSemanticCategoryPage from './AdminSemanticCategoryPage';
 import BaseModal from '../../components/common/modal/BaseModal';
+import KmModalSelect from '../../components/common/modal/KmModalSelect';
 import './admin-common.css';
 
 /**
@@ -231,7 +232,7 @@ function AdminSemanticObjectPage({ compact = false }) {
         title={editing?.id ? 'Object 수정' : 'Object 추가'}
         onClose={() => setEditing(null)}
         maxWidth="sm"
-        contentClassName="admin-semantic-edit-content"
+        contentClassName="admin-semantic-edit-content km-modal-form"
         actions={(
           <>
             <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
@@ -253,13 +254,20 @@ function AdminSemanticObjectPage({ compact = false }) {
             </div>
             <div className="admin-field">
               <label className="admin-field-label">객체 카테고리</label>
-              <select className="admin-select" value={editing.categoryId ?? ''}
-                onChange={(e) => setEditing({ ...editing, categoryId: e.target.value ? Number(e.target.value) : null })}>
-                <option value="">(선택 안 함)</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.path || c.nameEn} — {c.nameKo}</option>
-                ))}
-              </select>
+              <KmModalSelect
+                placeholder="(선택 안 함)"
+                value={editing.categoryId != null ? String(editing.categoryId) : ''}
+                onChange={(e) =>
+                  setEditing({
+                    ...editing,
+                    categoryId: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+                optionItems={categories.map((c) => ({
+                  value: c.id,
+                  label: `${c.path || c.nameEn} — ${c.nameKo}`,
+                }))}
+              />
             </div>
             <div className="admin-field">
               <label className="admin-field-label">설명</label>

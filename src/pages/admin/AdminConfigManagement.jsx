@@ -451,7 +451,7 @@ function AdminConfigManagement() {
                 )}
                 onClose={closeHelp}
                 maxWidth="md"
-                contentClassName="admin-config-help-content"
+                contentClassName="admin-config-help-content km-modal-form"
                 showCloseButton={false}
                 actions={(
                     <Button variant="outlined" onClick={closeHelp}>

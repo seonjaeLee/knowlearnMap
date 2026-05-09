@@ -188,7 +188,7 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
             subtitle={`워크스페이스 - ${workspace?.name || '-'}`}
             maxWidth="sm"
             fullWidth
-            contentClassName="share-modal-content"
+            contentClassName="share-modal-content km-modal-form"
             actionsClassName="share-modal-actions"
             actionsAlign="right"
             actions={(

@@ -90,7 +90,7 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
             title={editingNotice ? '공지사항 수정' : '공지사항 작성'}
             maxWidth="md"
             fullWidth
-            contentClassName="notice-create-modal-content"
+            contentClassName="notice-create-modal-content km-modal-form"
             actionsClassName="notice-create-modal-actions"
             actions={(
                 <>

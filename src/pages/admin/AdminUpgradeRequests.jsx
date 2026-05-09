@@ -149,7 +149,7 @@ const AdminUpgradeRequests = () => {
                     title="거절 사유 입력"
                     maxWidth="sm"
                     fullWidth
-                    contentClassName="admin-upgrade-reject-content"
+                    contentClassName="admin-upgrade-reject-content km-modal-form"
                     actions={(
                         <>
                             <Button variant="outlined" onClick={() => setRejectModalOpen(false)}>

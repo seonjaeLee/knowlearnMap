@@ -5,6 +5,7 @@ import { useDialog } from '../../hooks/useDialog';
 import { Users, Search, RotateCcw, Pencil, Trash2, Unlock, Mail } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BaseModal from '../../components/common/modal/BaseModal';
+import KmModalSelect from '../../components/common/modal/KmModalSelect';
 import './admin-common.css';
 import './AdminMemberManagement.css';
 
@@ -270,7 +271,7 @@ function AdminMemberManagement() {
                 title="사용자 수정"
                 onClose={() => setEditMember(null)}
                 maxWidth="xs"
-                contentClassName="admin-member-edit-content"
+                contentClassName="admin-member-edit-content km-modal-form"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={() => setEditMember(null)}>
@@ -288,43 +289,42 @@ function AdminMemberManagement() {
 
                         <div className="admin-field">
                             <label className="admin-field-label">권한 (Role)</label>
-                            <select
-                                className="admin-select"
+                            <KmModalSelect
+                                includeEmptyOption={false}
                                 value={editMember.role}
                                 onChange={(e) => setEditMember({ ...editMember, role: e.target.value })}
-                            >
-                                <option value="USER">USER</option>
-                                <option value="SYSOP">SYSOP</option>
-                                <option value="ADMIN">ADMIN</option>
-                            </select>
+                                options={['USER', 'SYSOP', 'ADMIN']}
+                            />
                         </div>
 
                         <div className="admin-field">
                             <label className="admin-field-label">등급 (Grade)</label>
-                            <select
-                                className="admin-select"
+                            <KmModalSelect
+                                includeEmptyOption={false}
                                 value={editMember.grade}
                                 onChange={(e) => setEditMember({ ...editMember, grade: e.target.value })}
-                            >
-                                <option value="FREE">FREE</option>
-                                <option value="PRO">PRO</option>
-                                <option value="MAX">MAX</option>
-                                <option value="SPECIAL">SPECIAL (무제한)</option>
-                            </select>
+                                optionItems={[
+                                    { value: 'FREE', label: 'FREE' },
+                                    { value: 'PRO', label: 'PRO' },
+                                    { value: 'MAX', label: 'MAX' },
+                                    { value: 'SPECIAL', label: 'SPECIAL (무제한)' },
+                                ]}
+                            />
                         </div>
 
                         <div className="admin-field">
                             <label className="admin-field-label">상태 (Status)</label>
-                            <select
-                                className="admin-select"
+                            <KmModalSelect
+                                includeEmptyOption={false}
                                 value={editMember.status}
                                 onChange={(e) => setEditMember({ ...editMember, status: e.target.value })}
-                            >
-                                <option value="ACTIVE">ACTIVE</option>
-                                <option value="VERIFYING_EMAIL">VERIFYING_EMAIL</option>
-                                <option value="WAITING_APPROVAL">WAITING_APPROVAL</option>
-                                <option value="APPROVED_WAITING_PASSWORD">APPROVED_WAITING_PASSWORD</option>
-                            </select>
+                                options={[
+                                    'ACTIVE',
+                                    'VERIFYING_EMAIL',
+                                    'WAITING_APPROVAL',
+                                    'APPROVED_WAITING_PASSWORD',
+                                ]}
+                            />
                         </div>
                     </>
                 ) : null}

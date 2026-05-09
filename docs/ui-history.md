@@ -2524,3 +2524,271 @@
 
 #### JSX/JS 변경 (예외 기록)
 - `AdminSemanticCategoryPage.jsx`, `AdminSemanticObjectPage.jsx`, `AdminSemanticRelationPage.jsx`, `AdminSemanticActionPage.jsx`, `FaqCreateModal.jsx`, `NoticeCreateModal.jsx`, `PromptFormDialog.jsx`, `EditPromptDialog.jsx` — 라벨 내 `*`를 `<span className="required-asterisk">`로 분리
+
+### 172) 워크스페이스 이름 변경 모달 — 네이티브 입력 공통 스타일
+
+- **목적**: MUI `TextField`(Outlined 플로팅 라벨) 대신 도메인 추가·FAQ 폼과 같은 라벨 상단 + 네이티브 입력 리듬으로 통일
+- **영향**: 홈 워크스페이스 이름 변경만 변경
+
+#### CSS 변경
+- `src/index.css` — 공통 `.modal-native-field`(라벨·`input[type=text/password/email]` 포커스 링)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx` — `TextField` 제거, `modal-native-field` + `label`/`input`
+
+### 173) 워크스페이스 이름 변경 모달 — 안내 문구 제거
+
+- **목적**: 본문 상단 힌트(「변경하고자 하는 이름을 입력해주세요」) 제거로 레이아웃 단순화
+- **영향**: 홈 워크스페이스 이름 변경 모달만 변경
+
+#### CSS 변경
+- `src/pages/Home.css` — `.home-rename-modal-hint` 제거
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx` — 해당 `Typography` 블록 제거, 미사용 `Typography` import 정리
+
+### 174) Decision(alert/confirm) 팝업 가로 — `min-width: 350px`만
+
+- **목적**: MUI `Dialog` 기본 `width` / `max-width` 제거 후 최소 가로 350px만 적용(본문 너비에 맞게 확장)
+- **영향**: `alert`·`confirm`만(`prompt`·일반 `BaseModal`은 변경 없음)
+
+#### CSS 변경
+- `src/context/DialogContext.module.scss` — `.decisionPaper`: 기존 `max-width: 488px` 제거, `width: auto`·`max-width: none`·`min-width: 350px`
+
+#### JSX/JS 변경 (예외 기록)
+- `src/context/DialogContext.jsx` — Decision일 때만 `maxWidth={false}`·`fullWidth={false}`로 MUI 용지 크기 규칙 비활성화
+
+### 175) Decision(alert/confirm) `.decisionPaper` 최소 가로 390px
+
+- **목적**: ### 174에서 정한 최소 가로 `350px`를 **`390px`**로 조정
+- **영향**: `alert`·`confirm` 용지 최소 너비만 변경
+
+#### CSS 변경
+- `src/context/DialogContext.module.scss` — `.decisionPaper` `min-width: 390px`
+
+### 176) 팝업 본문 폼 컨트롤 규격(`km-modal-form`)·`ModalFormField` 도입
+
+- **목적**: 팝업에만 공통 입력·선택·MUI Outlined·체크/라디오 톤을 한 파일에서 유지보수하고, 필드 마크업은 `ModalFormField`로 통일할 수 있게 함
+- **영향**: 전역 스타일 로드·홈 이름 변경·프롬프트 모달에 `km-modal-form` 적용(파일럿)
+
+#### 문서
+- `docs/modal-form-spec.md` — 신규
+- `docs/modal-spec.md` — §9에서 `modal-form-spec` 링크
+
+#### CSS 변경
+- `src/styles/km-modal-form.css` — `.km-modal-form` 및 하위 규칙(네이티브·MUI·`.modal-input` 팝업 내 보정)
+- `src/pages/Home.css` — `.modal-input--chunk-none` 제거(동일 규칙을 `km-modal-form`으로 이전)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/main.jsx` — `km-modal-form.css` import
+- `src/components/common/modal/ModalFormField.jsx`, `ModalFormField.module.scss` — 신규
+- `src/pages/Home.jsx` — 워크스페이스 이름 변경·프롬프트 변경 모달 `contentClassName`에 `km-modal-form`
+
+### 177) 홈「프롬프트 변경」모달 — 필드 카드 테두리 제거·그리드 간격 확대
+
+- **목적**: `.home-prompt-field` 박스 테두리를 없애고 그리드 갭을 넓혀 블록 간 여백으로 가독성 확보; 네이티브 `select`는 포인터 커서로 조작감 명확화
+- **영향**: 워크스페이스 프롬프트 변경 모달 레이아웃만 변경
+
+#### CSS 변경
+- `src/pages/Home.css` — `.home-prompt-modal-grid` `gap`을 `var(--spacing-lg)` × `var(--spacing-xl)`, 하단 여백 `var(--spacing-md)`; `.home-prompt-field` 테두리·배경·패딩 제거(플랫 스택)
+- `src/styles/km-modal-form.css` — `.km-modal-form select:not(:disabled)` `cursor: pointer`
+
+### 178) 홈「프롬프트 변경」— 라벨 스크린리더 전용·optgroup·select 크기
+
+- **목적**: 상단 라벨을 시각적으로 숨기고 드롭다운 내 `optgroup`으로 필드명 노출; 네이티브 select 여백·최소 높이·NONE 버튼 높이 정렬
+- **영향**: 워크스페이스 프롬프트 변경 모달만 변경
+
+#### CSS 변경
+- `src/pages/Home.css` — `.home-prompt-label` 시각 숨김; `.km-modal-form .home-prompt-modal-shell select.modal-input` 패딩·min-height; `.home-prompt-none-btn` min-height; 힌트 `font-size-xs`·상단 여백
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx` — 각 `label`에 `htmlFor`, `select`에 `id`; 옵션을 `<optgroup label="…">`로 감쌈
+
+### 179) 홈「프롬프트 변경」— ### 178 원복(라벨·옵션 구조)
+
+- **목적**: 라벨 숨김 시 선택값만으로 항목 구분이 어렵다는 피드백 반영 — 상단 라벨 재표시, `optgroup` 제거, 프롬프트 전용 select 높이·패딩 오버라이드 및 NONE 버튼 min-height 제거
+- **영향**: 워크스페이스 프롬프트 변경 모달만 변경
+
+#### CSS 변경
+- `src/pages/Home.css` — ### 178에서 바꾼 `.home-prompt-label`/셀렉트/NONE/힌트 규격을 ### 177 직후 상태로 되돌림
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx` — `htmlFor`/`id`/`optgroup` 제거, 평탄한 `<option>` 목록으로 복구
+
+### 180) 홈「프롬프트 변경」힌트 왼쪽 여백
+
+- **목적**: `.home-prompt-hint` 본문 들여쓰기
+- **영향**: 프롬프트 변경 모달 힌트만
+
+#### CSS 변경
+- `src/pages/Home.css` — `.home-prompt-hint` `margin-left: var(--spacing-sm)`(8px)
+
+### 181) 팝업 네이티브 `select` 규격 적용(`km-modal-form`)
+
+- **목적**: `modal-form-spec`대로 `select`를 input·textarea와 분리해 최소 높이·비대칭 우패딩·라인 높이 통일; 프롬프트 변경의 NONE 버튼 높이 정렬
+- **영향**: `contentClassName`에 `km-modal-form`이 있는 모든 팝업의 네이티브 `select`; 홈 프롬프트 변경 NONE 버튼
+
+#### CSS 변경
+- `src/styles/km-modal-form.css` — `.km-modal-form select` 전용 블록; `select.modal-input` 오버라이드
+- `src/pages/Home.css` — `.home-prompt-none-btn` `min-height`·`align-self`·`box-sizing`
+
+#### 문서 변경
+- `docs/modal-form-spec.md` — §6 네이티브 `select` 규격 문구 보강
+
+### 182) 프롬프트 변경 셀렉트 — 컴팩트 높이·화살표 여백·목록 샘플 보강
+
+- **목적**: 네이티브 select 세로 여백을 하단 버튼에 가깝게 줄이고, 우측 화살표 들러붙음 완화; API 목록이 짧을 때 UI용 샘플 코드로 드롭다운 항목 수 확보
+- **영향**: `km-modal-form` 내 모든 네이티브 select; 홈 프롬프트 코드 fetch·청킹 NONE 버튼
+
+#### CSS 변경
+- `src/styles/km-modal-form.css` — `.km-modal-form select`·`select.modal-input` 패딩·line-height·min-height 조정
+- `src/pages/Home.css` — `.home-prompt-none-btn` 높이를 셀렉트와 맞추도록 `min-height` 제거·세로 패딩 `spacing-xs`
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/Home.jsx` — `mergePromptCodesForSelectUi`·`PROMPT_SELECT_UI_SAMPLES`, fetch 후 코드 배열 보강
+
+#### 문서 변경
+- `docs/modal-form-spec.md` — §6 select 세로·우패딩 설명 갱신
+
+### 183) 팝업 폼 필드 UI 통일 — `radius-sm`·패딩·가이드 보강
+
+- **목적**: 가이드(`modal-form-spec`)대로 `modal-native-field`·`km-modal-form`·동일 패턴 폼의 모서리·패딩·테두리를 한 계열로 맞춤; 과도한 라운드(`radius-md`) 완화
+- **영향**: 팝업·전역 네이티브 한 줄 입력·도메인 추가·FAQ 생성 폼
+
+#### CSS 변경
+- `src/index.css` — `.modal-native-field` 입력 `border-radius` → `var(--radius-sm)`
+- `src/styles/km-modal-form.css` — 네이티브 input·textarea·select·MUI Outlined·`.modal-input` 모두 `--radius-sm`; `select` 패딩을 한 줄 입력과 세로·좌 동일·우만 화살표 여유
+- `src/pages/DomainSelection.css` — 도메인 추가 입력·에러 박스 `radius-sm`
+- `src/components/FaqCreateModal.css` — `.faq-form-group` 필드 토큰화·`radius-sm`·패딩 정렬
+
+#### 문서 변경
+- `docs/modal-form-spec.md` — §4 토큰 표로 통일 기준 명시, §6 요약 정리
+
+### 184) 전역 `.modal-input` 모서리 4px(`--radius-sm`) 통일
+
+- **목적**: 프롬프트 변경 등 `class="modal-input"` 사용처가 레거시 `8px` 모서리를 쓰지 않도록, 한 줄 input(`.modal-native-field`)과 동일하게 **4px**
+- **영향**: `.modal-input` 클래스를 쓰는 모든 select·입력(팝업 외 포함)
+
+#### CSS 변경
+- `src/index.css` — `.modal-input` `border-radius: var(--radius-sm)`, 테두리색 `var(--color-border)`
+
+#### 문서 변경
+- `docs/modal-form-spec.md` — 유지보수 문구에 `.modal-input` 명시
+
+### 185) 프롬프트 변경 — 네이티브 select 제거·`KmModalSelect`(MUI)로 OS 무관 통일
+
+- **목적**: 맥/윈도 등 OS별 펼침 UI 차이 제거; 트리거·화살표 여백·열린 목록을 토큰 기준으로 통일
+- **영향**: 홈 워크스페이스 프롬프트 변경 모달 전 필드; 메뉴 패널 전역 클래스는 다른 화면 재사용 가능
+
+#### CSS 변경
+- `src/styles/km-modal-form.css` — `.km-modal-select-menu-paper` 및 메뉴 아이템 토큰 스타일
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/KmModalSelect.jsx`, `KmModalSelect.module.scss` — 신규
+- `src/pages/Home.jsx` — `<select>` → `KmModalSelect`
+
+#### 문서 변경
+- `docs/modal-form-spec.md` — §6 네이티브 select 지양·`KmModalSelect` 안내
+
+### 186) 홈「프롬프트 변경」— 액션 영역 세로 여백·그리드 gap(32/48)
+
+- **목적**: `DialogActions` 세로 패딩이 커서 하단 밴드가 ~100px에 가깝게 보이는 문제 완화; 2열 그리드는 열 32px·행 48px 토큰으로 정리
+- **영향**: 프롬프트 변경 모달만
+
+#### CSS 변경
+- `src/pages/Home.css` — `.home-prompt-modal-actions` 세로 `var(--spacing-md)`(16px), 가로 `var(--spacing-lg)`(24px), `min-height: 0`; `.home-prompt-modal-grid` `gap: var(--spacing-xl) var(--spacing-2xl)`(행 32px · 열 48px)
+
+### 187) 홈「프롬프트 변경」그리드 gap 행·열 수정
+
+- **목적**: ### 186에서 `gap` 두 값이 행·열 의도와 반대로 적용된 것 수정(CSS `gap` 앞=행, 뒤=열)
+- **영향**: `.home-prompt-modal-grid`만
+
+#### CSS 변경
+- `src/pages/Home.css` — `gap: var(--spacing-xl) var(--spacing-2xl)`(행 32px · 열 48px)
+
+### 188) 홈「프롬프트 변경」— 그리드 gap 주석·액션 패딩 선택자 보강
+
+- **목적**: `gap` 행·열 의미 주석으로 재오류 방지; `.km-base-modal-actions.home-prompt-modal-actions`로 하단 패딩 덮어쓰기 확실화
+- **영향**: 프롬프트 변경 모달만
+
+#### CSS 변경
+- `src/pages/Home.css` — 위 선택자·그리드 주석
+
+### 189) `KmModalSelect` 높이 38px·프롬프트 모달 `paperSx`(900×850)·`BaseModal` 확장
+
+- **목적**: 셀렉트 트리거 높이 38px 고정; 프롬프트 변경 모달 가로 900·세로 상한 850px를 `Home.jsx` 상수로 조절 가능하게 함; `BaseModal`에 `paperSx` 지원
+- **영향**: 모든 `BaseModal` 호출(선택 prop); 프롬프트 변경·`KmModalSelect`·청킹 NONE 버튼 높이
+
+#### CSS 변경
+- `src/components/common/modal/KmModalSelect.module.scss` — 트리거 38px
+- `src/pages/Home.css` — `.home-prompt-modal-content` flex 스크롤; 미사용 `.home-prompt-modal` 블록 제거; NONE 버튼 `min-height: 38px`
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/common/modal/BaseModal.jsx` — `paperSx` → `PaperProps.sx`
+- `src/pages/Home.jsx` — `PROMPT_MODAL_PAPER_SX`, 프롬프트 `BaseModal`에 `maxWidth={false}` `fullWidth={false}` `paperSx`
+
+#### 문서 변경
+- `docs/modal-spec.md` — §7 `paperSx` 안내
+
+### 190) BaseModal 폼 공통 — `km-modal-form` 전반 적용·`<select>` → `KmModalSelect`
+
+- **목적**: 프롬프트 변경 모달과 동일하게 팝업 본문에 `km-modal-form`을 두어 입력·셀렉트 규격 통일; OS별 네이티브 `<select>` 제거
+- **영향**: `BaseModal`을 쓰는 편집·설정류 모달·글로벌 `DialogContext` 프롬프트; 목록/필터 바의 네이티브 `<select>`는 범위 제외
+
+#### CSS 변경
+- 없음(기존 `src/styles/km-modal-form.css` 활용)
+
+#### JSX/JS 변경
+- `src/components/common/modal/KmModalSelect.jsx` — `optionItems` `{ value, label, disabled? }`, `includeEmptyOption`, 선택적 `id`(라벨 연결), `inputProps.id`
+- `src/context/DialogContext.jsx` — `type === 'prompt'`일 때만 콘텐츠에 `km-modal-form`
+- `<select>` → `KmModalSelect`: `DbConnectionModal`, `ScheduledImportModal`, `FaqCreateModal`, `ReportCreationModal`, `AdminSemanticObjectPage`, `AdminSemanticCategoryPage`, `AdminSemanticActionPage`, `AdminSemanticRelationPage`, `AdminMemberManagement`
+- `contentClassName`에 `km-modal-form` 병합: `ForgotPasswordModal`, `DomainSelection`, 프롬프트 `PromptFormDialog`·`EditPromptDialog`, `NoticeCreateModal`, `NoticeDetailModal`, `DictionaryView`(편집·이동 모달), `ReportResultModal`, `AddSourceModal`, `ReportGenerationModal`, `ShareSettingsModal`, `QnaCreateModal`, `QnaDetailModal`, `FaqDetailModal`, `AdminConfigManagement`(도움말), `AdminUpgradeRequests`, `NotebookDetail`(청킹·메타 모달) 등
+
+### 191) 비밀번호 찾기 모달 — `ModalFormField`·네이티브 이메일 입력
+
+- **목적**: `km-modal-form` + `modal-form-spec`에 맞춰 MUI `TextField` 제거, 라벨 상단·토큰 기반 한 줄 입력으로 다른 팝업 폼과 통일
+- **영향**: 로그인 플로우「비밀번호 찾기」모달만
+
+#### CSS 변경
+- `src/components/ForgotPasswordModal.module.scss` — 안내 문단 `margin`·`font-family`를 토큰(`--font-family`)으로 정리
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ForgotPasswordModal.jsx` — `ModalFormField` + `input type="email"`; 라벨「이메일」·필수 별표
+
+### 192) 포커스 링·MUI primary를 `--color-accent`와 통일
+
+- **목적**: 네이티브 입력 포커스(테두리·외곽 glow)와「메일 전송」등 primary 버튼 색이 서로 다르게 보이던 문제 완화 — MUI 기본 primary(#1976d2)와 `:root --color-accent`(#1a73e8) 불일치 제거, 포커스 링은 accent 기반 단일 토큰으로 유지보수
+- **영향**: 전역 MUI `color="primary"` 컴포넌트; `.km-modal-form`·`.modal-native-field` 포커스
+
+#### CSS 변경
+- `src/index.css` — `--shadow-focus-input`(accent `color-mix`); `.modal-native-field` 포커스 `box-shadow`가 해당 변수 참조
+- `src/styles/km-modal-form.css` — 네이티브·MUI Outlined 포커스 `box-shadow` → `var(--shadow-focus-input)`
+
+#### JSX/JS 변경 (예외 기록)
+- `src/main.jsx` — `palette.primary.main` `#1a73e8`, `dark` `#1557b0`
+
+#### 문서 변경
+- `docs/modal-form-spec.md` — 포커스 행에 `--shadow-focus-input` 안내
+
+### 193) 비밀번호 찾기 — 필수 표시 제거·이메일 검증·포커스 토큰·전송 버튼 비활성
+
+- **목적**: 단일 입력이라 필수 별표 제거; 형식 오류 시「메일 전송」비활성; 포커스 테두리·링은 `--color-accent`·`--shadow-focus-input`과 동일하게 보이도록 모듈에서 보강
+- **영향**: `ForgotPasswordModal`만
+
+#### CSS 변경
+- `src/components/ForgotPasswordModal.module.scss` — `.emailInput` 기본 필드 토큰; `:global(.km-modal-form)` 하위 `:focus` / `:focus-visible`
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/ForgotPasswordModal.jsx` — `isValidEmail`; `ModalFormField` `required` 제거; 전송 버튼 `disabled={loading || !emailOk}`; API 요청 본문 `email.trim()`
+
+### 194) `km-modal-form` 네이티브 포커스 — `!important`·`:invalid:focus` 보강
+
+- **목적**: `type=email` 등으로 `:invalid`일 때 브라우저·다른 스타일이 `border-color`를 덮어 포커스 액센트가 취소선되어 보이던 문제 제거; MUI Dialog 하위에서도 공통 토큰 유지
+- **영향**: `.km-modal-form` 안 모든 네이티브 `input`/`select`/`textarea` 포커스; MUI Outlined 포커스 `box-shadow`
+
+#### CSS 변경
+- `src/styles/km-modal-form.css` — `:focus`·`:focus-visible`에 `!important`; `:invalid:focus` 보강; `.MuiOutlinedInput-root.Mui-focused` `box-shadow`에 `!important`
+- `src/components/ForgotPasswordModal.module.scss` — 동일 포커스 규칙에 `!important`, `:invalid:focus` 포함
+
+#### 문서 변경
+- `docs/modal-form-spec.md` — 포커스 행에 `!important`·`:invalid` 보강 설명

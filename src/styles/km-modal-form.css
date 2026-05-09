@@ -1,0 +1,250 @@
+/**
+ * 팝업(BaseModal 콘텐츠) 전용 폼 컨트롤 규격.
+ * 적용: BaseModal contentClassName에 `km-modal-form` 포함.
+ * 문서: docs/modal-form-spec.md
+ *
+ * 네이티브 필드는 `index.css` `.modal-native-field` 한 줄 입력과 동일 토큰:
+ * - 모서리: --radius-sm (모달 하단 버튼·modal-spec §4 와 통일)
+ * - 한 줄 패딩: 세로 calc(sm+xs), 가로 14px
+ * - select만 우측 패딩 확대(네이티브 화살표 여유)
+ */
+
+.km-modal-form {
+  font-family: var(--font-family);
+}
+
+/* ---------- 필드 블록(수동 마크업 시 ModalFormField와 동일 리듬) ---------- */
+.km-modal-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.km-modal-form-field:last-child {
+  margin-bottom: 0;
+}
+
+.km-modal-form-label {
+  display: block;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.km-modal-form-control {
+  width: 100%;
+  min-width: 0;
+}
+
+.km-modal-form-helper {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.km-modal-form-helper--error {
+  color: #dc2626;
+}
+
+/* ---------- 네이티브: 한 줄 입력·여러 줄 ---------- */
+.km-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']),
+.km-modal-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.km-modal-form textarea {
+  white-space: pre-wrap;
+  min-height: calc(4 * var(--spacing-md));
+  resize: vertical;
+}
+
+/* ---------- 네이티브 select (팝업 공통: 모달 하단 버튼과 유사한 세로 밀도·우측 화살표 여유) ---------- */
+.km-modal-form select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 0;
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) calc(var(--spacing-xl) + var(--spacing-md)) calc(var(--spacing-sm) + var(--spacing-xs)) 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.km-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):disabled,
+.km-modal-form select:disabled,
+.km-modal-form textarea:disabled {
+  background-color: var(--form-control-disabled-bg);
+  border-color: var(--form-control-disabled-border);
+  color: var(--form-control-disabled-text);
+  cursor: not-allowed;
+}
+
+/* UA·MUI·`:invalid`(type=email 등)가 덮는 경우 대비 — 팝업 공통 포커스 토큰 강제 */
+.km-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):focus,
+.km-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):focus-visible,
+.km-modal-form select:focus,
+.km-modal-form select:focus-visible,
+.km-modal-form textarea:focus,
+.km-modal-form textarea:focus-visible {
+  outline: none !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: var(--shadow-focus-input) !important;
+}
+
+/* 형식 오류 중에도 포커스 테두리는 액센트 유지(브라우저 `:invalid` 테두리 무시) */
+.km-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):invalid:focus,
+.km-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):invalid:focus-visible,
+.km-modal-form textarea:invalid:focus,
+.km-modal-form textarea:invalid:focus-visible {
+  border-color: var(--color-accent) !important;
+  box-shadow: var(--shadow-focus-input) !important;
+}
+
+.km-modal-form select:not(:disabled) {
+  cursor: pointer;
+}
+
+.km-modal-form select.km-modal-form-control--warning,
+.km-modal-form input.km-modal-form-control--warning,
+.km-modal-form select.modal-input--chunk-none,
+.km-modal-form input.modal-input--chunk-none {
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+  color: #dc2626 !important;
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+/* 전역 `.modal-input` 여백·단위가 팝업 그리드와 충돌할 때 정리 */
+.km-modal-form .modal-input {
+  margin-bottom: 0 !important;
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) 14px !important;
+  font-size: var(--font-size-base) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* select.modal-input: 전역 `.modal-input` 패딩 덮어쓰기(한 줄 input과 세로·좌 동일, 우만 화살표 여유) */
+.km-modal-form select.modal-input {
+  min-height: 0 !important;
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) calc(var(--spacing-xl) + var(--spacing-md)) calc(var(--spacing-sm) + var(--spacing-xs)) 14px !important;
+  line-height: 1.4 !important;
+}
+
+/* ---------- MUI TextField / Select (Outlined) ---------- */
+.km-modal-form .MuiTextField-root {
+  width: 100%;
+}
+
+.km-modal-form .MuiOutlinedInput-root {
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-base) !important;
+}
+
+.km-modal-form .MuiOutlinedInput-input {
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) 14px !important;
+}
+
+.km-modal-form .MuiOutlinedInput-inputSizeSmall {
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) 14px !important;
+}
+
+.km-modal-form .MuiInputLabel-root {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-base) !important;
+}
+
+.km-modal-form .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-border) !important;
+}
+
+.km-modal-form .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-border-hover) !important;
+}
+
+.km-modal-form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-accent) !important;
+  box-shadow: var(--shadow-focus-input) !important;
+}
+
+.km-modal-form .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline {
+  border-color: var(--form-control-disabled-border) !important;
+}
+
+.km-modal-form .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
+  border-color: #dc2626 !important;
+}
+
+.km-modal-form .MuiFormHelperText-root {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-sm) !important;
+  margin-top: var(--spacing-xs) !important;
+}
+
+/* ---------- MUI Checkbox / Radio ---------- */
+.km-modal-form .MuiFormControlLabel-root {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-items: flex-start !important;
+}
+
+.km-modal-form .MuiFormControlLabel-label {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-base) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.km-modal-form .MuiCheckbox-root,
+.km-modal-form .MuiRadio-root {
+  padding: var(--spacing-xs) !important;
+}
+
+/* ---------- KmModalSelect — 포털로 열리는 메뉴(OS별 네이티브 목록 대신 동일 UI) ---------- */
+.km-modal-select-menu-paper.MuiPaper-root.MuiMenu-paper {
+  border-radius: var(--radius-sm) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-medium) !important;
+  margin-top: var(--spacing-xs) !important;
+  max-height: min(42vh, 360px) !important;
+  padding: var(--spacing-xs) 0 !important;
+}
+
+.km-modal-select-menu-paper .MuiMenuItem-root {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-base) !important;
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  min-height: 40px !important;
+}
+
+.km-modal-select-menu-paper .MuiMenuItem-root.Mui-selected {
+  background-color: var(--color-accent-light) !important;
+}
+
+.km-modal-select-menu-paper .MuiMenuItem-root.Mui-selected:hover {
+  background-color: var(--color-accent-light) !important;
+}
+
+.km-modal-select-menu-paper .MuiMenuItem-root:hover {
+  background-color: var(--color-bg-hover) !important;
+}

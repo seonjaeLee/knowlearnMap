@@ -9,6 +9,7 @@ import { AuthProvider } from './context/AuthContext'
 import { DialogProvider } from './context/DialogContext'
 import axios from 'axios'
 import './index.css'
+import './styles/km-modal-form.css'
 import App from './App.jsx'
 
 // Sentry 초기화 (VITE_SENTRY_DSN 환경변수가 있을 때만 활성화)
@@ -46,6 +47,13 @@ const queryClient = new QueryClient({
 const theme = createTheme({
   typography: {
     fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif",
+  },
+  palette: {
+    primary: {
+      /* MUI 기본(#1976d2) 대신 `:root --color-accent`와 동일 — primary 버튼·네이티브 포커스 테두리 톤 통일 */
+      main: '#1a73e8',
+      dark: '#1557b0',
+    },
   },
 })
 

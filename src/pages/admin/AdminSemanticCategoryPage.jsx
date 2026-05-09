@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BaseModal from '../../components/common/modal/BaseModal';
+import KmModalSelect from '../../components/common/modal/KmModalSelect';
 import './admin-common.css';
 
 /**
@@ -390,7 +391,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
         title={editing?.id ? `${typeLabel} 카테고리 수정` : `${typeLabel} 카테고리 추가`}
         onClose={() => setEditing(null)}
         maxWidth="sm"
-        contentClassName="admin-semantic-edit-content"
+        contentClassName="admin-semantic-edit-content km-modal-form"
         actions={(
           <>
             <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
@@ -422,15 +423,22 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
             </div>
             <div className="admin-field">
               <label className="admin-field-label">상위 카테고리 (parent)</label>
-              <select className="admin-input" value={editing.parentId ?? ''}
-                onChange={(e) => setEditing({ ...editing, parentId: e.target.value ? Number(e.target.value) : null })}>
-                <option value="">(루트 — 최상위)</option>
-                {items.filter((it) => it.id !== editing.id).map((it) => (
-                  <option key={it.id} value={it.id}>
-                    {it.path || it.nameEn} — {it.nameKo}
-                  </option>
-                ))}
-              </select>
+              <KmModalSelect
+                placeholder="(루트 — 최상위)"
+                value={editing.parentId != null ? String(editing.parentId) : ''}
+                onChange={(e) =>
+                  setEditing({
+                    ...editing,
+                    parentId: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+                optionItems={items
+                  .filter((it) => it.id !== editing.id)
+                  .map((it) => ({
+                    value: it.id,
+                    label: `${it.path || it.nameEn} — ${it.nameKo}`,
+                  }))}
+              />
             </div>
             <div className="admin-field">
               <label className="admin-field-label">설명</label>

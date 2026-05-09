@@ -2100,7 +2100,7 @@ function NotebookDetail() {
                     onClose={() => setChunkModalPage(null)}
                     maxWidth="md"
                     headerVariant="filled"
-                    contentClassName="chunk-modal-body"
+                    contentClassName="chunk-modal-body km-modal-form"
                 >
                     {chunkModalPage ? highlightText(chunkModalPage.content, searchQuery, chunkModalPage.id) : null}
                 </BaseModal>
@@ -2143,7 +2143,7 @@ function NotebookDetail() {
                     onClose={() => setBizMetaOpen(false)}
                     maxWidth="md"
                     headerClassName="meta-modal-header"
-                    contentClassName="meta-modal-content"
+                    contentClassName="meta-modal-content km-modal-form"
                     actionsClassName="meta-modal-actions"
                     actions={(
                         <>
@@ -2226,7 +2226,7 @@ function NotebookDetail() {
                     onClose={() => setItMetaOpen(false)}
                     maxWidth="md"
                     headerClassName="meta-modal-header"
-                    contentClassName="meta-modal-content"
+                    contentClassName="meta-modal-content km-modal-form"
                     actionsClassName="meta-modal-actions"
                     actions={(
                         <>

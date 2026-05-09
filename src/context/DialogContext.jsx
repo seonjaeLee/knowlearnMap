@@ -155,12 +155,16 @@ export function DialogProvider({ children }) {
         onClose={handleCancel}
         disableBackdropClose={dialogState.disableBackdropClose}
         disableEscapeKeyDown={dialogState.disableEscapeKeyDown}
+        maxWidth={isDecisionDialog ? false : 'sm'}
+        fullWidth={!isDecisionDialog}
         showCloseButton={!isDecisionDialog}
         headerAlign={isDecisionDialog ? 'center' : 'left'}
         actionsAlign={isDecisionDialog ? 'center' : 'right'}
         paperClassName={isDecisionDialog ? styles.decisionPaper : ''}
         headerClassName={isDecisionDialog ? styles.decisionHeader : ''}
-        contentClassName={isDecisionDialog ? styles.decisionContent : ''}
+        contentClassName={
+          isDecisionDialog ? styles.decisionContent : isPrompt ? 'km-modal-form' : ''
+        }
         actionsClassName={isDecisionDialog ? styles.decisionActions : ''}
         actions={(
           <Stack direction="row" spacing={1}>

@@ -100,7 +100,7 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
             title="공지사항"
             maxWidth="xl"
             fullWidth
-            contentClassName="notice-detail-modal-content"
+            contentClassName="notice-detail-modal-content km-modal-form"
         >
                 <div className="notice-detail-modal-body">
                     {loading ? (

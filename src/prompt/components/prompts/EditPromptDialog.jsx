@@ -49,7 +49,7 @@ const EditPromptDialog = ({ open, prompt, categories, purposes, onClose, onSave,
       title="프롬프트 정보 수정"
       onClose={onClose}
       maxWidth="sm"
-      contentClassName="prompt-form-modal-content"
+      contentClassName="prompt-form-modal-content km-modal-form"
       actions={(
         <>
           <Button variant="outlined" onClick={onClose} sx={{ color: 'text.secondary' }}>

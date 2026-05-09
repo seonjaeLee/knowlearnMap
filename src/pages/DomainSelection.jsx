@@ -225,7 +225,7 @@ function DomainSelection() {
                 title="새 도메인 추가"
                 onClose={closeAddModal}
                 maxWidth="xs"
-                contentClassName="domain-add-modal-content"
+                contentClassName="domain-add-modal-content km-modal-form"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={closeAddModal} disabled={adding}>

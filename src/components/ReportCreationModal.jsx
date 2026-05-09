@@ -1,10 +1,12 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@mui/material';
 import BaseModal from './common/modal/BaseModal';
+import KmModalSelect from './common/modal/KmModalSelect';
 import './ReportCreationModal.css';
 
 function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
     const textAreaRef = useRef(null);
+    const [reportLang, setReportLang] = useState('ko');
 
     if (!isOpen) return null;
 
@@ -37,7 +39,7 @@ function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
             title="보고서 생성"
             maxWidth="md"
             fullWidth
-            contentClassName="report-creation-modal-content"
+            contentClassName="report-creation-modal-content km-modal-form"
             actionsClassName="report-creation-modal-actions"
             actions={(
                 <>
@@ -62,12 +64,17 @@ function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
                     {/* Language Selection */}
                     <div className="form-section">
                         <label className="form-label">언어를 선택하세요</label>
-                        <select className="form-select">
-                            <option value="ko">한국어 (기본)</option>
-                            <option value="en">English</option>
-                            <option value="ja">日本語</option>
-                            <option value="zh">中文</option>
-                        </select>
+                        <KmModalSelect
+                            includeEmptyOption={false}
+                            value={reportLang}
+                            onChange={(e) => setReportLang(e.target.value)}
+                            optionItems={[
+                                { value: 'ko', label: '한국어 (기본)' },
+                                { value: 'en', label: 'English' },
+                                { value: 'ja', label: '日本語' },
+                                { value: 'zh', label: '中文' },
+                            ]}
+                        />
                     </div>
 
                     {/* Custom Prompt */}

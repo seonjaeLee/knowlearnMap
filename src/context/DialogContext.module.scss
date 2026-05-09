@@ -7,8 +7,11 @@
   line-height: 1.5 !important;
 }
 
+/* alert/confirm만: MUI Dialog 기본 width·max-width 제약 해제 후 최소 가로만 고정 */
 .decisionPaper {
-  max-width: 488px !important;
+  width: auto !important;
+  max-width: none !important;
+  min-width: 390px !important;
 }
 
 .decisionContent {
