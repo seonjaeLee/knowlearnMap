@@ -117,7 +117,7 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
                                 <th style={{ width: 60 }}>#</th>
                                 <th>English</th>
                                 <th>한글</th>
-                                <th className="admin-col-actions" style={{ width: 60 }}>액션</th>
+                                <th className="admin-col-actions" style={{ width: 60 }}>관리</th>
                             </tr>
                         </thead>
                         <tbody>

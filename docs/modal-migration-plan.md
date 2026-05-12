@@ -48,4 +48,4 @@
 - [ ] `useDialog` API 사용 예시 공유
 - [ ] 전환 우선순위 대상 목록 공유
 - [ ] 롤백 방법(기존 AlertContext fallback) 공유
-- [ ] UI 히스토리 문서 업데이트 확인
+- [ ] `docs/ui-history.md` — **담당자가 요청할 때만** 갱신(`.cursor/rules/ui-history-on-request.mdc`); 자동 반영 체크 항목 아님

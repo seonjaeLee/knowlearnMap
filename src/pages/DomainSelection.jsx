@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import axios from 'axios';
 import { API_URL } from '../config/api';
+import { Loader2, Trash2 } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import BaseModal from '../components/common/modal/BaseModal';
 import './DomainSelection.css';
@@ -151,6 +152,7 @@ function DomainSelection() {
     return (
         <div className="domain-selection-container">
             <div className="domain-selection-content">
+                <div className="km-main-sticky-head">
                 <PageHeader
                     title="도메인 선택"
                     breadcrumbs={['어드민센터']}
@@ -168,53 +170,77 @@ function DomainSelection() {
                     <span>관리자 로그인 ({user.email})</span>
                     <span className="domain-content-help">작업할 도메인을 선택해주세요.</span>
                 </div>
+                </div>
 
                 {loading && <p>Loading domains...</p>}
                 {error && <p className="error-message">{error}</p>}
 
-                <div className="domain-list-container">
+                <div className="domain-list-container km-data-table-dense">
                     <table className="domain-list-table">
                         <thead>
                             <tr>
-                                <th width="64">선택</th>
+                                <th className="domain-list-th-select" width="56">선택</th>
                                 <th width="200">이름</th>
                                 <th>설명</th>
-                                <th width="92">관리</th>
+                                <th className="domain-list-th-action">
+                                    <span className="domain-list-actions-head">관리</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {domains.map(domain => (
-                                <tr
-                                    key={domain.id}
-                                    onClick={() => handleSelectDomain(domain.id)}
-                                    className={`domain-list-row ${String(domain.id) === currentDomainId ? 'domain-selected' : ''}`}
-                                >
-                                    <td className="domain-radio-cell">
-                                        <input
-                                            type="radio"
-                                            name="domain-select"
-                                            checked={String(domain.id) === currentDomainId}
-                                            onChange={() => handleSelectDomain(domain.id)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="domain-radio-input"
-                                        />
-                                    </td>
-                                    <td className="domain-list-name">
-                                        {domain.name}
-                                        {String(domain.id) === currentDomainId && <span className="domain-current-badge">현재</span>}
-                                    </td>
-                                    <td className="domain-list-desc">{domain.description || '-'}</td>
-                                    <td className="domain-list-action">
-                                        <button
-                                            className="delete-btn-small"
-                                            onClick={(e) => handleDeleteDomain(e, domain)}
-                                            disabled={deleting === domain.id}
-                                        >
-                                            {deleting === domain.id ? '삭제중...' : '삭제'}
-                                        </button>
+                            {!loading && domains.length === 0 ? (
+                                <tr>
+                                    <td className="domain-list-empty" colSpan={4}>
+                                        등록된 도메인이 없습니다.
                                     </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                domains.map(domain => (
+                                    <tr
+                                        key={domain.id}
+                                        onClick={() => handleSelectDomain(domain.id)}
+                                        className={`domain-list-row ${String(domain.id) === currentDomainId ? 'domain-selected' : ''}`}
+                                    >
+                                        <td className="domain-radio-cell">
+                                            <input
+                                                type="radio"
+                                                name="domain-select"
+                                                checked={String(domain.id) === currentDomainId}
+                                                onChange={() => handleSelectDomain(domain.id)}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="domain-radio-input"
+                                            />
+                                        </td>
+                                        <td className="domain-list-name">
+                                            <span className="domain-list-name-inner">
+                                                {domain.name}
+                                                {String(domain.id) === currentDomainId && (
+                                                    <span className="domain-current-badge">현재</span>
+                                                )}
+                                            </span>
+                                        </td>
+                                        <td className="domain-list-desc">{domain.description || '-'}</td>
+                                        <td className="domain-list-action">
+                                            <div className="domain-list-actions">
+                                                <button
+                                                    type="button"
+                                                    className="km-table-icon-btn km-table-icon-btn--danger"
+                                                    title="삭제"
+                                                    aria-label={deleting === domain.id ? '삭제 중' : '삭제'}
+                                                    onClick={(e) => handleDeleteDomain(e, domain)}
+                                                    disabled={deleting === domain.id}
+                                                >
+                                                    {deleting === domain.id ? (
+                                                        <Loader2 className="km-table-icon-btn__spin" aria-hidden />
+                                                    ) : (
+                                                        <Trash2 strokeWidth={1.75} aria-hidden />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>

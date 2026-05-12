@@ -187,7 +187,7 @@ const HistoryTab = ({ promptCode, versions }) => {
               <TableCell align="center">응답시간</TableCell>
               <TableCell align="center">상태</TableCell>
               <TableCell align="center">실행시간</TableCell>
-              <TableCell align="center">액션</TableCell>
+              <TableCell align="center">관리</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

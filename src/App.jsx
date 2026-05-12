@@ -61,29 +61,35 @@ function App() {
       <div className="app">
         <SessionExpiredHandler />
         <CustomAlert />
-        <Suspense fallback={<PageFallback />}>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/verify-email" element={<EmailVerification />} />
-            <Route path="/set-password" element={<SetPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+        <div className="app-main-suspense-wrap">
+          <Suspense fallback={<PageFallback />}>
+            <div className="app-route-shell">
+              <div className="app-route-outlet">
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/verify-email" element={<EmailVerification />} />
+                  <Route path="/set-password" element={<SetPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
 
-            <Route element={<PrivateRoute />}>
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<DomainSelection />} />
-                <Route path="/workspaces" element={<Home />} />
-                <Route path="/notebook/:id" element={<NotebookDetail />} />
-                <Route path="/admin/*" element={<Admin />} />
-                <Route path="/prompts" element={<PromptList />} />
-                <Route path="/prompts/:code" element={<PromptDetail />} />
-                <Route path="/notices" element={<NoticeList />} />
-                <Route path="/faq" element={<Faq />} />
-                <Route path="/qna" element={<QnaBoard />} />
-              </Route>
-            </Route>
-          </Routes>
-        </Suspense>
+                  <Route element={<PrivateRoute />}>
+                    <Route element={<MainLayout />}>
+                      <Route path="/" element={<DomainSelection />} />
+                      <Route path="/workspaces" element={<Home />} />
+                      <Route path="/notebook/:id" element={<NotebookDetail />} />
+                      <Route path="/admin/*" element={<Admin />} />
+                      <Route path="/prompts" element={<PromptList />} />
+                      <Route path="/prompts/:code" element={<PromptDetail />} />
+                      <Route path="/notices" element={<NoticeList />} />
+                      <Route path="/faq" element={<Faq />} />
+                      <Route path="/qna" element={<QnaBoard />} />
+                    </Route>
+                  </Route>
+                </Routes>
+              </div>
+            </div>
+          </Suspense>
+        </div>
       </div>
     </AlertProvider>
   );

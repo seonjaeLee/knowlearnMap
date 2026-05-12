@@ -1,126 +1,246 @@
-.admin-workspace-loading {
-  padding: 40px;
-  text-align: center;
-  color: #666;
+/* 워크스페이스 관리 — admin-table-card + workspace-mgmt 전용 열 (도메인 관리 패턴 정렬) */
+
+.workspace-mgmt-loading {
+    padding: var(--spacing-2xl);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
 }
 
-.admin-workspace-table-wrap {
-  overflow-x: auto;
-  background: var(--color-bg-primary);
-  border: 1px solid #e0e0e0;
-  border-radius: var(--radius-md);
+.workspace-mgmt-table-card {
+    --km-table-action-hit-size: 32px;
 }
 
-.admin-workspace-table {
-  width: 100%;
-  min-width: 1200px;
-  border-collapse: collapse;
-  font-size: var(--admin-font-md);
+.workspace-mgmt-table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 1080px;
 }
 
-.admin-workspace-header-row {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e0e0e0;
-  text-align: left;
+.workspace-mgmt-table .workspace-mgmt-th-name,
+.workspace-mgmt-table .workspace-mgmt-td-name {
+    min-width: 160px;
+    width: 14%;
 }
 
-.admin-workspace-th,
-.admin-workspace-td {
-  padding: 12px 16px;
+.workspace-mgmt-table .workspace-mgmt-th-domain,
+.workspace-mgmt-table .workspace-mgmt-td-domain {
+    min-width: 100px;
+    width: 10%;
 }
 
-.admin-workspace-th {
-  font-weight: 600;
-  color: #555;
+.workspace-mgmt-table .workspace-mgmt-th-owner,
+.workspace-mgmt-table .workspace-mgmt-td-owner {
+    min-width: 120px;
+    width: 12%;
 }
 
-.admin-workspace-th-center,
-.admin-workspace-center {
-  text-align: center;
+.workspace-mgmt-table .workspace-mgmt-th-docs,
+.workspace-mgmt-table .workspace-mgmt-td-docs {
+    width: 72px;
+    min-width: 72px;
+    max-width: 72px;
 }
 
-.admin-workspace-row {
-  border-bottom: 1px solid #f0f0f0;
+.workspace-mgmt-table .workspace-mgmt-th-share,
+.workspace-mgmt-table .workspace-mgmt-td-share {
+    width: 88px;
+    min-width: 88px;
+    max-width: 88px;
 }
 
-.admin-workspace-name-cell {
-  font-weight: 500;
-  color: #333;
+.workspace-mgmt-table .workspace-mgmt-th-prompt,
+.workspace-mgmt-table .workspace-mgmt-td-prompt {
+    min-width: 320px;
+    width: 26%;
+    vertical-align: middle;
 }
 
-.admin-workspace-icon {
-  margin-right: 6px;
+.workspace-mgmt-table .workspace-mgmt-th-created,
+.workspace-mgmt-table .workspace-mgmt-td-created {
+    min-width: 104px;
+    width: 11%;
 }
 
-.admin-workspace-muted {
-  color: #666;
+.workspace-mgmt-table .workspace-mgmt-th-actions,
+.workspace-mgmt-table .workspace-mgmt-td-actions {
+    width: var(--km-table-actions-col-min);
+    min-width: var(--km-table-actions-col-min);
+    max-width: var(--km-table-actions-col-min);
+    text-align: right;
+    vertical-align: middle;
+    box-sizing: border-box;
 }
 
-.admin-workspace-date {
-  font-size: var(--admin-font-base);
+/* `<colgroup>` + `useResizableColumns` — 고정 %·max-width와 충돌 방지 */
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-name,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-name,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-domain,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-domain,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-owner,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-owner,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-docs,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-docs,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-share,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-share,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-prompt,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-prompt,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-created,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-created,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-actions,
+.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-actions {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
 }
 
-.admin-workspace-share-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: var(--admin-font-sm);
-  font-weight: 500;
+.workspace-mgmt-actions-head {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
 }
 
-.admin-workspace-share-badge.share-all {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+.workspace-mgmt-table thead tr th:last-child .workspace-mgmt-actions-head {
+    padding-right: var(--spacing-sm);
 }
 
-.admin-workspace-share-badge.share-individual {
-  background-color: #ede9fe;
-  color: #7c3aed;
+.workspace-mgmt-table-card .workspace-mgmt-table thead tr {
+    height: 35px;
 }
 
-.admin-workspace-share-badge.share-none {
-  background-color: #f5f5f5;
-  color: #9e9e9e;
+.workspace-mgmt-table-card .workspace-mgmt-table th,
+.workspace-mgmt-table-card .workspace-mgmt-table td {
+    padding-block: var(--spacing-sm);
+    padding-inline: var(--spacing-sm);
+    line-height: 1.25;
+    box-sizing: border-box;
 }
 
-.admin-workspace-action-group {
-  display: flex;
-  gap: 4px;
-  justify-content: center;
+/* thead: 일반 흐름(열 고정 스티키 미사용) — 배경은 admin-common `.admin-table thead tr` 과 동일 톤 유지 */
+.workspace-mgmt-table-card .workspace-mgmt-table thead th {
+    padding-block: 0;
+    height: 35px;
+    vertical-align: middle;
 }
 
-.admin-workspace-icon-btn {
-  padding: 6px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  cursor: pointer;
-  background: #fff;
-  color: #666;
-  display: flex;
-  align-items: center;
+.workspace-mgmt-name-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
 }
 
-.admin-workspace-icon-btn.is-shared {
-  background: #e8f5e9;
-  color: #2e7d32;
+.workspace-mgmt-icon {
+    flex-shrink: 0;
 }
 
-.admin-workspace-icon-btn.is-danger {
-  border-color: #ffcdd2;
-  color: #e53935;
+.workspace-mgmt-name-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.admin-workspace-empty {
-  padding: 32px;
-  text-align: center;
-  color: #888;
+.workspace-mgmt-muted {
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.prompt-tag[data-active='true'][data-tone='danger'] { border-color: #dc2626 !important; color: #dc2626 !important; }
-.prompt-tag[data-active='true'][data-tone='violet'] { border-color: #7c3aed !important; color: #7c3aed !important; }
-.prompt-tag[data-active='true'][data-tone='blue'] { border-color: #1e40af !important; color: #1e40af !important; }
-.prompt-tag[data-active='true'][data-tone='green'] { border-color: #047857 !important; color: #047857 !important; }
-.prompt-tag[data-active='true'][data-tone='purple'] { border-color: #9333ea !important; color: #9333ea !important; }
-.prompt-tag[data-active='true'][data-tone='orange'] { border-color: #ea580c !important; color: #ea580c !important; }
-.prompt-tag[data-active='true'][data-tone='cyan'] { border-color: #0891b2 !important; color: #0891b2 !important; }
-.prompt-tag[data-active='true'][data-tone='indigo'] { border-color: #4f46e5 !important; color: #4f46e5 !important; }
-.prompt-tag[data-active='true'][data-tone='pink'] { border-color: #be185d !important; color: #be185d !important; }
+.workspace-mgmt-share-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 999px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.workspace-mgmt-share-badge.share-all {
+    background-color: var(--admin-color-success-soft);
+    color: var(--admin-color-success-on-soft);
+}
+
+.workspace-mgmt-share-badge.share-individual {
+    background-color: #ede9fe;
+    color: #7c3aed;
+}
+
+.workspace-mgmt-share-badge.share-none {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-tertiary);
+}
+
+.workspace-mgmt-actions {
+    display: inline-flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+}
+
+.workspace-mgmt-share-btn--active.km-table-icon-btn--neutral {
+    background: var(--admin-color-success-soft);
+    color: var(--admin-color-success-on-soft);
+}
+
+.workspace-mgmt-share-btn--active.km-table-icon-btn--neutral:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--admin-color-success-on-soft) 18%, transparent);
+    color: var(--admin-color-success-on-soft);
+}
+
+.workspace-mgmt-table-card .workspace-mgmt-table tbody tr.workspace-mgmt-tr-empty td,
+.workspace-mgmt-table-card .workspace-mgmt-table td.workspace-mgmt-empty {
+    height: auto !important;
+    padding: var(--spacing-2xl) var(--spacing-md) !important;
+}
+
+.workspace-mgmt-empty {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+}
+
+.prompt-tag[data-active='true'][data-tone='danger'] {
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+}
+.prompt-tag[data-active='true'][data-tone='violet'] {
+    border-color: #7c3aed !important;
+    color: #7c3aed !important;
+}
+.prompt-tag[data-active='true'][data-tone='blue'] {
+    border-color: #1e40af !important;
+    color: #1e40af !important;
+}
+.prompt-tag[data-active='true'][data-tone='green'] {
+    border-color: #047857 !important;
+    color: #047857 !important;
+}
+.prompt-tag[data-active='true'][data-tone='purple'] {
+    border-color: #9333ea !important;
+    color: #9333ea !important;
+}
+.prompt-tag[data-active='true'][data-tone='orange'] {
+    border-color: #ea580c !important;
+    color: #ea580c !important;
+}
+.prompt-tag[data-active='true'][data-tone='cyan'] {
+    border-color: #0891b2 !important;
+    color: #0891b2 !important;
+}
+.prompt-tag[data-active='true'][data-tone='indigo'] {
+    border-color: #4f46e5 !important;
+    color: #4f46e5 !important;
+}
+.prompt-tag[data-active='true'][data-tone='pink'] {
+    border-color: #be185d !important;
+    color: #be185d !important;
+}

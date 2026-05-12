@@ -1,5 +1,17 @@
 # CSS 디자인 토큰 기준
 
+## 연관 문서·파일
+
+| 파일·문서 | 역할 |
+|-----------|------|
+| `src/index.css` | `:root` 변수 **정의** |
+| `src/styles/km-scrollbar-thin.css` | 콘텐츠 내부 얇은 스크롤 — **`textarea` 전역** · 클래스 **`km-scrollbar-thin`** · `--km-scrollbar-*`(`index.css`) |
+| `docs/css-design-tokens.md` | 본 문서 — **규칙·표** |
+| `docs/ui-history.md` | UI 변경 이력(형식·번호는 문서 상단 안내; **갱신은 요청 시만** — `.cursor/rules/ui-history-on-request.mdc`) |
+| [layout-guideline.md](./layout-guideline.md) | 레이아웃 폭·브레이크포인트·본문 여백 |
+
+---
+
 프로젝트에서 **색·간격·비활성 상태** 등을 맞추기 위한 규칙입니다.  
 실제 값의 **단일 소스**는 `src/index.css`의 `:root` 블록입니다. 이 문서는 **이름 규칙·언제 쓸지·예시**만 정리합니다.
 
@@ -104,15 +116,3 @@
 1. **새 화면 / 새 블록** — 처음부터 `var()`만 사용.  
 2. **수정하는 파일** — 손대는 김에 인접한 `#hex`를 같은 의미의 토큰으로 치환.  
 3. **대규모 일괄 치환** — 디자인 검수 후 배치 작업.
-
----
-
-## 6. 관련 파일
-
-| 파일 | 역할 |
-|------|------|
-| `src/index.css` | `:root` 변수 **정의** |
-| `docs/css-design-tokens.md` | 본 문서 — **규칙·표** |
-| `docs/ui-history.md` | UI 변경 이력(예: 토큰 도입 항목) |
-
-레이아웃 폭·브레이크포인트는 `docs/layout-guideline.md`를 본다.

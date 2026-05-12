@@ -153,6 +153,7 @@ const PromptListContent = () => {
 
   return (
     <div className="admin-page">
+      <div className="km-main-sticky-head">
       <AdminPageHeader
         icon={FileText}
         title="프롬프트 관리"
@@ -213,6 +214,7 @@ const PromptListContent = () => {
             <MenuItem value={undefined}>전체</MenuItem>
           </Select>
         </div>
+      </div>
       </div>
 
       {isLoading ? (

@@ -1,9 +1,6 @@
 # UI 체계 정리 개요 (작업 가이드)
 
-기능 추가보다 **UI/UX 통일**을 우선할 때, **어디에 무엇을 정의하는지** 헷갈리지 않도록 하는 목차입니다.  
-내용은 진행하면서 채워 넣고, `docs/ui-history.md`에 반영합니다.
-
-**연관 문서**
+## 연관 문서
 
 | 문서 | 역할 |
 |------|------|
@@ -11,7 +8,12 @@
 | [css-design-tokens.md](./css-design-tokens.md) | `:root` 변수 네이밍·비활성 토큰 |
 | [mockup-guide.md](./mockup-guide.md) | 목업 산출물 형식·체크리스트 |
 | [data-table-spec.md](./data-table-spec.md) | 데이터 테이블 밀도·헤더·행·툴바 규격(초안) |
-| [ui-history.md](./ui-history.md) | 변경 이력 |
+| [ui-history.md](./ui-history.md) | 변경 이력(갱신: **요청 시만**, `.cursor/rules/ui-history-on-request.mdc`) |
+
+---
+
+기능 추가보다 **UI/UX 통일**을 우선할 때, **어디에 무엇을 정의하는지** 헷갈리지 않도록 하는 목차입니다.  
+작업 이력을 남길 필요가 있으면 **사용자 요청 시에만** `docs/ui-history.md`에 기록한다(갱신 정책: `.cursor/rules/ui-history-on-request.mdc`).
 
 ---
 

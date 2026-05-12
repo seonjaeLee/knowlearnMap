@@ -6,6 +6,7 @@ import { noticeApi } from '../services/api';
 import NoticeCreateModal from '../components/NoticeCreateModal';
 import NoticeDetailModal from '../components/NoticeDetailModal';
 import PageHeader from '../components/common/PageHeader';
+import './admin/admin-common.css';
 import './NoticeList.css';
 
 function NoticeList() {
@@ -80,96 +81,102 @@ function NoticeList() {
     const isAdmin = user?.role === 'ADMIN' || user?.email === 'admin';
 
     return (
-        <div className="notice-page">
-            <div className="notice-container">
+        <div className="notice-page admin-page">
+            <div className="km-main-sticky-head">
                 <PageHeader
                     title="공지사항"
                     breadcrumbs={['고객센터', '공지사항']}
                     actions={isAdmin ? (
-                        <button className="notice-create-btn" onClick={openCreateModal}>
-                            <Plus size={18} />
+                        <button type="button" className="admin-btn admin-btn-primary" onClick={openCreateModal}>
+                            <Plus size={14} aria-hidden />
                             공지사항 등록
                         </button>
                     ) : null}
                 />
 
-                <div className="notice-toolbar">
-                    <div className="notice-search-wrapper">
-                        <Search size={18} className="search-icon" />
-                        <form onSubmit={handleSearch}>
-                            <input
-                                type="text"
-                                placeholder="공지사항 검색"
-                                value={searchKeyword}
-                                onChange={(e) => setSearchKeyword(e.target.value)}
-                            />
-                        </form>
+                <div className="admin-toolbar">
+                    <div className="admin-toolbar-left">
+                        <div className="admin-search">
+                            <Search size={16} className="admin-search-icon" aria-hidden />
+                            <form onSubmit={handleSearch}>
+                                <input
+                                    type="text"
+                                    className="admin-search-input"
+                                    placeholder="공지사항 검색"
+                                    value={searchKeyword}
+                                    onChange={(e) => setSearchKeyword(e.target.value)}
+                                    aria-label="공지사항 검색"
+                                />
+                            </form>
+                        </div>
                     </div>
                 </div>
-
-                <div className="notice-list-container">
-                    <table className="notice-table">
-                        <thead>
-                            <tr>
-                                <th className="th-title">제목</th>
-                                <th className="th-author">작성자</th>
-                                <th className="th-created">작성일</th>
-                                <th className="th-views">조회수</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="4" className="td-loading">로딩 중...</td>
-                                </tr>
-                            ) : notices.length === 0 ? (
-                                <tr>
-                                    <td colSpan="4" className="td-empty">공지사항이 없습니다.</td>
-                                </tr>
-                            ) : (
-                                notices.map((notice) => (
-                                    <tr
-                                        key={notice.id}
-                                        onClick={() => handleNoticeClick(notice.id)}
-                                        className={`notice-row ${!notice.isRead ? 'unread' : ''} ${notice.isPinned ? 'pinned' : ''}`}
-                                    >
-                                        <td className="td-title">
-                                            {notice.isPinned && <span className="pin-badge">고정</span>}
-                                            <span className="notice-title-text">{notice.title}</span>
-                                            {!notice.isRead && <span className="new-badge">N</span>}
-                                        </td>
-                                        <td className="td-author">{notice.authorEmail?.split('@')[0] || '관리자'}</td>
-                                        <td className="td-created">{new Date(notice.createdAt).toLocaleDateString()}</td>
-                                        <td className="td-views">{notice.viewCount}</td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                {totalPages > 1 && (
-                    <div className="notice-pagination">
-                        <button
-                            className="pagination-btn"
-                            disabled={currentPage === 0}
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                        >
-                            이전
-                        </button>
-                        <span className="pagination-info">
-                            {currentPage + 1} / {totalPages}
-                        </span>
-                        <button
-                            className="pagination-btn"
-                            disabled={currentPage >= totalPages - 1}
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                        >
-                            다음
-                        </button>
-                    </div>
-                )}
             </div>
+
+            <div className="notice-list-container">
+                <table className="notice-table">
+                    <thead>
+                        <tr>
+                            <th className="th-title">제목</th>
+                            <th className="th-author">작성자</th>
+                            <th className="th-created">작성일</th>
+                            <th className="th-views">조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
+                            <tr>
+                                <td colSpan="4" className="td-loading">로딩 중...</td>
+                            </tr>
+                        ) : notices.length === 0 ? (
+                            <tr>
+                                <td colSpan="4" className="td-empty">공지사항이 없습니다.</td>
+                            </tr>
+                        ) : (
+                            notices.map((notice) => (
+                                <tr
+                                    key={notice.id}
+                                    onClick={() => handleNoticeClick(notice.id)}
+                                    className={`notice-row ${!notice.isRead ? 'unread' : ''} ${notice.isPinned ? 'pinned' : ''}`}
+                                >
+                                    <td className="td-title">
+                                        {notice.isPinned && <span className="pin-badge">고정</span>}
+                                        <span className="notice-title-text">{notice.title}</span>
+                                        {!notice.isRead && <span className="new-badge">N</span>}
+                                    </td>
+                                    <td className="td-author">{notice.authorEmail?.split('@')[0] || '관리자'}</td>
+                                    <td className="td-created">{new Date(notice.createdAt).toLocaleDateString()}</td>
+                                    <td className="td-views">{notice.viewCount}</td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {totalPages > 1 && (
+                <div className="notice-pagination">
+                    <button
+                        type="button"
+                        className="pagination-btn"
+                        disabled={currentPage === 0}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                        이전
+                    </button>
+                    <span className="pagination-info">
+                        {currentPage + 1} / {totalPages}
+                    </span>
+                    <button
+                        type="button"
+                        className="pagination-btn"
+                        disabled={currentPage >= totalPages - 1}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                        다음
+                    </button>
+                </div>
+            )}
 
             <NoticeCreateModal
                 isOpen={isCreateModalOpen}

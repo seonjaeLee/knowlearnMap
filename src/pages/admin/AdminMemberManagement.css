@@ -1,9 +1,174 @@
+/* 사용자 관리 — admin-table-card + member-mgmt 열·액션 (워크스페이스/도메인 관리 패턴 정렬) */
+
+.member-mgmt-loading {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.member-mgmt-table-card {
+  --km-table-action-hit-size: 32px;
+  --km-table-actions-col-min: 140px;
+}
+
+.member-mgmt-table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 1320px;
+}
+
+.member-mgmt-table .member-mgmt-th-id,
+.member-mgmt-table .member-mgmt-td-id {
+  width: 64px;
+  min-width: 56px;
+  max-width: 80px;
+}
+
+.member-mgmt-table .member-mgmt-th-email,
+.member-mgmt-table .member-mgmt-td-email {
+  width: 18%;
+  min-width: 180px;
+}
+
+.member-mgmt-table .member-mgmt-th-role,
+.member-mgmt-table .member-mgmt-td-role {
+  width: 88px;
+  min-width: 80px;
+}
+
+.member-mgmt-table .member-mgmt-th-grade,
+.member-mgmt-table .member-mgmt-td-grade {
+  width: 88px;
+  min-width: 80px;
+}
+
+.member-mgmt-table .member-mgmt-th-status,
+.member-mgmt-table .member-mgmt-td-status {
+  width: 140px;
+  min-width: 120px;
+}
+
+.member-mgmt-table .member-mgmt-th-domain,
+.member-mgmt-table .member-mgmt-td-domain {
+  width: 8%;
+  min-width: calc(var(--spacing-2xl) + var(--spacing-xl));
+}
+
+.member-mgmt-table .member-mgmt-th-failed,
+.member-mgmt-table .member-mgmt-td-failed {
+  width: calc(var(--spacing-xl) + var(--spacing-md) + var(--spacing-xs));
+  min-width: var(--spacing-2xl);
+  max-width: calc(var(--spacing-xl) + var(--spacing-md) + var(--spacing-xs) + var(--spacing-xs));
+}
+
+.member-mgmt-table .member-mgmt-th-locked,
+.member-mgmt-table .member-mgmt-td-locked {
+  width: 12%;
+  min-width: calc(var(--spacing-2xl) + var(--spacing-xl) + var(--spacing-xl) + var(--spacing-md));
+}
+
+.member-mgmt-table .member-mgmt-th-last,
+.member-mgmt-table .member-mgmt-td-last {
+  width: 13%;
+  min-width: calc(var(--spacing-2xl) + var(--spacing-2xl) + var(--spacing-lg) + var(--spacing-lg));
+}
+
+.member-mgmt-table .member-mgmt-th-created,
+.member-mgmt-table .member-mgmt-td-created {
+  width: 13%;
+  min-width: calc(var(--spacing-2xl) + var(--spacing-2xl) + var(--spacing-lg) + var(--spacing-lg));
+}
+
+.member-mgmt-table .member-mgmt-th-actions,
+.member-mgmt-table .member-mgmt-td-actions {
+  width: var(--km-table-actions-col-min);
+  min-width: var(--km-table-actions-col-min);
+  max-width: var(--km-table-actions-col-min);
+  text-align: right;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.member-mgmt-actions-head {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.member-mgmt-table thead tr th:last-child .member-mgmt-actions-head {
+  padding-right: var(--spacing-sm);
+}
+
+/* 도메인 관리(domain-mgmt-table-card)와 동일: 행 35px · 셀 세로 패딩 0 */
+.member-mgmt-table-card .member-mgmt-table thead tr {
+  height: 35px;
+}
+
+.member-mgmt-table-card .member-mgmt-table tbody tr:not(.member-mgmt-tr-empty) {
+  height: 35px;
+}
+
+.member-mgmt-table-card .member-mgmt-table th,
+.member-mgmt-table-card .member-mgmt-table td {
+  height: 35px;
+  padding-block: 0;
+  padding-inline: var(--spacing-sm);
+  line-height: 1.25;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+.member-mgmt-table-card .member-mgmt-table thead th {
+  padding-block: 0;
+  height: 35px;
+  vertical-align: middle;
+}
+
+.member-mgmt-table-card .member-mgmt-td-status {
+  overflow: hidden;
+}
+
+.member-mgmt-table-card .member-mgmt-td-status .admin-badge {
+  box-sizing: border-box;
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.member-mgmt-actions {
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.member-mgmt-table-card .member-mgmt-table tbody tr.member-mgmt-tr-empty td,
+.member-mgmt-table-card .member-mgmt-table td.member-mgmt-empty {
+  height: auto !important;
+  padding: var(--spacing-2xl) var(--spacing-md) !important;
+}
+
+.member-mgmt-empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
 .admin-member-email {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .admin-member-domain {
-  max-width: 150px;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -11,20 +176,11 @@
 
 .admin-member-locked-count {
   color: var(--admin-color-danger-on-soft);
-  font-weight: 700;
+  font-weight: var(--font-weight-semibold);
 }
 
 .admin-member-locked-date {
   color: var(--admin-color-danger-on-soft);
-}
-
-button[data-action-spacing='true'] {
-  margin-right: 4px;
-}
-
-.admin-member-empty {
-  border: none;
-  padding: 32px 0;
 }
 
 .admin-member-edit-content {

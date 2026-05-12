@@ -1,5 +1,13 @@
 # 목업 작업 가이드
 
+## 연관 문서
+
+- [ui-system-outline.md](./ui-system-outline.md)
+- [layout-guideline.md](./layout-guideline.md)
+- [css-design-tokens.md](./css-design-tokens.md)
+
+---
+
 디자인·개발 전문가가 아니어도, **같은 형식으로 자료만 정리해 주시면** 구현 단계에서 해석 비용이 크게 줄어듭니다. 이 문서는 그 **최소 규칙**만 담았습니다.
 
 ---
@@ -123,5 +131,3 @@
 ## 9. 문의
 
 규칙이 애매하면 **표는 비워 두고 스크린샷 + 질문 목록**만 주셔도 됩니다. 구현 담당자가 이 가이드와 맞춰 질문을 드릴 수 있습니다.
-
-**연관:** [ui-system-outline.md](./ui-system-outline.md) · [layout-guideline.md](./layout-guideline.md) · [css-design-tokens.md](./css-design-tokens.md)

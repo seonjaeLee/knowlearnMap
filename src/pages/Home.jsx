@@ -169,10 +169,12 @@ function Home() {
         const root = menuRef.current;
         const scrollParent = root?.closest('.main-content');
         window.addEventListener('resize', updatePlacement);
+        window.addEventListener('scroll', updatePlacement, true);
         scrollParent?.addEventListener('scroll', updatePlacement, true);
 
         return () => {
             window.removeEventListener('resize', updatePlacement);
+            window.removeEventListener('scroll', updatePlacement, true);
             scrollParent?.removeEventListener('scroll', updatePlacement, true);
         };
     }, [openMenuId]);

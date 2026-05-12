@@ -213,6 +213,7 @@ function AdminConfigManagement() {
 
     return (
         <div className="admin-page">
+            <div className="km-main-sticky-head">
             <AdminPageHeader
                 icon={Settings}
                 title="시스템 설정 관리"
@@ -259,6 +260,7 @@ function AdminConfigManagement() {
                 </select>
                 </div>
             </div>
+            </div>
 
             {loading ? (
                 <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
@@ -300,7 +302,7 @@ function AdminConfigManagement() {
                                         <th style={{ ...thStyle, width: '25%' }}>값</th>
                                         <th style={{ ...thStyle, width: '10%' }}>타입</th>
                                         <th style={{ ...thStyle, width: '25%' }}>설명</th>
-                                        <th style={{ ...thStyle, width: '10%', textAlign: 'center' }}>액션</th>
+                                        <th style={{ ...thStyle, width: '10%', textAlign: 'center' }}>관리</th>
                                     </tr>
                                 </thead>
                                 <tbody>

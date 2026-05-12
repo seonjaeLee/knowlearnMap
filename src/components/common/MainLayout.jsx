@@ -76,6 +76,9 @@ function MainLayout() {
   const isAdminCenterActive = () => location.pathname === '/' || location.pathname.startsWith('/admin');
   const isCustomerCenterActive = () => ['/notices', '/faq', '/qna'].includes(location.pathname);
 
+  /** 노트북만 outlet 래퍼가 남은 세로 공간을 채움(:has 대신 경로로 지정해 어드민 등에서 flex:1 오적용 방지) */
+  const isNotebookShellRoute = location.pathname.startsWith('/notebook/');
+
   const toggleLnbGroup = (groupKey) => {
     setLnbOpenGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }));
   };
@@ -237,11 +240,21 @@ function MainLayout() {
 
         <div className="content-panel">
           <main className="main-content">
-            <Outlet context={mainOutletContext} />
+            <div className="main-content-scroll-inner">
+              <div
+                className={
+                  isNotebookShellRoute
+                    ? 'main-content-outlet-wrap main-content-outlet-wrap--notebook'
+                    : 'main-content-outlet-wrap'
+                }
+              >
+                <Outlet context={mainOutletContext} />
+              </div>
+              <footer className="site-footer">
+                <p>© 2025 KNOWLEARN MAP. All rights reserved.</p>
+              </footer>
+            </div>
           </main>
-          <footer className="site-footer">
-            <p>© 2025 KNOWLEARN MAP. All rights reserved.</p>
-          </footer>
         </div>
       </div>
 

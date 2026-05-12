@@ -68,7 +68,7 @@
 
 .notebook-layout {
     display: flex;
-    /* 부모(main-content) flex column 의 남은 세로 공간을 차지 */
+    /* main이 min-height로 확보된 영역 안에서 남은 세로 공간을 채움(문서 스크롤 레이아웃 호환) */
     flex: 1 1 auto;
     min-height: 0;
     gap: 4px;
@@ -888,8 +888,9 @@
 .meta-modal-textarea {
     width: 100%;
     flex: 1;
-    min-height: 300px;
-    padding: 12px;
+    /* 최소 10줄 높이: line-height(1.6)·글자 크기 기준 + 상하 패딩 */
+    min-height: calc(10 * (var(--font-size-sm) * 1.6) + (var(--spacing-sm) + var(--spacing-xs)) * 2);
+    padding: calc(var(--spacing-sm) + var(--spacing-xs));
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
     font-size: var(--font-size-sm);
@@ -1290,18 +1291,7 @@
     line-height: var(--msg-input-line-height);
 }
 
-.message-input-textarea::-webkit-scrollbar {
-    width: 6px;
-}
-
-.message-input-textarea::-webkit-scrollbar-thumb {
-    background-color: #c5cad3;
-    border-radius: 3px;
-}
-
-.message-input-textarea::-webkit-scrollbar-track {
-    background: transparent;
-}
+/* 세로 스크롤 두께·색: 전역 `km-scrollbar-thin.css` + 클래스 `km-scrollbar-thin` */
 
 .message-input-textarea:focus:not(:disabled) {
     outline: none;

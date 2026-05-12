@@ -9,6 +9,8 @@ import { AuthProvider } from './context/AuthContext'
 import { DialogProvider } from './context/DialogContext'
 import axios from 'axios'
 import './index.css'
+import './styles/km-scrollbar-thin.css'
+import './styles/km-table-icon-actions.css'
 import './styles/km-modal-form.css'
 import App from './App.jsx'
 

@@ -11,11 +11,13 @@
 .decisionPaper {
   width: auto !important;
   max-width: none !important;
-  min-width: 390px !important;
+  min-width: 350px !important;
+  /* BaseModal `.dialogPaper` 공통 min-height — 알림/확인은 내용 높이만큼만 */
+  min-height: unset !important;
 }
 
 .decisionContent {
-  --base-modal-content-min-height: 120px;
+  --base-modal-content-min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;

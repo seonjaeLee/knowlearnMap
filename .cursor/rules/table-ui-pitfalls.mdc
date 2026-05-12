@@ -1,0 +1,22 @@
+---
+description: 테이블 UI 복붙·div 클릭·아이콘 무라벨 등 실수 방지 — 시맨틱·a11y·규격 일치
+globs: src/**/*.jsx
+alwaysApply: false
+---
+
+# 테이블·목록 UI 실수 방지
+
+`docs/dev-guide-table-ui.md`와 동일 원칙. 구현·리뷰 시 확인한다.
+
+## 하지 말 것
+
+1. **표를 페이지마다만 복사**하고 클래스·패딩만 살짝 바꾸기 → `data-table-spec.md`·기존 `admin-table` / 카드 래퍼 패턴과 맞추고, 새 화면은 규격에 열·밀도를 적은 뒤 작업한다.
+2. **`<div onClick>`** 로 버튼 역할 내기 → **`button type="button"`** 또는 **`a href`**.
+3. **아이콘만** 두고 **`aria-label` / 접근 가능한 이름** 없음 → 필수.
+4. **데이터 표를 div 레이아웃만**으로 재현 → **`table` + `thead`/`tbody` + `th scope`** 우선.
+
+## 할 것
+
+- 셀 간격은 주로 **`th`/`td` padding** + 디자인 토큰 (`index.css` `:root`, 어드민은 `admin-common.css`).
+- 행 내 아이콘 액션은 **`km-table-icon-btn`** + `--neutral` / `--danger` (`src/styles/km-table-icon-actions.css`).
+- 헤더 정렬 관례: **텍스트 열 좌측**, 선택 열만 중앙, **마지막 액션 열만 우측** (`docs/data-table-spec.md` §4).

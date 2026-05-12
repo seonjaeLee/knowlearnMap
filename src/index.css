@@ -14,6 +14,23 @@
   --color-accent-hover: #1557b0;
   --color-accent-light: #e8f0fe;
 
+  /* 테이블 행 내 삭제 등 아이콘 버튼 — `km-table-icon-actions.css`와 동일 토큰 (삭제 아이콘 기본 레드, 여기만 바꿔서 전역 일괄 조정) */
+  --color-icon-danger: #dc2626;
+  --color-icon-danger-emphasis: #b91c1c;
+
+  /* 테이블 액션 열: 아이콘 실크기·간격·클릭 영역 — 레퍼런스(편집+삭제 나란히)와 맞춤 */
+  --km-table-action-icon-size: 16px;
+  --km-table-action-icon-gap: calc(var(--spacing-sm) + var(--spacing-xs)); /* 12px */
+  --km-table-action-hit-size: 36px;
+  /* 편집+삭제 2개 + 좌우 셀 패딩(var(--spacing-md)*2) 시 필요 최소 폭 — 열 width와 함께 조정 */
+  --km-table-actions-col-min: 120px;
+
+  /*
+   * 어드민 목록: `km-main-sticky-head`(페이지 제목+툴바) 바로 아래에 표 헤더를 붙일 때의 sticky `top`.
+   * 실제 높이와 다르면 해당 페이지 CSS에서 덮어쓴다.
+   */
+  --km-admin-sticky-thead-top: 148px;
+
   /* 네이티브·팝업 폼 포커스 링 — accent와 동일 색상 계열(MUI `palette.primary.main`과 맞춤, 아래 §참고) */
   --shadow-focus-input: 0 0 0 2px color-mix(in srgb, var(--color-accent) 32%, transparent);
 
@@ -75,6 +92,14 @@
   /* 필수 항목 별표 — 라벨·MUI FormLabel/InputLabel 공통 */
   --color-required-asterisk: #ff0000;
 
+  /* 콘텐츠 내부 스크롤(본문/body 제외) — `styles/km-scrollbar-thin.css` */
+  --km-scrollbar-size: 10px;
+  --km-scrollbar-thumb: rgba(95, 99, 104, 0.45);
+  --km-scrollbar-track: transparent;
+
+  /* BaseModal 공통 Paper(헤더·본문·푸터 포함) 최소 높이 — alert/confirm은 DialogContext에서 예외 */
+  --base-modal-paper-min-height: 340px;
+
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -86,6 +111,7 @@
   box-sizing: border-box;
 }
 
+/* 앱 쉘: MainLayout 시 GNB·LNB 고정, 세로 스크롤은 콘텐츠 패널 내부만 */
 html,
 body,
 #root {
@@ -94,9 +120,7 @@ body,
 
 body {
   overflow: hidden;
-}
-
-body {
+  overflow-x: hidden;
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: var(--color-text-primary);

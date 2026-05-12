@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, MessageSquareText, Filter } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { Search, Plus } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
 import { qnaApi } from '../services/api';
 import QnaQuestionCard from '../components/QnaQuestionCard';
 import QnaCreateModal from '../components/QnaCreateModal';
 import QnaDetailModal from '../components/QnaDetailModal';
 import PageHeader from '../components/common/PageHeader';
+import './admin/admin-common.css';
 import './QnaBoard.css';
 
 function QnaBoard() {
-    const { isAdmin } = useAuth();
     const { showAlert } = useAlert();
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -75,16 +74,6 @@ function QnaBoard() {
         }
     };
 
-    const handleTogglePin = async (questionId) => {
-        try {
-            await qnaApi.togglePin(questionId);
-            fetchQuestions();
-        } catch (error) {
-            console.error('고정 토글 실패:', error);
-            showAlert('고정 상태 변경에 실패했습니다.');
-        }
-    };
-
     const handleQuestionClick = (questionId) => {
         setSelectedQuestionId(questionId);
         setIsDetailModalOpen(true);
@@ -96,32 +85,36 @@ function QnaBoard() {
     };
 
     return (
-        <div className="qna-page">
-            <div className="qna-container">
+        <div className="qna-page admin-page">
+            <div className="km-main-sticky-head">
                 <PageHeader
                     title="1:1 문의"
                     breadcrumbs={['고객센터', '1:1 문의']}
                     actions={(
-                        <button className="qna-create-btn" onClick={openCreateModal}>
-                            <Plus size={18} />
+                        <button type="button" className="admin-btn admin-btn-primary" onClick={openCreateModal}>
+                            <Plus size={14} aria-hidden />
                             문의 등록
                         </button>
                     )}
                 />
 
-                <div className="qna-toolbar">
-                    <div className="qna-search-wrapper">
-                        <Search size={18} className="search-icon" />
-                        <form onSubmit={handleSearch}>
-                            <input
-                                type="text"
-                                placeholder="요청 검색"
-                                value={searchKeyword}
-                                onChange={(e) => setSearchKeyword(e.target.value)}
-                            />
-                        </form>
+                <div className="admin-toolbar">
+                    <div className="admin-toolbar-left">
+                        <div className="admin-search">
+                            <Search size={16} className="admin-search-icon" aria-hidden />
+                            <form onSubmit={handleSearch}>
+                                <input
+                                    type="text"
+                                    className="admin-search-input"
+                                    placeholder="요청 검색"
+                                    value={searchKeyword}
+                                    onChange={(e) => setSearchKeyword(e.target.value)}
+                                    aria-label="문의 검색"
+                                />
+                            </form>
+                        </div>
                     </div>
-                    <div className="qna-status-filter">
+                    <div className="admin-toolbar-right">
                         <span className="filter-label">상태:</span>
                         <select
                             value={statusFilter}
@@ -134,85 +127,76 @@ function QnaBoard() {
                         </select>
                     </div>
                 </div>
-
-                <div className="qna-list-container">
-                    <table className="qna-table">
-                        <thead>
-                            <tr>
-                                <th className="th-title">제목</th>
-                                <th className="th-id">ID</th>
-                                <th className="th-created">만듦</th>
-                                <th className="th-activity">마지막 활동</th>
-                                <th className="th-status">상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="td-loading">로딩 중...</td>
-                                </tr>
-                            ) : questions.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="td-empty">문의 내역이 없습니다.</td>
-                                </tr>
-                            ) : (
-                                questions.map((question) => (
-                                    <tr key={question.id} onClick={() => handleQuestionClick(question.id)} className="qna-row">
-                                        <td className="td-title">
-                                            <span className="question-title-text">{question.title}</span>
-                                        </td>
-                                        <td className="td-id">#{question.id}</td>
-                                        <td className="td-created">{new Date(question.createdAt).toLocaleDateString()}</td>
-                                        <td className="td-activity">
-                                            {question.updatedAt
-                                                ? new Date(question.updatedAt).toLocaleDateString() // Simple relative date can be added later
-                                                : new Date(question.createdAt).toLocaleDateString()}
-                                        </td>
-                                        <td className="td-status">
-                                            <span className={`status-badge ${question.status === 'ANSWERED' ? 'solved' : 'open'}`}>
-                                                {question.status === 'ANSWERED' ? '해결' : '대기'}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-
-                    <div className="qna-footer-actions">
-                        {/* Button removed from header, maybe place somewhere else or keep it independent? 
-                             Screenshot shows "문의 등록" usually near tabs or separate. 
-                             Ah, screenshot 1 doesn't show "Create" button explicitly in the list view, 
-                             Wait, I missed it? 
-                             Actually, "문의 등록" usually is a Floating Action Button or top right.
-                             I'll keep the existing button but style it or place it appropriately.
-                         */}
-                    </div>
-                </div>
-
-                {/* Pagination (keep existing code) */}
-                {totalPages > 1 && (
-                    <div className="qna-pagination">
-                        <button
-                            className="pagination-btn"
-                            disabled={currentPage === 0}
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                        >
-                            이전
-                        </button>
-                        <span className="pagination-info">
-                            {currentPage + 1} / {totalPages}
-                        </span>
-                        <button
-                            className="pagination-btn"
-                            disabled={currentPage >= totalPages - 1}
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                        >
-                            다음
-                        </button>
-                    </div>
-                )}
             </div>
+
+            <div className="qna-list-container">
+                <table className="qna-table">
+                    <thead>
+                        <tr>
+                            <th className="th-title">제목</th>
+                            <th className="th-id">ID</th>
+                            <th className="th-created">만듦</th>
+                            <th className="th-activity">마지막 활동</th>
+                            <th className="th-status">상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
+                            <tr>
+                                <td colSpan="5" className="td-loading">로딩 중...</td>
+                            </tr>
+                        ) : questions.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="td-empty">문의 내역이 없습니다.</td>
+                            </tr>
+                        ) : (
+                            questions.map((question) => (
+                                <tr key={question.id} onClick={() => handleQuestionClick(question.id)} className="qna-row">
+                                    <td className="td-title">
+                                        <span className="question-title-text">{question.title}</span>
+                                    </td>
+                                    <td className="td-id">#{question.id}</td>
+                                    <td className="td-created">{new Date(question.createdAt).toLocaleDateString()}</td>
+                                    <td className="td-activity">
+                                        {question.updatedAt
+                                            ? new Date(question.updatedAt).toLocaleDateString()
+                                            : new Date(question.createdAt).toLocaleDateString()}
+                                    </td>
+                                    <td className="td-status">
+                                        <span className={`status-badge ${question.status === 'ANSWERED' ? 'solved' : 'open'}`}>
+                                            {question.status === 'ANSWERED' ? '해결' : '대기'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {totalPages > 1 && (
+                <div className="qna-pagination">
+                    <button
+                        type="button"
+                        className="pagination-btn"
+                        disabled={currentPage === 0}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                        이전
+                    </button>
+                    <span className="pagination-info">
+                        {currentPage + 1} / {totalPages}
+                    </span>
+                    <button
+                        type="button"
+                        className="pagination-btn"
+                        disabled={currentPage >= totalPages - 1}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                        다음
+                    </button>
+                </div>
+            )}
 
             <QnaCreateModal
                 isOpen={isCreateModalOpen}

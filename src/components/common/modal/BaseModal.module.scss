@@ -9,6 +9,7 @@
   box-shadow: var(--shadow-medium) !important;
   background-color: var(--color-bg-primary) !important;
   font-family: 'Pretendard', sans-serif !important;
+  min-height: var(--base-modal-paper-min-height) !important;
 }
 
 .header {
@@ -75,23 +76,7 @@
 .content {
   padding: var(--spacing-lg) var(--spacing-xl) !important;
   min-height: var(--base-modal-content-min-height, 120px) !important;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(95, 99, 104, 0.45) transparent;
-}
-
-.content::-webkit-scrollbar {
-  width: 10px;
-}
-
-.content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.content::-webkit-scrollbar-thumb {
-  background-color: rgba(95, 99, 104, 0.45);
-  border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: content-box;
+  /* 스크롤 두께·색: 전역 `km-scrollbar-thin.css` → `.km-base-modal-content` */
 }
 
 .contentInner {

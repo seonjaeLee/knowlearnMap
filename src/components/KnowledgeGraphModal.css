@@ -62,7 +62,7 @@
     flex-direction: column;
     overflow-x: auto;
     overflow-y: hidden;
-    scrollbar-width: thin;
+    /* 가로 스크롤 두께: 전역 `km-scrollbar-thin.css` */
     -webkit-overflow-scrolling: touch;
     box-sizing: border-box;
 }

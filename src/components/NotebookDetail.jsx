@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Button, Stack } from '@mui/material';
-import { useParams, useNavigate, useLocation, useOutletContext } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm'; // Added import for GFM support (tables)
 import { workspaceApi, ontologyApi, reportApi, structuredApi, dictionaryApi } from '../services/api';
@@ -31,7 +31,6 @@ function NotebookDetail() {
     const { id } = useParams(); // workspace(notebook) ID
     const navigate = useNavigate();
     const location = useLocation();
-    const { setLnbCollapsed } = useOutletContext() || {};
     const { user, isAdmin } = useAuth();
 
     const handleOpenEXP = () => {
@@ -1174,8 +1173,7 @@ function NotebookDetail() {
 
         setActiveTab(tab);
 
-        /* 탭별 레이아웃: LNB 접기 + 채팅만 좌우 패널 펼침 / 지식그래프·사전은 좌우 접음 */
-        setLnbCollapsed?.(true);
+        /* 탭별 레이아웃: 채팅만 좌우 패널 펼침 / 지식그래프·사전은 좌우 접음 (LNB는 MainLayout 상태 유지) */
         if (tab === 'chat') {
             setLeftSidebarOpen(true);
             setRightSidebarOpen(true);
@@ -1184,12 +1182,6 @@ function NotebookDetail() {
             setRightSidebarOpen(false);
         }
     };
-
-    // 노트북 상세 진입 시 LNB 접기 (탭별 패널은 초기 state 또는 탭 전환에서 처리)
-    useEffect(() => {
-        setLnbCollapsed?.(true);
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- 마운트 시 1회만
-    }, []);
 
     // --- Persona Handlers ---
     const handlePersonaSelect = (role) => {
@@ -2216,6 +2208,7 @@ function NotebookDetail() {
                         onChange={e => setBizMetaText(e.target.value)}
                         placeholder='[&#10;  {"name":"공통코드","desc":"공통코드 그룹의 분류 안에서 실제 사용할 번호","owner":"홍길동","keyword":"공통코드, 코드"},&#10;  ...&#10;]'
                         className="meta-modal-textarea"
+                        rows={10}
                     />
                 </BaseModal>
 
@@ -2299,6 +2292,7 @@ function NotebookDetail() {
                         onChange={e => setItMetaText(e.target.value)}
                         placeholder='[&#10;  {"table_name":"cls_m_code","table_desc":"코드마스터","column_name":"code_group","column_type":"varchar(50)","column_biz_meta":"공통코드그룹"},&#10;  ...&#10;]'
                         className="meta-modal-textarea"
+                        rows={10}
                     />
                 </BaseModal>
 

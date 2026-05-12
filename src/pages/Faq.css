@@ -86,6 +86,12 @@
     color: #666;
 }
 
+/* 어드민과 동일 toolbar 우측 필터 */
+.faq-page .admin-toolbar-right .filter-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
 .category-select {
     padding: 8px 12px;
     border: 1px solid #e0e0e0;

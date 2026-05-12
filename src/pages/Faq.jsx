@@ -6,6 +6,7 @@ import { faqApi } from '../services/api';
 import FaqCreateModal from '../components/FaqCreateModal';
 import FaqDetailModal from '../components/FaqDetailModal';
 import PageHeader from '../components/common/PageHeader';
+import './admin/admin-common.css';
 import './Faq.css';
 
 function Faq() {
@@ -100,33 +101,37 @@ function Faq() {
     };
 
     return (
-        <div className="faq-page">
-            <div className="faq-container">
+        <div className="faq-page admin-page">
+            <div className="km-main-sticky-head">
                 <PageHeader
                     title="자주 묻는 질문"
                     breadcrumbs={['고객센터', '자주 묻는 질문']}
                     actions={(
-                        <button className="faq-create-btn" onClick={openCreateModal}>
-                            <Plus size={18} />
+                        <button type="button" className="admin-btn admin-btn-primary" onClick={openCreateModal}>
+                            <Plus size={14} aria-hidden />
                             FAQ 작성
                         </button>
                     )}
                 />
 
-                <div className="faq-toolbar">
-                    <div className="faq-search-wrapper">
-                        <Search size={18} className="search-icon" />
-                        <form onSubmit={handleSearch}>
-                            <input
-                                type="text"
-                                placeholder="FAQ 검색"
-                                value={searchKeyword}
-                                onChange={(e) => setSearchKeyword(e.target.value)}
-                            />
-                        </form>
+                <div className="admin-toolbar">
+                    <div className="admin-toolbar-left">
+                        <div className="admin-search">
+                            <Search size={16} className="admin-search-icon" aria-hidden />
+                            <form onSubmit={handleSearch}>
+                                <input
+                                    type="text"
+                                    className="admin-search-input"
+                                    placeholder="FAQ 검색"
+                                    value={searchKeyword}
+                                    onChange={(e) => setSearchKeyword(e.target.value)}
+                                    aria-label="FAQ 검색"
+                                />
+                            </form>
+                        </div>
                     </div>
                     {categories.length > 0 && (
-                        <div className="faq-category-filter">
+                        <div className="admin-toolbar-right">
                             <span className="filter-label">카테고리:</span>
                             <select
                                 value={selectedCategory}
@@ -141,74 +146,76 @@ function Faq() {
                         </div>
                     )}
                 </div>
-
-                <div className="faq-list-container">
-                    <table className="faq-table">
-                        <thead>
-                            <tr>
-                                <th className="th-title">제목</th>
-                                <th className="th-category">카테고리</th>
-                                <th className="th-author">작성자</th>
-                                <th className="th-created">작성일</th>
-                                <th className="th-views">조회수</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="td-loading">로딩 중...</td>
-                                </tr>
-                            ) : faqs.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="td-empty">등록된 FAQ가 없습니다.</td>
-                                </tr>
-                            ) : (
-                                faqs.map((faq) => (
-                                    <tr
-                                        key={faq.id}
-                                        onClick={() => handleFaqClick(faq.id)}
-                                        className="faq-row"
-                                    >
-                                        <td className="td-title">
-                                            <span className="faq-title-text">{faq.title}</span>
-                                        </td>
-                                        <td className="td-category">
-                                            {faq.category && (
-                                                <span className="category-badge">{faq.category}</span>
-                                            )}
-                                        </td>
-                                        <td className="td-author">{faq.authorEmail?.split('@')[0] || faq.createdBy || '-'}</td>
-                                        <td className="td-created">{new Date(faq.createdAt).toLocaleDateString()}</td>
-                                        <td className="td-views">{faq.viewCount}</td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                {totalPages > 1 && (
-                    <div className="faq-pagination">
-                        <button
-                            className="pagination-btn"
-                            disabled={currentPage === 0}
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                        >
-                            이전
-                        </button>
-                        <span className="pagination-info">
-                            {currentPage + 1} / {totalPages}
-                        </span>
-                        <button
-                            className="pagination-btn"
-                            disabled={currentPage >= totalPages - 1}
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                        >
-                            다음
-                        </button>
-                    </div>
-                )}
             </div>
+
+            <div className="faq-list-container">
+                <table className="faq-table">
+                    <thead>
+                        <tr>
+                            <th className="th-title">제목</th>
+                            <th className="th-category">카테고리</th>
+                            <th className="th-author">작성자</th>
+                            <th className="th-created">작성일</th>
+                            <th className="th-views">조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
+                            <tr>
+                                <td colSpan="5" className="td-loading">로딩 중...</td>
+                            </tr>
+                        ) : faqs.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="td-empty">등록된 FAQ가 없습니다.</td>
+                            </tr>
+                        ) : (
+                            faqs.map((faq) => (
+                                <tr
+                                    key={faq.id}
+                                    onClick={() => handleFaqClick(faq.id)}
+                                    className="faq-row"
+                                >
+                                    <td className="td-title">
+                                        <span className="faq-title-text">{faq.title}</span>
+                                    </td>
+                                    <td className="td-category">
+                                        {faq.category && (
+                                            <span className="category-badge">{faq.category}</span>
+                                        )}
+                                    </td>
+                                    <td className="td-author">{faq.authorEmail?.split('@')[0] || faq.createdBy || '-'}</td>
+                                    <td className="td-created">{new Date(faq.createdAt).toLocaleDateString()}</td>
+                                    <td className="td-views">{faq.viewCount}</td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {totalPages > 1 && (
+                <div className="faq-pagination">
+                    <button
+                        type="button"
+                        className="pagination-btn"
+                        disabled={currentPage === 0}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                        이전
+                    </button>
+                    <span className="pagination-info">
+                        {currentPage + 1} / {totalPages}
+                    </span>
+                    <button
+                        type="button"
+                        className="pagination-btn"
+                        disabled={currentPage >= totalPages - 1}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                        다음
+                    </button>
+                </div>
+            )}
 
             <FaqCreateModal
                 isOpen={isModalOpen}

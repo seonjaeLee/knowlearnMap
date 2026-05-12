@@ -1,0 +1,85 @@
+/**
+ * 테이블 행 내 아이콘 전용 버튼 — 편집·삭제 동일 호버 패턴, 크기·간격은 `:root` 토큰.
+ * 삭제 색: 항상 `var(--color-icon-danger)` (#dc2626) — 변경 금지 아님, 토큰으로만 조정.
+ * 어드민 `.admin-table` 안에서는 `admin-common.css`가 팔레트만 덮어씀.
+ *
+ * 사용 예:
+ *   <div class="km-table-actions">…</div> 로 편집+삭제 나란히 gap 통일
+ *   <button type="button" class="km-table-icon-btn km-table-icon-btn--neutral" title="수정">…</button>
+ *   <button type="button" class="km-table-icon-btn km-table-icon-btn--danger" title="삭제">…</button>
+ */
+
+.km-table-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--km-table-action-icon-gap);
+    min-width: 0;
+}
+
+.km-table-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--km-table-action-hit-size);
+    height: var(--km-table-action-hit-size);
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.km-table-icon-btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+}
+
+.km-table-icon-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.km-table-icon-btn > svg {
+    width: var(--km-table-action-icon-size);
+    height: var(--km-table-action-icon-size);
+    flex-shrink: 0;
+}
+
+/* 편집·일반 액션 — 기본은 보조 텍스트색, 호버 시 삭제와 같은 방식으로 연한 채움 + 진한 글자색 */
+.km-table-icon-btn--neutral {
+    color: var(--color-text-secondary);
+}
+
+.km-table-icon-btn--neutral:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
+    color: var(--color-text-primary);
+}
+
+/* 삭제: 기본 레드 유지 (이전 인라인 #dc2626과 동일 계열) */
+.km-table-icon-btn--danger {
+    color: var(--color-icon-danger);
+}
+
+.km-table-icon-btn--danger:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-icon-danger) 10%, transparent);
+    color: var(--color-icon-danger-emphasis);
+}
+
+.km-table-icon-btn--danger > svg {
+    color: inherit;
+    stroke: currentColor;
+}
+
+.km-table-icon-btn__spin {
+    animation: km-table-icon-spin 0.75s linear infinite;
+}
+
+@keyframes km-table-icon-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

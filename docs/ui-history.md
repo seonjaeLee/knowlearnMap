@@ -2,6 +2,8 @@
 
 > **구조 안내:** `### N)` 번호는 **파일 전역에서 한 줄로만** 이어집니다. 상단은 과거 날짜부터 시간순이며, **가장 최근 날짜 섹션은 파일 하단**에 추가되는 형태입니다. **`## 2026-05-09`** 작업은 **맨 아래** 해당 헤더 아래에서 확인하세요.
 
+> **갱신 정책(현행):** 이 파일은 **사용자가 명시적으로 요청할 때만** 수정합니다(예: 「히스토리에 적어줘」「ui-history에 남겨줘」). UI 작업만으로 에이전트가 임의로 항목을 추가하지 않습니다. 규칙 원문: `.cursor/rules/ui-history-on-request.mdc`. 본문의 과거 항목(예: ### 93)에 적힌 **「항상 기록」** 안내는 당시 기준이며 **폐지**되었습니다. 해석이 겹치면 **본 블록과 위 규칙 파일**을 우선합니다.
+
 ## 2026-04-30
 
 ### 1) 앱형 레이아웃 기준 재정의
@@ -905,6 +907,7 @@
 ### 62) 작업 기록 방식
 - 목적: UI 변경 이력을 날짜별로 추적 가능하게 유지
 - 영향: 이후 UI 관련 작업 시 `docs/ui-history.md`에 **작업일 기준**으로 항목 추가
+- **(참고·현행)** 갱신은 파일 상단 **갱신 정책(현행)** — **사용자 요청 시에만** 항목을 추가한다(`.cursor/rules/ui-history-on-request.mdc`).
 
 ### 63) 노트북 상세 가운데 패널 폭 330px 미만 시 탭 아이콘·라벨 세로 정렬
 - 목적: 좌측 문서 뷰어·우측 스튜디오 등으로 중앙 패널이 매우 좁아질 때 탭 라벨이 가로 한 줄에 꾸겨 넣어지며 깨져 보이는 현상 완화
@@ -1126,9 +1129,10 @@
 #### JSX/JS 변경 (예외 기록)
 - 없음
 
-#### 히스토리 작성 원칙 (이후 작업)
-- UI·CSS 튜닝 요청은 **`docs/ui-history.md`에 항목 번호(### N) + 필요 시 표(NB- 접두 반복 가능)** 로 남김  
-- 되돌림 요청은 **항목 번호 또는 표 번호**로 지정 가능하도록 유지
+#### 히스토리 작성 원칙 (참고)
+- **현행 갱신:** `.cursor/rules/ui-history-on-request.mdc` — **사용자가 명시적으로 요청할 때만** `docs/ui-history.md`에 항목을 추가한다.
+- **형식:** 요청으로 기록할 때는 항목 번호(`### N)`)를 이어 가고, 필요 시 표(NB- 접두 반복 가능)를 쓴다.
+- **되돌림:** 요청 시 **항목 번호 또는 표 번호**로 지정할 수 있도록 위 형식을 유지한다.
 
 ### 79) 가운데 패널 탭줄: 세로선까지 맞춤 + 탭 최소 폭 + 좁은 패널 시 온톨로지 폭
 
@@ -1262,6 +1266,7 @@
 
 - **목적**: 별도로 “히스토리에 적어줘”라고 하지 않아도, UI·화면 관련 변경 후 **`docs/ui-history.md` 갱신을 작업의 일부로 고정**해 나중에 검색·확인 가능하게 함
 - **영향**: `.cursor/rules/ui-history-always.mdc` — 무조건 수행·같은 세션 내 완료·검색 목적 명시
+- **(정책 변경 2026-05-12)** 위 “필수·자동 기록”은 **폐지**됨. 현행은 `.cursor/rules/ui-history-on-request.mdc`(요청 시에만 갱신). 파일 상단 **갱신 정책(현행)** 블록과 동일.
 
 ### 94) 워크스페이스 그리드 카드 - 공유 배지 디자인 경량화 + 배지·more-btn 우측 그룹
 
@@ -2834,3 +2839,146 @@
 #### JSX/JS 변경
 - `src/components/DomainManagement.jsx` — `VITE_ENABLE_DOMAIN_MOCK` 플래그 도입, `/domains` 조회 실패 시 더미 도메인 fallback, 프롬프트 기본값/코드 fallback, mock 모드에서 생성·수정·삭제를 로컬 state로 처리
 - `src/data/domainMockData.js` — 도메인 관리용 샘플 도메인/프롬프트 기본값/용도별 프롬프트 코드 더미 데이터 추가
+
+## 2026-05-12
+
+### 199) 도메인 선택 테이블 — `data-table-spec` 밀집·토큰 정렬
+
+- **목적**: `docs/data-table-spec.md`의 밀집형 목록 규격에 맞춰 행·헤더 패딩과 타이포를 줄이고, 색·테두리·호버를 `:root` 토큰으로 통일
+- **영향**: 어드민센터 도메인 선택(`/`) 목록 테이블·상단 안내 바·도메인 추가 버튼·삭제 버튼; 로딩 완료 후 목록이 비었을 때 안내 행 표시
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — `.domain-list-container`·`.domain-list-table` th/td를 토큰 기반 밀집 스타일로 변경; 선택 행 강조·호버·빈 목록 셀(`.domain-list-empty`); `.domain-add-btn`·`.user-info-bar`·`.delete-btn-small` 토큰화
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/DomainSelection.jsx` — 테이블 래퍼에 `km-data-table-dense` 클래스; 선택/관리 열 `th` 정렬용 클래스; 빈 목록 시 `colSpan` 안내 행; 삭제 버튼 `type="button"`
+
+### 200) 도메인 선택 테이블 — 행 높이(참고 레이아웃)·삭제 아이콘
+
+- **목적**: 사용자 관리형 테이블과 유사하게 본문 행 높이를 약 40~44px대로 맞추고, 삭제는 빨간 stroke 휴지통 아이콘만 표시
+- **영향**: 도메인 선택(`/`) 목록 행·헤더 세로 패딩·관리 열 폭; 삭제 중에는 `Loader2` 스피너
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — `th`/`td`에 `padding-block: calc(var(--spacing-sm) + 2px)`, `tbody td` `min-height: 44px`, `thead th` `min-height: 40px`; `.delete-btn-small` 제거 후 `.domain-delete-icon-btn`(36×36, 빨간 `currentColor`, 호버 배경)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/DomainSelection.jsx` — `lucide-react`의 `Trash2`·`Loader2`; 삭제 버튼 `title`/`aria-label`; 관리 열 `width` 52px
+
+#### 문서 변경
+- `docs/data-table-spec.md` — §3 밀집 행에 참고 행 높이(40~44px) 패턴 한 줄 추가
+
+### 201) 도메인 선택 테이블 — 행·헤더 고정 높이, 이름 열 가로선 정렬, 관리 열 아이콘 정렬
+
+- **목적**: `이름` 열이 인접 열과 가로 경계선이 어긋져 끊겨 보이던 현상 제거; 헤더·본문 행 높이를 요청값(35px / 43px)으로 통일; `관리` 헤더와 삭제 아이콘의 우측 정렬·세로 기준을 맞춤
+- **영향**: 어드민센터 도메인 선택(`/`) 목록 테이블 레이아웃; 긴 이름·설명은 한 줄 말줄임
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — `table-layout: fixed`; `thead tr`/`th` 높이 35px, `tbody tr`/`td` 높이 43px·세로 패딩 0; `이름` 셀은 table-cell 유지·`.domain-list-name-inner`에 flex; 선택·관리 열 폭 56px / 68px로 `th`·`td` 일치; `.domain-list-desc` 말줄임; 빈 목록 행은 `tr:has(.domain-list-empty)`로 높이 자동, 셀은 높이 제한 해제
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/DomainSelection.jsx` — 이름 셀 내용을 `.domain-list-name-inner`로 감쌈; 관리 열 `th`의 고정 `width` 속성 제거(CSS에서 통일)
+
+### 202) 도메인 선택 테이블 — 관리 열 헤더·아이콘 우측 정렬 통일, 다중 액션 대비
+
+- **목적**: `관리` 헤더는 우측 정렬인데 본문 아이콘이 셀 중앙에 가깝게 보이던 수평 어긋남 제거; 이후 편집 아이콘을 삭제 왼쪽에 두는 레이아웃과 동일한 우측 정렬 패턴 확보
+- **영향**: 도메인 선택(`/`) 테이블 관리 열 폭·마크업; 다른 화면에서도 동일 클래스 재사용 시 편집+삭제 배치 가능
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — 관리 열 폭 108px(36+간격+36+패딩 여유); `.domain-list-actions-head`(헤더 라벨)·`.domain-list-actions`(본문 버튼 그룹)에 `display: flex`, `justify-content: flex-end`, `gap: var(--spacing-xs)`; 삭제 버튼 전용 `vertical-align` 보조 규칙 제거
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/DomainSelection.jsx` — `th` 내 라벨을 `.domain-list-actions-head`로 감쌈; 액션 `td` 안에 `.domain-list-actions` 래퍼 추가(편집 버튼 삽입 위치)
+
+### 203) 데이터 테이블 — 선택 열 옵션·카드 border·푸터(페이지네이션 중앙·우측 예약)
+
+- **목적**: 화면별로 좌측 체크박스 열을 켜거나 끌 수 있게 공통 클래스·예시 상수 제공; 목록 카드는 그림자 대신 border로 통일; 하단은 페이지네이션을 **가운데**, 우측은 **추가 옵션용 빈 슬롯**을 확보한 3열 레이아웃으로 맞춤
+- **영향**: 어드민 `admin-common.css` 테이블 블록; 도메인 선택 테이블 래퍼 그림자 제거; 사용자 관리 목록에 카드+페이지네이션+푸터 컴포넌트
+
+#### CSS 변경
+- `src/pages/admin/admin-common.css` — `.admin-table-card`(테이블+푸터 한 카드); `.admin-table-footer` 및 `__start`/`__center`/`__end`, `.admin-table-pagination`, `.admin-table-page-btn`, `.admin-table-page-ellipsis`; `.admin-th-select`/`.admin-td-select`(체크박스 열)
+- `src/pages/DomainSelection.css` — `.domain-list-container`에서 `box-shadow` 제거(테두리만 유지)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/components/admin/AdminTableFooter.jsx` — 신규(좌·중·우 슬롯)
+- `src/pages/admin/AdminMemberManagement.jsx` — `SHOW_ROW_CHECKBOX_COLUMN` 상수·선택 상태·페이지 크기·`AdminTableFooter`·`admin-table-card`; 목록은 `paginatedMembers`로 분할
+
+#### 문서 변경
+- `docs/data-table-spec.md` — §6 선택 열 옵션, §9 푸터 3열·`AdminTableFooter`·`admin-table-card` 안내
+
+### 204) 도메인 선택 테이블 — 헤더 배경 밝게 조정
+
+- **목적**: 헤더 회색이 과하게 진해 테두리 대비가 약한 느낌을 줄임(이후 205에서 하단 이중선 의미 정정)
+- **영향**: 어드민 도메인 선택(`/`) 목록 테이블만(전역 `--color-bg-dark` 미변경)
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — `th` 배경 `var(--color-bg-subtle)` 유지
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 205) 도메인 선택 테이블 — 카드 **하단** 이중선 제거(의도 정정)
+
+- **목적**: 사용자 피드백 반영 — "하단"은 **테이블 카드 맨 아래**가 마치 그림자·두꺼운 선처럼 보이던 현상; 마지막 행 `td`의 `border-bottom`과 `.domain-list-container`의 `border` 하단이 겹침. 204에서 적용했던 헤더·첫 행 경계 변경은 요청과 달라 **되돌림**(`th`에 `border-bottom` 복구, `tbody tr:first-child td`의 `border-top` 제거)
+- **영향**: 도메인 선택(`/`) 목록 테이블 외곽 하단만 시각적으로 한 줄로 정리
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — `tbody tr:last-child td { border-bottom: none }`; `th`의 `border-bottom: 1px solid var(--color-border-subtle)` 복구; `tbody tr:first-child td`의 `border-top` 규칙 삭제
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 206) 도메인 선택 테이블 — 헤더 배경을 행 hover와 동일 토큰으로 통일
+
+- **목적**: 헤더 영역 배경을 본문 행에 마우스를 올렸을 때와 같은 회색 톤(`--color-bg-hover`)으로 맞춤
+- **영향**: 도메인 선택(`/`) 테이블 `th`만
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — `.domain-list-table th`의 `background`를 `var(--color-bg-hover)`로 변경
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 207) 도메인 선택 테이블 — 선택 행 배경색 `#ebf2ff`
+
+- **목적**: 현재 선택된 도메인 행 배경을 지정 색으로 통일
+- **영향**: 도메인 선택(`/`) 목록에서 `tr.domain-selected` 본문 셀(호버 포함)
+
+#### CSS 변경
+- `src/pages/DomainSelection.css` — `.domain-selected td`, `.domain-list-row.domain-selected:hover td`의 `background`를 `#ebf2ff`로 변경
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+### 208) 테이블 UI 개발 가이드 정의·`data-table-spec` 연동 및 목록 표 공통화 적용
+
+- **목적**: 팀 공통 **테이블 마크업·밀도·헤더 정렬·액션 열·페이지네이션·열 리사이즈**를 문서와 코드로 고정하고, 어드민·도메인 선택 등 목록 화면에 동일 패턴 적용; 워크스페이스 표는 **헤더 `sticky` 미사용**(일반 `thead` 흐름); 상단 `km-main-sticky-head`는 **하단 margin/padding·하단 box-shadow 제거**로 본문과 간격 정리
+- **영향**: `docs` 테이블 규격·가이드; `admin-common` 및 도메인/워크스페이스/사용자 관리·도메인 선택 등; 메인 레이아웃 sticky 헤더 블록; Cursor 규칙(`table-ui-pitfalls`, `km-table-actions-ui`, `ui-history-on-request`)
+
+#### 문서 변경
+- `docs/dev-guide-table-ui.md` — 신규(피해야 할 패턴, 체크리스트, `useResizableColumns` 안내, `dev-guide` ↔ `data-table-spec` 연계)
+- `docs/data-table-spec.md` — 규격 보강(기존 199~207·203 등과 맞물림)
+- `docs/css-design-tokens.md` — 테이블·스크롤 등 토큰 정리 보조
+- `docs/ui-system-outline.md`, `docs/mockup-guide.md`, `docs/modal-migration-plan.md` — 개요·교차 참조 소폭
+- `docs/ui-history_.md` — 삭제(중복·폐기)
+- `.cursor/rules/ui-history-always.mdc` — 삭제(요청 시만 `ui-history` 갱신으로 전환)
+- `.cursor/rules/ui-history-on-request.mdc`, `.cursor/rules/table-ui-pitfalls.mdc`, `.cursor/rules/km-table-actions-ui.mdc`, `.cursor/rules/workflow-confirm-before-implement.mdc` — 추가
+
+#### CSS·전역 스타일
+- `src/pages/admin/admin-common.css` — 테이블 카드·랩·푸터·페이지네이션·체크박스 열·프롬프트 태그·열 리사이즈 핸들 등 확장
+- `src/styles/km-scrollbar-thin.css`, `src/styles/km-table-icon-actions.css` — 신규
+- `src/index.css` — 스크롤·테이블 액션·sticky thead 오프셋 등 토큰
+- `src/App.css`, `src/pages/Admin.css`, `src/main.jsx` — 전역 연동
+- `src/components/common/MainLayout.css` — `km-main-sticky-head` 하단 여백·그림자 제거, 본문 스크롤·브레이크포인트 등 정리
+- `src/pages/DomainSelection.css`, `src/components/DomainManagement.css`, `src/pages/admin/AdminWorkspaceManagement.css`, `src/pages/admin/AdminMemberManagement.css` — 밀집 표·카드·열·액션 정렬
+
+#### JSX/JS 변경
+- `src/hooks/useResizableColumns.jsx` — 신규
+- `src/components/admin/AdminTableFooter.jsx` — 신규
+- `src/data/workspaceMockData.js`, `src/data/memberMockData.js` — 신규(목업)
+- `src/pages/admin/AdminWorkspaceManagement.jsx`, `AdminMemberManagement.jsx`, `src/components/DomainManagement.jsx`, `src/pages/DomainSelection.jsx` — 공통 테이블 패턴·목업·푸터·리사이즈 등
+- `src/components/common/MainLayout.jsx`, `src/App.jsx` — 레이아웃·import 보조
+- 기타 목록성 페이지(`NoticeList`, `QnaBoard`, `Faq`, 프롬프트 목록 등) — 상단 sticky 블록·표기 소폭
+
+#### 기타
+- `src/components/common/modal/BaseModal.module.scss`, `src/context/DialogContext.module.scss` — 모달과 병행된 UI 정리
+- `NotebookDetail`, `KnowledgeGraphModal`, 어드민 설정 등 — 동일 브랜치 내 소폭 스타일/마크업 조정

@@ -99,7 +99,7 @@ const VersionHistoryPanel = ({
               <TableCell sx={{ width: '60px', whiteSpace: 'nowrap', bgcolor: '#f5f5f5' }}>활성</TableCell>
               <TableCell sx={{ bgcolor: '#f5f5f5' }}>버전</TableCell>
               <TableCell sx={{ bgcolor: '#f5f5f5' }}>수정일자</TableCell>
-              <TableCell align="center" sx={{ bgcolor: '#f5f5f5' }}>액션</TableCell>
+              <TableCell align="center" sx={{ bgcolor: '#f5f5f5' }}>관리</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

@@ -1,8 +1,12 @@
-/* MainLayout.css */
+/* MainLayout — GNB·LNB 고정, 오른쪽 콘텐츠 패널만 세로 스크롤(main-content) */
 .main-layout {
+  --main-layout-gnb-height: 56px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
   overflow: hidden;
   background-color: #f9fafb;
 }
@@ -11,13 +15,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
+  height: var(--main-layout-gnb-height);
+  flex-shrink: 0;
   padding: 0 20px;
   background-color: #1e293b;
   border-bottom: 1px solid #334155;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.25);
-  position: sticky;
-  top: 0;
   z-index: 1000;
 }
 
@@ -35,17 +38,22 @@
 
 .layout-body {
   display: flex;
-  flex: 1;
+  flex: 1 1 auto;
+  align-items: stretch;
+  min-width: 0;
   min-height: 0;
 }
 
 .lnb-sidebar {
   width: 212px;
   min-width: 212px;
+  flex-shrink: 0;
+  align-self: stretch;
   background-color: #ffffff;
   border-right: 1px solid #e5e7eb;
   padding: 14px 10px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -255,15 +263,18 @@
 }
 
 .content-panel {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
 .main-layout .main-content {
-  flex: 1;
-  padding: 12px 14px 14px;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* 상단은 0 — 타이틀·sticky 헤더가 GNB 바로 아래 정렬. 좌·하만 브레이크포인트별 유지 */
+  padding: 0 14px 14px;
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -271,9 +282,90 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Outlet + 푸터: main 세로를 채우고 짧은 본문일 때 site-footer는 패널(스크롤 영역) 하단에 고정 */
+.main-layout .main-content-scroll-inner {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-self: stretch;
+  gap: var(--spacing-lg);
+}
+
+/* 라우트 본문 — 기본은 콘텐츠 높이만큼만, 노트북만 남은 세로 공간 채움 */
+.main-layout .main-content-outlet-wrap {
+  flex: 0 1 auto;
+  min-width: 0;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-layout .main-content-outlet-wrap--notebook {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* 콘텐츠 루트: 목록 등은 본문 높이에 맞춤(푸터를 스크롤 끝으로 밀기 위해 flex 성장 제거) */
+.main-layout .main-content-outlet-wrap .admin-page,
+.main-layout .main-content-outlet-wrap .admin-container,
+.main-layout .main-content-outlet-wrap .domain-management-container,
+.main-layout .main-content-outlet-wrap .domain-selection-container,
+.main-layout .main-content-outlet-wrap .home-container {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-layout .main-content-outlet-wrap .loading-screen {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+/* 노트북: outlet 래퍼 직계 .notebook-layout */
+.main-layout .main-content-outlet-wrap--notebook > .notebook-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* 목록·설정: 제목 + 툴바 — sticky( main 상단 패딩 없음, 별도 음수 마진 불필요 ) */
+/* z-index: admin 표 thead 열 리사이즈용 th(z-index 최대 ~24)보다 반드시 커야 스크롤 시 본문이 헤더 위로 비치지 않음 */
+.main-layout .main-content .km-main-sticky-head {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  background: var(--color-bg-primary);
+  isolation: isolate;
+  padding-top:var(--spacing-sm);
+  padding-bottom:var(--spacing-sm);
+}
+
+.main-layout .main-content .km-main-sticky-head .page-header {
+  margin-bottom: 0;
+}
+
+/* 노트북 등: PageHeader가 outlet 래퍼 직계일 때 */
+.main-layout .main-content-outlet-wrap > .page-header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--color-bg-primary);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  isolation: isolate;
+  box-shadow: 0 1px 0 var(--color-border-subtle);
 }
 
 .gnb-right {
@@ -360,8 +452,10 @@
 }
 
 .site-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding: var(--spacing-sm) 0;
   text-align: center;
-  padding: 8px 0;
   color: #888;
   font-size: 12px;
   background-color: #f9fafb;
@@ -369,8 +463,8 @@
 }
 
 @media (min-width: 1920px) {
-  .main-content {
-    padding: 14px 18px 16px;
+  .main-layout .main-content {
+    padding: 0 18px 16px;
   }
 
   .lnb-sidebar {
@@ -380,8 +474,8 @@
 }
 
 @media (max-width: 1919px) {
-  .main-content {
-    padding: 12px 16px 14px;
+  .main-layout .main-content {
+    padding: 0 16px 14px;
   }
 }
 
@@ -390,8 +484,8 @@
     padding: 0 16px;
   }
 
-  .main-content {
-    padding: 12px 14px;
+  .main-layout .main-content {
+    padding: 0 14px 12px;
   }
 
   .lnb-sidebar {
@@ -411,8 +505,8 @@
     padding: 12px 8px 10px;
   }
 
-  .main-content {
-    padding: 10px 12px;
+  .main-layout .main-content {
+    padding: 0 12px 10px;
   }
 
   .gnb-right {
@@ -447,8 +541,8 @@
     font-size: 12px;
   }
 
-  .main-content {
-    padding: 8px 10px;
+  .main-layout .main-content {
+    padding: 0 10px 8px;
   }
 
   .service-label {

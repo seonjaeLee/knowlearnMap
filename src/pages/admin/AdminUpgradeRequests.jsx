@@ -89,7 +89,7 @@ const AdminUpgradeRequests = () => {
                             <th className="admin-upgrade-th">전화번호</th>
                             <th className="admin-upgrade-th">유형</th>
                             <th className="admin-upgrade-th">상태</th>
-                            <th className="admin-upgrade-th">액션</th>
+                            <th className="admin-upgrade-th">관리</th>
                         </tr>
                     </thead>
                     <tbody>
