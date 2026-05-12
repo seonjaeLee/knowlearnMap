@@ -1,9 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Search, Plus, X, Globe, CheckCircle, AlertCircle, Trash2, Edit2, Database, Layout, Info } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Search, Plus, Globe, CheckCircle, AlertCircle, Trash2, Edit2, Database, Layout, Info } from 'lucide-react';
 import { useDialog } from '../hooks/useDialog';
 import { apiCall } from '../services/api';
-import PageHeader from './common/PageHeader';
+import AdminPageHeader from './admin/AdminPageHeader';
+import BaseModal from './common/modal/BaseModal';
+import ModalFormField from './common/modal/ModalFormField';
+import KmModalSelect from './common/modal/KmModalSelect';
+import { mockDomains, mockDomainPromptDefaults, mockPromptCodesByPurpose } from '../data/domainMockData';
+import '../pages/admin/admin-common.css';
 import './DomainManagement.css';
+
+const isDomainMockEnabled = import.meta.env.VITE_ENABLE_DOMAIN_MOCK === 'true';
+const PROMPT_PURPOSES = ['CHUNK', 'ONTOLOGY', 'CHAT_RESULT', 'CONTENT_ONTOLOGY', 'SCHEMA_ANALYSIS', 'INTER_TABLE_ANALYSIS', 'AQL_GENERATION', 'AQL_INTERPRETATION', 'AGGREGATION_STRATEGY'];
 
 function DomainManagement() {
     const { alert, confirm } = useDialog();
@@ -45,36 +53,72 @@ function DomainManagement() {
     const [aqlInterpretationPromptCodes, setAqlInterpretationPromptCodes] = useState([]);
     const [aggregationStrategyPromptCodes, setAggregationStrategyPromptCodes] = useState([]);
     const [promptDefaults, setPromptDefaults] = useState({});
+    const [domainSearch, setDomainSearch] = useState('');
 
     useEffect(() => {
         fetchDomains();
     }, []);
 
+    const filteredDomains = useMemo(() => {
+        const q = domainSearch.trim().toLowerCase();
+        if (!q) return domains;
+        return domains.filter((d) => {
+            const name = (d.name || '').toLowerCase();
+            const desc = (d.description || '').toLowerCase();
+            const db = (d.arangoDbName || '').toLowerCase();
+            return name.includes(q) || desc.includes(q) || db.includes(q);
+        });
+    }, [domains, domainSearch]);
+
     const fetchDomains = async () => {
+        if (isDomainMockEnabled) {
+            setDomains(mockDomains);
+            return;
+        }
+
         try {
             const data = await apiCall('/domains');
             setDomains(data);
         } catch (err) {
             console.error('Failed to fetch domains', err);
+            setDomains(mockDomains);
         }
     };
 
     const fetchPromptDefaults = async () => {
+        if (isDomainMockEnabled) {
+            setPromptDefaults(mockDomainPromptDefaults);
+            return mockDomainPromptDefaults;
+        }
+
         try {
             const data = await apiCall('/domains/prompt-defaults');
             setPromptDefaults(data);
             return data;
         } catch (err) {
             console.error('프롬프트 기본값 조회 실패:', err);
+            setPromptDefaults(mockDomainPromptDefaults);
         }
-        return {};
+        return mockDomainPromptDefaults;
     };
 
     const fetchPromptCodesByPurpose = async () => {
+        if (isDomainMockEnabled) {
+            setChunkPromptCodes(mockPromptCodesByPurpose.CHUNK || []);
+            setOntologyPromptCodes(mockPromptCodesByPurpose.ONTOLOGY || []);
+            setChatPromptCodes(mockPromptCodesByPurpose.CHAT_RESULT || []);
+            setContentOntologyPromptCodes(mockPromptCodesByPurpose.CONTENT_ONTOLOGY || []);
+            setSchemaAnalysisPromptCodes(mockPromptCodesByPurpose.SCHEMA_ANALYSIS || []);
+            setInterTableAnalysisPromptCodes(mockPromptCodesByPurpose.INTER_TABLE_ANALYSIS || []);
+            setAqlGenerationPromptCodes(mockPromptCodesByPurpose.AQL_GENERATION || []);
+            setAqlInterpretationPromptCodes(mockPromptCodesByPurpose.AQL_INTERPRETATION || []);
+            setAggregationStrategyPromptCodes(mockPromptCodesByPurpose.AGGREGATION_STRATEGY || []);
+            return;
+        }
+
         try {
-            const purposes = ['CHUNK', 'ONTOLOGY', 'CHAT_RESULT', 'CONTENT_ONTOLOGY', 'SCHEMA_ANALYSIS', 'INTER_TABLE_ANALYSIS', 'AQL_GENERATION', 'AQL_INTERPRETATION', 'AGGREGATION_STRATEGY'];
             const results = await Promise.all(
-                purposes.map(purpose =>
+                PROMPT_PURPOSES.map((purpose) =>
                     apiCall(`/v1/prompts?purpose=${encodeURIComponent(purpose)}&isActive=true&size=100`)
                         .catch(() => ({ data: { content: [] } }))
                 )
@@ -94,6 +138,15 @@ function DomainManagement() {
             setAggregationStrategyPromptCodes(extractCodes(results[8]));
         } catch (err) {
             console.error('프롬프트 코드 목록 조회 실패:', err);
+            setChunkPromptCodes(mockPromptCodesByPurpose.CHUNK || []);
+            setOntologyPromptCodes(mockPromptCodesByPurpose.ONTOLOGY || []);
+            setChatPromptCodes(mockPromptCodesByPurpose.CHAT_RESULT || []);
+            setContentOntologyPromptCodes(mockPromptCodesByPurpose.CONTENT_ONTOLOGY || []);
+            setSchemaAnalysisPromptCodes(mockPromptCodesByPurpose.SCHEMA_ANALYSIS || []);
+            setInterTableAnalysisPromptCodes(mockPromptCodesByPurpose.INTER_TABLE_ANALYSIS || []);
+            setAqlGenerationPromptCodes(mockPromptCodesByPurpose.AQL_GENERATION || []);
+            setAqlInterpretationPromptCodes(mockPromptCodesByPurpose.AQL_INTERPRETATION || []);
+            setAggregationStrategyPromptCodes(mockPromptCodesByPurpose.AGGREGATION_STRATEGY || []);
         }
     };
 
@@ -198,6 +251,11 @@ function DomainManagement() {
             return;
         }
 
+        if (isDomainMockEnabled) {
+            setDomains((prev) => prev.filter((domain) => domain.id !== id));
+            return;
+        }
+
         try {
             await apiCall(`/domains/${id}`, { method: 'DELETE' });
             fetchDomains();
@@ -223,6 +281,28 @@ function DomainManagement() {
         }
 
         try {
+            if (isDomainMockEnabled) {
+                if (isEditMode) {
+                    setDomains((prev) => prev.map((domain) => (
+                        domain.id === editId
+                            ? { ...domain, ...formData }
+                            : domain
+                    )));
+                } else {
+                    const nextId = domains.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+                    const newDomain = {
+                        ...formData,
+                        id: nextId,
+                        workspaceCount: 0,
+                        workspaces: [],
+                        createdAt: new Date().toISOString(),
+                    };
+                    setDomains((prev) => [newDomain, ...prev]);
+                }
+                setIsModalOpen(false);
+                return;
+            }
+
             const url = isEditMode ? `/domains/${editId}` : '/domains';
             const method = isEditMode ? 'PUT' : 'POST';
 
@@ -238,31 +318,53 @@ function DomainManagement() {
         }
     };
 
+    const handleSelectFieldChange = (fieldName) => (e) => {
+        const value = e?.target?.value ?? '';
+        setFormData((prev) => ({
+            ...prev,
+            [fieldName]: value,
+        }));
+    };
+
+    const promptSelectConfigs = [
+        { key: 'ontologyPrompt', label: '온톨로지 프롬프트', options: ontologyPromptCodes, helper: 'Chunk → LLM 온톨로지 추출' },
+        { key: 'chatResultPrompt', label: '채팅 프롬프트', options: chatPromptCodes, helper: 'Chat 응답 생성' },
+        { key: 'contentOntologyPrompt', label: 'CONTENT 온톨로지', options: contentOntologyPromptCodes, helper: '정형 Chunk → LLM 온톨로지' },
+        { key: 'schemaAnalysisPrompt', label: '스키마 분석', options: schemaAnalysisPromptCodes, helper: 'CSV/DB 스키마 자동 분석' },
+        { key: 'interTableAnalysisPrompt', label: '테이블 간 관계 분석', options: interTableAnalysisPromptCodes, helper: '다건 테이블 간 FK/관계 분석' },
+        { key: 'aqlGenerationPrompt', label: 'AQL 생성', options: aqlGenerationPromptCodes, helper: '자연어 → AQL 쿼리 생성' },
+        { key: 'aqlInterpretationPrompt', label: 'AQL 결과 해석', options: aqlInterpretationPromptCodes, helper: 'AQL 쿼리 결과 자연어 해석' },
+        { key: 'aggregationStrategyPrompt', label: '집계 전략', options: aggregationStrategyPromptCodes, helper: '대규모 정형 데이터 집계 전략' },
+    ];
+
     return (
-        <div className="domain-management-container">
-            <PageHeader
+        <div className="domain-management-container admin-page">
+            <AdminPageHeader
                 title="도메인 관리"
-                breadcrumbs={['어드민센터']}
+                count={domains.length}
                 actions={(
-                    <div className="domain-toolbar">
-                        <div className="search-wrapper">
-                            <Search size={18} className="search-icon" />
-                            <input
-                                type="text"
-                                className="domain-search-input"
-                                placeholder="도메인 검색..."
-                            />
-                        </div>
-                        <button
-                            className="new-domain-btn"
-                            onClick={handleOpenCreateModal}
-                        >
-                            <Plus size={18} />
-                            새 도메인
-                        </button>
-                    </div>
+                    <button type="button" className="admin-btn admin-btn-primary" onClick={handleOpenCreateModal}>
+                        <Plus size={14} />
+                        새 도메인
+                    </button>
                 )}
             />
+
+            <div className="admin-toolbar">
+                <div className="admin-toolbar-left">
+                    <div className="admin-search">
+                        <Search size={16} className="admin-search-icon" />
+                        <input
+                            type="text"
+                            className="admin-search-input"
+                            placeholder="도메인 검색..."
+                            value={domainSearch}
+                            onChange={(e) => setDomainSearch(e.target.value)}
+                            aria-label="도메인 검색"
+                        />
+                    </div>
+                </div>
+            </div>
 
             <div className="domain-table-container">
                 <table className="domain-table">
@@ -284,8 +386,14 @@ function DomainManagement() {
                                     등록된 도메인이 없습니다.
                                 </td>
                             </tr>
+                        ) : filteredDomains.length === 0 ? (
+                            <tr>
+                                <td colSpan="7" className="empty-state">
+                                    검색 결과가 없습니다.
+                                </td>
+                            </tr>
                         ) : (
-                            domains.map((domain) => (
+                            filteredDomains.map((domain) => (
                                 <tr key={domain.id}>
                                     <td className="domain-name-cell">
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -377,317 +485,124 @@ function DomainManagement() {
                 </table>
             </div>
 
-            {/* Modal */}
-            {isModalOpen && (
-                <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-                    <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>{isEditMode ? '도메인 정보 수정' : '새 도메인 추가'}</h3>
-                            <button className="close-btn" onClick={() => setIsModalOpen(false)}>
-                                <X size={20} />
+            <BaseModal
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title={isEditMode ? '도메인 정보 수정' : '새 도메인 추가'}
+                contentClassName="km-modal-form domain-modal-content"
+                paperSx={{ width: '680px', maxWidth: '95vw', maxHeight: '90vh' }}
+                actions={(
+                    <>
+                        <button type="button" className="admin-btn" onClick={() => setIsModalOpen(false)}>
+                            취소
+                        </button>
+                        <button
+                            type="button"
+                            className="admin-btn admin-btn-primary"
+                            onClick={handleSubmit}
+                            disabled={!isEditMode && !isArangoDbChecked}
+                        >
+                            {isEditMode ? '수정 완료' : '생성하기'}
+                        </button>
+                    </>
+                )}
+            >
+                <ModalFormField label="도메인명" required>
+                    <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        placeholder="도메인 이름을 입력하세요"
+                        autoFocus
+                    />
+                </ModalFormField>
+
+                <ModalFormField label="설명">
+                    <input
+                        type="text"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        placeholder="도메인에 대한 한 줄 설명"
+                    />
+                </ModalFormField>
+
+                <ModalFormField
+                    label="ArangoDB 데이터베이스명"
+                    required={!isEditMode}
+                    helperText={!isEditMode ? '* 생성 후에는 변경할 수 없습니다. (영문 소문자만 가능)' : undefined}
+                >
+                    {isEditMode ? (
+                        <input type="text" value={formData.arangoDbName} disabled />
+                    ) : (
+                        <div className="domain-input-group">
+                            <input
+                                type="text"
+                                name="arangoDbName"
+                                value={formData.arangoDbName}
+                                onChange={handleInputChange}
+                                placeholder="예: mydomaindb (소문자)"
+                            />
+                            <button type="button" className="admin-btn" onClick={handleDuplicateCheck}>
+                                중복확인
                             </button>
                         </div>
+                    )}
+                </ModalFormField>
 
-                        <div className="modal-body">
-                            <div className="form-group">
-                                <label className="form-label">도메인명</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    className="form-input"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    placeholder="도메인 이름을 입력하세요"
-                                    autoFocus
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label className="form-label">설명</label>
-                                <input
-                                    type="text"
-                                    name="description"
-                                    className="form-input"
-                                    value={formData.description}
-                                    onChange={handleInputChange}
-                                    placeholder="도메인에 대한 한 줄 설명"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label className="form-label">ArangoDB 데이터베이스명</label>
-                                {isEditMode ? (
-                                    <input
-                                        type="text"
-                                        className="form-input"
-                                        value={formData.arangoDbName}
-                                        disabled
-                                        style={{ backgroundColor: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' }}
-                                    />
-                                ) : (
-                                    <>
-                                        <div className="input-group">
-                                            <input
-                                                type="text"
-                                                name="arangoDbName"
-                                                className="form-input"
-                                                value={formData.arangoDbName}
-                                                onChange={handleInputChange}
-                                                placeholder="예: mydomaindb (소문자)"
-                                            />
-                                            <button className="check-btn" onClick={handleDuplicateCheck}>
-                                                중복확인
-                                            </button>
-                                        </div>
-                                        {checkMessage && (
-                                            <div className={`validation-msg ${isArangoDbChecked ? 'success' : 'error'}`}>
-                                                {isArangoDbChecked ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
-                                                {checkMessage}
-                                            </div>
-                                        )}
-                                        <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
-                                            * 생성 후에는 변경할 수 없습니다. (영문 소문자만 가능)
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(2, 1fr)',
-                                gap: '12px 16px',
-                                marginBottom: '12px'
-                            }}>
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">청킹 프롬프트</label>
-                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                        <select
-                                            name="chunkPrompt"
-                                            className="form-input"
-                                            style={{ flex: 1, marginBottom: 0, ...(formData.chunkPrompt === 'NONE' ? { backgroundColor: '#fef2f2', borderColor: '#fca5a5', color: '#dc2626', fontWeight: '600' } : {}) }}
-                                            value={formData.chunkPrompt}
-                                            onChange={handleInputChange}
-                                        >
-                                            <option value="">-- 기본값 --</option>
-                                            {chunkPromptCodes.map(code => (
-                                                <option key={code} value={code}>{code}</option>
-                                            ))}
-                                        </select>
-                                        <button
-                                            type="button"
-                                            className="check-btn"
-                                            onClick={() => setFormData(prev => ({ ...prev, chunkPrompt: prev.chunkPrompt === 'NONE' ? '' : 'NONE' }))}
-                                            style={{
-                                                ...(formData.chunkPrompt === 'NONE'
-                                                    ? { backgroundColor: '#dc2626', color: '#fff', borderColor: '#dc2626' }
-                                                    : {})
-                                            }}
-                                        >
-                                            NONE
-                                        </button>
-                                    </div>
-                                    <div style={{ fontSize: '11px', color: formData.chunkPrompt === 'NONE' ? '#dc2626' : '#94a3b8', marginTop: '4px' }}>
-                                        {formData.chunkPrompt === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
-                                    </div>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">온톨로지 프롬프트</label>
-                                    <select
-                                        name="ontologyPrompt"
-                                        className="form-input"
-                                        value={formData.ontologyPrompt}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {ontologyPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                        Chunk → LLM 온톨로지 추출
-                                    </div>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">채팅 프롬프트</label>
-                                    <select
-                                        name="chatResultPrompt"
-                                        className="form-input"
-                                        value={formData.chatResultPrompt}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {chatPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                        Chat 응답 생성
-                                    </div>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">CONTENT 온톨로지</label>
-                                    <select
-                                        name="contentOntologyPrompt"
-                                        className="form-input"
-                                        value={formData.contentOntologyPrompt}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {contentOntologyPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                        정형 Chunk → LLM 온톨로지
-                                    </div>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">스키마 분석</label>
-                                    <select
-                                        name="schemaAnalysisPrompt"
-                                        className="form-input"
-                                        value={formData.schemaAnalysisPrompt}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {schemaAnalysisPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                        CSV/DB 스키마 자동 분석
-                                    </div>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">테이블 간 관계 분석</label>
-                                    <select
-                                        name="interTableAnalysisPrompt"
-                                        className="form-input"
-                                        value={formData.interTableAnalysisPrompt}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {interTableAnalysisPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                        다건 테이블 간 FK/관계 분석
-                                    </div>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">AQL 생성</label>
-                                    <select
-                                        name="aqlGenerationPrompt"
-                                        className="form-input"
-                                        value={formData.aqlGenerationPrompt}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {aqlGenerationPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                        자연어 → AQL 쿼리 생성
-                                    </div>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">AQL 결과 해석</label>
-                                    <select
-                                        name="aqlInterpretationPrompt"
-                                        className="form-input"
-                                        value={formData.aqlInterpretationPrompt}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {aqlInterpretationPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                        AQL 쿼리 결과 자연어 해석
-                                    </div>
-                                </div>
-
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label className="form-label">집계 전략</label>
-                                    <select
-                                        name="aggregationStrategyPrompt"
-                                        className="form-input"
-                                        value={formData.aggregationStrategyPrompt}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">-- 기본값 --</option>
-                                        {aggregationStrategyPromptCodes.map(code => (
-                                            <option key={code} value={code}>{code}</option>
-                                        ))}
-                                    </select>
-                                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
-                                        대규모 정형 데이터 집계 전략
-                                    </div>
-                                </div>
-                            </div>
-
-                            {isEditMode && (
-                                <div style={{
-                                    marginTop: '20px',
-                                    padding: '12px 16px',
-                                    backgroundColor: '#fef3c7',
-                                    borderRadius: '8px',
-                                    border: '1px solid #fde68a',
-                                    fontSize: '13px',
-                                    color: '#92400e',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px'
-                                }}>
-                                    <Info size={16} />
-                                    <span>
-                                        <strong>시맨틱 카테고리/관계</strong>는 KnowlearnEXP의 카테고리 관리 메뉴에서 편집할 수 있습니다.
-                                    </span>
-                                </div>
-                            )}
-
-                            {error && (
-                                <div style={{
-                                    padding: '10px',
-                                    backgroundColor: '#fee2e2',
-                                    color: '#dc2626',
-                                    borderRadius: '6px',
-                                    fontSize: '13px',
-                                    marginBottom: '16px'
-                                }}>
-                                    {error}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="modal-footer">
-                            <button
-                                className="btn-cancel"
-                                onClick={() => setIsModalOpen(false)}
-                            >
-                                취소
-                            </button>
-                            <button
-                                className="btn-submit"
-                                onClick={handleSubmit}
-                                disabled={!isEditMode && !isArangoDbChecked}
-                            >
-                                {isEditMode ? '수정 완료' : '생성하기'}
-                            </button>
-                        </div>
+                {checkMessage && (
+                    <div className={`domain-validation-msg ${isArangoDbChecked ? 'success' : 'error'}`}>
+                        {isArangoDbChecked ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
+                        {checkMessage}
                     </div>
+                )}
+
+                <div className="domain-prompt-grid">
+                    <ModalFormField
+                        label="청킹 프롬프트"
+                        helperText={formData.chunkPrompt === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
+                        helperClassName={formData.chunkPrompt === 'NONE' ? 'domain-helper-error' : ''}
+                    >
+                        <div className="domain-input-group">
+                            <KmModalSelect
+                                value={formData.chunkPrompt}
+                                onChange={handleSelectFieldChange('chunkPrompt')}
+                                options={chunkPromptCodes}
+                                warn={formData.chunkPrompt === 'NONE'}
+                            />
+                            <button
+                                type="button"
+                                className={`admin-btn ${formData.chunkPrompt === 'NONE' ? 'admin-btn-danger' : ''}`}
+                                onClick={() => setFormData((prev) => ({ ...prev, chunkPrompt: prev.chunkPrompt === 'NONE' ? '' : 'NONE' }))}
+                            >
+                                NONE
+                            </button>
+                        </div>
+                    </ModalFormField>
+
+                    {promptSelectConfigs.map((item) => (
+                        <ModalFormField key={item.key} label={item.label} helperText={item.helper}>
+                            <KmModalSelect
+                                value={formData[item.key]}
+                                onChange={handleSelectFieldChange(item.key)}
+                                options={item.options}
+                            />
+                        </ModalFormField>
+                    ))}
                 </div>
-            )}
+
+                {isEditMode && (
+                    <div className="domain-info-note">
+                        <Info size={16} />
+                        <span>
+                            <strong>시맨틱 카테고리/관계</strong>는 KnowlearnEXP의 카테고리 관리 메뉴에서 편집할 수 있습니다.
+                        </span>
+                    </div>
+                )}
+
+                {error && <div className="domain-error-note">{error}</div>}
+            </BaseModal>
         </div>
     );
 }

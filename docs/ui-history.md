@@ -2792,3 +2792,45 @@
 
 #### 문서 변경
 - `docs/modal-form-spec.md` — 포커스 행에 `!important`·`:invalid` 보강 설명
+
+### 195) 도메인 관리 — 헤더와 검색 분리·`AdminPageHeader`·클라이언트 검색
+
+- **목적**: 프롬프트 관리 등 다른 어드민 페이지와 동일하게 타이틀 행에는 액션 버튼만 두고, 검색은 헤더 아래 `admin-toolbar`로 옮겨 좁은 뷰포트에서 타이틀·우측 버튼 정렬이 흐트러지지 않게 함
+- **영향**: `/admin/domains` 도메인 관리 목록 UI; 도메인명·설명·ArangoDB명 기준 클라이언트 필터; 목록 건수는 헤더 제목 옆 `(N)` 표시
+
+#### CSS 변경
+- `src/components/DomainManagement.css` — 미사용 `.domain-header`·`.domain-toolbar`·검색·`new-domain-btn` 블록 제거
+
+#### JSX/JS 변경
+- `src/components/DomainManagement.jsx` — `PageHeader` → `AdminPageHeader`; `admin-common.css` import; `admin-toolbar` + `admin-search` 행; `domainSearch`/`filteredDomains`; 빈 필터 시「검색 결과가 없습니다.」; 루트에 `admin-page` 클래스 병합
+
+### 196) 도메인 추가/수정 팝업 — `BaseModal`·`km-modal-form`·`KmModalSelect` 공통화
+
+- **목적**: 도메인 추가/수정 팝업이 기존 커스텀 오버레이/폼 스타일로 남아 있던 부분을 공통 모달 규격으로 통일해 페이지 간 모달 UI/폼 경험을 일관화
+- **영향**: `/admin/domains`의 도메인 생성·수정 팝업 헤더/본문/푸터; 프롬프트 선택 셀렉트 UI; 중복확인/경고/오류 메시지 블록
+
+#### CSS 변경
+- `src/components/DomainManagement.css` — 구형 `.modal-*`/`.form-*`/`.btn-*` 스타일 제거, `domain-modal-content`·`domain-input-group`·`domain-prompt-grid`·`domain-info-note`·`domain-error-note` 등 `BaseModal` 기반 클래스 추가
+
+#### JSX/JS 변경
+- `src/components/DomainManagement.jsx` — 커스텀 모달 마크업 제거 후 `BaseModal` 적용(`contentClassName="km-modal-form"`), 필드 블록을 `ModalFormField`로 전환, 프롬프트 셀렉트를 네이티브 `<select>`에서 `KmModalSelect`로 교체, `handleSelectFieldChange`·`promptSelectConfigs`로 선택 필드 로직 공통화
+
+### 197) 도메인 팝업 입력 필드 배경 통일(2열 가독성 개선)
+
+- **목적**: 2열 프롬프트 영역이 복잡해 보이는 인상을 줄이기 위해 도메인 팝업 내부의 `input`/셀렉트(`KmModalSelect`) 배경을 동일한 흰색으로 통일
+- **영향**: `/admin/domains` 도메인 생성·수정 팝업의 필드 시각 밀도 완화, 입력/선택 컨트롤 일관성 향상
+
+#### CSS 변경
+- `src/components/DomainManagement.css` — `.domain-modal-content` 범위에서 텍스트 입력과 `.MuiOutlinedInput-root` 배경을 `var(--color-bg-secondary)`로 강제 적용
+
+### 198) 도메인 관리 로컬 더미 데이터 모드 추가
+
+- **목적**: 테이블 디자인 작업 중 백엔드 연결 여부와 무관하게 도메인 관리 화면을 바로 확인할 수 있도록 로컬 더미 데이터 표시/편집 흐름 제공
+- **영향**: `/admin/domains` 목록·도메인 생성/수정/삭제 흐름; 프롬프트 코드/기본값 조회 실패 시 폼 선택값 보장
+
+#### CSS 변경
+- 없음
+
+#### JSX/JS 변경
+- `src/components/DomainManagement.jsx` — `VITE_ENABLE_DOMAIN_MOCK` 플래그 도입, `/domains` 조회 실패 시 더미 도메인 fallback, 프롬프트 기본값/코드 fallback, mock 모드에서 생성·수정·삭제를 로컬 state로 처리
+- `src/data/domainMockData.js` — 도메인 관리용 샘플 도메인/프롬프트 기본값/용도별 프롬프트 코드 더미 데이터 추가

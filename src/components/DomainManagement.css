@@ -7,83 +7,6 @@
     margin: 0;
 }
 
-.domain-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-}
-
-.domain-title-group h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: 4px;
-}
-
-.domain-title-group p {
-    color: var(--color-text-secondary);
-    font-size: 14px;
-}
-
-.domain-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-    min-width: 0;
-}
-
-.search-wrapper {
-    position: relative;
-    flex: 1 1 220px;
-    min-width: 0;
-    max-width: 300px;
-    width: 100%;
-}
-
-.search-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-text-secondary);
-    pointer-events: none;
-}
-
-.domain-search-input {
-    width: 100%;
-    padding: 10px 12px 10px 36px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    transition: all 0.2s;
-}
-
-.domain-search-input:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px var(--color-primary-light);
-    outline: none;
-}
-
-.new-domain-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.new-domain-btn:hover {
-    background-color: var(--color-primary-dark);
-}
-
 .domain-table-container {
     background: white;
     border-radius: var(--radius-lg);
@@ -148,177 +71,84 @@
     font-size: 15px;
 }
 
-/* Modal Styles — 전역 fadeIn/slideUp 미정의·충돌 방지용 로컬 키프레임 */
-@keyframes domain-mgmt-modal-overlay-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes domain-mgmt-modal-card-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(4px);
-    animation: domain-mgmt-modal-overlay-in 0.2s ease-out;
-}
-
-.modal-card {
-    background: white;
-    width: 680px;
-    max-width: 95vw;
-    max-height: 90vh;
+.domain-modal-content {
     overflow-y: auto;
-    border-radius: var(--radius-lg);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    animation: domain-mgmt-modal-card-in 0.3s ease-out;
 }
 
-@media (max-width: 700px) {
-    .modal-card {
-        width: 95vw;
-    }
+.domain-modal-content input:not([type='checkbox']):not([type='radio']),
+.domain-modal-content .MuiOutlinedInput-root {
+    background-color: var(--color-bg-secondary) !important;
 }
 
-.modal-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--color-border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--color-text-secondary);
-}
-
-.modal-body {
-    padding: 24px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    margin-bottom: 8px;
-}
-
-.form-input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    transition: all 0.2s;
-}
-
-.form-input:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px var(--color-primary-light);
-    outline: none;
-}
-
-.input-group {
-    display: flex;
-    gap: 8px;
-}
-
-.check-btn {
-    padding: 10px 16px;
-    background-color: #f8f9fa;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    color: var(--color-text-primary);
-    cursor: pointer;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.check-btn:hover {
-    background-color: #e9ecef;
-}
-
-.validation-msg {
-    font-size: 12px;
-    margin-top: 6px;
+.domain-input-group {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--spacing-sm);
 }
 
-.validation-msg.success {
+.domain-input-group > :first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.domain-input-group > button {
+    flex-shrink: 0;
+}
+
+.domain-validation-msg {
+    margin: calc(-1 * var(--spacing-sm)) 0 var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+}
+
+.domain-validation-msg.success {
     color: #059669;
 }
 
-.validation-msg.error {
+.domain-validation-msg.error {
     color: #dc2626;
 }
 
-.modal-footer {
-    padding: 16px 24px;
-    background-color: #f8f9fa;
-    border-top: 1px solid var(--color-border);
+.domain-prompt-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.domain-helper-error {
+    color: #dc2626 !important;
+}
+
+.domain-info-note {
+    margin-top: var(--spacing-md);
+    padding: 12px var(--spacing-md);
+    border: 1px solid #fde68a;
+    border-radius: var(--radius-md);
+    background-color: #fef3c7;
+    color: #92400e;
+    font-size: var(--font-size-sm);
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    align-items: center;
+    gap: var(--spacing-sm);
 }
 
-.btn-cancel {
-    padding: 10px 20px;
-    border: 1px solid var(--color-border);
-    background: white;
-    border-radius: var(--radius-md);
-    color: var(--color-text-secondary);
-    font-weight: 500;
-    cursor: pointer;
+.domain-error-note {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #fecaca;
+    background-color: #fee2e2;
+    color: #dc2626;
+    font-size: var(--font-size-sm);
 }
 
-.btn-submit {
-    padding: 10px 20px;
-    background: var(--color-primary);
-    border: none;
-    border-radius: var(--radius-md);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.btn-submit:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+@media (max-width: 1023px) {
+    .domain-prompt-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ========== Prompt Tag Grid (Domain/Workspace) ========== */
