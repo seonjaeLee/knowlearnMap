@@ -9,6 +9,8 @@
 |------|------|
 | [layout-guideline.md](./layout-guideline.md) | 앱 레이아웃 폭·브레이크포인트·여백 |
 | [css-design-tokens.md](./css-design-tokens.md) | `:root` 변수 네이밍·비활성 토큰 |
+| [mockup-guide.md](./mockup-guide.md) | 목업 산출물 형식·체크리스트 |
+| [data-table-spec.md](./data-table-spec.md) | 데이터 테이블 밀도·헤더·행·툴바 규격(초안) |
 | [ui-history.md](./ui-history.md) | 변경 이력 |
 
 ---
