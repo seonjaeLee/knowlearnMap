@@ -42,7 +42,7 @@
 
 /* Grid/Card styles removed */
 
-/* docs/data-table-spec.md — 밀집(km-data-table-dense), 토큰 기준 */
+/* docs/data-table-spec.md — 밀집(km-data-table-dense); 열 폭은 DomainSelection.jsx columns에서만 지정 */
 .domain-list-container {
     background: var(--color-bg-secondary);
     border-radius: var(--radius-md);
@@ -51,46 +51,30 @@
     border: 1px solid var(--color-border-subtle);
 }
 
-.domain-list-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    font-family: var(--font-family);
-}
-
-.domain-list-table thead tr {
-    height: 35px;
-}
-
-.domain-list-table th {
-    /* 본문 행 hover(.domain-list-row:hover td)와 동일 톤 */
-    background: var(--color-bg-hover);
-    color: var(--color-text-secondary);
-    text-align: left;
+.domain-list-container .domain-basic-table thead .MuiTableCell-root {
     height: 35px;
     padding-block: 0;
     padding-inline: var(--spacing-md);
-    font-weight: var(--font-weight-semibold);
-    border-bottom: 1px solid var(--color-border-subtle);
-    font-size: var(--font-size-sm);
     white-space: nowrap;
     line-height: 1.25;
     box-sizing: border-box;
     vertical-align: middle;
 }
 
-.domain-list-table .domain-list-th-select {
-    text-align: center;
-    width: 56px;
+.domain-list-container .domain-basic-table thead .MuiTableCell-head:last-of-type .domain-list-actions-head {
+    padding-right: var(--spacing-sm);
 }
 
-.domain-list-table .domain-list-th-action {
-    text-align: right;
-    width: var(--km-table-actions-col-min);
-    min-width: var(--km-table-actions-col-min);
-    max-width: var(--km-table-actions-col-min);
+.domain-list-container .domain-basic-table tbody .MuiTableCell-root {
+    height: 43px;
+    padding-block: 0;
     padding-inline: var(--spacing-md);
+    line-height: 1.25;
     box-sizing: border-box;
+}
+
+.domain-list-container .domain-basic-table tbody tr:last-child .MuiTableCell-root {
+    border-bottom: none;
 }
 
 .domain-list-actions-head {
@@ -101,41 +85,10 @@
     min-width: 0;
 }
 
-.domain-list-table thead tr th:last-child .domain-list-actions-head {
-    padding-right: var(--spacing-sm); /* 8px — 토큰과 동일 */
-}
-
-.domain-list-table tbody tr {
-    height: 43px;
-}
-
-.domain-list-table tbody tr:has(.domain-list-empty) {
-    height: auto;
-}
-
-.domain-list-table td {
-    height: 43px;
-    padding-block: 0;
-    padding-inline: var(--spacing-md);
-    border-bottom: 1px solid var(--color-border-subtle);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    background: var(--color-bg-secondary);
-    vertical-align: middle;
-    line-height: 1.25;
-    box-sizing: border-box;
-}
-
-/* 마지막 행 하단선 + .domain-list-container 하단 border 가 겹쳐 2px·그림자처럼 보이는 현상 방지 */
-.domain-list-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
 .domain-radio-cell {
-    text-align: center;
-    width: 56px;
-    min-width: 56px;
-    max-width: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
 }
 
@@ -159,7 +112,7 @@
     background: #ebf2ff;
 }
 
-.domain-list-row.domain-selected td:first-child {
+.domain-list-row.domain-selected td:first-of-type {
     box-shadow: inset 3px 0 0 var(--color-accent);
 }
 
@@ -167,7 +120,6 @@
     background: #ebf2ff;
 }
 
-/* td는 table-cell 유지 — 가로선·행 높이가 인접 열과 어긋나지 않음 */
 .domain-list-name {
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
@@ -205,10 +157,6 @@
 
 .domain-list-action {
     text-align: right;
-    width: var(--km-table-actions-col-min);
-    min-width: var(--km-table-actions-col-min);
-    max-width: var(--km-table-actions-col-min);
-    padding-inline: var(--spacing-md);
     box-sizing: border-box;
     vertical-align: middle;
 }
@@ -224,12 +172,10 @@
 
 .domain-list-empty {
     text-align: center;
-    height: auto !important;
-    max-height: none !important;
-    padding: var(--spacing-lg) var(--spacing-md) !important;
+    padding: var(--spacing-lg) var(--spacing-md);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    background: var(--color-bg-secondary) !important;
+    background: var(--color-bg-secondary);
 }
 
 .error-message {
