@@ -207,6 +207,24 @@
     flex-shrink: 0;
 }
 
+/* PageHeader·툴바 우측: 텍스트 버튼 + 정사각 아이콘 버튼 높이 통일 */
+.admin-toolbar-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--admin-space-sm);
+}
+
+.admin-toolbar-actions > .admin-btn {
+    min-height: 40px;
+    box-sizing: border-box;
+}
+
+.admin-toolbar-actions > .admin-btn.admin-btn-icon {
+    min-width: 40px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .admin-search {
     position: relative;
     width: 320px;
@@ -487,6 +505,20 @@
     stroke: currentColor;
 }
 
+.admin-table .km-table-icon-btn--success {
+    color: var(--admin-color-success);
+}
+
+.admin-table .km-table-icon-btn--success:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--admin-color-success) 12%, transparent);
+    color: var(--admin-color-success-on-soft);
+}
+
+.admin-table .km-table-icon-btn--success > svg {
+    color: inherit;
+    stroke: currentColor;
+}
+
 /* ============================================================
  * 배지 (상태/역할/등급 공통)
  * ============================================================ */
@@ -576,6 +608,18 @@
 .admin-btn-primary:hover {
     background: var(--admin-color-primary-hover);
     border-color: var(--admin-color-primary-hover);
+}
+
+/* 성능·캐시 등 긍정 액션 — 테두리·배경만 강조(아이콘+텍스트 툴바 버튼용) */
+.admin-btn-outline-success {
+    border-color: color-mix(in srgb, var(--admin-color-success) 40%, var(--admin-border-strong));
+    background: color-mix(in srgb, var(--admin-color-success-soft) 70%, var(--admin-bg-panel));
+    color: var(--admin-color-success-on-soft);
+}
+
+.admin-btn-outline-success:hover {
+    background: var(--admin-color-success-soft);
+    border-color: color-mix(in srgb, var(--admin-color-success) 55%, var(--admin-border-strong));
 }
 
 .admin-btn-danger {

@@ -1,0 +1,206 @@
+/* 시스템 설정 관리 — BasicTable + 토큰 */
+
+.config-mgmt-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.config-mgmt-loading {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.config-mgmt-empty {
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.config-mgmt-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.config-mgmt-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  max-width: min(100%, 280px);
+}
+
+.config-mgmt-actions-head {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.config-mgmt-value-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  width: 100%;
+}
+
+.config-mgmt-value-line {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--color-bg-hover);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+}
+
+.config-mgmt-value-popover-trigger {
+  flex-shrink: 0;
+}
+
+.config-mgmt-value-popover-inner {
+  min-width: 0;
+}
+
+.config-mgmt-value-popover-pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+/* KmPopover Paper 병합 클래스 — 긴 설정 값용 */
+.config-mgmt-value-popover-panel {
+  max-width: min(560px, calc(100vw - var(--spacing-xl))) !important;
+  max-height: min(60vh, 420px) !important;
+}
+
+.config-mgmt-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.config-mgmt-category-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.config-mgmt-category-subtitle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.config-mgmt-category-title-text {
+  margin: 0 !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.35 !important;
+  color: var(--color-text-primary) !important;
+}
+
+.config-mgmt-category-table-area {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.config-mgmt-category-count {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+}
+
+.config-mgmt-table-shell {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+.config-mgmt-basic-table {
+  min-width: 960px;
+}
+
+.config-mgmt-key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-sm);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-medium);
+}
+
+.config-mgmt-edit-modal-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  box-sizing: border-box;
+  resize: vertical;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+.config-mgmt-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.config-mgmt-type-badge--numeric {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.config-mgmt-type-badge--bool {
+  background: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+}
+
+.config-mgmt-type-badge--string {
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg-secondary));
+  color: var(--color-text-primary);
+}
+
+.config-mgmt-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* 행 호버(BasicTable)와 읽기 전용 값 블록 톤이 겹치지 않게: 값은 패널색+테두리, 행 호버만 연한 액센트 틴트 */
+.config-mgmt-table-shell tbody tr:hover > td {
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary)) !important;
+}

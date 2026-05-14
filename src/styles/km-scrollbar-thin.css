@@ -3,7 +3,7 @@
  *
  * 사용법:
  * - `textarea` 전역 얇은 스크롤(세로)
- * - overflow가 생기는 래퍼에 `class="km-scrollbar-thin"` 추가
+ * - overflow가 생기는 래퍼에 `class="km-scrollbar-thin"` 또는 `basic-table-shell` 추가
  * - 아래 연동 선택자는 동일 규칙이 자동 적용됨 (마크업 변경 최소화)
  *
  * 토큰: `index.css` 의 `--km-scrollbar-*`
@@ -12,6 +12,7 @@
 textarea,
 .km-scrollbar-thin,
 .admin-table-wrap,
+.basic-table-shell,
 .admin-upgrade-table-wrap,
 .kg-body-hscroll,
 .km-base-modal-content,
@@ -23,6 +24,7 @@ textarea,
 textarea::-webkit-scrollbar,
 .km-scrollbar-thin::-webkit-scrollbar,
 .admin-table-wrap::-webkit-scrollbar,
+.basic-table-shell::-webkit-scrollbar,
 .admin-upgrade-table-wrap::-webkit-scrollbar,
 .kg-body-hscroll::-webkit-scrollbar,
 .km-base-modal-content::-webkit-scrollbar,
@@ -34,6 +36,7 @@ textarea::-webkit-scrollbar,
 textarea::-webkit-scrollbar-track,
 .km-scrollbar-thin::-webkit-scrollbar-track,
 .admin-table-wrap::-webkit-scrollbar-track,
+.basic-table-shell::-webkit-scrollbar-track,
 .admin-upgrade-table-wrap::-webkit-scrollbar-track,
 .kg-body-hscroll::-webkit-scrollbar-track,
 .km-base-modal-content::-webkit-scrollbar-track,
@@ -44,6 +47,7 @@ textarea::-webkit-scrollbar-track,
 textarea::-webkit-scrollbar-thumb,
 .km-scrollbar-thin::-webkit-scrollbar-thumb,
 .admin-table-wrap::-webkit-scrollbar-thumb,
+.basic-table-shell::-webkit-scrollbar-thumb,
 .admin-upgrade-table-wrap::-webkit-scrollbar-thumb,
 .kg-body-hscroll::-webkit-scrollbar-thumb,
 .km-base-modal-content::-webkit-scrollbar-thumb,

@@ -274,7 +274,7 @@
   flex: 1 1 auto;
   min-height: 0;
   /* 상단은 0 — 타이틀·sticky 헤더가 GNB 바로 아래 정렬. 좌·하만 브레이크포인트별 유지 */
-  padding: 0 14px 14px;
+  padding: 0 14px 0 14px;
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -336,11 +336,11 @@
 }
 
 /* 목록·설정: 제목 + 툴바 — sticky( main 상단 패딩 없음, 별도 음수 마진 불필요 ) */
-/* z-index: admin 표 thead 열 리사이즈용 th(z-index 최대 ~24)보다 반드시 커야 스크롤 시 본문이 헤더 위로 비치지 않음 */
+/* z-index: BasicTable 리사이즈 th 가 z-index 최대 40까지 쓰므로, 본문이 스티키 헤더 위로 비치지 않게 50으로 둠 */
 .main-layout .main-content .km-main-sticky-head {
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 50;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -464,7 +464,7 @@
 
 @media (min-width: 1920px) {
   .main-layout .main-content {
-    padding: 0 18px 16px;
+    padding: 0 18px 0 16px;
   }
 
   .lnb-sidebar {
@@ -475,7 +475,7 @@
 
 @media (max-width: 1919px) {
   .main-layout .main-content {
-    padding: 0 16px 14px;
+    padding: 0 16px 0 14px;
   }
 }
 
@@ -485,7 +485,7 @@
   }
 
   .main-layout .main-content {
-    padding: 0 14px 12px;
+    padding: 0 14px 0 12px;
   }
 
   .lnb-sidebar {
@@ -506,7 +506,7 @@
   }
 
   .main-layout .main-content {
-    padding: 0 12px 10px;
+    padding: 0 12px 0 10px;
   }
 
   .gnb-right {
@@ -542,7 +542,7 @@
   }
 
   .main-layout .main-content {
-    padding: 0 10px 8px;
+    padding: 0 10px 0 8px;
   }
 
   .service-label {

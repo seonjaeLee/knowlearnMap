@@ -4,7 +4,8 @@
 
 - [data-table-spec.md](./data-table-spec.md)
 - [layout-guideline.md](./layout-guideline.md)
-- 열 너비 드래그 리사이즈: 아래 **§5**, 구현체 `src/hooks/useResizableColumns.jsx`
+- **MUI 공통 표·푸터·페이지네이션**: 아래 **섹션 6** (`BasicTable` 스택)
+- 열 너비 드래그(원시 `<table>`): 아래 **§5**, 구현체 `src/hooks/useResizableColumns.jsx`
 
 ---
 
@@ -137,3 +138,110 @@
 - **증상**: 경계를 드래그해도 열 너비가 바뀌지 않거나, 핸들이 반응하지 않는다.
 - **흔한 원인**: `.km-col-resize-handle`이 `th` 오른쪽 밖으로 나가는데, **오른쪽 인접 `th`가 위에 그려져** 마우스 이벤트를 가로챈다.
 - **프로젝트 내 조치**: `admin-common.css`에서 `.admin-table:has(.km-col-resize-handle)` 인 표의 **`thead tr > th`에 좌측 열부터 더 높은 `z-index`**·`overflow: visible`을 적용해 두었다. 새 표에서도 같은 전역 규칙이 적용된다.
+
+---
+
+## 6. BasicTable 공통 스택 (MUI Table, 푸터, 페이지네이션)
+
+**원시 `<table>` + `useResizableColumns`**(위 §5)와 별개로, **MUI `Table`** 기반의 공통 목록 컴포넌트가 있다. 새 어드민 목록을 이 패턴으로 맞출 때 아래를 따른다.
+
+### 6.1 구성 파일
+
+| 역할 | 경로 |
+|------|------|
+| 테이블 본체 | `src/components/common/BasicTable.jsx` |
+| 테이블 스코프 SCSS | `src/components/common/BasicTable.module.scss` |
+| 푸터·페이지네이션 전역 클래스 | `src/components/common/BasicTable.global.css` |
+| 하단 바(3열 그리드) | `src/components/common/BasicTableFooter.jsx` |
+| 이전·번호·다음 UI | `src/components/common/BasicTablePaginationNav.jsx` |
+| 열 너비 드래그(MUI 표용) | `src/hooks/useBasicTableColumnResize.js` |
+
+`BasicTable.jsx`는 `BasicTable.global.css`를 import 하므로, **`BasicTable` 또는 `BasicTablePaginationNav`를 쓰는 화면**에서는 별도로 전역 CSS를 붙이지 않아도 페이지네이션·푸터 요약 클래스가 적용된다.
+
+### 6.2 레이아웃(가로 스크롤)
+
+- 바깥 래퍼에 **`basic-table-shell`** + 가로 스크롤(`overflow-x: auto` 등, 페이지 CSS에서 `member-mgmt-table-shell`처럼 조합).
+- **권장**: 셸은 **테이블(`BasicTable`)만** 감싼다. `BasicTableFooter`는 셸 **밖**(카드 안 형제)에 두면, 푸터는 고정 폭으로 두고 표만 가로 스크롤할 수 있다.
+- `BasicTable`의 **`tableFooter` 내장 옵션**을 켜면 테이블과 푸터가 `Fragment`로 형제가 된다. 이 경우에도 **셸이 푸터까지 감싸지 않도록** 페이지 구조를 맞춘다.
+
+### 6.3 `BasicTable` props 요약
+
+| props | 설명 |
+|--------|------|
+| `columns` | `{ id, label, width?, align?, ellipsis?, resizeBoundaryAfter? }[]`. `resizeBoundaryAfter`가 숫자이고 `onColumnResizeMouseDown`이 있으면 해당 열 오른쪽에 리사이즈 핸들. |
+| `data` | 행 객체 배열. `id`가 있으면 행 key로 사용. |
+| `renderCell` | `( { column, row, rowIndex } ) => ReactNode` — `undefined`/`null`이면 `row[column.id]` 문자열·숫자 표시. |
+| `onColumnResizeMouseDown` | `useBasicTableColumnResize`의 `startResize` 연결. |
+| `className` | 루트 `TableContainer`에 추가 클래스(페이지별 밀도·카드 연동). |
+| `tableFooter` | 기본 `false`. 내장 푸터를 쓸 때만 객체(아래 6.4). |
+
+### 6.4 내장 푸터 `tableFooter` (선택)
+
+- **표시 조건**: `tableFooter`가 객체이고 **`enabled === true`** 이며, `pagination`에 `page`, `totalPages`, `onPageChange`가 모두 있을 때만 렌더된다.
+- **역할**: 테이블 아래에 `BasicTableFooter`를 붙이고, 가운데는 항상 `BasicTablePaginationNav`. `summary` → 좌측(`start`), `end` → 우측.
+- **선택 props**: `pagination.prevLabel`, `pagination.nextLabel` (기본 이전/다음).
+
+```jsx
+<BasicTable
+  columns={columns}
+  data={rows}
+  tableFooter={{
+    enabled: true,
+    summary: <span className="basic-table-footer-summary">…</span>,
+    end: null,
+    pagination: {
+      page,
+      totalPages,
+      onPageChange: setPage,
+    },
+  }}
+/>
+```
+
+내장 푸터를 쓰지 않을 때는 `tableFooter={false}` 로 두고, 페이지에서 `BasicTableFooter` + `BasicTablePaginationNav`를 **직접** 배치한다.
+
+```jsx
+import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '…/common/BasicTable';
+```
+
+### 6.5 `BasicTableFooter` · `BasicTablePaginationNav`
+
+- **`BasicTableFooter`**: `start` | `center` | `end` 슬롯. 비워도 3열 그리드 유지(레이아웃 흔들림 방지).
+- **`BasicTablePaginationNav`**: **UI 전용 컴포넌트**(훅 아님). `page` / `totalPages` / `onPageChange`는 **부모 state**에서 넘긴다. 번호 묶음·말줄임 로직은 컴포넌트 내부.
+- **전역 클래스**(마크업 규약은 `BasicTable.global.css` 주석 참고): `basic-table-pagination`, `basic-table-page-cluster`, `basic-table-page-btn`, `basic-table-page-ellipsis`, 요약용 `basic-table-footer-summary`. 간격·타이포는 **`src/index.css` `:root` 토큰**(`--spacing-*`, `--radius-*`, `--font-size-*` 등)을 쓴다.
+
+### 6.6 열 리사이즈 `useBasicTableColumnResize`
+
+- **원시 표용** `useResizableColumns`(§5)와 API가 다르다. MUI `BasicTable`에는 **`useBasicTableColumnResize`**만 연결한다.
+- `definitions`에 열별 `defaultWidthPx`, `minWidthPx` 등을 두고, 반환된 `columns`를 `BasicTable`에 넘기고, `startResize`를 `onColumnResizeMouseDown`에 연결한다.
+- 참고: `src/pages/admin/AdminMemberManagement.jsx`, `src/components/DomainManagement.jsx`(원시 표는 §5.5와 동일 파일명이나 패턴 구분).
+
+### 6.7 사용자 관리 화면: 푸터 표시 플래그
+
+`src/pages/admin/AdminMemberManagement.jsx` 상단 **`SHOW_MEMBER_TABLE_FOOTER`**:
+
+- **`false`(현재 기본)**: `BasicTableFooter` 전체를 **렌더하지 않음**. 요약 문구·`BasicTablePaginationNav` JSX는 **소스에 유지**되어 있어, 나중에 상단으로 옮기거나 플래그만 `true`로 바꿔 다시 노출하기 쉽다.
+- **`true`**: 푸터를 그리며, 좌측 요약 + 가운데 페이지네이션. 테이블 `data`는 **`PAGE_SIZE` 단위 슬라이스**(`paginatedMembers`), 푸터 숨김 시에는 **검색 결과 전체**(`filteredMembers`)를 넘기도록 `tableMemberRows`로 분기한다.
+
+### 6.8 새 화면 작업 순서(체크리스트)
+
+1. `data-table-spec.md`에서 밀도·열 정의 확인.
+2. `useBasicTableColumnResize`로 열 정의·저장 키(`storageKey`) 결정.
+3. 카드 + **`basic-table-shell`** 안에 `BasicTable` 배치; 푸터는 셸 밖 또는 `tableFooter` 사용 시 형제 관계 유지.
+4. 클라이언트 페이지네이션 시 **`PAGE_SIZE` 상수**·`page` state·`totalPages`·`useMemo` 슬라이스 패턴을 사용자 관리와 동일하게 맞춘다.
+5. 페이지네이션 UI는 **`BasicTablePaginationNav`** 재사용, 요약은 `basic-table-footer-summary` + `BasicTableFooter`의 `start`.
+6. 토큰·스크롤바는 [css-design-tokens.md](./css-design-tokens.md), `km-scrollbar-thin` 규칙을 따른다.
+
+### 6.9 `km-main-sticky-head`와 `BasicTable` 헤더 셀의 `z-index` (본문이 스티키 제목 위로 비치지 않게)
+
+- `BasicTable`에서 열 리사이즈가 켜진 열의 `th`에는 `z-index: 40 - colIndex` 식으로 **최대 40 근처**까지 올라갈 수 있다.
+- 페이지 상단 블록 **`.km-main-sticky-head`**(제목·툴바)가 `position: sticky`일 때는 이 값보다 **확실히 큰 `z-index`**(프로젝트에서는 **50**)를 두어, 스크롤 시 표 헤더·본문 텍스트가 스티키 블록 **위로 겹쳐 보이지 않게** 한다.
+- 구현 참고: `src/components/common/MainLayout.css`
+
+### 6.10 참고 화면: 시스템 설정 관리(`/admin/config`)
+
+- **메뉴**: 어드민센터 → **시스템 설정 관리**
+- **표**: 카테고리별로 `BasicTable`을 나누어 배치; 카테고리명은 표 **밖** 소제목(`section` + 제목 행), 표는 `basic-table-shell` + 카드형 래퍼로만 감쌈.
+- **값 열**: 한 줄 + `text-overflow: ellipsis`; 실제로 잘린 경우에만 승인 관리와 동일한 **`Info`** 아이콘으로 `KmPopover`에 전문 표시(편집은 모달).
+- **관리 열**: 수정은 도메인 관리와 동일 **`FilePen`** + `km-table-icon-btn--neutral`; `km-table-actions`의 간격은 `:root`의 `--km-table-action-icon-gap`(기본 0)을 따른다.
+- **툴바 필터**: MUI `Select`의 `sx`는 **`src/pages/admin/promptToolbarSelectSx.js`**의 `promptToolbarSelectSx`를 프롬프트 관리와 공유한다.

@@ -1,0 +1,188 @@
+/* ArangoDB 관리 — BasicTable + useBasicTableColumnResize */
+
+.arango-mgmt-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.arango-mgmt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--spacing-xs) + var(--spacing-xs));
+  padding: var(--spacing-sm) 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.arango-mgmt-btn:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
+}
+
+.arango-mgmt-btn--icon {
+  padding: var(--spacing-sm);
+  min-width: var(--km-table-action-hit-size);
+  min-height: var(--km-table-action-hit-size);
+}
+
+.arango-mgmt-loading {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.arango-mgmt-table-card {
+  --km-table-action-hit-size: 32px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.arango-mgmt-table-shell {
+  background: var(--color-bg-secondary);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+.arango-mgmt-basic-table {
+  min-width: 1040px;
+}
+
+.arango-mgmt-empty--solo {
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.arango-mgmt-expand-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+}
+
+.arango-mgmt-domain-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.arango-mgmt-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.arango-mgmt-muted {
+  color: var(--color-text-secondary);
+}
+
+.arango-mgmt-ws-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.arango-mgmt-ws-name--orphan {
+  color: var(--color-icon-danger);
+}
+
+.arango-mgmt-num {
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.arango-mgmt-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.arango-mgmt-badge--danger {
+  background: color-mix(in srgb, var(--color-icon-danger) 12%, transparent);
+  color: var(--color-icon-danger);
+}
+
+.arango-mgmt-badge--muted {
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
+}
+
+.arango-mgmt-badge--ok {
+  background: color-mix(in srgb, var(--color-icon-success) 14%, transparent);
+  color: var(--color-icon-success);
+}
+
+.arango-mgmt-badge--off {
+  background: var(--color-bg-hover);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
+}
+
+.arango-mgmt-row-expanded {
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  outline-offset: -2px;
+}
+
+.arango-mgmt-row-detail-inner {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.arango-mgmt-detail-basic-table {
+  min-width: 920px;
+}
+
+.arango-mgmt-row-detail-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.arango-mgmt-row-detail-empty {
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.arango-mgmt-spin {
+  animation: arango-mgmt-spin 0.9s linear infinite;
+}
+
+@keyframes arango-mgmt-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

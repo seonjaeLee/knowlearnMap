@@ -32,19 +32,7 @@ function DomainSelection() {
     const [adding, setAdding] = useState(false);
     const [deleting, setDeleting] = useState(null);
 
-    useEffect(() => {
-        if (user && !isAdmin) {
-            // Normal users have 1:1 domain mapping, auto-select (skip selection)
-            navigate('/workspaces');
-            return;
-        }
-
-        if (isAdmin) {
-            fetchDomains();
-        }
-    }, [user, isAdmin, navigate]);
-
-    const fetchDomains = async () => {
+    const fetchDomains = useCallback(async () => {
         setLoading(true);
         if (isLocalAuthEnabled) {
             setDomains(LOCAL_DOMAINS);
@@ -62,7 +50,20 @@ function DomainSelection() {
             setError('도메인 목록을 불러오는데 실패했습니다.');
             setLoading(false);
         }
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 모듈 빌드 플래그를 의존 배열에 명시(요청)
+    }, [isLocalAuthEnabled]);
+
+    useEffect(() => {
+        if (user && !isAdmin) {
+            // Normal users have 1:1 domain mapping, auto-select (skip selection)
+            navigate('/workspaces');
+            return;
+        }
+
+        if (isAdmin) {
+            fetchDomains();
+        }
+    }, [user, isAdmin, navigate, fetchDomains]);
 
     const handleAddDomain = async () => {
         if (!addForm.name.trim()) { setAddError('도메인명을 입력해주세요.'); return; }
@@ -98,7 +99,7 @@ function DomainSelection() {
         }
     };
 
-    const handleDeleteDomain = async (e, domain) => {
+    const handleDeleteDomain = useCallback(async (e, domain) => {
         e.stopPropagation();
         const wsCount = domain.workspaceCount || 0;
         const msg = wsCount > 0
@@ -126,7 +127,7 @@ function DomainSelection() {
         } finally {
             setDeleting(null);
         }
-    };
+    }, [showConfirm, showAlert, fetchDomains]);
 
     const closeAddModal = () => {
         setShowAddModal(false);
@@ -135,18 +136,18 @@ function DomainSelection() {
 
     const currentDomainId = localStorage.getItem('admin_selected_domain_id');
 
-    const handleSelectDomain = (domainId) => {
+    const handleSelectDomain = useCallback((domainId) => {
         const selectedDomain = domains.find(d => d.id === domainId);
         if (selectedDomain) {
             localStorage.setItem('admin_selected_domain_id', domainId);
             localStorage.setItem('admin_selected_domain_name', selectedDomain.name);
             navigate('/workspaces');
         }
-    };
+    }, [domains, navigate]);
 
     const domainColumns = useMemo(
         () => [
-            { id: '_select', label: '선택', width: '56px', align: 'center' },
+            { id: '_select', label: '선택', width: '56px', align: 'center', ellipsis: false },
             { id: 'name', label: '이름', width: '200px', align: 'left' },
             { id: 'description', label: '설명', align: 'left' },
             {
@@ -154,6 +155,7 @@ function DomainSelection() {
                 label: <span className="domain-list-actions-head">관리</span>,
                 width: 'var(--km-table-actions-col-min)',
                 align: 'right',
+                ellipsis: false,
             },
         ],
         []
@@ -248,7 +250,7 @@ function DomainSelection() {
                 {loading && <p>Loading domains...</p>}
                 {error && <p className="error-message">{error}</p>}
 
-                <div className="domain-list-container km-data-table-dense">
+                <div className="domain-list-container km-data-table-dense basic-table-shell">
                     {!loading && domains.length === 0 ? (
                         <div className="domain-list-empty" role="status">
                             등록된 도메인이 없습니다.

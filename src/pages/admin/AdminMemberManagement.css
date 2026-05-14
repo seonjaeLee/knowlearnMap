@@ -1,4 +1,87 @@
-/* 사용자 관리 — admin-table-card + member-mgmt 열·액션 (워크스페이스/도메인 관리 패턴 정렬) */
+/* 사용자 관리 — 워크스페이스/도메인 관리와 동일: BasicTable + 토큰, admin-common 미사용 */
+
+.member-mgmt-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.member-mgmt-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.member-mgmt-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.member-mgmt-search {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  flex: 1 1 280px;
+  max-width: 400px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+}
+
+.member-mgmt-search-icon {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.member-mgmt-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.member-mgmt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--spacing-xs) + var(--spacing-xs));
+  padding: var(--spacing-sm) 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.member-mgmt-btn:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
+}
+
+.member-mgmt-btn--icon {
+  padding: var(--spacing-sm);
+  min-width: var(--km-table-action-hit-size);
+  min-height: var(--km-table-action-hit-size);
+}
 
 .member-mgmt-loading {
   padding: var(--spacing-2xl);
@@ -10,84 +93,26 @@
 .member-mgmt-table-card {
   --km-table-action-hit-size: 32px;
   --km-table-actions-col-min: 140px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  min-width: 0;
+  overflow: hidden;
 }
 
-.member-mgmt-table {
-  table-layout: fixed;
-  width: 100%;
+.member-mgmt-table-shell {
+  background: var(--color-bg-secondary);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+.member-mgmt-basic-table {
   min-width: 1320px;
 }
 
-.member-mgmt-table .member-mgmt-th-id,
-.member-mgmt-table .member-mgmt-td-id {
-  width: 64px;
-  min-width: 56px;
-  max-width: 80px;
-}
-
-.member-mgmt-table .member-mgmt-th-email,
-.member-mgmt-table .member-mgmt-td-email {
-  width: 18%;
-  min-width: 180px;
-}
-
-.member-mgmt-table .member-mgmt-th-role,
-.member-mgmt-table .member-mgmt-td-role {
-  width: 88px;
-  min-width: 80px;
-}
-
-.member-mgmt-table .member-mgmt-th-grade,
-.member-mgmt-table .member-mgmt-td-grade {
-  width: 88px;
-  min-width: 80px;
-}
-
-.member-mgmt-table .member-mgmt-th-status,
-.member-mgmt-table .member-mgmt-td-status {
-  width: 140px;
-  min-width: 120px;
-}
-
-.member-mgmt-table .member-mgmt-th-domain,
-.member-mgmt-table .member-mgmt-td-domain {
-  width: 8%;
-  min-width: calc(var(--spacing-2xl) + var(--spacing-xl));
-}
-
-.member-mgmt-table .member-mgmt-th-failed,
-.member-mgmt-table .member-mgmt-td-failed {
-  width: calc(var(--spacing-xl) + var(--spacing-md) + var(--spacing-xs));
-  min-width: var(--spacing-2xl);
-  max-width: calc(var(--spacing-xl) + var(--spacing-md) + var(--spacing-xs) + var(--spacing-xs));
-}
-
-.member-mgmt-table .member-mgmt-th-locked,
-.member-mgmt-table .member-mgmt-td-locked {
-  width: 12%;
-  min-width: calc(var(--spacing-2xl) + var(--spacing-xl) + var(--spacing-xl) + var(--spacing-md));
-}
-
-.member-mgmt-table .member-mgmt-th-last,
-.member-mgmt-table .member-mgmt-td-last {
-  width: 13%;
-  min-width: calc(var(--spacing-2xl) + var(--spacing-2xl) + var(--spacing-lg) + var(--spacing-lg));
-}
-
-.member-mgmt-table .member-mgmt-th-created,
-.member-mgmt-table .member-mgmt-td-created {
-  width: 13%;
-  min-width: calc(var(--spacing-2xl) + var(--spacing-2xl) + var(--spacing-lg) + var(--spacing-lg));
-}
-
-.member-mgmt-table .member-mgmt-th-actions,
-.member-mgmt-table .member-mgmt-td-actions {
-  width: var(--km-table-actions-col-min);
-  min-width: var(--km-table-actions-col-min);
-  max-width: var(--km-table-actions-col-min);
-  text-align: right;
-  vertical-align: middle;
-  box-sizing: border-box;
+.member-mgmt-table-card .member-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .member-mgmt-actions-head {
+  padding-right: var(--spacing-sm);
 }
 
 .member-mgmt-actions-head {
@@ -98,40 +123,12 @@
   min-width: 0;
 }
 
-.member-mgmt-table thead tr th:last-child .member-mgmt-actions-head {
-  padding-right: var(--spacing-sm);
-}
-
-/* 도메인 관리(domain-mgmt-table-card)와 동일: 행 35px · 셀 세로 패딩 0 */
-.member-mgmt-table-card .member-mgmt-table thead tr {
-  height: 35px;
-}
-
-.member-mgmt-table-card .member-mgmt-table tbody tr:not(.member-mgmt-tr-empty) {
-  height: 35px;
-}
-
-.member-mgmt-table-card .member-mgmt-table th,
-.member-mgmt-table-card .member-mgmt-table td {
-  height: 35px;
-  padding-block: 0;
-  padding-inline: var(--spacing-sm);
-  line-height: 1.25;
-  box-sizing: border-box;
-  vertical-align: middle;
-}
-
-.member-mgmt-table-card .member-mgmt-table thead th {
-  padding-block: 0;
-  height: 35px;
-  vertical-align: middle;
-}
-
-.member-mgmt-table-card .member-mgmt-td-status {
+.member-mgmt-status-cell {
   overflow: hidden;
+  min-width: 0;
 }
 
-.member-mgmt-table-card .member-mgmt-td-status .admin-badge {
+.member-mgmt-table-card .member-mgmt-basic-table .MuiTableBody-root .member-mgmt-status-cell .admin-badge {
   box-sizing: border-box;
   display: inline-block;
   max-width: 100%;
@@ -151,16 +148,28 @@
   min-width: 0;
 }
 
-.member-mgmt-table-card .member-mgmt-table tbody tr.member-mgmt-tr-empty td,
-.member-mgmt-table-card .member-mgmt-table td.member-mgmt-empty {
-  height: auto !important;
-  padding: var(--spacing-2xl) var(--spacing-md) !important;
+.member-mgmt-empty--solo {
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
 }
 
 .member-mgmt-empty {
   text-align: center;
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
+}
+
+.member-mgmt-col-id {
+  color: var(--color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.member-mgmt-col-date {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
 }
 
 .admin-member-email {
@@ -175,14 +184,79 @@
 }
 
 .admin-member-locked-count {
-  color: var(--admin-color-danger-on-soft);
+  color: var(--color-icon-danger-emphasis);
   font-weight: var(--font-weight-semibold);
 }
 
 .admin-member-locked-date {
-  color: var(--admin-color-danger-on-soft);
+  color: var(--color-icon-danger-emphasis);
 }
 
-.admin-member-edit-content {
+.member-mgmt-member-edit-content {
   min-height: auto !important;
+}
+
+.member-mgmt-modal-email-display {
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) 14px;
+  background: var(--color-bg-hover);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.member-mgmt-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.member-mgmt-modal-field-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+/* 배지 — 기존 admin-common `.admin-badge*` 와 동일 시각(리터럴 팔레트) */
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.admin-badge-primary {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.admin-badge-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.admin-badge-warn {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.admin-badge-danger {
+  background: #fee2e2;
+  color: #c62828;
+}
+
+.admin-badge-info {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.admin-badge-neutral {
+  background: #f3f4f6;
+  color: #4b5563;
 }

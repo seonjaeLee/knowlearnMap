@@ -1,0 +1,67 @@
+/**
+ * BasicTable 전역 유틸 — 페이지에서 문자열 클래스로 페이지네이션 마크업 시 사용.
+ * 마크업: `<nav class="basic-table-pagination">` 안에 이전·다음 버튼과,
+ * 페이지 번호·말줄임만 `<div class="basic-table-page-cluster" role="group">` 로 감싼다.
+ * 간격: 이전|클러스터|다음 = `--spacing-sm`(8px), 클러스터 내부 = `--spacing-xs`(4px).
+ */
+.basic-table-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.basic-table-page-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.basic-table-page-btn {
+  min-width: 32px;
+  height: var(--spacing-lg);
+  padding: 0 var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.basic-table-page-btn:hover:not(:disabled) {
+  background: var(--color-bg-hover);
+  border-color: var(--color-text-tertiary);
+}
+
+.basic-table-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.basic-table-page-btn.is-active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.basic-table-page-ellipsis {
+  padding: 0 var(--spacing-xs);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  user-select: none;
+}
+
+.basic-table-footer-summary {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,23 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Button } from '@mui/material';
-import { Search, Plus, Globe, CheckCircle, AlertCircle, Database, Layout, Info } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import {
+    Search, Plus, Globe, CheckCircle, AlertCircle, Database, Layout, Info, FilePen, Trash2,
+} from 'lucide-react';
 import { useDialog } from '../hooks/useDialog';
-import { useResizableColumns } from '../hooks/useResizableColumns';
+import { useBasicTableColumnResize } from '../hooks/useBasicTableColumnResize';
 import { apiCall } from '../services/api';
 import AdminPageHeader from './admin/AdminPageHeader';
 import BaseModal from './common/modal/BaseModal';
 import ModalFormField from './common/modal/ModalFormField';
 import KmModalSelect from './common/modal/KmModalSelect';
+import BasicTable from './common/BasicTable';
 import { mockDomains, mockDomainPromptDefaults, mockPromptCodesByPurpose } from '../data/domainMockData';
-import '../pages/admin/admin-common.css';
 import './DomainManagement.css';
 
 const isDomainMockEnabled = import.meta.env.VITE_ENABLE_DOMAIN_MOCK === 'true';
 const PROMPT_PURPOSES = ['CHUNK', 'ONTOLOGY', 'CHAT_RESULT', 'CONTENT_ONTOLOGY', 'SCHEMA_ANALYSIS', 'INTER_TABLE_ANALYSIS', 'AQL_GENERATION', 'AQL_INTERPRETATION', 'AGGREGATION_STRATEGY'];
-
-/** 도메인 관리 표 열 리사이즈 (px) — 순서: 도메인명, 설명, 워크스페이스, 생성일, ArangoDB */
-const DOMAIN_TABLE_RESIZE_DEFAULTS_PX = [260, 280, 240, 112, 104];
-const DOMAIN_TABLE_RESIZE_MINS_PX = [160, 200, 208, 112, 104];
 
 function DomainManagement() {
     const { alert, confirm } = useDialog();
@@ -58,32 +55,35 @@ function DomainManagement() {
     const [aqlGenerationPromptCodes, setAqlGenerationPromptCodes] = useState([]);
     const [aqlInterpretationPromptCodes, setAqlInterpretationPromptCodes] = useState([]);
     const [aggregationStrategyPromptCodes, setAggregationStrategyPromptCodes] = useState([]);
-    const [promptDefaults, setPromptDefaults] = useState({});
+    const [, setPromptDefaults] = useState({});
     const [domainSearch, setDomainSearch] = useState('');
 
-    const columnResize = useResizableColumns({
-        defaultWidthsPx: DOMAIN_TABLE_RESIZE_DEFAULTS_PX,
-        minWidthsPx: DOMAIN_TABLE_RESIZE_MINS_PX,
+    const domainTableColumnDefinitions = useMemo(
+        () => [
+            { id: 'name', label: '도메인명', defaultWidthPx: 260, minWidthPx: 160, align: 'left' },
+            { id: 'description', label: '설명', defaultWidthPx: 280, minWidthPx: 200, align: 'left' },
+            { id: '_workspaces', label: '워크스페이스', defaultWidthPx: 240, minWidthPx: 208, align: 'left', ellipsis: false },
+            { id: '_created', label: '생성일', defaultWidthPx: 112, minWidthPx: 112, align: 'left' },
+            { id: 'arangoDbName', label: 'ArangoDB', defaultWidthPx: 104, minWidthPx: 104, align: 'left' },
+            {
+                id: 'actions',
+                label: <span className="domain-mgmt-actions-head">관리</span>,
+                defaultWidthPx: 120,
+                minWidthPx: 120,
+                align: 'right',
+                ellipsis: false,
+            },
+        ],
+        []
+    );
+
+    const { columns: domainTableColumns, startResize: domainColumnStartResize } = useBasicTableColumnResize({
+        definitions: domainTableColumnDefinitions,
         storageKey: 'km-domain-mgmt-columns-v1',
         enabled: true,
     });
 
-    useEffect(() => {
-        fetchDomains();
-    }, []);
-
-    const filteredDomains = useMemo(() => {
-        const q = domainSearch.trim().toLowerCase();
-        if (!q) return domains;
-        return domains.filter((d) => {
-            const name = (d.name || '').toLowerCase();
-            const desc = (d.description || '').toLowerCase();
-            const db = (d.arangoDbName || '').toLowerCase();
-            return name.includes(q) || desc.includes(q) || db.includes(q);
-        });
-    }, [domains, domainSearch]);
-
-    const fetchDomains = async () => {
+    const fetchDomains = useCallback(async () => {
         if (isDomainMockEnabled) {
             setDomains(mockDomains);
             return;
@@ -96,7 +96,23 @@ function DomainManagement() {
             console.error('Failed to fetch domains', err);
             setDomains(mockDomains);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 도메인 목록 1회 로드
+        fetchDomains();
+    }, [fetchDomains]);
+
+    const filteredDomains = useMemo(() => {
+        const q = domainSearch.trim().toLowerCase();
+        if (!q) return domains;
+        return domains.filter((d) => {
+            const name = (d.name || '').toLowerCase();
+            const desc = (d.description || '').toLowerCase();
+            const db = (d.arangoDbName || '').toLowerCase();
+            return name.includes(q) || desc.includes(q) || db.includes(q);
+        });
+    }, [domains, domainSearch]);
 
     const fetchPromptDefaults = async () => {
         if (isDomainMockEnabled) {
@@ -352,27 +368,110 @@ function DomainManagement() {
         { key: 'aggregationStrategyPrompt', label: '집계 전략', options: aggregationStrategyPromptCodes, helper: '대규모 정형 데이터 집계 전략' },
     ];
 
+    const renderDomainCell = useCallback(({ column, row: domain }) => {
+        switch (column.id) {
+            case 'name':
+                return (
+                    <div className="domain-mgmt-name-row">
+                        <Globe size={16} aria-hidden className="domain-mgmt-name-icon" />
+                        <span className="domain-mgmt-name-text">{domain.name}</span>
+                    </div>
+                );
+            case 'description':
+                return (
+                    <span className="domain-mgmt-desc-text" title={domain.description || ''}>
+                        {domain.description || '-'}
+                    </span>
+                );
+            case '_workspaces':
+                return (
+                    <div
+                        className="domain-mgmt-ws-cell"
+                        title={
+                            domain.workspaces?.length > 0
+                                ? domain.workspaces.map((ws) => ws.name).join(', ')
+                                : '워크스페이스 없음'
+                        }
+                    >
+                        <span className="domain-mgmt-ws-badge">
+                            <Layout size={16} aria-hidden />
+                            {domain.workspaceCount || 0}
+                        </span>
+                        {domain.workspaces?.length > 0 ? (
+                            <span className="domain-mgmt-ws-names">
+                                {domain.workspaces.map((ws) => ws.name).join(', ')}
+                            </span>
+                        ) : null}
+                    </div>
+                );
+            case '_created':
+                return (
+                    <span className="domain-mgmt-date-text">
+                        {new Date(domain.createdDatetime || domain.createdAt).toLocaleDateString()}
+                    </span>
+                );
+            case 'arangoDbName':
+                return (
+                    <div className="domain-mgmt-arango-row">
+                        <Database size={16} aria-hidden />
+                        <span>{domain.arangoDbName}</span>
+                    </div>
+                );
+            case 'actions':
+                return (
+                    <div className="domain-mgmt-actions">
+                        <button
+                            type="button"
+                            className="km-table-icon-btn km-table-icon-btn--neutral"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenEditModal(domain);
+                            }}
+                            title="도메인 수정"
+                            aria-label={`${domain.name} 도메인 수정`}
+                        >
+                            <FilePen strokeWidth={1.75} aria-hidden />
+                        </button>
+                        <button
+                            type="button"
+                            className="km-table-icon-btn km-table-icon-btn--danger"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(domain.id, domain.name);
+                            }}
+                            title="도메인 삭제"
+                            aria-label={`${domain.name} 도메인 삭제`}
+                        >
+                            <Trash2 strokeWidth={1.75} aria-hidden />
+                        </button>
+                    </div>
+                );
+            default:
+                return undefined;
+        }
+    }, [handleOpenEditModal, handleDelete]);
+
     return (
-        <div className="domain-management-container admin-page">
+        <div className="domain-management-container domain-mgmt-page">
             <div className="km-main-sticky-head">
             <AdminPageHeader
                 title="도메인 관리"
                 count={domains.length}
                 actions={(
-                    <button type="button" className="admin-btn admin-btn-primary" onClick={handleOpenCreateModal}>
+                    <button type="button" className="domain-mgmt-btn domain-mgmt-btn--primary" onClick={handleOpenCreateModal}>
                         <Plus size={14} />
                         새 도메인
                     </button>
                 )}
             />
 
-            <div className="admin-toolbar">
-                <div className="admin-toolbar-left">
-                    <div className="admin-search">
-                        <Search size={16} className="admin-search-icon" />
+            <div className="domain-mgmt-toolbar">
+                <div className="domain-mgmt-toolbar-left">
+                    <div className="domain-mgmt-search">
+                        <Search size={16} className="domain-mgmt-search-icon" />
                         <input
                             type="text"
-                            className="admin-search-input"
+                            className="domain-mgmt-search-input"
                             placeholder="도메인 검색..."
                             value={domainSearch}
                             onChange={(e) => setDomainSearch(e.target.value)}
@@ -383,123 +482,25 @@ function DomainManagement() {
             </div>
             </div>
 
-            <div className="admin-table-card domain-mgmt-table-card">
-                <div className="admin-table-wrap">
-                    <table className="admin-table domain-mgmt-table domain-mgmt-table--resizable">
-                        {columnResize.colGroup}
-                        <thead>
-                            <tr>
-                                <th className="domain-mgmt-th-name km-th-col-resizable">
-                                    도메인명
-                                    <span
-                                        className="km-col-resize-handle"
-                                        onMouseDown={(e) => columnResize.startResize(0, e)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        aria-hidden
-                                    />
-                                </th>
-                                <th className="domain-mgmt-th-desc km-th-col-resizable">
-                                    설명
-                                    <span
-                                        className="km-col-resize-handle"
-                                        onMouseDown={(e) => columnResize.startResize(1, e)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        aria-hidden
-                                    />
-                                </th>
-                                <th className="domain-mgmt-th-ws km-th-col-resizable">
-                                    워크스페이스
-                                    <span
-                                        className="km-col-resize-handle"
-                                        onMouseDown={(e) => columnResize.startResize(2, e)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        aria-hidden
-                                    />
-                                </th>
-                                <th className="domain-mgmt-th-created km-th-col-resizable">
-                                    생성일
-                                    <span
-                                        className="km-col-resize-handle"
-                                        onMouseDown={(e) => columnResize.startResize(3, e)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        aria-hidden
-                                    />
-                                </th>
-                                <th className="domain-mgmt-th-arango">ArangoDB</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {domains.length === 0 ? (
-                                <tr className="domain-mgmt-tr-empty">
-                                    <td colSpan={5} className="domain-mgmt-empty">
-                                        등록된 도메인이 없습니다.
-                                    </td>
-                                </tr>
-                            ) : filteredDomains.length === 0 ? (
-                                <tr className="domain-mgmt-tr-empty">
-                                    <td colSpan={5} className="domain-mgmt-empty">
-                                        검색 결과가 없습니다.
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredDomains.map((domain) => (
-                                    <tr
-                                        key={domain.id}
-                                        className="domain-mgmt-tr-clickable"
-                                        tabIndex={0}
-                                        role="button"
-                                        aria-label={`${domain.name} 도메인 상세 열기`}
-                                        onClick={() => handleOpenEditModal(domain)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                handleOpenEditModal(domain);
-                                            }
-                                        }}
-                                    >
-                                        <td className="domain-mgmt-td-name">
-                                            <div className="domain-mgmt-name-row">
-                                                <Globe size={16} aria-hidden className="domain-mgmt-name-icon" />
-                                                <span className="domain-mgmt-name-text">{domain.name}</span>
-                                            </div>
-                                        </td>
-                                        <td className="domain-mgmt-td-desc" title={domain.description || ''}>
-                                            {domain.description || '-'}
-                                        </td>
-                                        <td className="domain-mgmt-td-ws">
-                                            <div
-                                                className="domain-mgmt-ws-cell"
-                                                title={
-                                                    domain.workspaces?.length > 0
-                                                        ? domain.workspaces.map((ws) => ws.name).join(', ')
-                                                        : '워크스페이스 없음'
-                                                }
-                                            >
-                                                <span className="domain-mgmt-ws-badge">
-                                                    <Layout size={16} aria-hidden />
-                                                    {domain.workspaceCount || 0}
-                                                </span>
-                                                {domain.workspaces?.length > 0 && (
-                                                    <span className="domain-mgmt-ws-names">
-                                                        {domain.workspaces.map((ws) => ws.name).join(', ')}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="domain-mgmt-td-created admin-col-date">
-                                            {new Date(domain.createdDatetime || domain.createdAt).toLocaleDateString()}
-                                        </td>
-                                        <td className="domain-mgmt-td-arango">
-                                            <div className="domain-mgmt-arango-row">
-                                                <Database size={16} aria-hidden />
-                                                <span>{domain.arangoDbName}</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+            <div className="domain-mgmt-table-card">
+                <div className="domain-mgmt-table-shell basic-table-shell">
+                    {domains.length === 0 ? (
+                        <div className="domain-mgmt-empty domain-mgmt-empty--solo" role="status">
+                            등록된 도메인이 없습니다.
+                        </div>
+                    ) : filteredDomains.length === 0 ? (
+                        <div className="domain-mgmt-empty domain-mgmt-empty--solo" role="status">
+                            검색 결과가 없습니다.
+                        </div>
+                    ) : (
+                        <BasicTable
+                            className="domain-mgmt-basic-table"
+                            columns={domainTableColumns}
+                            data={filteredDomains}
+                            renderCell={renderDomainCell}
+                            onColumnResizeMouseDown={domainColumnStartResize}
+                        />
+                    )}
                 </div>
             </div>
 
@@ -511,25 +512,12 @@ function DomainManagement() {
                 paperSx={{ width: '680px', maxWidth: '95vw', maxHeight: '90vh' }}
                 actions={(
                     <>
-                        <div className="domain-modal-actions-left">
-                            {isEditMode && (
-                                <Button
-                                    type="button"
-                                    variant="outlined"
-                                    color="error"
-                                    className="persona-delete-btn"
-                                    onClick={() => handleDelete(editId, formData.name)}
-                                >
-                                    도메인 삭제
-                                </Button>
-                            )}
-                        </div>
-                        <button type="button" className="admin-btn" onClick={() => setIsModalOpen(false)}>
+                        <button type="button" className="domain-mgmt-btn" onClick={() => setIsModalOpen(false)}>
                             취소
                         </button>
                         <button
                             type="button"
-                            className="admin-btn admin-btn-primary"
+                            className="domain-mgmt-btn domain-mgmt-btn--primary"
                             onClick={handleSubmit}
                             disabled={!isEditMode && !isArangoDbChecked}
                         >
@@ -575,7 +563,7 @@ function DomainManagement() {
                                 onChange={handleInputChange}
                                 placeholder="예: mydomaindb (소문자)"
                             />
-                            <button type="button" className="admin-btn" onClick={handleDuplicateCheck}>
+                            <button type="button" className="domain-mgmt-btn" onClick={handleDuplicateCheck}>
                                 중복확인
                             </button>
                         </div>
@@ -604,7 +592,7 @@ function DomainManagement() {
                             />
                             <button
                                 type="button"
-                                className={`admin-btn ${formData.chunkPrompt === 'NONE' ? 'admin-btn-danger' : ''}`}
+                                className={`domain-mgmt-btn ${formData.chunkPrompt === 'NONE' ? 'domain-mgmt-btn--danger' : ''}`}
                                 onClick={() => setFormData((prev) => ({ ...prev, chunkPrompt: prev.chunkPrompt === 'NONE' ? '' : 'NONE' }))}
                             >
                                 NONE

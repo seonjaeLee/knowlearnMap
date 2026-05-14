@@ -1,61 +1,129 @@
-.admin-upgrade-table-wrap {
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-md);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.admin-upgrade-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.admin-upgrade-loading {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.admin-upgrade-table-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.admin-upgrade-table-shell {
+  background: var(--color-bg-secondary);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  min-width: 0;
 }
 
-.admin-upgrade-table {
+.admin-upgrade-basic-table {
+  min-width: 1080px;
+}
+
+.admin-upgrade-actions-head {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   width: 100%;
-  border-collapse: collapse;
+  min-width: 0;
 }
 
-.admin-upgrade-thead {
-  background: #f8f9fa;
-  border-bottom: 2px solid #e9ecef;
+.admin-upgrade-table-card .admin-upgrade-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .admin-upgrade-actions-head {
+  padding-right: var(--spacing-sm);
 }
 
-.admin-upgrade-th,
-.admin-upgrade-td {
-  padding: 12px;
-  text-align: left;
+.admin-upgrade-muted {
+  color: var(--color-text-secondary);
 }
 
-.admin-upgrade-th {
-  font-weight: 600;
-  color: #495057;
+.admin-upgrade-date-text {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
 }
 
-.admin-upgrade-row {
-  border-bottom: 1px solid #f1f3f5;
+.admin-upgrade-status-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  min-width: 0;
 }
 
-.admin-upgrade-empty {
-  padding: 20px;
+.admin-upgrade-status-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.admin-upgrade-reject-info-btn {
+  flex-shrink: 0;
+}
+
+/* 워크스페이스 관리 Popover와 동일: 패딩은 KmPopover `.panel`만 사용 */
+.admin-upgrade-reject-popover-inner {
+  min-width: 0;
+  max-width: min(320px, 85vw);
+}
+
+.admin-upgrade-reject-popover-title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.admin-upgrade-reject-popover-text {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  word-break: break-word;
+}
+
+.admin-upgrade-empty--solo {
   text-align: center;
-  color: #868e96;
+  padding: var(--spacing-2xl) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
 }
 
 .admin-upgrade-type-badge {
-  padding: 4px 8px;
-  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
   font-size: var(--admin-font-sm);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .admin-upgrade-type-badge.is-max {
-  background: #e9ecef;
-  color: #495057;
+  background: var(--color-bg-hover);
+  color: var(--color-text-secondary);
 }
 
 .admin-upgrade-type-badge.is-pro {
-  background: #e7f5ff;
-  color: #228be6;
+  background: var(--color-accent-light);
+  color: var(--color-accent);
 }
 
 .admin-upgrade-status {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .admin-upgrade-status.status-approved {
@@ -63,22 +131,20 @@
 }
 
 .admin-upgrade-status.status-rejected {
-  color: #e03131;
+  color: var(--color-icon-danger);
 }
 
 .admin-upgrade-status.status-pending {
   color: #f08c00;
 }
 
-.admin-upgrade-reject-reason {
-  font-size: var(--admin-font-sm);
-  color: #868e96;
-  margin-top: 4px;
-}
-
 .admin-upgrade-actions {
-  display: flex;
-  gap: 8px;
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--km-table-action-icon-gap);
+  width: 100%;
+  min-width: 0;
 }
 
 .admin-upgrade-reject-content {
@@ -87,6 +153,6 @@
 
 .admin-upgrade-reject-desc {
   font-size: var(--admin-font-md) !important;
-  color: #666 !important;
-  margin-bottom: 12px !important;
+  color: var(--color-text-secondary) !important;
+  margin-bottom: var(--spacing-sm) !important;
 }

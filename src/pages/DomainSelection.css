@@ -52,8 +52,6 @@
 }
 
 .domain-list-container .domain-basic-table thead .MuiTableCell-root {
-    height: 35px;
-    padding-block: 0;
     padding-inline: var(--spacing-md);
     white-space: nowrap;
     line-height: 1.25;
@@ -66,8 +64,6 @@
 }
 
 .domain-list-container .domain-basic-table tbody .MuiTableCell-root {
-    height: 43px;
-    padding-block: 0;
     padding-inline: var(--spacing-md);
     line-height: 1.25;
     box-sizing: border-box;

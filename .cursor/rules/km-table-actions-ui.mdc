@@ -1,23 +1,24 @@
 ---
-description: 테이블 행 내 편집·삭제 아이콘 버튼 UX — 크기·간격·삭제 레드 유지
+description: 테이블 행 내 편집·삭제·승인 아이콘 버튼 UX — 크기·간격·시맨틱 색 유지
 alwaysApply: false
 ---
 
-# 테이블 액션 아이콘 (편집 + 삭제)
+# 테이블 액션 아이콘 (neutral / danger / success)
 
 구현·수정 시 아래를 우선한다.
 
 ## 토큰 (`src/index.css` `:root`)
 
 - **`--km-table-action-icon-size`** — 아이콘 실크기(기본 **16px**).
-- **`--km-table-action-icon-gap`** — 두 버튼 사이 간격(기본 `calc(var(--spacing-sm) + var(--spacing-xs))` = 12px).
+- **`--km-table-action-icon-gap`** — 두 버튼 사이 간격(기본 **0** — 나란히 붙임).
 - **`--km-table-action-hit-size`** — 클릭 영역 한 변(기본 36px).
 - **`--km-table-actions-col-min`** — 편집+삭제 열 최소 너비(기본 120px; 두 히트+간격+셀 좌우 패딩 고려).
-- **삭제 색**: **`--color-icon-danger`** (#dc2626) — 삭제 아이콘 기본 레드는 이 토큰만 조정. 임의로 회색/액센트로 바꾸지 않는다.
+- **삭제 색**: **`--color-icon-danger`** — 삭제·거절 등 위험 액션. 임의로 회색으로 바꾸지 않는다.
+- **승인·긍정 색**: **`--color-icon-success`**, **`--color-icon-success-emphasis`** — 승인 등 긍정 액션(`km-table-icon-btn--success`).
 
 ## 스타일 단일 소스
 
-- `src/styles/km-table-icon-actions.css` — `.km-table-icon-btn`, `--neutral` / `--danger`, 행 내 `svg` 크기는 위 토큰으로만 제어.
+- `src/styles/km-table-icon-actions.css` — `.km-table-icon-btn`, `--neutral` / `--danger` / **`--success`**, 행 내 `svg` 크기는 위 토큰으로만 제어.
 - 어드민 테이블: `admin-common.css`의 `.admin-table .km-table-icon-btn-*` 가 팔레트만 덮어쓴다.
 
 ## 데이터 테이블 규격

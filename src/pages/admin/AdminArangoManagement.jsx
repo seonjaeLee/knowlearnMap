@@ -1,259 +1,334 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { adminArangoApi } from '../../services/api';
-import { useAlert } from '../../context/AlertContext';
-import { RotateCcw, ChevronDown, ChevronRight, Database, Loader2 } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
+import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
+import { RotateCcw, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import BasicTable from '../../components/common/BasicTable';
+import { mockArangoDatabases, mockArangoWorkspacesByDomainId } from '../../data/arangoAdminMockData';
 import './admin-common.css';
+import './AdminArangoManagement.css';
+
+const isArangoMockEnabled = import.meta.env.VITE_ENABLE_ARANGO_MOCK === 'true';
+
+function fmtCount(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toLocaleString() : '0';
+}
 
 function AdminArangoManagement() {
     const [databases, setDatabases] = useState([]);
     const [loading, setLoading] = useState(true);
+    /** `live` | `mock` — mock이면 워크스페이스 상세도 로컬 맵 사용 */
+    const [listSource, setListSource] = useState('live');
     const [expandedDomain, setExpandedDomain] = useState(null);
     const [workspaceDetails, setWorkspaceDetails] = useState({});
     const [loadingDetails, setLoadingDetails] = useState({});
-    const { showAlert } = useAlert();
+    const { alert } = useDialog();
 
-    const fetchDatabases = async () => {
-        try {
-            setLoading(true);
-            const data = await adminArangoApi.getDatabases();
-            setDatabases(data || []);
-        } catch (error) {
-            console.error('Failed to fetch arango databases:', error);
-            showAlert('ArangoDB 데이터베이스 목록을 불러오는데 실패했습니다.', 'error');
-        } finally {
+    const domainTableColumnDefinitions = useMemo(
+        () => [
+            { id: '_expand', label: '', defaultWidthPx: 44, minWidthPx: 40, align: 'center', ellipsis: false },
+            { id: 'domainName', label: '도메인', defaultWidthPx: 168, minWidthPx: 120, align: 'left' },
+            { id: 'arangoDbName', label: 'DB명', defaultWidthPx: 160, minWidthPx: 120, align: 'left' },
+            { id: 'objectNodeCount', label: 'Objects', defaultWidthPx: 100, minWidthPx: 88, align: 'center' },
+            { id: 'relationNodeCount', label: 'Relations', defaultWidthPx: 100, minWidthPx: 88, align: 'center' },
+            { id: 'edgeCount', label: 'Edges', defaultWidthPx: 88, minWidthPx: 80, align: 'center' },
+            { id: 'rdbWorkspaceCount', label: 'WS(RDB)', defaultWidthPx: 88, minWidthPx: 80, align: 'center' },
+            { id: 'arangoWorkspaceCount', label: 'WS(Arango)', defaultWidthPx: 104, minWidthPx: 92, align: 'center' },
+            { id: 'orphanWorkspaceCount', label: '고아', defaultWidthPx: 72, minWidthPx: 64, align: 'center' },
+            { id: 'dbExists', label: 'DB상태', defaultWidthPx: 88, minWidthPx: 80, align: 'center', ellipsis: false },
+        ],
+        []
+    );
+
+    const workspaceTableColumnDefinitions = useMemo(
+        () => [
+            { id: 'workspaceId', label: 'WS ID', defaultWidthPx: 100, minWidthPx: 88, align: 'left' },
+            { id: 'workspaceName', label: '워크스페이스명', defaultWidthPx: 200, minWidthPx: 140, align: 'left' },
+            { id: 'createdBy', label: '소유자', defaultWidthPx: 160, minWidthPx: 120, align: 'left' },
+            { id: 'objectNodeCount', label: 'Objects', defaultWidthPx: 88, minWidthPx: 80, align: 'center' },
+            { id: 'relationNodeCount', label: 'Relations', defaultWidthPx: 88, minWidthPx: 80, align: 'center' },
+            { id: 'edgeCount', label: 'Edges', defaultWidthPx: 80, minWidthPx: 72, align: 'center' },
+            { id: 'arangoDocumentCount', label: '문서(Arango)', defaultWidthPx: 112, minWidthPx: 96, align: 'center' },
+            { id: 'rdbDocumentCount', label: '문서(RDB)', defaultWidthPx: 104, minWidthPx: 88, align: 'center' },
+            { id: '_status', label: '상태', defaultWidthPx: 88, minWidthPx: 80, align: 'center', ellipsis: false },
+        ],
+        []
+    );
+
+    const { columns: domainTableColumns, startResize: domainColumnStartResize } = useBasicTableColumnResize({
+        definitions: domainTableColumnDefinitions,
+        storageKey: 'km-admin-arango-domains-v1',
+        enabled: true,
+    });
+
+    const { columns: workspaceTableColumns, startResize: workspaceColumnStartResize } = useBasicTableColumnResize({
+        definitions: workspaceTableColumnDefinitions,
+        storageKey: 'km-admin-arango-workspaces-v1',
+        enabled: true,
+    });
+
+    const fetchDatabases = useCallback(async () => {
+        if (isArangoMockEnabled) {
+            setDatabases(mockArangoDatabases);
+            setListSource('mock');
             setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchDatabases();
-    }, []);
-
-    const handleRowClick = async (domainId) => {
-        if (expandedDomain === domainId) {
-            setExpandedDomain(null);
             return;
         }
 
-        setExpandedDomain(domainId);
-
-        if (workspaceDetails[domainId]) return;
-
         try {
-            setLoadingDetails(prev => ({ ...prev, [domainId]: true }));
-            const data = await adminArangoApi.getWorkspaces(domainId);
-            setWorkspaceDetails(prev => ({ ...prev, [domainId]: data || [] }));
+            setLoading(true);
+            const data = await adminArangoApi.getDatabases();
+            const list = Array.isArray(data) ? data : [];
+            setDatabases(list);
+            setListSource('live');
         } catch (error) {
-            console.error('Failed to fetch workspace details:', error);
-            showAlert('워크스페이스 상세 정보를 불러오는데 실패했습니다.', 'error');
+            console.warn('[AdminArangoManagement] API 실패, 목 데이터로 표시:', error?.message || error);
+            setDatabases(mockArangoDatabases);
+            setListSource('mock');
+            await alert('ArangoDB 데이터베이스 목록을 불러오지 못했습니다. 샘플 목록을 표시합니다.');
         } finally {
-            setLoadingDetails(prev => ({ ...prev, [domainId]: false }));
+            setLoading(false);
         }
-    };
+    }, [alert]);
 
-    const handleRefresh = () => {
+    useEffect(() => {
+        fetchDatabases();
+    }, [fetchDatabases]);
+
+    const loadWorkspaces = useCallback(
+        async (domainId) => {
+            if (isArangoMockEnabled || listSource === 'mock') {
+                setWorkspaceDetails((prev) => ({
+                    ...prev,
+                    [domainId]: mockArangoWorkspacesByDomainId[domainId] ?? [],
+                }));
+                return;
+            }
+
+            try {
+                setLoadingDetails((prev) => ({ ...prev, [domainId]: true }));
+                const data = await adminArangoApi.getWorkspaces(domainId);
+                setWorkspaceDetails((prev) => ({
+                    ...prev,
+                    [domainId]: Array.isArray(data) ? data : [],
+                }));
+            } catch (error) {
+                console.warn('[AdminArangoManagement] 워크스페이스 API 실패:', error?.message || error);
+                await alert('워크스페이스 상세 정보를 불러오지 못했습니다. 샘플 데이터로 대체합니다.');
+                setWorkspaceDetails((prev) => ({
+                    ...prev,
+                    [domainId]: mockArangoWorkspacesByDomainId[domainId] ?? [],
+                }));
+            } finally {
+                setLoadingDetails((prev) => ({ ...prev, [domainId]: false }));
+            }
+        },
+        [alert, listSource]
+    );
+
+    const handleRefresh = useCallback(() => {
         setExpandedDomain(null);
         setWorkspaceDetails({});
+        setLoadingDetails({});
         fetchDatabases();
-    };
+    }, [fetchDatabases]);
 
-    const thStyle = { padding: '12px 16px', fontWeight: 600, color: '#555' };
-    const tdStyle = { padding: '12px 16px', color: '#666' };
-    const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
+    const handleDomainRowClick = useCallback(
+        (_e, { row }) => {
+            const domainId = row.domainId;
+            if (expandedDomain === domainId) {
+                setExpandedDomain(null);
+                return;
+            }
+            setExpandedDomain(domainId);
+            if (workspaceDetails[domainId] != null) {
+                return;
+            }
+            if (isArangoMockEnabled || listSource === 'mock') {
+                setWorkspaceDetails((prev) => ({
+                    ...prev,
+                    [domainId]: mockArangoWorkspacesByDomainId[domainId] ?? [],
+                }));
+                return;
+            }
+            void loadWorkspaces(domainId);
+        },
+        [expandedDomain, listSource, loadWorkspaces, workspaceDetails]
+    );
+
+    const domainTableRows = useMemo(
+        () => databases.map((d) => ({ ...d, id: d.domainId })),
+        [databases]
+    );
+
+    const renderDomainCell = useCallback(
+        ({ column, row }) => {
+            switch (column.id) {
+                case '_expand':
+                    return (
+                        <span className="arango-mgmt-expand-cell" aria-hidden>
+                            {expandedDomain === row.domainId ? (
+                                <ChevronDown size={16} strokeWidth={1.75} />
+                            ) : (
+                                <ChevronRight size={16} strokeWidth={1.75} />
+                            )}
+                        </span>
+                    );
+                case 'domainName':
+                    return <span className="arango-mgmt-domain-name">{row.domainName || '-'}</span>;
+                case 'arangoDbName':
+                    return <span className="arango-mgmt-mono">{row.arangoDbName || '-'}</span>;
+                case 'objectNodeCount':
+                case 'relationNodeCount':
+                case 'edgeCount':
+                case 'rdbWorkspaceCount':
+                case 'arangoWorkspaceCount':
+                    return <span className="arango-mgmt-num">{fmtCount(row[column.id])}</span>;
+                case 'orphanWorkspaceCount': {
+                    const nOrphan = Number(row.orphanWorkspaceCount) || 0;
+                    if (nOrphan > 0) {
+                        return <span className="arango-mgmt-badge arango-mgmt-badge--danger">{nOrphan}</span>;
+                    }
+                    return <span className="arango-mgmt-badge arango-mgmt-badge--muted">0</span>;
+                }
+                case 'dbExists':
+                    return row.dbExists ? (
+                        <span className="arango-mgmt-badge arango-mgmt-badge--ok">정상</span>
+                    ) : (
+                        <span className="arango-mgmt-badge arango-mgmt-badge--off">없음</span>
+                    );
+                default:
+                    return undefined;
+            }
+        },
+        [expandedDomain]
+    );
+
+    const renderWorkspaceCell = useCallback(({ column, row }) => {
+        switch (column.id) {
+            case 'workspaceId':
+                return <span className="arango-mgmt-mono">{row.workspaceId ?? '-'}</span>;
+            case 'workspaceName':
+                return (
+                    <span className={row.isOrphan ? 'arango-mgmt-ws-name arango-mgmt-ws-name--orphan' : 'arango-mgmt-ws-name'}>
+                        {row.workspaceName || '-'}
+                    </span>
+                );
+            case 'createdBy':
+                return <span className="arango-mgmt-muted">{row.createdBy || '-'}</span>;
+            case 'objectNodeCount':
+            case 'relationNodeCount':
+            case 'edgeCount':
+            case 'arangoDocumentCount':
+            case 'rdbDocumentCount':
+                return <span className="arango-mgmt-num">{fmtCount(row[column.id])}</span>;
+            case '_status':
+                return row.isOrphan ? (
+                    <span className="arango-mgmt-badge arango-mgmt-badge--danger">고아</span>
+                ) : (
+                    <span className="arango-mgmt-badge arango-mgmt-badge--ok">정상</span>
+                );
+            default:
+                return undefined;
+        }
+    }, []);
+
+    const domainRowClassName = useCallback(
+        (row) => (expandedDomain === row.domainId ? 'arango-mgmt-row-expanded' : ''),
+        [expandedDomain]
+    );
+
+    const domainRowAriaLabel = useCallback((row) => {
+        const name = row.domainName || '도메인';
+        return `${name}, 워크스페이스 상세 ${expandedDomain === row.domainId ? '접기' : '펼치기'}`;
+    }, [expandedDomain]);
+
+    const renderRowDetail = useCallback(
+        ({ row }) => {
+            if (expandedDomain !== row.domainId) return null;
+            const domainId = row.domainId;
+            if (loadingDetails[domainId]) {
+                return (
+                    <div className="arango-mgmt-row-detail-loading" role="status">
+                        <Loader2 className="arango-mgmt-spin" size={18} aria-hidden />
+                        <span>워크스페이스 상세 정보를 불러오는 중...</span>
+                    </div>
+                );
+            }
+            const list = workspaceDetails[domainId] ?? [];
+            const rows = list.map((ws) => ({ ...ws, id: ws.workspaceId }));
+            if (rows.length === 0) {
+                return (
+                    <div className="arango-mgmt-row-detail-empty" role="status">
+                        워크스페이스 데이터가 없습니다.
+                    </div>
+                );
+            }
+            return (
+                <div className="arango-mgmt-row-detail-inner basic-table-shell">
+                    <BasicTable
+                        className="arango-mgmt-detail-basic-table"
+                        columns={workspaceTableColumns}
+                        data={rows}
+                        renderCell={renderWorkspaceCell}
+                        onColumnResizeMouseDown={workspaceColumnStartResize}
+                    />
+                </div>
+            );
+        },
+        [
+            expandedDomain,
+            loadingDetails,
+            workspaceDetails,
+            workspaceTableColumns,
+            renderWorkspaceCell,
+            workspaceColumnStartResize,
+        ]
+    );
 
     return (
-        <div className="admin-page">
+        <div className="arango-mgmt-page">
             <AdminPageHeader
-                icon={Database}
                 title="ArangoDB 관리"
                 count={databases.length}
                 actions={(
-                    <button onClick={handleRefresh} className="admin-btn admin-btn-icon" title="새로고침">
-                        <RotateCcw size={16} />
+                    <button
+                        type="button"
+                        onClick={handleRefresh}
+                        className="arango-mgmt-btn arango-mgmt-btn--icon"
+                        title="새로고침"
+                        aria-label="ArangoDB 목록 새로고침"
+                    >
+                        <RotateCcw size={16} aria-hidden />
                     </button>
                 )}
             />
 
             {loading ? (
-                <div style={{ padding: '60px', textAlign: 'center', color: '#666', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                    <Loader2 size={32} style={{ animation: 'spin 1s linear infinite' }} color="#2563eb" />
-                    <span>데이터를 불러오는 중...</span>
-                    <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
-                </div>
+                <div className="arango-mgmt-loading">데이터를 불러오는 중...</div>
             ) : (
-                <div className="table-container" style={{ overflowX: 'auto', background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--admin-font-md)' }}>
-                        <thead>
-                            <tr style={{ background: '#f8f9fa', borderBottom: '1px solid #e0e0e0', textAlign: 'left' }}>
-                                <th style={{ ...thStyle, width: '40px' }}></th>
-                                <th style={thStyle}>도메인</th>
-                                <th style={thStyle}>DB명</th>
-                                <th style={{ ...thStyle, textAlign: 'center' }}>Objects</th>
-                                <th style={{ ...thStyle, textAlign: 'center' }}>Relations</th>
-                                <th style={{ ...thStyle, textAlign: 'center' }}>Edges</th>
-                                <th style={{ ...thStyle, textAlign: 'center' }}>WS(RDB)</th>
-                                <th style={{ ...thStyle, textAlign: 'center' }}>WS(Arango)</th>
-                                <th style={{ ...thStyle, textAlign: 'center' }}>고아</th>
-                                <th style={{ ...thStyle, textAlign: 'center' }}>DB상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {databases.length > 0 ? (
-                                databases.map(db => (
-                                    <React.Fragment key={db.domainId}>
-                                        {/* Level 1 Row */}
-                                        <tr
-                                            onClick={() => handleRowClick(db.domainId)}
-                                            style={{
-                                                borderBottom: '1px solid #f0f0f0',
-                                                cursor: 'pointer',
-                                                background: expandedDomain === db.domainId ? '#f0f7ff' : 'white',
-                                                transition: 'background 0.15s'
-                                            }}
-                                            onMouseEnter={e => { if (expandedDomain !== db.domainId) e.currentTarget.style.background = '#fafafa'; }}
-                                            onMouseLeave={e => { if (expandedDomain !== db.domainId) e.currentTarget.style.background = 'white'; }}
-                                        >
-                                            <td style={{ ...tdCenterStyle, width: '40px' }}>
-                                                {expandedDomain === db.domainId
-                                                    ? <ChevronDown size={16} />
-                                                    : <ChevronRight size={16} />}
-                                            </td>
-                                            <td style={{ ...tdStyle, fontWeight: 500, color: '#333' }}>{db.domainName}</td>
-                                            <td style={{ ...tdStyle, fontFamily: 'monospace', fontSize: 'var(--admin-font-base)' }}>{db.arangoDbName || '-'}</td>
-                                            <td style={tdCenterStyle}>{db.objectNodeCount.toLocaleString()}</td>
-                                            <td style={tdCenterStyle}>{db.relationNodeCount.toLocaleString()}</td>
-                                            <td style={tdCenterStyle}>{db.edgeCount.toLocaleString()}</td>
-                                            <td style={tdCenterStyle}>{db.rdbWorkspaceCount}</td>
-                                            <td style={tdCenterStyle}>{db.arangoWorkspaceCount}</td>
-                                            <td style={tdCenterStyle}>
-                                                {db.orphanWorkspaceCount > 0 ? (
-                                                    <span style={{
-                                                        padding: '2px 8px',
-                                                        borderRadius: '12px',
-                                                        fontSize: 'var(--admin-font-sm)',
-                                                        backgroundColor: '#fff1f0',
-                                                        color: '#cf1322',
-                                                        fontWeight: 600
-                                                    }}>
-                                                        {db.orphanWorkspaceCount}
-                                                    </span>
-                                                ) : (
-                                                    <span style={{ color: '#999' }}>0</span>
-                                                )}
-                                            </td>
-                                            <td style={tdCenterStyle}>
-                                                <span style={{
-                                                    padding: '4px 8px',
-                                                    borderRadius: '12px',
-                                                    fontSize: 'var(--admin-font-sm)',
-                                                    backgroundColor: db.dbExists ? '#e8f5e9' : '#f5f5f5',
-                                                    color: db.dbExists ? '#2e7d32' : '#9e9e9e',
-                                                    fontWeight: 500
-                                                }}>
-                                                    {db.dbExists ? '정상' : '없음'}
-                                                </span>
-                                            </td>
-                                        </tr>
-
-                                        {/* Level 2 Expanded Detail */}
-                                        {expandedDomain === db.domainId && (
-                                            <tr>
-                                                <td colSpan="10" style={{ padding: 0, background: '#f9fafb' }}>
-                                                    <div style={{ padding: '16px 24px 16px 56px' }}>
-                                                        {loadingDetails[db.domainId] ? (
-                                                            <div style={{ padding: '20px', textAlign: 'center', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                                                                <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} color="#2563eb" />
-                                                                워크스페이스 상세 정보를 불러오는 중...
-                                                            </div>
-                                                        ) : (
-                                                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--admin-font-base)', background: 'white', border: '1px solid #e8e8e8', borderRadius: '6px' }}>
-                                                                <thead>
-                                                                    <tr style={{ background: '#fafafa', borderBottom: '1px solid #e8e8e8', textAlign: 'left' }}>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555' }}>WS ID</th>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555' }}>워크스페이스명</th>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555' }}>소유자</th>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555', textAlign: 'center' }}>Objects</th>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555', textAlign: 'center' }}>Relations</th>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555', textAlign: 'center' }}>Edges</th>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555', textAlign: 'center' }}>문서(Arango)</th>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555', textAlign: 'center' }}>문서(RDB)</th>
-                                                                        <th style={{ padding: '10px 12px', fontWeight: 600, color: '#555', textAlign: 'center' }}>상태</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {(workspaceDetails[db.domainId] || []).length > 0 ? (
-                                                                        (workspaceDetails[db.domainId] || []).map(ws => (
-                                                                            <tr
-                                                                                key={ws.workspaceId}
-                                                                                style={{
-                                                                                    borderBottom: '1px solid #f0f0f0',
-                                                                                    background: ws.isOrphan ? '#fff3f0' : 'white'
-                                                                                }}
-                                                                            >
-                                                                                <td style={{ padding: '10px 12px', color: '#888', fontFamily: 'monospace' }}>{ws.workspaceId}</td>
-                                                                                <td style={{ padding: '10px 12px', fontWeight: 500, color: ws.isOrphan ? '#cf1322' : '#333' }}>
-                                                                                    {ws.workspaceName}
-                                                                                </td>
-                                                                                <td style={{ padding: '10px 12px', color: '#666' }}>{ws.createdBy || '-'}</td>
-                                                                                <td style={{ padding: '10px 12px', textAlign: 'center', color: '#666' }}>{ws.objectNodeCount.toLocaleString()}</td>
-                                                                                <td style={{ padding: '10px 12px', textAlign: 'center', color: '#666' }}>{ws.relationNodeCount.toLocaleString()}</td>
-                                                                                <td style={{ padding: '10px 12px', textAlign: 'center', color: '#666' }}>{ws.edgeCount.toLocaleString()}</td>
-                                                                                <td style={{ padding: '10px 12px', textAlign: 'center', color: '#666' }}>{ws.arangoDocumentCount}</td>
-                                                                                <td style={{ padding: '10px 12px', textAlign: 'center', color: '#666' }}>{ws.rdbDocumentCount}</td>
-                                                                                <td style={{ padding: '10px 12px', textAlign: 'center' }}>
-                                                                                    {ws.isOrphan ? (
-                                                                                        <span style={{
-                                                                                            padding: '2px 8px',
-                                                                                            borderRadius: '12px',
-                                                                                            fontSize: 'var(--admin-font-xs)',
-                                                                                            backgroundColor: '#fff1f0',
-                                                                                            color: '#cf1322',
-                                                                                            fontWeight: 600,
-                                                                                            border: '1px solid #ffa39e'
-                                                                                        }}>
-                                                                                            고아
-                                                                                        </span>
-                                                                                    ) : (
-                                                                                        <span style={{
-                                                                                            padding: '2px 8px',
-                                                                                            borderRadius: '12px',
-                                                                                            fontSize: 'var(--admin-font-xs)',
-                                                                                            backgroundColor: '#e8f5e9',
-                                                                                            color: '#2e7d32',
-                                                                                            fontWeight: 500
-                                                                                        }}>
-                                                                                            정상
-                                                                                        </span>
-                                                                                    )}
-                                                                                </td>
-                                                                            </tr>
-                                                                        ))
-                                                                    ) : (
-                                                                        <tr>
-                                                                            <td colSpan="9" style={{ padding: '20px', textAlign: 'center', color: '#888' }}>
-                                                                                워크스페이스 데이터가 없습니다.
-                                                                            </td>
-                                                                        </tr>
-                                                                    )}
-                                                                </tbody>
-                                                            </table>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </React.Fragment>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="10" style={{ padding: '32px', textAlign: 'center', color: '#888' }}>
-                                        등록된 도메인이 없습니다.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                <div className="arango-mgmt-table-card">
+                    <div className="arango-mgmt-table-shell basic-table-shell">
+                        {databases.length === 0 ? (
+                            <div className="arango-mgmt-empty--solo" role="status">
+                                등록된 도메인이 없습니다.
+                            </div>
+                        ) : (
+                            <BasicTable
+                                className="arango-mgmt-basic-table"
+                                columns={domainTableColumns}
+                                data={domainTableRows}
+                                renderCell={renderDomainCell}
+                                renderRowDetail={renderRowDetail}
+                                onRowClick={handleDomainRowClick}
+                                getRowClassName={domainRowClassName}
+                                rowAriaLabel={domainRowAriaLabel}
+                                onColumnResizeMouseDown={domainColumnStartResize}
+                            />
+                        )}
+                    </div>
                 </div>
             )}
         </div>

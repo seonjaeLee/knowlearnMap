@@ -1,19 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { workspaceApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
-import { useResizableColumns } from '../../hooks/useResizableColumns';
+import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
 import { Search, RotateCcw, Share2, Trash2 } from 'lucide-react';
 import ShareSettingsModal from '../../components/ShareSettingsModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import BasicTable from '../../components/common/BasicTable';
+import KmPopover from '../../components/common/KmPopover';
 import { mockAdminWorkspaces } from '../../data/workspaceMockData';
-import './admin-common.css';
 import './AdminWorkspaceManagement.css';
 
 const isWorkspaceMockEnabled = import.meta.env.VITE_ENABLE_WORKSPACE_MOCK === 'true';
 
-/** 워크스페이스 관리 표 열(px) — 이름, 도메인, 소유자, 문서수, 공유, 프롬프트, 생성일, 관리 */
-const WORKSPACE_TABLE_RESIZE_DEFAULTS_PX = [170, 110, 130, 72, 88, 290, 110, 120];
-const WORKSPACE_TABLE_RESIZE_MINS_PX = [160, 100, 120, 72, 88, 200, 104, 120];
+function formatWorkspaceDate(dateString) {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('ko-KR');
+}
+
+function workspacePromptTagDefs(ws) {
+    return [
+        { label: 'chunk', value: ws.chunkPrompt, tone: ws.chunkPrompt === 'NONE' ? 'danger' : 'violet' },
+        { label: 'ontology', value: ws.ontologyPrompt, tone: 'blue' },
+        { label: 'chat', value: ws.chatResultPrompt, tone: 'green' },
+        { label: 'content', value: ws.contentOntologyPrompt, tone: 'purple' },
+        { label: 'schema', value: ws.schemaAnalysisPrompt, tone: 'orange' },
+        { label: 'interTable', value: ws.interTableAnalysisPrompt, tone: 'cyan' },
+        { label: 'aqlGen', value: ws.aqlGenerationPrompt, tone: 'indigo' },
+        { label: 'aqlInterp', value: ws.aqlInterpretationPrompt, tone: 'pink' },
+    ];
+}
+
+function workspacePromptSummaryLine(ws) {
+    const n = workspacePromptTagDefs(ws).length;
+    return `프롬프트 ${n}종`;
+}
 
 function AdminWorkspaceManagement() {
     const [workspaces, setWorkspaces] = useState([]);
@@ -21,18 +41,40 @@ function AdminWorkspaceManagement() {
     const [searchTerm, setSearchTerm] = useState('');
     const [shareModalOpen, setShareModalOpen] = useState(false);
     const [shareWorkspace, setShareWorkspace] = useState(null);
+    /** { anchorEl: Element, workspace: object } | null — 프롬프트 열 상세 Popover */
+    const [promptPopover, setPromptPopover] = useState(null);
     /** API 실패 시 더미로 채우거나 `VITE_ENABLE_WORKSPACE_MOCK` 인 경우 — 삭제를 로컬 state로만 처리 */
     const [adminListSource, setAdminListSource] = useState('live');
     const { alert, confirm } = useDialog();
 
-    const columnResize = useResizableColumns({
-        defaultWidthsPx: WORKSPACE_TABLE_RESIZE_DEFAULTS_PX,
-        minWidthsPx: WORKSPACE_TABLE_RESIZE_MINS_PX,
+    const workspaceTableColumnDefinitions = useMemo(
+        () => [
+            { id: 'name', label: '워크스페이스명', defaultWidthPx: 245, minWidthPx: 140, align: 'left' },
+            { id: 'domainName', label: '도메인', defaultWidthPx: 150, minWidthPx: 100, align: 'left' },
+            { id: 'createdBy', label: '소유자', defaultWidthPx: 200, minWidthPx: 120, align: 'left' },
+            { id: 'documentCount', label: '문서수', defaultWidthPx: 72, minWidthPx: 72, align: 'left' },
+            { id: '_share', label: '공유', defaultWidthPx: 88, minWidthPx: 88, align: 'left', ellipsis: false },
+            { id: '_prompts', label: '프롬프트', defaultWidthPx: 140, minWidthPx: 120, align: 'left', ellipsis: false },
+            { id: '_created', label: '생성일', defaultWidthPx: 110, minWidthPx: 100, align: 'left' },
+            {
+                id: '_actions',
+                label: <span className="workspace-mgmt-actions-head">관리</span>,
+                defaultWidthPx: 120,
+                minWidthPx: 120,
+                align: 'right',
+                ellipsis: false,
+            },
+        ],
+        []
+    );
+
+    const { columns: workspaceTableColumns, startResize: workspaceColumnStartResize } = useBasicTableColumnResize({
+        definitions: workspaceTableColumnDefinitions,
         storageKey: 'km-admin-workspace-mgmt-columns-v1',
         enabled: true,
     });
 
-    const fetchWorkspaces = async () => {
+    const fetchWorkspaces = useCallback(async () => {
         try {
             setLoading(true);
             if (isWorkspaceMockEnabled) {
@@ -50,103 +92,175 @@ function AdminWorkspaceManagement() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchWorkspaces();
-    }, []);
+    }, [fetchWorkspaces]);
 
-    const handleOpenShareModal = (ws) => {
+    const handleOpenShareModal = useCallback((ws) => {
         setShareWorkspace(ws);
         setShareModalOpen(true);
-    };
+    }, []);
 
-    const handleShareSaved = () => {
+    const handleShareSaved = useCallback(() => {
         fetchWorkspaces();
-    };
+    }, [fetchWorkspaces]);
 
     const deleteUsesLocalState = isWorkspaceMockEnabled || adminListSource === 'mock';
 
-    const handleDelete = async (id, name) => {
-        const confirmed = await confirm(`"${name}" 워크스페이스를 삭제하시겠습니까?\n관련된 모든 문서와 데이터가 삭제됩니다.`);
-        if (!confirmed) {
-            return;
-        }
-        if (deleteUsesLocalState) {
-            setWorkspaces((prev) => prev.filter((w) => w.id !== id));
-            await alert('워크스페이스가 삭제되었습니다.');
-            return;
-        }
-        try {
-            await workspaceApi.delete(id);
-            await alert('워크스페이스가 삭제되었습니다.');
-            fetchWorkspaces();
-        } catch (error) {
-            console.error('Failed to delete workspace:', error);
-            await alert('워크스페이스 삭제에 실패했습니다.');
-        }
-    };
+    const handleDelete = useCallback(
+        async (id, name) => {
+            const confirmed = await confirm(`"${name}" 워크스페이스를 삭제하시겠습니까?\n관련된 모든 문서와 데이터가 삭제됩니다.`);
+            if (!confirmed) {
+                return;
+            }
+            if (deleteUsesLocalState) {
+                setWorkspaces((prev) => prev.filter((w) => w.id !== id));
+                await alert('워크스페이스가 삭제되었습니다.');
+                return;
+            }
+            try {
+                await workspaceApi.delete(id);
+                await alert('워크스페이스가 삭제되었습니다.');
+                fetchWorkspaces();
+            } catch (error) {
+                console.error('Failed to delete workspace:', error);
+                await alert('워크스페이스 삭제에 실패했습니다.');
+            }
+        },
+        [alert, confirm, deleteUsesLocalState, fetchWorkspaces]
+    );
 
-    const filteredWorkspaces = workspaces.filter((ws) => {
+    const filteredWorkspaces = useMemo(() => {
         const searchLower = searchTerm.toLowerCase();
-        return (
-            (ws.name && ws.name.toLowerCase().includes(searchLower)) ||
-            (ws.domainName && ws.domainName.toLowerCase().includes(searchLower)) ||
-            (ws.createdBy && ws.createdBy.toLowerCase().includes(searchLower)) ||
-            (ws.ontologyPrompt && ws.ontologyPrompt.toLowerCase().includes(searchLower))
+        return workspaces.filter(
+            (ws) =>
+                (ws.name && ws.name.toLowerCase().includes(searchLower)) ||
+                (ws.domainName && ws.domainName.toLowerCase().includes(searchLower)) ||
+                (ws.createdBy && ws.createdBy.toLowerCase().includes(searchLower)) ||
+                (ws.ontologyPrompt && ws.ontologyPrompt.toLowerCase().includes(searchLower))
         );
-    });
+    }, [workspaces, searchTerm]);
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        return new Date(dateString).toLocaleDateString('ko-KR');
-    };
-
-    const promptTagDefs = (ws) => [
-        { label: 'chunk', value: ws.chunkPrompt, tone: ws.chunkPrompt === 'NONE' ? 'danger' : 'violet' },
-        { label: 'ontology', value: ws.ontologyPrompt, tone: 'blue' },
-        { label: 'chat', value: ws.chatResultPrompt, tone: 'green' },
-        { label: 'content', value: ws.contentOntologyPrompt, tone: 'purple' },
-        { label: 'schema', value: ws.schemaAnalysisPrompt, tone: 'orange' },
-        { label: 'interTable', value: ws.interTableAnalysisPrompt, tone: 'cyan' },
-        { label: 'aqlGen', value: ws.aqlGenerationPrompt, tone: 'indigo' },
-        { label: 'aqlInterp', value: ws.aqlInterpretationPrompt, tone: 'pink' },
-    ];
+    const renderWorkspaceCell = useCallback(
+        ({ column, row: ws }) => {
+            switch (column.id) {
+                case 'name':
+                    return (
+                        <div className="workspace-mgmt-name-cell">
+                            <span className="workspace-mgmt-icon" aria-hidden>
+                                {ws.icon || '📄'}
+                            </span>
+                            <span className="workspace-mgmt-name-text">{ws.name}</span>
+                        </div>
+                    );
+                case 'domainName':
+                    return <span className="workspace-mgmt-muted">{ws.domainName || '-'}</span>;
+                case 'createdBy':
+                    return <span className="workspace-mgmt-muted">{ws.createdBy || '-'}</span>;
+                case 'documentCount':
+                    return <span className="workspace-mgmt-muted">{ws.documentCount ?? 0}</span>;
+                case '_share':
+                    return (
+                        <span className={`workspace-mgmt-share-badge share-${(ws.shareType || 'NONE').toLowerCase()}`}>
+                            {ws.shareType === 'ALL' ? '전체' : ws.shareType === 'INDIVIDUAL' ? '개별' : 'OFF'}
+                        </span>
+                    );
+                case '_prompts': {
+                    const popoverOpen = Boolean(
+                        promptPopover && promptPopover.workspace && promptPopover.workspace.id === ws.id
+                    );
+                    return (
+                        <div className="workspace-mgmt-prompt-cell">
+                            <button
+                                type="button"
+                                className="workspace-mgmt-prompt-trigger"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPromptPopover({ anchorEl: e.currentTarget, workspace: ws });
+                                }}
+                                aria-expanded={popoverOpen}
+                                aria-haspopup="true"
+                                aria-controls="workspace-mgmt-prompt-popover"
+                                title="프롬프트 전체 보기"
+                            >
+                                <span className="workspace-mgmt-prompt-trigger-text">
+                                    {workspacePromptSummaryLine(ws)}
+                                </span>
+                                <span className="workspace-mgmt-prompt-trigger-suffix" aria-hidden>
+                                    보기
+                                </span>
+                            </button>
+                        </div>
+                    );
+                }
+                case '_created':
+                    return <span className="workspace-mgmt-date-text">{formatWorkspaceDate(ws.createdAt)}</span>;
+                case '_actions':
+                    return (
+                        <div className="workspace-mgmt-actions">
+                            <button
+                                type="button"
+                                onClick={() => handleOpenShareModal(ws)}
+                                title="공유 설정"
+                                aria-label={`${ws.name} 공유 설정`}
+                                className={`km-table-icon-btn km-table-icon-btn--neutral ${ws.shareType !== 'NONE' ? 'workspace-mgmt-share-btn--active' : ''}`}
+                            >
+                                <Share2 strokeWidth={1.75} size={16} aria-hidden />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleDelete(ws.id, ws.name)}
+                                title="삭제"
+                                aria-label={`${ws.name} 삭제`}
+                                className="km-table-icon-btn km-table-icon-btn--danger"
+                            >
+                                <Trash2 strokeWidth={1.75} size={16} aria-hidden />
+                            </button>
+                        </div>
+                    );
+                default:
+                    return undefined;
+            }
+        },
+        [handleDelete, handleOpenShareModal, promptPopover]
+    );
 
     return (
-        <div className="admin-page">
+        <div className="workspace-mgmt-page">
             <div className="km-main-sticky-head">
-            <AdminPageHeader
-                title="워크스페이스 관리"
-                count={filteredWorkspaces.length}
-                actions={(
-                    <button
-                        type="button"
-                        onClick={fetchWorkspaces}
-                        className="admin-btn admin-btn-icon"
-                        title="새로고침"
-                        aria-label="워크스페이스 목록 새로고침"
-                    >
-                        <RotateCcw size={16} aria-hidden />
-                    </button>
-                )}
-            />
+                <AdminPageHeader
+                    title="워크스페이스 관리"
+                    count={filteredWorkspaces.length}
+                    actions={(
+                        <button
+                            type="button"
+                            onClick={fetchWorkspaces}
+                            className="workspace-mgmt-btn workspace-mgmt-btn--icon"
+                            title="새로고침"
+                            aria-label="워크스페이스 목록 새로고침"
+                        >
+                            <RotateCcw size={16} aria-hidden />
+                        </button>
+                    )}
+                />
 
-            <div className="admin-toolbar">
-                <div className="admin-toolbar-left">
-                    <div className="admin-search">
-                        <Search size={18} className="admin-search-icon" aria-hidden />
-                        <input
-                            type="text"
-                            className="admin-search-input"
-                            placeholder="워크스페이스명, 도메인, 소유자 검색..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            aria-label="워크스페이스 검색"
-                        />
+                <div className="workspace-mgmt-toolbar">
+                    <div className="workspace-mgmt-toolbar-left">
+                        <div className="workspace-mgmt-search">
+                            <Search size={18} className="workspace-mgmt-search-icon" aria-hidden />
+                            <input
+                                type="text"
+                                className="workspace-mgmt-search-input"
+                                placeholder="워크스페이스명, 도메인, 소유자 검색..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                aria-label="워크스페이스 검색"
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
 
             {loading ? (
@@ -154,147 +268,21 @@ function AdminWorkspaceManagement() {
                     데이터를 불러오는 중...
                 </div>
             ) : (
-                <div className="admin-table-card workspace-mgmt-table-card">
-                    <div className="admin-table-wrap">
-                        <table className="admin-table workspace-mgmt-table workspace-mgmt-table--resizable">
-                            {columnResize.colGroup}
-                            <thead>
-                                <tr>
-                                    <th scope="col" className="workspace-mgmt-th-name km-th-col-resizable">
-                                        워크스페이스명
-                                        <span
-                                            className="km-col-resize-handle"
-                                            onMouseDown={(e) => columnResize.startResize(0, e)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-hidden
-                                        />
-                                    </th>
-                                    <th scope="col" className="workspace-mgmt-th-domain km-th-col-resizable">
-                                        도메인
-                                        <span
-                                            className="km-col-resize-handle"
-                                            onMouseDown={(e) => columnResize.startResize(1, e)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-hidden
-                                        />
-                                    </th>
-                                    <th scope="col" className="workspace-mgmt-th-owner km-th-col-resizable">
-                                        소유자
-                                        <span
-                                            className="km-col-resize-handle"
-                                            onMouseDown={(e) => columnResize.startResize(2, e)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-hidden
-                                        />
-                                    </th>
-                                    <th scope="col" className="workspace-mgmt-th-docs km-th-col-resizable">
-                                        문서수
-                                        <span
-                                            className="km-col-resize-handle"
-                                            onMouseDown={(e) => columnResize.startResize(3, e)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-hidden
-                                        />
-                                    </th>
-                                    <th scope="col" className="workspace-mgmt-th-share km-th-col-resizable">
-                                        공유
-                                        <span
-                                            className="km-col-resize-handle"
-                                            onMouseDown={(e) => columnResize.startResize(4, e)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-hidden
-                                        />
-                                    </th>
-                                    <th scope="col" className="workspace-mgmt-th-prompt km-th-col-resizable">
-                                        프롬프트
-                                        <span
-                                            className="km-col-resize-handle"
-                                            onMouseDown={(e) => columnResize.startResize(5, e)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-hidden
-                                        />
-                                    </th>
-                                    <th scope="col" className="workspace-mgmt-th-created km-th-col-resizable">
-                                        생성일
-                                        <span
-                                            className="km-col-resize-handle"
-                                            onMouseDown={(e) => columnResize.startResize(6, e)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            aria-hidden
-                                        />
-                                    </th>
-                                    <th scope="col" className="workspace-mgmt-th-actions">
-                                        <span className="workspace-mgmt-actions-head">관리</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredWorkspaces.length > 0 ? (
-                                    filteredWorkspaces.map((ws) => (
-                                        <tr key={ws.id}>
-                                            <td className="workspace-mgmt-td-name">
-                                                <div className="workspace-mgmt-name-cell">
-                                                    <span className="workspace-mgmt-icon" aria-hidden>{ws.icon || '📄'}</span>
-                                                    <span className="workspace-mgmt-name-text">{ws.name}</span>
-                                                </div>
-                                            </td>
-                                            <td className="workspace-mgmt-td-domain workspace-mgmt-muted">{ws.domainName || '-'}</td>
-                                            <td className="workspace-mgmt-td-owner workspace-mgmt-muted">{ws.createdBy || '-'}</td>
-                                            <td className="workspace-mgmt-td-docs workspace-mgmt-muted">{ws.documentCount ?? 0}</td>
-                                            <td className="workspace-mgmt-td-share">
-                                                <span className={`workspace-mgmt-share-badge share-${(ws.shareType || 'NONE').toLowerCase()}`}>
-                                                    {ws.shareType === 'ALL' ? '전체' : ws.shareType === 'INDIVIDUAL' ? '개별' : 'OFF'}
-                                                </span>
-                                            </td>
-                                            <td className="workspace-mgmt-td-prompt">
-                                                <div className="prompt-tag-grid">
-                                                    {promptTagDefs(ws).map(({ label, value, tone }) => (
-                                                        <span
-                                                            key={label}
-                                                            className={`prompt-tag ${value ? 'prompt-tag--active' : ''}`}
-                                                            data-active={Boolean(value)}
-                                                            data-tone={value ? tone : ''}
-                                                        >
-                                                            <span className="prompt-tag__label">{label}</span>
-                                                            <span className="prompt-tag__value">{value || '기본값'}</span>
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </td>
-                                            <td className="workspace-mgmt-td-created admin-col-date">{formatDate(ws.createdAt)}</td>
-                                            <td className="workspace-mgmt-td-actions">
-                                                <div className="workspace-mgmt-actions">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleOpenShareModal(ws)}
-                                                        title="공유 설정"
-                                                        aria-label={`${ws.name} 공유 설정`}
-                                                        className={`km-table-icon-btn km-table-icon-btn--neutral ${ws.shareType !== 'NONE' ? 'workspace-mgmt-share-btn--active' : ''}`}
-                                                    >
-                                                        <Share2 strokeWidth={1.75} size={16} aria-hidden />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDelete(ws.id, ws.name)}
-                                                        title="삭제"
-                                                        aria-label={`${ws.name} 삭제`}
-                                                        className="km-table-icon-btn km-table-icon-btn--danger"
-                                                    >
-                                                        <Trash2 strokeWidth={1.75} size={16} aria-hidden />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr className="workspace-mgmt-tr-empty">
-                                        <td colSpan={8} className="workspace-mgmt-empty">
-                                            {searchTerm ? '검색 결과가 없습니다.' : '워크스페이스가 없습니다.'}
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                <div className="workspace-mgmt-table-card">
+                    <div className="workspace-mgmt-table-shell basic-table-shell">
+                        {filteredWorkspaces.length === 0 ? (
+                            <div className="workspace-mgmt-empty workspace-mgmt-empty--solo" role="status">
+                                {searchTerm ? '검색 결과가 없습니다.' : '워크스페이스가 없습니다.'}
+                            </div>
+                        ) : (
+                            <BasicTable
+                                className="workspace-mgmt-basic-table"
+                                columns={workspaceTableColumns}
+                                data={filteredWorkspaces}
+                                renderCell={renderWorkspaceCell}
+                                onColumnResizeMouseDown={workspaceColumnStartResize}
+                            />
+                        )}
                     </div>
                 </div>
             )}
@@ -308,6 +296,31 @@ function AdminWorkspaceManagement() {
                     onSaved={handleShareSaved}
                 />
             )}
+
+            <KmPopover
+                id="workspace-mgmt-prompt-popover"
+                open={Boolean(promptPopover)}
+                anchorEl={promptPopover?.anchorEl ?? null}
+                onClose={() => setPromptPopover(null)}
+            >
+                {promptPopover ? (
+                    <div className="workspace-mgmt-prompt-popover-inner">
+                        <div className="prompt-tag-grid">
+                            {workspacePromptTagDefs(promptPopover.workspace).map(({ label, value, tone }) => (
+                                <span
+                                    key={label}
+                                    className={`prompt-tag ${value ? 'prompt-tag--active' : ''}`}
+                                    data-active={Boolean(value)}
+                                    data-tone={value ? tone : ''}
+                                >
+                                    <span className="prompt-tag__label">{label}</span>
+                                    <span className="prompt-tag__value">{value || '기본값'}</span>
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                ) : null}
+            </KmPopover>
         </div>
     );
 }

@@ -17,10 +17,13 @@
   /* 테이블 행 내 삭제 등 아이콘 버튼 — `km-table-icon-actions.css`와 동일 토큰 (삭제 아이콘 기본 레드, 여기만 바꿔서 전역 일괄 조정) */
   --color-icon-danger: #dc2626;
   --color-icon-danger-emphasis: #b91c1c;
+  /* 테이블 행 내 승인 등 긍정 액션 — `km-table-icon-btn--success` */
+  --color-icon-success: #2b8a3e;
+  --color-icon-success-emphasis: #1b6e2f;
 
-  /* 테이블 액션 열: 아이콘 실크기·간격·클릭 영역 — 레퍼런스(편집+삭제 나란히)와 맞춤 */
+  /* 테이블 액션 열: 아이콘 실크기·간격·클릭 영역 — 편집·삭제 버튼은 사이 간격 0(나란히) */
   --km-table-action-icon-size: 16px;
-  --km-table-action-icon-gap: calc(var(--spacing-sm) + var(--spacing-xs)); /* 12px */
+  --km-table-action-icon-gap: 0;
   --km-table-action-hit-size: 36px;
   /* 편집+삭제 2개 + 좌우 셀 패딩(var(--spacing-md)*2) 시 필요 최소 폭 — 열 width와 함께 조정 */
   --km-table-actions-col-min: 120px;

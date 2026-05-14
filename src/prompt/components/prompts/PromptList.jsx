@@ -22,6 +22,7 @@ import { promptService } from '../../api/promptService';
 import PromptFormDialog from './PromptFormDialog';
 import EditPromptDialog from './EditPromptDialog';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
+import { promptToolbarSelectSx } from '../../../pages/admin/promptToolbarSelectSx';
 import '../../../pages/admin/admin-common.css';
 
 // 보안 등급 → 공통 배지 클래스 매핑
@@ -134,7 +135,7 @@ const PromptListContent = () => {
     try {
       await deletePrompt.mutateAsync(prompt.code);
       showAlert('삭제되었습니다.');
-    } catch (error) {
+    } catch {
       showAlert('프롬프트 삭제에 실패했습니다. 다시 시도해주세요.');
     }
   };
@@ -142,14 +143,7 @@ const PromptListContent = () => {
   const prompts = Array.isArray(data?.data?.content) ? data.data.content : [];
 
   // MUI Select/TextField용 공통 sx — admin-common.css 의 input 스타일과 시각적으로 정렬
-  const selectSx = {
-    minWidth: 140,
-    fontSize: 'var(--admin-font-md)',
-    bgcolor: 'var(--admin-bg-panel)',
-    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border-strong)' },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-color-primary)' },
-  };
+  const selectSx = promptToolbarSelectSx;
 
   return (
     <div className="admin-page">

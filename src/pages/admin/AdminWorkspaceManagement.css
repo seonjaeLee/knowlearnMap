@@ -1,4 +1,87 @@
-/* 워크스페이스 관리 — admin-table-card + workspace-mgmt 전용 열 (도메인 관리 패턴 정렬) */
+/* 워크스페이스 관리 — admin-common 미사용, BasicTable + useBasicTableColumnResize */
+
+.workspace-mgmt-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+}
+
+.workspace-mgmt-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.workspace-mgmt-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    min-width: 0;
+}
+
+.workspace-mgmt-search {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    flex: 1 1 280px;
+    max-width: 400px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+}
+
+.workspace-mgmt-search-icon {
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+}
+
+.workspace-mgmt-search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    outline: none;
+}
+
+.workspace-mgmt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--spacing-xs) + var(--spacing-xs));
+    padding: var(--spacing-sm) 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+    white-space: nowrap;
+}
+
+.workspace-mgmt-btn:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-border-hover);
+}
+
+.workspace-mgmt-btn--icon {
+    padding: var(--spacing-sm);
+    min-width: var(--km-table-action-hit-size);
+    min-height: var(--km-table-action-hit-size);
+}
 
 .workspace-mgmt-loading {
     padding: var(--spacing-2xl);
@@ -9,89 +92,82 @@
 
 .workspace-mgmt-table-card {
     --km-table-action-hit-size: 32px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    min-width: 0;
+    overflow: hidden;
 }
 
-.workspace-mgmt-table {
-    table-layout: fixed;
-    width: 100%;
-    min-width: 1080px;
+.workspace-mgmt-table-shell {
+    background: var(--color-bg-secondary);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-width: 0;
 }
 
-.workspace-mgmt-table .workspace-mgmt-th-name,
-.workspace-mgmt-table .workspace-mgmt-td-name {
-    min-width: 160px;
-    width: 14%;
+.workspace-mgmt-basic-table {
+    min-width: 1020px;
 }
 
-.workspace-mgmt-table .workspace-mgmt-th-domain,
-.workspace-mgmt-table .workspace-mgmt-td-domain {
-    min-width: 100px;
-    width: 10%;
+.workspace-mgmt-prompt-cell {
+    min-width: 0;
+    max-width: 100%;
 }
 
-.workspace-mgmt-table .workspace-mgmt-th-owner,
-.workspace-mgmt-table .workspace-mgmt-td-owner {
-    min-width: 120px;
-    width: 12%;
+.workspace-mgmt-prompt-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.workspace-mgmt-table .workspace-mgmt-th-docs,
-.workspace-mgmt-table .workspace-mgmt-td-docs {
-    width: 72px;
-    min-width: 72px;
-    max-width: 72px;
+.workspace-mgmt-prompt-trigger:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-border-hover);
 }
 
-.workspace-mgmt-table .workspace-mgmt-th-share,
-.workspace-mgmt-table .workspace-mgmt-td-share {
-    width: 88px;
-    min-width: 88px;
-    max-width: 88px;
+.workspace-mgmt-prompt-trigger:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
-.workspace-mgmt-table .workspace-mgmt-th-prompt,
-.workspace-mgmt-table .workspace-mgmt-td-prompt {
-    min-width: 320px;
-    width: 26%;
-    vertical-align: middle;
+.workspace-mgmt-prompt-trigger-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.workspace-mgmt-table .workspace-mgmt-th-created,
-.workspace-mgmt-table .workspace-mgmt-td-created {
-    min-width: 104px;
-    width: 11%;
+.workspace-mgmt-prompt-trigger-suffix {
+    flex-shrink: 0;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-secondary);
 }
 
-.workspace-mgmt-table .workspace-mgmt-th-actions,
-.workspace-mgmt-table .workspace-mgmt-td-actions {
-    width: var(--km-table-actions-col-min);
-    min-width: var(--km-table-actions-col-min);
-    max-width: var(--km-table-actions-col-min);
-    text-align: right;
-    vertical-align: middle;
-    box-sizing: border-box;
+.workspace-mgmt-prompt-popover-inner {
+    min-width: 0;
 }
 
-/* `<colgroup>` + `useResizableColumns` — 고정 %·max-width와 충돌 방지 */
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-name,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-name,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-domain,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-domain,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-owner,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-owner,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-docs,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-docs,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-share,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-share,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-prompt,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-prompt,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-created,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-created,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-th-actions,
-.workspace-mgmt-table.workspace-mgmt-table--resizable .workspace-mgmt-td-actions {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
+.workspace-mgmt-empty--solo {
+    text-align: center;
+    padding: var(--spacing-2xl) var(--spacing-md);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
 }
 
 .workspace-mgmt-actions-head {
@@ -102,27 +178,8 @@
     min-width: 0;
 }
 
-.workspace-mgmt-table thead tr th:last-child .workspace-mgmt-actions-head {
+.workspace-mgmt-table-card .workspace-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .workspace-mgmt-actions-head {
     padding-right: var(--spacing-sm);
-}
-
-.workspace-mgmt-table-card .workspace-mgmt-table thead tr {
-    height: 35px;
-}
-
-.workspace-mgmt-table-card .workspace-mgmt-table th,
-.workspace-mgmt-table-card .workspace-mgmt-table td {
-    padding-block: var(--spacing-sm);
-    padding-inline: var(--spacing-sm);
-    line-height: 1.25;
-    box-sizing: border-box;
-}
-
-/* thead: 일반 흐름(열 고정 스티키 미사용) — 배경은 admin-common `.admin-table thead tr` 과 동일 톤 유지 */
-.workspace-mgmt-table-card .workspace-mgmt-table thead th {
-    padding-block: 0;
-    height: 35px;
-    vertical-align: middle;
 }
 
 .workspace-mgmt-name-cell {
@@ -152,6 +209,11 @@
     white-space: nowrap;
 }
 
+.workspace-mgmt-date-text {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
 .workspace-mgmt-share-badge {
     display: inline-flex;
     align-items: center;
@@ -163,8 +225,8 @@
 }
 
 .workspace-mgmt-share-badge.share-all {
-    background-color: var(--admin-color-success-soft);
-    color: var(--admin-color-success-on-soft);
+    background-color: var(--color-accent-light);
+    color: var(--color-accent);
 }
 
 .workspace-mgmt-share-badge.share-individual {
@@ -181,31 +243,70 @@
     display: inline-flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 0;
+    gap: var(--km-table-action-icon-gap);
     width: 100%;
     min-width: 0;
 }
 
 .workspace-mgmt-share-btn--active.km-table-icon-btn--neutral {
-    background: var(--admin-color-success-soft);
-    color: var(--admin-color-success-on-soft);
+    background: var(--color-accent-light);
+    color: var(--color-accent);
 }
 
 .workspace-mgmt-share-btn--active.km-table-icon-btn--neutral:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--admin-color-success-on-soft) 18%, transparent);
-    color: var(--admin-color-success-on-soft);
-}
-
-.workspace-mgmt-table-card .workspace-mgmt-table tbody tr.workspace-mgmt-tr-empty td,
-.workspace-mgmt-table-card .workspace-mgmt-table td.workspace-mgmt-empty {
-    height: auto !important;
-    padding: var(--spacing-2xl) var(--spacing-md) !important;
+    background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+    color: var(--color-accent);
 }
 
 .workspace-mgmt-empty {
     text-align: center;
     color: var(--color-text-secondary);
     font-size: var(--font-size-base);
+}
+
+/* admin-common `.prompt-tag-*` 이전 — 토큰·로컬 값 */
+.prompt-tag-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.prompt-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 2px var(--spacing-sm);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    background: var(--color-bg-subtle);
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+}
+
+.prompt-tag--active {
+    background: var(--color-bg-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.prompt-tag__label {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    opacity: 0.7;
+}
+
+.prompt-tag__label::after {
+    content: ':';
+}
+
+.prompt-tag__value {
+    font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .prompt-tag[data-active='true'][data-tone='danger'] {

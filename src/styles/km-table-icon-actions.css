@@ -1,12 +1,13 @@
 /**
- * 테이블 행 내 아이콘 전용 버튼 — 편집·삭제 동일 호버 패턴, 크기·간격은 `:root` 토큰.
+ * 테이블 행 내 아이콘 전용 버튼 — neutral / danger / success 호버 패턴, 크기·간격은 `:root` 토큰.
  * 삭제 색: 항상 `var(--color-icon-danger)` (#dc2626) — 변경 금지 아님, 토큰으로만 조정.
  * 어드민 `.admin-table` 안에서는 `admin-common.css`가 팔레트만 덮어씀.
  *
  * 사용 예:
- *   <div class="km-table-actions">…</div> 로 편집+삭제 나란히 gap 통일
+ *   <div class="km-table-actions">…</div> 로 편집+삭제 나란히 (간격은 `:root` --km-table-action-icon-gap, 기본 0)
  *   <button type="button" class="km-table-icon-btn km-table-icon-btn--neutral" title="수정">…</button>
  *   <button type="button" class="km-table-icon-btn km-table-icon-btn--danger" title="삭제">…</button>
+ *   <button type="button" class="km-table-icon-btn km-table-icon-btn--success" title="승인">…</button>
  */
 
 .km-table-actions {
@@ -70,6 +71,21 @@
 }
 
 .km-table-icon-btn--danger > svg {
+    color: inherit;
+    stroke: currentColor;
+}
+
+/* 승인·긍정 액션 — danger와 동일 패턴(아이콘색 + 연한 톤 호버) */
+.km-table-icon-btn--success {
+    color: var(--color-icon-success);
+}
+
+.km-table-icon-btn--success:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-icon-success) 12%, transparent);
+    color: var(--color-icon-success-emphasis);
+}
+
+.km-table-icon-btn--success > svg {
     color: inherit;
     stroke: currentColor;
 }

@@ -1,6 +1,6 @@
 # UI 작업 히스토리
 
-> **구조 안내:** `### N)` 번호는 **파일 전역에서 한 줄로만** 이어집니다. 상단은 과거 날짜부터 시간순이며, **가장 최근 날짜 섹션은 파일 하단**에 추가되는 형태입니다. **`## 2026-05-09`** 작업은 **맨 아래** 해당 헤더 아래에서 확인하세요.
+> **구조 안내:** `### N)` 번호는 **파일 전역에서 한 줄로만** 이어집니다. 상단은 과거 날짜부터 시간순이며, **가장 최근 날짜 섹션은 파일 하단**에 추가되는 형태입니다. **`## 2026-05-14`** 작업은 **맨 아래** 해당 헤더 아래에서 확인하세요.
 
 > **갱신 정책(현행):** 이 파일은 **사용자가 명시적으로 요청할 때만** 수정합니다(예: 「히스토리에 적어줘」「ui-history에 남겨줘」). UI 작업만으로 에이전트가 임의로 항목을 추가하지 않습니다. 규칙 원문: `.cursor/rules/ui-history-on-request.mdc`. 본문의 과거 항목(예: ### 93)에 적힌 **「항상 기록」** 안내는 당시 기준이며 **폐지**되었습니다. 해석이 겹치면 **본 블록과 위 규칙 파일**을 우선합니다.
 
@@ -2982,3 +2982,27 @@
 #### 기타
 - `src/components/common/modal/BaseModal.module.scss`, `src/context/DialogContext.module.scss` — 모달과 병행된 UI 정리
 - `NotebookDetail`, `KnowledgeGraphModal`, 어드민 설정 등 — 동일 브랜치 내 소폭 스타일/마크업 조정
+
+## 2026-05-14
+
+### 209) 시스템 설정 관리(`/admin/config`) — `BasicTable`·열 리사이즈·스티키 헤더·값 열 UX·툴바 토큰
+
+- **목적**: 어드민 **시스템 설정 관리** 화면을 `BasicTable` + `useBasicTableColumnResize` 패턴으로 정리; `km-main-sticky-head`와 표 헤더 `z-index` 겹침 방지; 값은 표 내 인라인 편집 없이 **모달 수정** + 한 줄 미리보기·**말줄임 시에만** `Info`로 `KmPopover` 전체 표시; 관리열은 `km-table-icon-actions`(도메인과 동일 **`FilePen`** 수정); 카테고리는 표 밖 **소제목** + 표 카드 분리; 카테고리 필터는 프롬프트 툴바와 동일 **`promptToolbarSelectSx`** MUI `Select`
+- **영향**: 시스템 설정 관리 메뉴; 공용 `admin-common`(툴바 버튼 높이·`admin-btn-outline-success`); `MainLayout` 스티키 `z-index`; 프롬프트 목록 `Select` sx 공유 파일
+
+#### 문서 변경
+- `docs/dev-guide-table-ui.md` — `BasicTable` + `km-main-sticky-head` 적층, 시스템 설정 화면 참고 안내 보강
+
+#### CSS 변경
+- `src/components/common/MainLayout.css` — `.km-main-sticky-head`의 `z-index`를 **50**으로 상향(BasicTable 리사이즈 `th` 최대 40과의 역할 분리)
+- `src/pages/admin/admin-common.css` — `.admin-toolbar-actions`(우측 액션 버튼 높이 통일), `.admin-btn-outline-success`(캐시 갱신 등)
+- `src/pages/admin/AdminConfigManagement.css` — 카테고리 섹션·표 영역·값 한 줄·popover·행 호버 대비·편집 모달 `textarea` 등
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/admin/AdminConfigManagement.jsx` — `BasicTable` + `useBasicTableColumnResize`(`km-admin-config-mgmt-v1`); `BaseModal` 편집; `KmPopover` 값 전체; `ConfigMgmtValueTableCell`(말줄임 감지·`ResizeObserver`); MUI `Select`/`MenuItem` + `promptToolbarSelectSx`
+- `src/pages/admin/promptToolbarSelectSx.js` — **신규**(프롬프트 툴바 MUI `Select` sx 공통)
+- `src/prompt/components/prompts/PromptList.jsx` — `selectSx`를 `promptToolbarSelectSx` import로 통일
+- `src/data/adminConfigMockData.js` — 시스템 설정 UI용 목 데이터(기존 브랜치 맥락과 연동 시 참고)
+
+#### 기타
+- `src/styles/km-table-icon-actions.css` — 변경 없음(관리열은 기존 `km-table-actions` / `km-table-icon-btn` 패턴 준수)
