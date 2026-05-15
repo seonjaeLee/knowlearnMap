@@ -26,6 +26,7 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                 setTitle(editingFaq.title || '');
                 setContent(editingFaq.content || '');
                 setCategory(editingFaq.category || '');
+                setNewCategory('');
                 setDisplayOrder(editingFaq.displayOrder || 0);
                 setIsActive(editingFaq.isActive !== false);
             } else {
@@ -99,7 +100,7 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
         <BaseModal
             open={isOpen}
             onClose={onClose}
-            title={editingFaq ? 'FAQ 수정' : 'FAQ 작성'}
+            title={editingFaq ? '자주 묻는 질문 수정' : '자주 묻는 질문 작성'}
             maxWidth="md"
             fullWidth
             contentClassName="faq-modal-content km-modal-form"
@@ -135,28 +136,33 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                     <div className="faq-form-group">
                         <label htmlFor="faq-category">카테고리</label>
                         <div className="faq-category-input">
-                            <KmModalSelect
-                                id="faq-category"
-                                placeholder="카테고리 선택"
-                                value={category}
-                                onChange={(e) => {
-                                    const v = e.target.value;
-                                    setCategory(v);
-                                    if (v) setNewCategory('');
-                                }}
-                                options={categories || []}
-                            />
-                            <span className="or-divider">또는</span>
-                            <input
-                                type="text"
-                                value={newCategory}
-                                onChange={(e) => {
-                                    setNewCategory(e.target.value);
-                                    if (e.target.value) setCategory('');
-                                }}
-                                placeholder="새 카테고리 입력"
-                                maxLength={50}
-                            />
+                            <div className="faq-category-field">
+                                <KmModalSelect
+                                    id="faq-category"
+                                    placeholder="카테고리 선택"
+                                    value={category}
+                                    onChange={(e) => {
+                                        const v = e.target.value;
+                                        setCategory(v);
+                                        if (v) setNewCategory('');
+                                    }}
+                                    options={categories || []}
+                                />
+                            </div>
+                            <span className="faq-category-or" aria-hidden="true">또는</span>
+                            <div className="faq-category-field">
+                                <input
+                                    id="faq-new-category"
+                                    type="text"
+                                    value={newCategory}
+                                    onChange={(e) => {
+                                        setNewCategory(e.target.value);
+                                        if (e.target.value) setCategory('');
+                                    }}
+                                    placeholder="새 카테고리 입력"
+                                    maxLength={50}
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -192,20 +198,21 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                         />
                     </div>
 
-                    <div className="faq-form-row">
-                        <div className="faq-form-group half">
+                    <div className="faq-form-row faq-order-active-row">
+                        <div className="faq-form-group faq-form-group--half">
                             <label htmlFor="faq-order">표시 순서</label>
                             <input
                                 id="faq-order"
                                 type="number"
                                 value={displayOrder}
-                                onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
+                                onChange={(e) => setDisplayOrder(parseInt(e.target.value, 10) || 0)}
                                 min={0}
                             />
                         </div>
-                        <div className="faq-form-group half">
-                            <label className="checkbox-label">
+                        <div className="faq-order-active-check">
+                            <label className="faq-active-checkbox" htmlFor="faq-active">
                                 <input
+                                    id="faq-active"
                                     type="checkbox"
                                     checked={isActive}
                                     onChange={(e) => setIsActive(e.target.checked)}

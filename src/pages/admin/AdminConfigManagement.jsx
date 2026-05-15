@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { adminConfigApi } from '../../services/api';
-import { Box, Button, MenuItem, Select, Typography } from '@mui/material';
+import { Button, MenuItem, Select } from '@mui/material';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
-import { RotateCcw, RefreshCw, HelpCircle, FilePen, Info } from 'lucide-react';
+import { attachRowSpanMeta, getRowSpanCellProps } from '../../hooks/useTableRowSpanGroups';
+import { RotateCcw, RefreshCw, HelpCircle, FilePen, ChevronDown } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import KmPopover from '../../components/common/KmPopover';
 import BaseModal from '../../components/common/modal/BaseModal';
 import { mockAdminConfigCategories, mockAdminConfigItems } from '../../data/adminConfigMockData';
-import { promptToolbarSelectSx } from './promptToolbarSelectSx';
 import './admin-common.css';
 import './AdminConfigManagement.css';
 
@@ -142,6 +142,19 @@ const CATEGORY_SORT_ORDER = [
     'ETC',
 ];
 
+function sortConfigsForTable(configs) {
+    return [...configs].sort((a, b) => {
+        const catA = a.category || 'ETC';
+        const catB = b.category || 'ETC';
+        const ia = CATEGORY_SORT_ORDER.indexOf(catA);
+        const ib = CATEGORY_SORT_ORDER.indexOf(catB);
+        const sa = ia === -1 ? 999 : ia;
+        const sb = ib === -1 ? 999 : ib;
+        if (sa !== sb) return sa - sb;
+        return String(a.configKey || '').localeCompare(String(b.configKey || ''));
+    });
+}
+
 function typeBadgeClassName(dataType) {
     const dt = String(dataType || '');
     if (dt === 'INT' || dt === 'LONG') {
@@ -153,7 +166,6 @@ function typeBadgeClassName(dataType) {
     return 'config-mgmt-type-badge config-mgmt-type-badge--string';
 }
 
-/** 값 열을 textarea 형태(읽기 전용/편집)로 — dev의 PERSONA·SEMANTIC·SLLM 및 `valuePresentation: 'textarea'` */
 const TEXTAREA_VALUE_CATEGORIES = new Set(['PERSONA', 'SEMANTIC', 'SLLM']);
 
 function usesTextareaValuePresentation(row) {
@@ -162,7 +174,6 @@ function usesTextareaValuePresentation(row) {
     return TEXTAREA_VALUE_CATEGORIES.has(row.category);
 }
 
-/** 표 값 열 한 줄 미리보기(공백·개행 축약) */
 function formatConfigValuePreview(raw) {
     if (raw == null || String(raw).trim() === '') {
         return '—';
@@ -170,67 +181,35 @@ function formatConfigValuePreview(raw) {
     return String(raw).replace(/\s+/g, ' ').trim();
 }
 
-function ConfigMgmtValueTableCell({ row, valuePopover, setValuePopover }) {
-    const lineRef = useRef(null);
-    const [truncated, setTruncated] = useState(false);
-    const preview = formatConfigValuePreview(row.configValue);
-
-    useEffect(() => {
-        const el = lineRef.current;
-        if (!el || typeof ResizeObserver === 'undefined') {
-            return undefined;
-        }
-        const update = () => {
-            requestAnimationFrame(() => {
-                const node = lineRef.current;
-                if (!node) return;
-                setTruncated(node.scrollWidth > node.clientWidth + 1);
-            });
-        };
-        update();
-        const ro = new ResizeObserver(() => update());
-        ro.observe(el);
-        return () => ro.disconnect();
-    }, [row.configKey, row.configValue]);
-
-    const popoverOpen = Boolean(
-        valuePopover && valuePopover.row && valuePopover.row.configKey === row.configKey
-    );
-
+function ConfigMgmtCategoryHeadSelect({ value, categories, onChange }) {
     return (
-        <div className="config-mgmt-value-cell">
-            <span
-                ref={lineRef}
-                className="config-mgmt-value-line"
-                title={truncated ? String(row.configValue ?? '') : undefined}
-            >
-                {preview}
-            </span>
-            {truncated ? (
-                <button
-                    type="button"
-                    className="km-table-icon-btn km-table-icon-btn--neutral config-mgmt-value-popover-trigger"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setValuePopover({ anchorEl: e.currentTarget, row });
-                    }}
-                    aria-expanded={popoverOpen}
-                    aria-haspopup="true"
-                    aria-controls="config-mgmt-value-popover"
-                    title="값 전체 보기"
-                    aria-label={`${row.configKey} 값 전체 보기`}
-                >
-                    <Info strokeWidth={1.75} size={16} aria-hidden />
-                </button>
-            ) : null}
-        </div>
+        <Select
+            value={value}
+            onChange={onChange}
+            onClick={(e) => e.stopPropagation()}
+            displayEmpty
+            variant="standard"
+            disableUnderline
+            className="config-mgmt-th-category-select"
+            inputProps={{ 'aria-label': '카테고리 필터' }}
+            IconComponent={(iconProps) => <ChevronDown {...iconProps} size={14} aria-hidden />}
+            renderValue={(selected) => (
+                <span className="config-mgmt-th-category-select-value">
+                    {selected ? '카테고리' : '카테고리 전체'}
+                </span>
+            )}
+            MenuProps={{
+                PaperProps: { className: 'config-mgmt-th-category-select-menu' },
+            }}
+        >
+            <MenuItem value="">전체 카테고리</MenuItem>
+            {categories.map((cat) => (
+                <MenuItem key={cat} value={cat}>
+                    {CATEGORY_LABELS[cat] || cat}
+                </MenuItem>
+            ))}
+        </Select>
     );
-}
-
-function configEditModalTitle(row) {
-    if (!row?.configKey) return '값 수정';
-    const catLabel = CATEGORY_LABELS[row.category] || row.category || '';
-    return `${catLabel} ${row.configKey} 값 수정`;
 }
 
 function AdminConfigManagement() {
@@ -242,9 +221,7 @@ function AdminConfigManagement() {
     const [saving, setSaving] = useState(false);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [helpModal, setHelpModal] = useState(null);
-    /** { anchorEl: Element, row: object } | null — 값 전체 보기 Popover */
-    const [valuePopover, setValuePopover] = useState(null);
+    const [categoryHelpPopover, setCategoryHelpPopover] = useState(null);
     const mockStoreRef = useRef(null);
     const { alert } = useDialog();
 
@@ -308,6 +285,7 @@ function AdminConfigManagement() {
         (e) => {
             const cat = e.target.value;
             setSelectedCategory(cat);
+            setCategoryHelpPopover(null);
             void fetchConfigs(cat);
         },
         [fetchConfigs]
@@ -317,10 +295,12 @@ function AdminConfigManagement() {
         void fetchConfigs(selectedCategory);
     }, [fetchConfigs, selectedCategory]);
 
-    const openRowHelp = useCallback((config) => setHelpModal({ type: 'row', data: config }), []);
-    const openCategoryHelp = useCallback((category) => setHelpModal({ type: 'category', data: category }), []);
-    const closeHelp = useCallback(() => setHelpModal(null), []);
-    const closeValuePopover = useCallback(() => setValuePopover(null), []);
+    const closeCategoryHelpPopover = useCallback(() => setCategoryHelpPopover(null), []);
+    const toggleCategoryHelpPopover = useCallback((category, e) => {
+        e.stopPropagation();
+        const anchorEl = e.currentTarget;
+        setCategoryHelpPopover((prev) => (prev?.category === category ? null : { category, anchorEl }));
+    }, []);
 
     const openEditModal = useCallback((config) => {
         setEditModalRow(config);
@@ -377,69 +357,109 @@ function AdminConfigManagement() {
         }
     }, [alert, saveUsesMock]);
 
-    const groupedConfigs = useMemo(() => {
-        return configs.reduce((acc, config) => {
-            const category = config.category || 'ETC';
-            if (!acc[category]) acc[category] = [];
-            acc[category].push(config);
-            return acc;
-        }, {});
+    const tableData = useMemo(() => {
+        const sorted = sortConfigsForTable(configs).map((c) => ({ ...c, id: c.configKey }));
+        return attachRowSpanMeta(sorted, 'category', 'category');
     }, [configs]);
-
-    const sortedGroupedEntries = useMemo(() => {
-        const entries = Object.entries(groupedConfigs);
-        entries.sort(([a], [b]) => {
-            const ia = CATEGORY_SORT_ORDER.indexOf(a);
-            const ib = CATEGORY_SORT_ORDER.indexOf(b);
-            const sa = ia === -1 ? 999 : ia;
-            const sb = ib === -1 ? 999 : ib;
-            if (sa !== sb) return sa - sb;
-            return String(a).localeCompare(String(b));
-        });
-        return entries;
-    }, [groupedConfigs]);
 
     const configColumnDefinitions = useMemo(
         () => [
-            { id: 'configKey', label: '키', defaultWidthPx: 220, minWidthPx: 160, align: 'left' },
-            { id: 'configValue', label: '값', defaultWidthPx: 280, minWidthPx: 200, align: 'left', ellipsis: false },
-            { id: 'dataType', label: '타입', defaultWidthPx: 88, minWidthPx: 72, align: 'center' },
-            { id: 'description', label: '설명', defaultWidthPx: 260, minWidthPx: 160, align: 'left', ellipsis: false },
+            {
+                id: 'category',
+                label: (
+                    <ConfigMgmtCategoryHeadSelect
+                        value={selectedCategory}
+                        categories={categories}
+                        onChange={handleCategoryChange}
+                    />
+                ),
+                headLabelWrap: false,
+                defaultWidthPx: 180,
+                minWidthPx: 120,
+                align: 'left',
+                ellipsis: false,
+            },
+            { id: 'configKey', label: '키', defaultWidthPx: 260, minWidthPx: 180, align: 'left' },
+            { id: 'configValue', label: '값', defaultWidthPx: 280, minWidthPx: 200, align: 'left' },
+            { id: 'dataType', label: '타입', defaultWidthPx: 90, minWidthPx: 72, align: 'left' },
+            { id: 'description', label: '설명', minWidthPx: 160, align: 'left', flex: true },
             {
                 id: '_actions',
                 label: <span className="config-mgmt-actions-head">관리</span>,
-                defaultWidthPx: 140,
-                minWidthPx: 120,
+                defaultWidthPx: 88,
+                minWidthPx: 72,
                 align: 'right',
                 ellipsis: false,
             },
         ],
-        []
+        [categories, handleCategoryChange, selectedCategory]
     );
 
     const { columns: configTableColumns, startResize: configColumnStartResize } = useBasicTableColumnResize({
         definitions: configColumnDefinitions,
-        storageKey: 'km-admin-config-mgmt-v1',
+        storageKey: 'km-admin-config-mgmt-v3',
         enabled: true,
     });
+
+    const getBodyCellProps = useCallback(({ column, row }) => {
+        if (column.id === 'category') {
+            return getRowSpanCellProps(row, 'category');
+        }
+        return {};
+    }, []);
 
     const renderConfigCell = useCallback(
         ({ column, row }) => {
             switch (column.id) {
+                case 'category': {
+                    const cat = row.category || 'ETC';
+                    const catLabel = CATEGORY_LABELS[cat] || cat;
+                    const helpOpen = categoryHelpPopover?.category === cat;
+                    return (
+                        <div className="config-mgmt-category-cell">
+                            <span className="config-mgmt-category-cell-label">{catLabel}</span>
+                            <button
+                                type="button"
+                                className="km-popover-icon-btn"
+                                onClick={(e) => toggleCategoryHelpPopover(cat, e)}
+                                title="카테고리 설명 보기"
+                                aria-label={`${catLabel} 설명 보기`}
+                                aria-expanded={helpOpen}
+                                aria-haspopup="true"
+                                aria-controls="config-mgmt-category-help-popover"
+                            >
+                                <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
+                            </button>
+                        </div>
+                    );
+                }
                 case 'configKey':
                     return <span className="config-mgmt-key">{row.configKey}</span>;
-                case 'configValue':
+                case 'configValue': {
+                    const preview = formatConfigValuePreview(row.configValue);
+                    const fullValue =
+                        row.configValue == null || String(row.configValue).trim() === ''
+                            ? ''
+                            : String(row.configValue);
                     return (
-                        <ConfigMgmtValueTableCell
-                            row={row}
-                            valuePopover={valuePopover}
-                            setValuePopover={setValuePopover}
-                        />
+                        <span className="config-mgmt-value-line" title={fullValue || undefined}>
+                            {preview}
+                        </span>
                     );
+                }
                 case 'dataType':
                     return <span className={typeBadgeClassName(row.dataType)}>{row.dataType}</span>;
-                case 'description':
-                    return <span className="config-mgmt-desc">{row.description || '-'}</span>;
+                case 'description': {
+                    const descText = row.description || '-';
+                    return (
+                        <span
+                            className="config-mgmt-desc"
+                            title={row.description ? String(row.description) : undefined}
+                        >
+                            {descText}
+                        </span>
+                    );
+                }
                 case '_actions':
                     return (
                         <div className="km-table-actions">
@@ -452,22 +472,13 @@ function AdminConfigManagement() {
                             >
                                 <FilePen strokeWidth={1.75} aria-hidden />
                             </button>
-                            <button
-                                type="button"
-                                className="km-table-icon-btn km-table-icon-btn--neutral"
-                                onClick={() => openRowHelp(row)}
-                                title="이 설정 설명 보기"
-                                aria-label={`${row.configKey} 설명 보기`}
-                            >
-                                <HelpCircle strokeWidth={1.75} aria-hidden />
-                            </button>
                         </div>
                     );
                 default:
                     return undefined;
             }
         },
-        [openEditModal, openRowHelp, valuePopover]
+        [categoryHelpPopover, openEditModal, toggleCategoryHelpPopover]
     );
 
     return (
@@ -499,147 +510,60 @@ function AdminConfigManagement() {
                         </div>
                     )}
                 />
-
-                <div className="config-mgmt-toolbar admin-toolbar">
-                    <div className="config-mgmt-toolbar-left admin-toolbar-left">
-                        <Select
-                            value={selectedCategory}
-                            onChange={handleCategoryChange}
-                            size="small"
-                            variant="outlined"
-                            displayEmpty
-                            aria-label="카테고리 필터"
-                            sx={{
-                                ...promptToolbarSelectSx,
-                                minWidth: 160,
-                                maxWidth: 'min(100%, 280px)',
-                            }}
-                        >
-                            <MenuItem value="">전체 카테고리</MenuItem>
-                            {categories.map((cat) => (
-                                <MenuItem key={cat} value={cat}>
-                                    {CATEGORY_LABELS[cat] || cat}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </div>
-                </div>
             </div>
 
             {loading ? (
                 <div className="config-mgmt-loading">데이터를 불러오는 중...</div>
-            ) : sortedGroupedEntries.length === 0 ? (
+            ) : tableData.length === 0 ? (
                 <div className="config-mgmt-empty" role="status">
                     표시할 설정이 없습니다.
                 </div>
             ) : (
-                <div className="config-mgmt-groups">
-                    {sortedGroupedEntries.map(([category, categoryConfigs]) => (
-                        <section key={category} className="config-mgmt-category-section" aria-labelledby={`config-cat-${category}`}>
-                            <div className="config-mgmt-category-subtitle">
-                                <Typography component="h3" variant="h6" id={`config-cat-${category}`} className="config-mgmt-category-title-text">
-                                    {CATEGORY_LABELS[category] || category}
-                                </Typography>
-                                <button
-                                    type="button"
-                                    className="km-table-icon-btn km-table-icon-btn--neutral"
-                                    onClick={() => openCategoryHelp(category)}
-                                    title="카테고리 설명 보기"
-                                    aria-label={`${CATEGORY_LABELS[category] || category} 설명 보기`}
-                                >
-                                    <HelpCircle strokeWidth={1.75} aria-hidden />
-                                </button>
-                                <span className="config-mgmt-category-count">({categoryConfigs.length}개)</span>
-                            </div>
-                            <div className="config-mgmt-category-table-area">
-                                <div className="config-mgmt-table-shell basic-table-shell">
-                                    <BasicTable
-                                        key={category}
-                                        className="config-mgmt-basic-table"
-                                        columns={configTableColumns}
-                                        data={categoryConfigs.map((c) => ({ ...c, id: c.configKey }))}
-                                        renderCell={renderConfigCell}
-                                        onColumnResizeMouseDown={configColumnStartResize}
-                                    />
-                                </div>
-                            </div>
-                        </section>
-                    ))}
+                <div className="config-mgmt-table-card">
+                    <div className="config-mgmt-table-shell basic-table-shell">
+                        <BasicTable
+                            className="config-mgmt-basic-table"
+                            columns={configTableColumns}
+                            data={tableData}
+                            renderCell={renderConfigCell}
+                            getBodyCellProps={getBodyCellProps}
+                            onColumnResizeMouseDown={configColumnStartResize}
+                        />
+                    </div>
                 </div>
             )}
 
-            <BaseModal
-                open={Boolean(helpModal)}
-                title={(
-                    <span className="admin-config-help-title">
-                        <HelpCircle size={18} aria-hidden />
-                        {helpModal?.type === 'category'
-                            ? `카테고리 설명: ${CATEGORY_LABELS[helpModal?.data] || helpModal?.data || ''}`
-                            : '설정 항목 설명'}
-                    </span>
-                )}
-                onClose={closeHelp}
-                maxWidth="md"
-                contentClassName="admin-config-help-content km-modal-form"
-                showCloseButton={false}
-                actions={(
-                    <Button variant="outlined" onClick={closeHelp}>
-                        닫기
-                    </Button>
-                )}
-                actionsAlign="right"
+            <KmPopover
+                id="config-mgmt-category-help-popover"
+                open={Boolean(categoryHelpPopover)}
+                anchorEl={categoryHelpPopover?.anchorEl ?? null}
+                onClose={closeCategoryHelpPopover}
+                panelClassName="config-mgmt-category-help-popover-panel"
             >
-                {helpModal?.type === 'category' ? (
+                {categoryHelpPopover ? (
                     (() => {
-                        const info = CATEGORY_DESCRIPTIONS[helpModal.data] || { summary: '설명이 없습니다.' };
+                        const info = CATEGORY_DESCRIPTIONS[categoryHelpPopover.category] || {
+                            summary: '설명이 없습니다.',
+                        };
                         return (
-                            <Box className="admin-config-help-category-wrap">
-                                <Typography className="admin-config-help-summary">{info.summary}</Typography>
-                                {info.details && info.details.length > 0 && (
-                                    <ul className="admin-config-help-details">
+                            <div className="config-mgmt-category-help-popover-inner">
+                                <p className="config-mgmt-category-help-popover-summary">{info.summary}</p>
+                                {info.details && info.details.length > 0 ? (
+                                    <ul className="config-mgmt-category-help-popover-details">
                                         {info.details.map((d, i) => (
                                             <li key={i}>{d}</li>
                                         ))}
                                     </ul>
-                                )}
-                            </Box>
+                                ) : null}
+                            </div>
                         );
                     })()
-                ) : (
-                    <Box className="admin-config-help-field-list">
-                        <div>
-                            <div className="admin-config-help-label">키</div>
-                            <div className="admin-config-help-code-block">{helpModal?.data?.configKey}</div>
-                        </div>
-                        <div className="admin-config-help-split-row">
-                            <div>
-                                <div className="admin-config-help-label">카테고리</div>
-                                <div className="admin-config-help-text">
-                                    {CATEGORY_LABELS[helpModal?.data?.category] || helpModal?.data?.category || '-'}
-                                </div>
-                            </div>
-                            <div>
-                                <div className="admin-config-help-label">타입</div>
-                                <div className="admin-config-help-text">{helpModal?.data?.dataType || '-'}</div>
-                            </div>
-                        </div>
-                        <div>
-                            <div className="admin-config-help-label">현재 값</div>
-                            <div className="admin-config-help-value-block">{helpModal?.data?.configValue || '(빈 값)'}</div>
-                        </div>
-                        <div>
-                            <div className="admin-config-help-label">설명</div>
-                            <div className="admin-config-help-description">
-                                {helpModal?.data?.description || '등록된 설명이 없습니다. 관리자에게 문의하세요.'}
-                            </div>
-                        </div>
-                    </Box>
-                )}
-            </BaseModal>
+                ) : null}
+            </KmPopover>
 
             <BaseModal
                 open={Boolean(editModalRow)}
-                title={configEditModalTitle(editModalRow)}
+                title="시스템 설정 관리"
                 onClose={closeEditModal}
                 maxWidth="md"
                 disableBackdropClose={saving}
@@ -657,36 +581,47 @@ function AdminConfigManagement() {
                 )}
             >
                 {editModalRow ? (
-                    <textarea
-                        className="config-mgmt-edit-modal-textarea"
-                        value={editDraft}
-                        onChange={(e) => setEditDraft(e.target.value)}
-                        rows={usesTextareaValuePresentation(editModalRow) ? 16 : 8}
-                        aria-label="설정 값"
-                        disabled={saving}
-                    />
+                    <dl className="config-mgmt-edit-modal-form">
+                        <div className="config-mgmt-edit-modal-row">
+                            <dt className="config-mgmt-edit-modal-label">카테고리</dt>
+                            <dd className="config-mgmt-edit-modal-value">
+                                {CATEGORY_LABELS[editModalRow.category] || editModalRow.category || '-'}
+                            </dd>
+                        </div>
+                        <div className="config-mgmt-edit-modal-row">
+                            <dt className="config-mgmt-edit-modal-label">키</dt>
+                            <dd className="config-mgmt-edit-modal-value config-mgmt-edit-modal-value--mono">
+                                {editModalRow.configKey}
+                            </dd>
+                        </div>
+                        <div className="config-mgmt-edit-modal-row">
+                            <dt className="config-mgmt-edit-modal-label">타입</dt>
+                            <dd className="config-mgmt-edit-modal-value">
+                                {editModalRow.dataType || '-'}
+                            </dd>
+                        </div>
+                        <div className="config-mgmt-edit-modal-row">
+                            <dt className="config-mgmt-edit-modal-label">설명</dt>
+                            <dd className="config-mgmt-edit-modal-value">
+                                {editModalRow.description || '등록된 설명이 없습니다. 관리자에게 문의하세요.'}
+                            </dd>
+                        </div>
+                        <div className="config-mgmt-edit-modal-row config-mgmt-edit-modal-row--value">
+                            <dt className="config-mgmt-edit-modal-label">값</dt>
+                            <dd className="config-mgmt-edit-modal-value">
+                                <textarea
+                                    className="config-mgmt-edit-modal-textarea"
+                                    value={editDraft}
+                                    onChange={(e) => setEditDraft(e.target.value)}
+                                    rows={usesTextareaValuePresentation(editModalRow) ? 12 : 6}
+                                    aria-label="설정 값"
+                                    disabled={saving}
+                                />
+                            </dd>
+                        </div>
+                    </dl>
                 ) : null}
             </BaseModal>
-
-            <KmPopover
-                id="config-mgmt-value-popover"
-                open={Boolean(valuePopover)}
-                anchorEl={valuePopover?.anchorEl ?? null}
-                onClose={closeValuePopover}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                panelClassName="config-mgmt-value-popover-panel"
-            >
-                {valuePopover?.row ? (
-                    <div className="config-mgmt-value-popover-inner">
-                        <pre className="config-mgmt-value-popover-pre">
-                            {valuePopover.row.configValue === '' || valuePopover.row.configValue == null
-                                ? '(비어 있음)'
-                                : String(valuePopover.row.configValue)}
-                        </pre>
-                    </div>
-                ) : null}
-            </KmPopover>
         </div>
     );
 }

@@ -157,25 +157,25 @@
   background-color: var(--color-bg-secondary) !important;
 }
 
-.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn)) {
+.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):not(.notice-list-move-btn)) {
   border-color: #6b7280 !important;
   color: #6b7280 !important;
   background-color: #f3f4f6 !important;
 }
 
-.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):hover) {
+.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):not(.notice-list-move-btn):hover) {
   border-color: #4b5563 !important;
   color: #4b5563 !important;
   background-color: #f9fafb !important;
 }
 
-.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):active) {
+.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):not(.notice-list-move-btn):active) {
   border-color: #4b5563 !important;
   color: #4b5563 !important;
   background-color: #f3f4f6 !important;
 }
 
-.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn).Mui-disabled) {
+.actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):not(.notice-list-move-btn).Mui-disabled) {
   border-color: var(--btn-disabled-bg) !important;
   color: var(--btn-disabled-text) !important;
   background-color: #f3f4f6 !important;

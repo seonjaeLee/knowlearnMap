@@ -100,9 +100,7 @@
     transition: background-color var(--transition-fast);
 }
 
-.domain-list-row:hover td {
-    background: var(--color-bg-hover);
-}
+/* 행 호버: BasicTable.global.css `.basic-table-shell` 공통 규칙 */
 
 .domain-selected td {
     background: #ebf2ff;

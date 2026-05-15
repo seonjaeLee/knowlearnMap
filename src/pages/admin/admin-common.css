@@ -427,7 +427,7 @@
 }
 
 .admin-table tbody tr:hover {
-    background: var(--admin-bg-hover);
+    background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary));
 }
 
 .admin-table .admin-col-id {

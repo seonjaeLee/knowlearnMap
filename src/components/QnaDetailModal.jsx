@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Edit2, Trash2, ImagePlus } from 'lucide-react';
+import { Button } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
@@ -8,7 +9,14 @@ import ContentRenderer from './ContentRenderer';
 import BaseModal from './common/modal/BaseModal';
 import './QnaDetailModal.css';
 
-function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
+function QnaDetailModal({
+    isOpen,
+    onClose,
+    questionId,
+    questionData = null,
+    readOnly = false,
+    onUpdate,
+}) {
     const { user, isAdmin } = useAuth();
     const { showAlert } = useAlert();
     const { confirm } = useDialog();
@@ -16,8 +24,6 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
     const [loading, setLoading] = useState(true);
     const [answerContent, setAnswerContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [editingAnswerId, setEditingAnswerId] = useState(null);
-    const [editingAnswerContent, setEditingAnswerContent] = useState('');
     const [isEditingQuestion, setIsEditingQuestion] = useState(false);
     const [editQuestionTitle, setEditQuestionTitle] = useState('');
     const [editQuestionContent, setEditQuestionContent] = useState('');
@@ -39,10 +45,17 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
     };
 
     useEffect(() => {
-        if (isOpen && questionId) {
+        if (!isOpen) return;
+        if (questionData) {
+            setQuestion(questionData);
+            setLoading(false);
+            setIsEditingQuestion(false);
+            return;
+        }
+        if (questionId) {
             fetchQuestion();
         }
-    }, [isOpen, questionId]);
+    }, [isOpen, questionId, questionData]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -56,13 +69,8 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
         });
     };
 
-    const isOwner = (authorEmail) => {
-        return user?.email === authorEmail;
-    };
-
-    const canModify = (authorEmail) => {
-        return isOwner(authorEmail) || isAdmin;
-    };
+    const isOwner = question && user?.email === question.authorEmail;
+    const canEditQuestion = Boolean(question) && isOwner && !readOnly;
 
     const handleSubmitAnswer = async (e) => {
         e.preventDefault();
@@ -76,27 +84,6 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
             if (onUpdate) onUpdate();
         } catch (error) {
             console.error('답변 등록 실패:', error);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleEditAnswer = (answer) => {
-        setEditingAnswerId(answer.id);
-        setEditingAnswerContent(answer.content);
-    };
-
-    const handleUpdateAnswer = async () => {
-        if (!editingAnswerContent.trim()) return;
-
-        setIsSubmitting(true);
-        try {
-            await qnaApi.updateAnswer(editingAnswerId, { content: editingAnswerContent.trim() });
-            setEditingAnswerId(null);
-            setEditingAnswerContent('');
-            fetchQuestion();
-        } catch (error) {
-            console.error('답변 수정 실패:', error);
         } finally {
             setIsSubmitting(false);
         }
@@ -131,11 +118,11 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
                 const newContent = answerContent.substring(0, start) + imageTag + answerContent.substring(end);
                 setAnswerContent(newContent);
             } else {
-                setAnswerContent(prev => prev + imageTag);
+                setAnswerContent((prev) => prev + imageTag);
             }
         } catch (error) {
             console.error('이미지 업로드 실패:', error);
-            showAlert('이미지 업로드에 실패했습니다: ' + error.message, 'error');
+            showAlert(`이미지 업로드에 실패했습니다: ${error.message}`, 'error');
         } finally {
             setIsUploadingAnswer(false);
             if (answerFileInputRef.current) {
@@ -144,10 +131,16 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
         }
     };
 
-    const handleEditQuestion = () => {
+    const handleStartEditQuestion = () => {
         setIsEditingQuestion(true);
         setEditQuestionTitle(question.title);
-        setEditQuestionContent(question.content);
+        setEditQuestionContent(question.content || '');
+    };
+
+    const handleCancelEditQuestion = () => {
+        setIsEditingQuestion(false);
+        setEditQuestionTitle(question.title);
+        setEditQuestionContent(question.content || '');
     };
 
     const handleUpdateQuestion = async () => {
@@ -155,6 +148,19 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
 
         setIsSubmitting(true);
         try {
+            if (questionData) {
+                const updated = {
+                    ...question,
+                    title: editQuestionTitle.trim(),
+                    content: editQuestionContent.trim(),
+                    updatedAt: new Date().toISOString(),
+                };
+                setQuestion(updated);
+                setIsEditingQuestion(false);
+                if (onUpdate) onUpdate(updated);
+                return;
+            }
+
             await qnaApi.updateQuestion(questionId, {
                 title: editQuestionTitle.trim(),
                 content: editQuestionContent.trim(),
@@ -170,10 +176,15 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
     };
 
     const handleDeleteQuestion = async () => {
-        const confirmed2 = await confirm('이 질문을 삭제하시겠습니까? 모든 답변도 함께 삭제됩니다.');
-        if (!confirmed2) return;
+        const confirmedDelete = await confirm('이 질문을 삭제하시겠습니까? 모든 답변도 함께 삭제됩니다.');
+        if (!confirmedDelete) return;
 
         try {
+            if (questionData) {
+                if (onUpdate) onUpdate({ deleted: true, id: question.id });
+                onClose();
+                return;
+            }
             await qnaApi.deleteQuestion(questionId);
             onClose();
             if (onUpdate) onUpdate();
@@ -182,220 +193,211 @@ function QnaDetailModal({ isOpen, onClose, questionId, onUpdate }) {
         }
     };
 
+    const renderFooterActions = () => {
+        if (canEditQuestion && isEditingQuestion) {
+            return (
+                <>
+                    <Button variant="outlined" onClick={handleCancelEditQuestion} disabled={isSubmitting}>
+                        취소
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleUpdateQuestion}
+                        disabled={isSubmitting || !editQuestionTitle.trim() || !editQuestionContent.trim()}
+                    >
+                        {isSubmitting ? '저장 중...' : '저장'}
+                    </Button>
+                </>
+            );
+        }
+
+        return (
+            <Button variant="contained" onClick={onClose}>
+                닫기
+            </Button>
+        );
+    };
+
     if (!isOpen) return null;
 
     return (
         <BaseModal
             open={isOpen}
             onClose={onClose}
-            title="질문 상세"
-            maxWidth="xl"
-            fullWidth
+            title="1:1문의"
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={{ width: '920px', maxWidth: 'calc(100vw - 48px)', maxHeight: 'calc(100vh - 48px)' }}
             contentClassName="qna-detail-modal-content km-modal-form"
+            actionsClassName="qna-detail-modal-actions"
+            actions={renderFooterActions()}
         >
-                <div className="qna-detail-modal-body">
-                    {loading ? (
-                        <div className="qna-detail-loading">
-                            <div className="loading-spinner"></div>
-                            <p>로딩 중...</p>
-                        </div>
-                    ) : question ? (
-                        <div className="qna-detail-content-wrapper">
-                            <div className="qna-main-column">
-                                <div className="qna-question-section">
-                                    <div className="question-header">
-                                        <h3 className="question-title">{question.title}</h3>
-                                        {isOwner(question.authorEmail) && (
-                                            <div className="question-actions">
-                                                <button
-                                                    className="btn-edit-question"
-                                                    onClick={handleEditQuestion}
-                                                    title="수정"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    className="btn-delete-question"
-                                                    onClick={handleDeleteQuestion}
-                                                    title="삭제"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        )}
-                                        {isAdmin && !isOwner(question.authorEmail) && (
-                                            <div className="question-actions">
-                                                <button
-                                                    className="btn-delete-question"
-                                                    onClick={handleDeleteQuestion}
-                                                    title="삭제"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
+            <div className="qna-detail-modal-body">
+                {loading ? (
+                    <div className="qna-detail-loading">
+                        <div className="loading-spinner" aria-hidden />
+                        <p>로딩 중...</p>
+                    </div>
+                ) : question ? (
+                    <div className="qna-detail-content-wrapper">
+                        <section className="qna-detail-head" aria-label="문의 정보">
+                            <div className="qna-detail-head-top">
+                                <div className="qna-title-block">
+                                    {question.domainName && (
+                                        <span className="qna-detail-domain">{question.domainName}</span>
+                                    )}
                                     {isEditingQuestion ? (
-                                        <div className="question-edit-form">
-                                            <input
-                                                type="text"
-                                                value={editQuestionTitle}
-                                                onChange={(e) => setEditQuestionTitle(e.target.value)}
-                                                className="edit-title-input"
-                                                placeholder="제목"
-                                            />
-                                            <textarea
-                                                value={editQuestionContent}
-                                                onChange={(e) => setEditQuestionContent(e.target.value)}
-                                                className="edit-content-textarea"
-                                                rows={6}
-                                                placeholder="내용"
-                                            />
-                                            <div className="edit-actions">
-                                                <button
-                                                    className="btn-cancel-edit"
-                                                    onClick={() => setIsEditingQuestion(false)}
-                                                >
-                                                    취소
-                                                </button>
-                                                <button
-                                                    className="btn-save-edit"
-                                                    onClick={handleUpdateQuestion}
-                                                    disabled={isSubmitting}
-                                                >
-                                                    {isSubmitting ? '저장 중...' : '저장'}
-                                                </button>
-                                            </div>
-                                        </div>
+                                        <input
+                                            type="text"
+                                            value={editQuestionTitle}
+                                            onChange={(e) => setEditQuestionTitle(e.target.value)}
+                                            className="qna-detail-title-input"
+                                            placeholder="제목"
+                                            aria-label="제목"
+                                        />
                                     ) : (
-                                        <div className="question-content">
-                                            <ContentRenderer content={question.content} />
-                                        </div>
+                                        <h3 className="qna-detail-title">{question.title}</h3>
                                     )}
                                 </div>
+                                {canEditQuestion && !isEditingQuestion && (
+                                    <div className="qna-question-actions">
+                                        <button
+                                            type="button"
+                                            className="btn-edit-question"
+                                            onClick={handleStartEditQuestion}
+                                            title="수정"
+                                            aria-label="문의 수정"
+                                        >
+                                            <Edit2 size={16} aria-hidden />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn-delete-question"
+                                            onClick={handleDeleteQuestion}
+                                            title="삭제"
+                                            aria-label="문의 삭제"
+                                        >
+                                            <Trash2 size={16} aria-hidden />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="qna-detail-meta-row">
+                                <div className="qna-detail-inline-meta">
+                                    <span>{question.authorEmail?.split('@')[0] || '익명'}</span>
+                                    <span>{formatDate(question.createdAt)}</span>
+                                    <span>#{question.id}</span>
+                                    <span
+                                        className={`qna-detail-status ${question.status === 'ANSWERED' ? 'is-answered' : 'is-waiting'}`}
+                                    >
+                                        {question.status === 'ANSWERED' ? '답변완료' : '답변대기'}
+                                    </span>
+                                    {question.contact ? <span>{question.contact}</span> : null}
+                                </div>
+                                <span className="qna-detail-updated">
+                                    최종수정 : {formatDate(question.updatedAt || question.createdAt)}
+                                </span>
+                            </div>
+                        </section>
 
-                                <div className="qna-answers-section">
-                                    <h4 className="answers-title">
-                                        답변
-                                    </h4>
+                        <section className="qna-detail-body-box" aria-label="문의 내용">
+                            {isEditingQuestion ? (
+                                <textarea
+                                    value={editQuestionContent}
+                                    onChange={(e) => setEditQuestionContent(e.target.value)}
+                                    className="qna-edit-content-textarea"
+                                    rows={12}
+                                    placeholder="내용"
+                                    aria-label="내용"
+                                />
+                            ) : (
+                                <div className="qna-body-content">
+                                    <ContentRenderer content={question.content || '등록된 내용이 없습니다.'} />
+                                </div>
+                            )}
+                        </section>
 
-                                    {question.answers && question.answers.length > 0 ? (
-                                        <div className="answers-list">
-                                            {question.answers.map((answer) => (
-                                                <div key={answer.id} className="answer-item">
-                                                    <div className="answer-header">
-                                                        <span className="answer-author-name answer-admin-badge">
-                                                            관리자
-                                                        </span>
-                                                        <span className="answer-date">{formatDate(answer.createdAt)}</span>
-                                                        {isAdmin && (
-                                                            <button
-                                                                className="btn-delete-answer"
-                                                                onClick={() => handleDeleteAnswer(answer.id)}
-                                                                title="삭제"
-                                                            >
-                                                                <Trash2 size={14} />
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                    <div className="answer-content">
-                                                        <ContentRenderer content={answer.content} />
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="no-answers">
-                                            <p>아직 답변이 없습니다.</p>
-                                        </div>
-                                    )}
+                        <section className="qna-detail-answers-section" aria-label="답변">
+                            <h4 className="qna-answers-title">답변</h4>
 
-                                    {isAdmin && (
-                                        <div className="answer-form-container">
-                                            <form className="answer-form" onSubmit={handleSubmitAnswer}>
-                                                <div className="answer-toolbar">
+                            {question.answers && question.answers.length > 0 ? (
+                                <div className="qna-answers-list">
+                                    {question.answers.map((answer) => (
+                                        <article key={answer.id} className="qna-answer-item">
+                                            <div className="qna-answer-header">
+                                                <span className="qna-answer-badge">관리자</span>
+                                                <span className="qna-answer-date">{formatDate(answer.createdAt)}</span>
+                                                {!readOnly && isAdmin && (
                                                     <button
                                                         type="button"
-                                                        className="btn-attach-image"
-                                                        onClick={() => answerFileInputRef.current?.click()}
-                                                        disabled={isUploadingAnswer}
-                                                        title="이미지 첨부"
+                                                        className="btn-delete-answer"
+                                                        onClick={() => handleDeleteAnswer(answer.id)}
+                                                        title="삭제"
+                                                        aria-label="답변 삭제"
                                                     >
-                                                        <ImagePlus size={16} />
-                                                        {isUploadingAnswer ? '업로드 중...' : '이미지 첨부'}
+                                                        <Trash2 size={14} aria-hidden />
                                                     </button>
-                                                    <input
-                                                        ref={answerFileInputRef}
-                                                        type="file"
-                                                        accept="image/jpeg,image/png,image/gif,image/webp"
-                                                        onChange={handleAnswerImageUpload}
-                                                        className="qna-detail-hidden-file-input"
-                                                    />
-                                                </div>
-                                                <textarea
-                                                    ref={answerTextareaRef}
-                                                    value={answerContent}
-                                                    onChange={(e) => setAnswerContent(e.target.value)}
-                                                    placeholder="답변을 입력해주세요."
-                                                    rows={4}
-                                                />
-                                                <div className="answer-form-actions">
-                                                    <button
-                                                        type="submit"
-                                                        className="btn-submit-answer"
-                                                        disabled={!answerContent.trim() || isSubmitting}
-                                                    >
-                                                        답변 등록
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    )}
+                                                )}
+                                            </div>
+                                            <div className="qna-answer-content">
+                                                <ContentRenderer content={answer.content} />
+                                            </div>
+                                        </article>
+                                    ))}
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="qna-no-answers">
+                                    <p>아직 답변이 없습니다.</p>
+                                </div>
+                            )}
 
-                            <div className="qna-sidebar-column">
-                                <div className="meta-info-box">
-                                    <div className="meta-row">
-                                        <span className="meta-label">작성자</span>
-                                        <span className="meta-value">{(question.authorEmail?.split('@')[0]) || '익명'}</span>
-                                    </div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">작성일</span>
-                                        <span className="meta-value">{formatDate(question.createdAt)}</span>
-                                    </div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">최근 수정</span>
-                                        <span className="meta-value">{formatDate(question.updatedAt || question.createdAt)}</span>
-                                    </div>
-                                    <div className="meta-divider"></div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">문의 번호</span>
-                                        <span className="meta-value">#{question.id}</span>
-                                    </div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">상태</span>
-                                        <span className="meta-value">
-                                            <span className={`status-tag ${question.status === 'ANSWERED' ? 'solved' : 'open'}`}>
-                                                {question.status === 'ANSWERED' ? '답변완료' : '답변대기'}
-                                            </span>
-                                        </span>
-                                    </div>
-                                    {question.contact && (
-                                        <div className="meta-row">
-                                            <span className="meta-label">연락처</span>
-                                            <span className="meta-value">{question.contact}</span>
+                            {!readOnly && isAdmin && (
+                                <div className="qna-answer-form-container">
+                                    <form className="qna-answer-form" onSubmit={handleSubmitAnswer}>
+                                        <div className="qna-answer-toolbar">
+                                            <button
+                                                type="button"
+                                                className="btn-attach-image"
+                                                onClick={() => answerFileInputRef.current?.click()}
+                                                disabled={isUploadingAnswer}
+                                                title="이미지 첨부"
+                                            >
+                                                <ImagePlus size={16} aria-hidden />
+                                                {isUploadingAnswer ? '업로드 중...' : '이미지 첨부'}
+                                            </button>
+                                            <input
+                                                ref={answerFileInputRef}
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/gif,image/webp"
+                                                onChange={handleAnswerImageUpload}
+                                                className="qna-detail-hidden-file-input"
+                                            />
                                         </div>
-                                    )}
+                                        <textarea
+                                            ref={answerTextareaRef}
+                                            value={answerContent}
+                                            onChange={(e) => setAnswerContent(e.target.value)}
+                                            placeholder="답변을 입력해주세요."
+                                            rows={4}
+                                        />
+                                        <div className="qna-answer-form-actions">
+                                            <button
+                                                type="submit"
+                                                className="btn-submit-answer"
+                                                disabled={!answerContent.trim() || isSubmitting}
+                                            >
+                                                답변 등록
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="qna-detail-error">
-                            질문을 불러올 수 없습니다.
-                        </div>
-                    )}
-                </div>
+                            )}
+                        </section>
+                    </div>
+                ) : (
+                    <div className="qna-detail-error">질문을 불러올 수 없습니다.</div>
+                )}
+            </div>
         </BaseModal>
     );
 }

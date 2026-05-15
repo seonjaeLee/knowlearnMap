@@ -99,7 +99,7 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
         <BaseModal
             open={isOpen}
             onClose={onClose}
-            title={editingQuestion ? '질문 수정' : '새 질문 작성'}
+            title={editingQuestion ? '1:1 문의 수정' : '1:1 문의 등록'}
             maxWidth="md"
             fullWidth
             contentClassName="qna-create-modal-content km-modal-form"
@@ -189,14 +189,14 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
                     </div>
 
                     <div className="qna-privacy-agreement">
-                        <h4>개인정보 수집 및 이용 동의</h4>
-                        <label className="checkbox-label">
+                        <label className="qna-privacy-consent" htmlFor="qna-privacy-agree">
                             <input
+                                id="qna-privacy-agree"
                                 type="checkbox"
                                 checked={privacyAgreement}
                                 onChange={(e) => setPrivacyAgreement(e.target.checked)}
                             />
-                            <span className="checkbox-text"></span>
+                            <span>개인정보 수집 및 이용 동의</span>
                         </label>
                         <p className="privacy-text">
                             * 수집항목: [필수]회원정보(이름, 이메일) / [선택] 참조이메일, 연락처 * 개인정보의 수집 및 이용목적: 문의 확인 및 처리 * 개인정보의 보유 및 이용기간: 3년 * 귀하는 동의를 거절할 수 있는 권리를 보유하며, 동의를 거절하는 경우 문의에 대한 처리에 제한이 있습니다.

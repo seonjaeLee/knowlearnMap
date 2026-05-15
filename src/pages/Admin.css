@@ -140,7 +140,7 @@
 }
 
 .admin-table tbody tr:hover {
-    background-color: var(--color-bg-hover);
+    background-color: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary));
 }
 
 .admin-btn {

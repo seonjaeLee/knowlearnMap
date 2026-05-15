@@ -24,15 +24,19 @@ function loadStoredWidths(storageKey, defaultWidths, minWidths) {
  * `BasicTable`에 `onColumnResizeMouseDown={startResize}` 를 넘깁니다.
  *
  * @param {object} opts
- * @param {{ id: string, label: import('react').ReactNode, defaultWidthPx: number, minWidthPx?: number, align?: 'left'|'center'|'right', ellipsis?: boolean }[]} opts.definitions
+ * @param {{ id: string, label: import('react').ReactNode, defaultWidthPx?: number, minWidthPx?: number, align?: 'left'|'center'|'right', ellipsis?: boolean, flex?: boolean }[]} opts.definitions
  *        `ellipsis: false` — 태그·버튼 등 복합 셀에서 말줄임 래퍼 비활성(기본은 true).
+ *        `flex: true` — `width` 미지정(표 너비의 나머지). `defaultWidthPx` 없으면 `minWidthPx`로 리사이즈 상태만 유지.
  * @param {string} [opts.storageKey]
  * @param {boolean} [opts.enabled=true]
  */
 export function useBasicTableColumnResize({ definitions, storageKey, enabled = true }) {
     const count = definitions.length;
     const minWidthsPx = useMemo(() => definitions.map((d) => d.minWidthPx ?? 40), [definitions]);
-    const defaultWidthsPx = useMemo(() => definitions.map((d) => d.defaultWidthPx), [definitions]);
+    const defaultWidthsPx = useMemo(
+        () => definitions.map((d) => d.defaultWidthPx ?? d.minWidthPx ?? 80),
+        [definitions]
+    );
 
     if (minWidthsPx.length !== defaultWidthsPx.length || count === 0) {
         throw new Error('useBasicTableColumnResize: definitions가 비었거나 defaultWidthPx/minWidthPx 배열이 맞지 않습니다.');
@@ -137,8 +141,9 @@ export function useBasicTableColumnResize({ definitions, storageKey, enabled = t
                 id: d.id,
                 label: d.label,
                 align: d.align,
-                width: `${widths[idx]}px`,
+                width: d.flex ? undefined : `${widths[idx]}px`,
                 ellipsis: d.ellipsis !== false,
+                headLabelWrap: d.headLabelWrap,
                 resizeBoundaryAfter: enabled && idx < definitions.length - 1 ? idx : undefined,
             })),
         [definitions, enabled, widths]

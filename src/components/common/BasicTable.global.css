@@ -1,4 +1,13 @@
 /**
+ * BasicTable 행 호버 — 시스템 설정 관리와 동일 톤(액센트 5% 믹스).
+ * 고정·선택 행 등은 페이지에서 더 구체적인 선택자로 덮어씁니다.
+ */
+.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected) > td,
+.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected) > th {
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary)) !important;
+}
+
+/**
  * BasicTable 전역 유틸 — 페이지에서 문자열 클래스로 페이지네이션 마크업 시 사용.
  * 마크업: `<nav class="basic-table-pagination">` 안에 이전·다음 버튼과,
  * 페이지 번호·말줄임만 `<div class="basic-table-page-cluster" role="group">` 로 감싼다.

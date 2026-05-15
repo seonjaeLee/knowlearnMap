@@ -86,26 +86,38 @@
     margin-bottom: 0;
 }
 
-.qna-privacy-agreement {
+/* .qna-privacy-agreement {
     margin: 20px 0;
     padding: 16px;
     background-color: #f9f9f9;
     border: 1px solid #eee;
     border-radius: 4px;
-}
+} */
 
-.qna-privacy-agreement h4 {
-    margin: 0 0 12px 0;
-    font-size: 14px;
-    color: #333;
-}
-
-.checkbox-label {
-    display: flex;
+.qna-privacy-consent {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: var(--spacing-sm);
+    margin: 0 0 var(--spacing-sm);
+    padding: 0;
     cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    color: var(--color-text-primary);
+}
+
+.qna-privacy-consent input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--color-accent);
+}
+
+.qna-privacy-consent span {
+    line-height: var(--font-size-base);
 }
 
 .privacy-text {

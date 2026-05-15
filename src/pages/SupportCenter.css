@@ -17,6 +17,7 @@
     flex-wrap: wrap;
 }
 
+/* 툴바 컨트롤 — modal-native-field / KmModalSelect(38px)와 동일 형태 */
 .support-search {
     display: flex;
     align-items: center;
@@ -24,10 +25,18 @@
     min-width: 0;
     flex: 1 1 280px;
     max-width: 400px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-md);
+    height: 38px;
+    box-sizing: border-box;
+    padding: 0 var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     background: var(--color-bg-secondary);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.support-search:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-focus-input);
 }
 
 .support-search-icon {
@@ -38,10 +47,11 @@
 .support-search-input {
     flex: 1 1 auto;
     min-width: 0;
+    height: 100%;
     border: none;
     background: transparent;
     font-family: var(--font-family);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     color: var(--color-text-primary);
     outline: none;
 }
@@ -58,16 +68,20 @@
     color: var(--color-text-secondary);
 }
 
-.support-select {
-    height: 34px;
-    padding: 0 var(--spacing-md) 0 var(--spacing-sm);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-secondary);
-    color: var(--color-text-primary);
-    font-family: var(--font-family);
-    font-size: var(--font-size-sm);
-    outline: none;
+/* KmModalSelect — km-modal-form.css + KmModalSelect.module.scss (도메인 수정 팝업과 동일) */
+.support-filter-select {
+    width: 160px;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.support-filter-select .km-modal-select {
+    width: 100%;
+}
+
+/* 관리 열 — km-table-icon-actions.css 아이콘 버튼 */
+.support-basic-table .km-table-actions {
+    justify-content: flex-end;
 }
 
 .support-table-card {
@@ -87,10 +101,6 @@
 
 .support-basic-table {
     min-width: 820px;
-}
-
-.notice-page .support-basic-table .MuiTableBody-root .MuiTableRow-root {
-    cursor: pointer;
 }
 
 .support-qna-table {
@@ -116,7 +126,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
 }
 

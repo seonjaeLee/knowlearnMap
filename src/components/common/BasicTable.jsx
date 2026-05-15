@@ -53,6 +53,8 @@ function columnCellStyle(col) {
  * 선택: `tableFooter` — `enabled: true`이면 테이블 아래에 `BasicTableFooter`+`BasicTablePaginationNav`를 같이 렌더합니다. 가로 스크롤 셸(`basic-table-shell`)은 **테이블만** 감싸고 푸터는 밖에 두는 레이아웃을 권장합니다(그 경우 `tableFooter`는 `false`로 두고 페이지에서 `BasicTableFooter`를 별도 배치).
  * @param {false|object} [tableFooter] — `false`(기본) | `{ enabled?: boolean, summary?: React.ReactNode, end?: React.ReactNode, pagination: { page, totalPages, onPageChange } }`
  * @param {(ctx: { row: object, rowIndex: number }) => React.ReactNode} [renderRowDetail] — 반환값이 있으면 해당 데이터 행 바로 아래에 `colSpan` 서브행(아코디언 패널)을 렌더합니다. `null`/`false`면 생략합니다.
+ * @param {(ctx: { column: object, row: object, rowIndex: number }) => { skip?: boolean, rowSpan?: number, style?: object, className?: string }} [getBodyCellProps]
+ *        `skip: true`이면 해당 열 `td`를 렌더하지 않음. `rowSpan`은 병합 셀용.
  */
 function BasicTable({
   columns,
@@ -62,6 +64,7 @@ function BasicTable({
   onRowKeyDown,
   getRowClassName,
   onColumnResizeMouseDown,
+  getBodyCellProps,
   rowAriaLabel,
   renderRowDetail,
   className = '',
@@ -91,7 +94,11 @@ function BasicTable({
                   className={[styles.headCell, hasResize ? styles.headCellResizable : ''].filter(Boolean).join(' ')}
                   style={headStyle}
                 >
-                  <span className={styles.headCellLabel}>{col.label}</span>
+                  {col.headLabelWrap === false ? (
+                    col.label
+                  ) : (
+                    <span className={styles.headCellLabel}>{col.label}</span>
+                  )}
                   {hasResize ? (
                     <span
                       className={styles.colResizeHandle}
@@ -111,9 +118,11 @@ function BasicTable({
         </TableHead>
         <TableBody>
           {data.map((row, rowIndex) => {
-            const extraRowClass = getRowClassName?.(row, rowIndex) ?? '';
-            const rowClass = [styles.row, extraRowClass].filter(Boolean).join(' ');
             const rowInteractive = Boolean(onRowClick || onRowKeyDown);
+            const extraRowClass = getRowClassName?.(row, rowIndex) ?? '';
+            const rowClass = [styles.row, rowInteractive ? styles.rowInteractive : '', extraRowClass]
+              .filter(Boolean)
+              .join(' ');
             const rk = getRowKey(row, rowIndex);
             const detailContent = renderRowDetail?.({ row, rowIndex });
             const showDetail = detailContent != null && detailContent !== false;
@@ -131,12 +140,27 @@ function BasicTable({
                   onKeyDown={onRowKeyDown ? (e) => onRowKeyDown(e, { row, rowIndex }) : undefined}
                 >
                   {columns.map((col) => {
+                    const spanProps = getBodyCellProps?.({ column: col, row, rowIndex }) ?? {};
+                    if (spanProps.skip) return null;
+
                     const custom = renderCell?.({ column: col, row, rowIndex });
                     const content =
                       custom !== undefined && custom !== null ? custom : defaultCellValue(row, col.id);
                     const cellEllipsis = col.ellipsis !== false;
+                    const baseStyle = columnCellStyle(col);
+                    const mergedStyle =
+                      baseStyle || spanProps.style
+                        ? { ...baseStyle, ...spanProps.style }
+                        : undefined;
+                    const cellClass = [styles.bodyCell, spanProps.className].filter(Boolean).join(' ');
+
                     return (
-                      <TableCell key={col.id} className={styles.bodyCell} style={columnCellStyle(col)}>
+                      <TableCell
+                        key={col.id}
+                        className={cellClass}
+                        style={mergedStyle}
+                        rowSpan={spanProps.rowSpan}
+                      >
                         <div className={cellEllipsis ? styles.cellClip : styles.cellClipFree}>{content}</div>
                       </TableCell>
                     );
@@ -206,10 +230,12 @@ BasicTable.propTypes = {
       align: PropTypes.oneOf(['left', 'center', 'right']),
       ellipsis: PropTypes.bool,
       resizeBoundaryAfter: PropTypes.number,
+      headLabelWrap: PropTypes.bool,
     })
   ).isRequired,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   renderCell: PropTypes.func,
+  getBodyCellProps: PropTypes.func,
   onRowClick: PropTypes.func,
   onRowKeyDown: PropTypes.func,
   getRowClassName: PropTypes.func,
@@ -240,6 +266,7 @@ BasicTable.defaultProps = {
   onRowKeyDown: undefined,
   getRowClassName: undefined,
   onColumnResizeMouseDown: undefined,
+  getBodyCellProps: undefined,
   rowAriaLabel: undefined,
   renderRowDetail: undefined,
   className: '',

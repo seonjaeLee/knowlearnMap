@@ -7,7 +7,7 @@
   /* admin-common :root 와 동일 값(테이블·푸터 범위) — admin-common 미 import 화면에서도 동작 */
   --bt-bg-panel: #ffffff;
   --bt-bg-subtle: #f8f9fa;
-  --bt-bg-hover: #f3f4f6;
+  --bt-bg-hover: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary));
   --bt-border: #e5e7eb;
   --bt-border-strong: #d1d5db;
   --bt-text-primary: #111827;
@@ -157,6 +157,10 @@
 
 .row:hover .bodyCell {
   background: var(--bt-bg-hover);
+}
+
+.rowInteractive {
+  cursor: pointer;
 }
 
 /* ---------- 푸터(BasicTableFooter) — `.wrap` 밖에서도 쓰이므로 `:root` 토큰만 사용 ---------- */

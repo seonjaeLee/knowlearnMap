@@ -1,13 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
+import { Button } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import { faqApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
 import BaseModal from './common/modal/BaseModal';
-import './FaqDetailModal.css';
+import './NoticeDetailModal.css';
 
-function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
+function FaqDetailModal({
+    isOpen,
+    onClose,
+    faqId,
+    faqData,
+    onUpdate,
+    onBackToList,
+    onPrevious,
+    onNext,
+    hasPrevious = false,
+    hasNext = false,
+}) {
     const { user, isAdmin } = useAuth();
     const { confirm } = useDialog();
     const [faq, setFaq] = useState(null);
@@ -18,6 +30,11 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchFaq = async () => {
+        if (faqData) {
+            setFaq(faqData);
+            setLoading(false);
+            return;
+        }
         if (!faqId) return;
         setLoading(true);
         try {
@@ -31,11 +48,11 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
     };
 
     useEffect(() => {
-        if (isOpen && faqId) {
+        if (isOpen && (faqId || faqData)) {
             fetchFaq();
             setIsEditing(false);
         }
-    }, [isOpen, faqId]);
+    }, [isOpen, faqId, faqData]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -50,7 +67,7 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
     };
 
     const isOwner = faq && (user?.email === faq.authorEmail || user?.email === faq.createdBy);
-    const canModify = isOwner || isAdmin;
+    const canModify = !faqData && (isOwner || isAdmin);
 
     const handleEditFaq = () => {
         setIsEditing(true);
@@ -97,116 +114,138 @@ function FaqDetailModal({ isOpen, onClose, faqId, onUpdate }) {
         <BaseModal
             open={isOpen}
             onClose={onClose}
-            title="FAQ 상세"
-            maxWidth="xl"
-            fullWidth
-            contentClassName="faq-detail-modal-content km-modal-form"
-        >
-                <div className="faq-detail-modal-body">
-                    {loading ? (
-                        <div className="faq-detail-loading">
-                            <div className="loading-spinner"></div>
-                            <p>로딩 중...</p>
-                        </div>
-                    ) : faq ? (
-                        <div className="faq-detail-content-wrapper">
-                            <div className="faq-main-column">
-                                <div className="faq-content-section">
-                                    <div className="faq-content-header">
-                                        <h3 className="faq-detail-title">{faq.title}</h3>
-                                        {canModify && (
-                                            <div className="faq-actions">
-                                                <button
-                                                    className="btn-edit-faq"
-                                                    onClick={handleEditFaq}
-                                                    title="수정"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    className="btn-delete-faq"
-                                                    onClick={handleDeleteFaq}
-                                                    title="삭제"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                    {isEditing ? (
-                                        <div className="faq-edit-form">
-                                            <input
-                                                type="text"
-                                                value={editTitle}
-                                                onChange={(e) => setEditTitle(e.target.value)}
-                                                className="edit-title-input"
-                                                placeholder="제목"
-                                            />
-                                            <textarea
-                                                value={editContent}
-                                                onChange={(e) => setEditContent(e.target.value)}
-                                                className="edit-content-textarea"
-                                                rows={10}
-                                                placeholder="내용"
-                                            />
-                                            <div className="edit-actions">
-                                                <button
-                                                    className="btn-cancel-edit"
-                                                    onClick={() => setIsEditing(false)}
-                                                >
-                                                    취소
-                                                </button>
-                                                <button
-                                                    className="btn-save-edit"
-                                                    onClick={handleUpdateFaq}
-                                                    disabled={isSubmitting}
-                                                >
-                                                    {isSubmitting ? '저장 중...' : '저장'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="faq-body-content">
-                                            <ContentRenderer content={faq.content} />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="faq-sidebar-column">
-                                <div className="meta-info-box">
-                                    <div className="meta-row">
-                                        <span className="meta-label">작성자</span>
-                                        <span className="meta-value">{faq.authorEmail?.split('@')[0] || faq.createdBy || '-'}</span>
-                                    </div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">작성일</span>
-                                        <span className="meta-value">{formatDate(faq.createdAt)}</span>
-                                    </div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">최근 수정</span>
-                                        <span className="meta-value">{formatDate(faq.updatedAt || faq.createdAt)}</span>
-                                    </div>
-                                    <div className="meta-divider"></div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">조회수</span>
-                                        <span className="meta-value">{faq.viewCount}</span>
-                                    </div>
-                                    {faq.category && (
-                                        <div className="meta-row">
-                                            <span className="meta-label">카테고리</span>
-                                            <span className="meta-value">{faq.category}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="faq-detail-error">
-                            FAQ를 불러올 수 없습니다.
-                        </div>
-                    )}
+            title="자주 묻는 질문"
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={{ width: '920px', maxWidth: 'calc(100vw - 48px)', maxHeight: 'calc(100vh - 48px)' }}
+            contentClassName="notice-detail-modal-content km-modal-form"
+            actionsClassName="notice-detail-modal-actions"
+            actions={(
+                <div className="notice-detail-actions-layout">
+                    <div className="notice-detail-actions-left">
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            className="notice-list-move-btn"
+                            onClick={onBackToList || onClose}
+                        >
+                            목록이동
+                        </Button>
+                        <Button variant="outlined" onClick={onPrevious} disabled={!hasPrevious}>
+                            이전글
+                        </Button>
+                        <Button variant="outlined" onClick={onNext} disabled={!hasNext}>
+                            다음글
+                        </Button>
+                    </div>
+                    <Button variant="contained" onClick={onClose}>
+                        확인
+                    </Button>
                 </div>
+            )}
+        >
+            <div className="notice-detail-modal-body">
+                {loading ? (
+                    <div className="notice-detail-loading">
+                        <div className="loading-spinner" />
+                        <p>로딩 중...</p>
+                    </div>
+                ) : faq ? (
+                    <div className="notice-detail-content-wrapper">
+                        <section className="notice-detail-head" aria-label="FAQ 정보">
+                            <div className="notice-detail-head-top">
+                                <div className="notice-title-block">
+                                    {faq.category && (
+                                        <span className="notice-detail-category">{faq.category}</span>
+                                    )}
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={editTitle}
+                                            onChange={(e) => setEditTitle(e.target.value)}
+                                            className="notice-detail-title-input"
+                                            placeholder="질문"
+                                            aria-label="질문"
+                                        />
+                                    ) : (
+                                        <h3 className="notice-detail-title">{faq.title}</h3>
+                                    )}
+                                </div>
+                                {canModify && !isEditing && (
+                                    <div className="notice-actions">
+                                        <button
+                                            type="button"
+                                            className="btn-edit-notice"
+                                            onClick={handleEditFaq}
+                                            title="수정"
+                                        >
+                                            <Edit2 size={16} aria-hidden />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn-delete-notice"
+                                            onClick={handleDeleteFaq}
+                                            title="삭제"
+                                        >
+                                            <Trash2 size={16} aria-hidden />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="notice-detail-meta-row">
+                                <div className="notice-detail-inline-meta">
+                                    <span>{faq.authorEmail?.split('@')[0] || faq.createdBy || '관리자'}</span>
+                                    <span>{formatDate(faq.createdAt)}</span>
+                                    <span>조회 {faq.viewCount ?? 0}</span>
+                                </div>
+                                <span className="notice-detail-updated">
+                                    최종수정 : {formatDate(faq.updatedAt || faq.createdAt)}
+                                </span>
+                            </div>
+                        </section>
+
+                        <section className="notice-detail-body-box" aria-label="답변 내용">
+                            {isEditing ? (
+                                <div className="notice-edit-form">
+                                    <textarea
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                        className="edit-content-textarea"
+                                        rows={12}
+                                        placeholder="내용"
+                                        aria-label="내용"
+                                    />
+                                    <div className="edit-actions">
+                                        <button
+                                            type="button"
+                                            className="btn-cancel-edit"
+                                            onClick={() => setIsEditing(false)}
+                                        >
+                                            취소
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn-save-edit"
+                                            onClick={handleUpdateFaq}
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting ? '저장 중...' : '저장'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="notice-body-content">
+                                    <ContentRenderer content={faq.content || '등록된 내용이 없습니다.'} />
+                                </div>
+                            )}
+                        </section>
+                    </div>
+                ) : (
+                    <div className="notice-detail-error">
+                        FAQ를 불러올 수 없습니다.
+                    </div>
+                )}
+            </div>
         </BaseModal>
     );
 }

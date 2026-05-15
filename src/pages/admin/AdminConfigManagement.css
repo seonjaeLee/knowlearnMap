@@ -22,22 +22,6 @@
   font-size: var(--font-size-base);
 }
 
-.config-mgmt-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  flex-wrap: wrap;
-}
-
-.config-mgmt-toolbar-left {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  min-width: 0;
-  max-width: min(100%, 280px);
-}
-
 .config-mgmt-actions-head {
   display: flex;
   justify-content: flex-end;
@@ -46,17 +30,113 @@
   min-width: 0;
 }
 
-.config-mgmt-value-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
+/* 표 카드 — FAQ/공지 support-table-card 패턴 */
+.config-mgmt-table-card {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
   min-width: 0;
+  overflow: hidden;
+}
+
+.config-mgmt-table-shell {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+.config-mgmt-basic-table {
+  min-width: 1060px;
+}
+
+/* th 카테고리 필터 — 테두리 없이 텍스트 + 화살표 */
+.config-mgmt-th-category-select {
   width: 100%;
+  min-width: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.config-mgmt-th-category-select::before,
+.config-mgmt-th-category-select::after {
+  display: none !important;
+}
+
+.config-mgmt-th-category-select .MuiSelect-select {
+  display: flex !important;
+  align-items: center;
+  min-height: unset !important;
+  padding: 0 18px 0 0 !important;
+  background: transparent !important;
+}
+
+.config-mgmt-th-category-select .MuiSelect-icon {
+  right: 0;
+  top: calc(50% - 7px);
+  color: var(--color-text-secondary);
+}
+
+.config-mgmt-th-category-select:hover .MuiSelect-select,
+.config-mgmt-th-category-select.Mui-focused .MuiSelect-select {
+  color: var(--color-text-primary);
+}
+
+.config-mgmt-th-category-select:hover .MuiSelect-icon,
+.config-mgmt-th-category-select.Mui-focused .MuiSelect-icon {
+  color: var(--color-text-primary);
+}
+
+.config-mgmt-th-category-select-value {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.config-mgmt-basic-table thead th:first-child {
+  overflow: visible;
+}
+
+/* tbody 카테고리 병합 셀 */
+.config-mgmt-category-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.config-mgmt-th-category-select-menu .MuiMenuItem-root {
+  font-size: var(--font-size-xs);
+}
+
+.config-mgmt-category-cell-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.35;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.config-mgmt-basic-table .basic-table-body-cell--rowspan {
+  border-right: 1px solid var(--color-border-subtle);
+}
+
+.config-mgmt-value-cell {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .config-mgmt-value-line {
-  flex: 1 1 auto;
+  display: block;
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -68,6 +148,10 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
   box-sizing: border-box;
+}
+
+.config-mgmt-basic-table .config-mgmt-type-badge {
+  vertical-align: middle;
 }
 
 .config-mgmt-value-popover-trigger {
@@ -88,63 +172,35 @@
   color: var(--color-text-primary);
 }
 
-/* KmPopover Paper 병합 클래스 — 긴 설정 값용 */
 .config-mgmt-value-popover-panel {
   max-width: min(560px, calc(100vw - var(--spacing-xl))) !important;
   max-height: min(60vh, 420px) !important;
 }
 
-.config-mgmt-groups {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
+.config-mgmt-category-help-popover-panel {
+  max-width: min(480px, calc(100vw - var(--spacing-xl))) !important;
 }
 
-.config-mgmt-category-section {
+.config-mgmt-category-help-popover-inner {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
   min-width: 0;
 }
 
-.config-mgmt-category-subtitle {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  min-width: 0;
+.config-mgmt-category-help-popover-summary {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.55;
+  color: var(--color-text-primary);
 }
 
-.config-mgmt-category-title-text {
-  margin: 0 !important;
-  font-size: var(--font-size-lg) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  line-height: 1.35 !important;
-  color: var(--color-text-primary) !important;
-}
-
-.config-mgmt-category-table-area {
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-secondary);
-  min-width: 0;
-  overflow: hidden;
-}
-
-.config-mgmt-category-count {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-normal);
+.config-mgmt-category-help-popover-details {
+  margin: 0;
+  padding-left: calc(var(--spacing-md) + var(--spacing-xs));
+  font-size: var(--font-size-sm);
+  line-height: 1.55;
   color: var(--color-text-secondary);
-}
-
-.config-mgmt-table-shell {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  min-width: 0;
-}
-
-.config-mgmt-basic-table {
-  min-width: 960px;
 }
 
 .config-mgmt-key {
@@ -154,19 +210,53 @@
   font-weight: var(--font-weight-medium);
 }
 
-.config-mgmt-edit-modal-textarea {
-  width: 100%;
-  min-height: 200px;
-  padding: var(--spacing-sm);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
+/* 수정 팝업 — 라벨(좌) · 값(우) 가로 배치 */
+.config-mgmt-edit-modal-form {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.config-mgmt-edit-modal-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  column-gap: var(--spacing-lg);
+  align-items: start;
+}
+
+.config-mgmt-edit-modal-row--value {
+  align-items: start;
+}
+
+.config-mgmt-edit-modal-label {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}
+
+.config-mgmt-edit-modal-value {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.config-mgmt-edit-modal-value--mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: var(--font-size-sm);
-  line-height: 1.5;
-  box-sizing: border-box;
-  resize: vertical;
-  background: var(--color-bg-secondary);
-  color: var(--color-text-primary);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-medium);
+  word-break: break-all;
+}
+
+.config-mgmt-edit-modal-textarea {
+  width: 100%;
+  min-height: 160px;
+  margin: 0;
 }
 
 .config-mgmt-type-badge {
@@ -194,13 +284,11 @@
 }
 
 .config-mgmt-desc {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   line-height: 1.45;
-  word-break: break-word;
 }
 
-/* 행 호버(BasicTable)와 읽기 전용 값 블록 톤이 겹치지 않게: 값은 패널색+테두리, 행 호버만 연한 액센트 틴트 */
-.config-mgmt-table-shell tbody tr:hover > td {
-  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary)) !important;
-}

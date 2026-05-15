@@ -3056,3 +3056,50 @@
 
 #### 기타
 - 검증: `npm run build` 통과
+
+### 213) 고객센터 3개 메뉴 — 목록 테이블 정리·상세/작성 팝업 구조·툴바 select·관리자 권한(관리 열)
+
+- **목적**: 공지사항 / FAQ / 1:1 문의를 `BasicTable` + 공통 토큰 기준으로 통일하고, 상세·작성 팝업 레이아웃을 정리; 툴바 필터는 도메인 수정 팝업과 동일한 `KmModalSelect`로 맞춤; **관리자**에게만 목록 **관리** 열(수정·삭제) 및 등록 버튼 노출
+- **영향**: 고객센터 3개 목록·상세 모달·툴바; 공용 `BasicTable` 행 호버·커서; 비관리자는 관리 열·공지/FAQ 등록 버튼 미표시(1:1 **문의 등록**은 일반 사용자 유지). 1:1 **답변 등록(대기 상태만)** 규칙은 별도 단계로 보류
+
+#### 목록 테이블 (메뉴별 열·동작)
+| 메뉴 | 열 순서 | 비고 |
+|------|---------|------|
+| 공지사항 | 분류 → 제목 → 작성자 → 작성일 → 조회수 (+ 관리*) | 고정 행 `#fbf5f3`·핀/NEW 배지; 행 클릭 → 상세 |
+| FAQ | 카테고리 → 질문 → 작성자 → 작성일 → 조회수 (+ 관리*) | 카테고리 `KmModalSelect` 필터; 행 클릭 → 상세 |
+| 1:1 문의 | 제목 → 도메인 → 문의번호 → 등록일 → 최근 활동 → 상태 (+ 관리*) | 상태 `KmModalSelect` 필터 |
+
+\*관리 열: `user.role === 'ADMIN'` 또는 `user.email === 'admin'` 일 때만
+
+#### 권한·관리 열
+- `src/utils/supportCenterAdmin.js` — `isSupportCenterAdmin(user)` 공통 판별
+- `src/pages/supportCenterColumns.js` — 관리 열 정의(`_actions`, 라벨 `관리`)
+- `src/components/support/SupportTableAdminActions.jsx` — `km-table-icon-btn` 수정(`FilePen`) / 삭제(`Trash2`), 클릭 시 `stopPropagation`(행 상세와 분리)
+- **수정**: 각 메뉴 기존 작성 모달을 `editingNotice` / `editingFaq` / `editingQuestion` 으로 열어 전 필드 편집
+- **삭제**: `useDialog().confirm` 후 로컬 state에서 제거(다른 어드민 테이블과 동일 패턴)
+- **상단 등록**: 공지·FAQ — 관리자만; 1:1 문의 등록 버튼 — 전 사용자
+
+#### 상세·작성 팝업 구조
+- **공지 상세** (`NoticeDetailModal`) — 회색 **head**(분류·제목·메타·최종수정) + 흰색 **body**(본문만); 우측 메타 중복 제거; footer 목록이동(블루 아웃라인)·확인; `BaseModal` content 패딩과 head `padding-inline` 분리 유지
+- **FAQ 상세** (`FaqDetailModal`) — 공지 상세와 동일 클래스·레이아웃; `NoticeDetailModal.css` 재사용
+- **툴바 select** — 네이티브 `<select>` 제거 → `KmModalSelect` + 부모 `km-modal-form`(스타일 단일 소스: `KmModalSelect.module.scss`, `km-modal-form.css`)
+
+#### 공용 테이블 UX
+- `BasicTable` — `onRowClick`/`onRowKeyDown` 있을 때만 `rowInteractive`·`cursor: pointer`
+- 행 호버 — `color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary))` (`BasicTable.module.scss` / `BasicTable.global.css`); 고정 공지 행(`.support-row-pinned`)은 호버 제외
+- 제목 셀 — `.support-title-text` `font-weight: var(--font-weight-medium)` (`SupportCenter.css`)
+
+#### CSS 변경
+- `src/pages/SupportCenter.css` — 툴바 검색·`support-filter-select`(KmModalSelect 너비), 배지·상태 pill·관리 열 정렬 등
+- `src/components/NoticeDetailModal.css` — 상세 head/body·footer 버튼
+- `src/pages/NoticeList.css`, `Faq.css`, `QnaBoard.css` — 페이지별 보조(고정 행·배지 등)
+
+#### JSX/JS 변경 (예외 기록)
+- `src/pages/NoticeList.jsx`, `Faq.jsx`, `QnaBoard.jsx` — 관리 열·저장/삭제 핸들러·`useAuth`·`useDialog`
+- `src/components/NoticeDetailModal.jsx`, `FaqDetailModal.jsx`
+- `src/components/common/BasicTable.jsx` — `rowInteractive` 선언 순서 수정(초기화 전 참조 오류 방지)
+- `src/data/supportMockData.js` — FAQ `content` 등 상세용 필드 보강
+
+#### 기타
+- 1:1 **질문 상세** 팝업(관리자 답변·이미지 첨부·대기 시에만 답변 등록) — 미착수, 후속 협의
+- 검증: `npm run build` 통과

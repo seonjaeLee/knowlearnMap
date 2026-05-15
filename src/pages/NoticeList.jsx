@@ -1,18 +1,22 @@
-import { useMemo, useState } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { Pin, Plus, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useDialog } from '../hooks/useDialog';
 import NoticeCreateModal from '../components/NoticeCreateModal';
 import NoticeDetailModal from '../components/NoticeDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
+import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
 import { mockNotices } from '../data/supportMockData';
+import { isSupportCenterAdmin } from '../utils/supportCenterAdmin';
+import { SUPPORT_ADMIN_ACTIONS_COLUMN } from './supportCenterColumns';
 import './admin/admin-common.css';
 import './NoticeList.css';
 import './SupportCenter.css';
 
-const noticeColumns = [
-  { id: 'title', label: '제목', width: '46%', align: 'left' },
+const NOTICE_BASE_COLUMNS = [
   { id: 'category', label: '분류', width: 112, align: 'left' },
+  { id: 'title', label: '제목', width: '46%', align: 'left' },
   { id: 'author', label: '작성자', width: 120, align: 'left' },
   { id: 'createdAt', label: '작성일', width: 120, align: 'left' },
   { id: 'viewCount', label: '조회수', width: 88, align: 'center', ellipsis: false },
@@ -23,21 +27,40 @@ function formatDate(value) {
   return new Date(value).toLocaleDateString('ko-KR');
 }
 
+/** 고정 공지 우선, 동일 그룹 내 작성일 최신순 */
+function sortNoticesForList(items) {
+  return [...items].sort((a, b) => {
+    const aPinned = Boolean(a.isPinned);
+    const bPinned = Boolean(b.isPinned);
+    if (aPinned !== bPinned) return aPinned ? -1 : 1;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+}
+
 function NoticeList() {
   const { user } = useAuth();
+  const { confirm } = useDialog();
   const [notices, setNotices] = useState(mockNotices);
   const [noticeSearch, setNoticeSearch] = useState('');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [editingNotice, setEditingNotice] = useState(null);
   const [selectedNoticeId, setSelectedNoticeId] = useState(null);
 
-  const isAdmin = user?.role === 'ADMIN' || user?.email === 'admin';
+  const isAdmin = isSupportCenterAdmin(user);
+
+  const noticeColumns = useMemo(
+    () => (isAdmin ? [...NOTICE_BASE_COLUMNS, SUPPORT_ADMIN_ACTIONS_COLUMN] : NOTICE_BASE_COLUMNS),
+    [isAdmin],
+  );
 
   const filteredNotices = useMemo(() => {
     const q = noticeSearch.trim().toLowerCase();
-    if (!q) return notices;
-    return notices.filter((notice) => (
-      `${notice.title} ${notice.category} ${notice.authorEmail}`.toLowerCase().includes(q)
-    ));
+    const matched = q
+      ? notices.filter((notice) => (
+        `${notice.title} ${notice.category} ${notice.authorEmail}`.toLowerCase().includes(q)
+      ))
+      : notices;
+    return sortNoticesForList(matched);
   }, [notices, noticeSearch]);
 
   const selectedNotice = useMemo(
@@ -49,7 +72,21 @@ function NoticeList() {
     [filteredNotices, selectedNoticeId]
   );
 
-  const handleCreateNotice = async (noticeData) => {
+  const handleSaveNotice = async (noticeData) => {
+    if (editingNotice) {
+      setNotices((prev) => prev.map((item) => (
+        item.id === editingNotice.id
+          ? {
+            ...item,
+            ...noticeData,
+            category: noticeData.category || item.category || '공지',
+            updatedAt: new Date().toISOString(),
+          }
+          : item
+      )));
+      return;
+    }
+
     const nextId = notices.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
     setNotices((prev) => [
       {
@@ -67,6 +104,30 @@ function NoticeList() {
     ]);
   };
 
+  const handleOpenCreateModal = useCallback(() => {
+    setEditingNotice(null);
+    setIsFormModalOpen(true);
+  }, []);
+
+  const handleOpenEditModal = useCallback((notice) => {
+    setEditingNotice(notice);
+    setIsFormModalOpen(true);
+  }, []);
+
+  const handleCloseFormModal = useCallback(() => {
+    setIsFormModalOpen(false);
+    setEditingNotice(null);
+  }, []);
+
+  const handleDeleteNotice = useCallback(async (notice) => {
+    const confirmed = await confirm(`"${notice.title}" 공지사항을 삭제하시겠습니까?`);
+    if (!confirmed) return;
+    setNotices((prev) => prev.filter((item) => item.id !== notice.id));
+    if (selectedNoticeId === notice.id) {
+      setSelectedNoticeId(null);
+    }
+  }, [confirm, selectedNoticeId]);
+
   const handleNoticeClick = (notice) => {
     setSelectedNoticeId(notice.id);
     setNotices((prev) => prev.map((item) => (
@@ -81,14 +142,22 @@ function NoticeList() {
     if (nextNotice) handleNoticeClick(nextNotice);
   };
 
-  const renderNoticeCell = ({ column, row }) => {
+  const renderNoticeCell = useCallback(({ column, row }) => {
     switch (column.id) {
       case 'title':
         return (
           <div className="support-title-cell">
-            {row.isPinned && <span className="support-badge support-badge--danger">고정</span>}
+            {row.isPinned && (
+              <span className="badge-icon-pin" title="고정" aria-label="고정">
+                <Pin size={14} strokeWidth={2} aria-hidden />
+              </span>
+            )}
             <span className="support-title-text">{row.title}</span>
-            {!row.isRead && <span className="support-badge support-badge--new">N</span>}
+            {!row.isRead && (
+              <span className="badge-icon-new" aria-label="새 글">
+                N
+              </span>
+            )}
           </div>
         );
       case 'category':
@@ -99,10 +168,18 @@ function NoticeList() {
         return formatDate(row.createdAt);
       case 'viewCount':
         return row.viewCount ?? 0;
+      case '_actions':
+        return (
+          <SupportTableAdminActions
+            label={row.title}
+            onEdit={() => handleOpenEditModal(row)}
+            onDelete={() => handleDeleteNotice(row)}
+          />
+        );
       default:
         return undefined;
     }
-  };
+  }, [handleDeleteNotice, handleOpenEditModal]);
 
   return (
     <div className="notice-page support-page">
@@ -111,7 +188,7 @@ function NoticeList() {
           title="공지사항"
           breadcrumbs={['고객센터', '공지사항']}
           actions={isAdmin ? (
-            <button type="button" className="admin-btn admin-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+            <button type="button" className="admin-btn admin-btn-primary" onClick={handleOpenCreateModal}>
               <Plus size={14} aria-hidden />
               공지사항 등록
             </button>
@@ -163,10 +240,10 @@ function NoticeList() {
       </div>
 
       <NoticeCreateModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateNotice}
-        editingNotice={null}
+        isOpen={isFormModalOpen}
+        onClose={handleCloseFormModal}
+        onSubmit={handleSaveNotice}
+        editingNotice={editingNotice}
       />
 
       <NoticeDetailModal

@@ -6,6 +6,36 @@
     min-height: 0;
 }
 
+/* 고정 공지 행 배경 */
+.notice-page .support-row-pinned td {
+    background: #fbf5f3;
+}
+
+.notice-page .support-row-pinned:hover td {
+    background: #fbf5f3;
+}
+
+/* 핀·새글 아이콘 훅 (색·크기는 추후 조정) */
+.badge-icon-pin,
+.badge-icon-new {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.badge-icon-pin {
+    color: var(--color-icon-danger, #dc2626);
+}
+
+.badge-icon-new {
+    min-width: 1.125rem;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-accent);
+}
+
 .notice-container {
     max-width: 100%;
     width: 100%;

@@ -123,7 +123,12 @@ function NoticeDetailModal({
             actions={(
                 <div className="notice-detail-actions-layout">
                     <div className="notice-detail-actions-left">
-                        <Button variant="outlined" onClick={onBackToList || onClose}>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            className="notice-list-move-btn"
+                            onClick={onBackToList || onClose}
+                        >
                             목록이동
                         </Button>
                         <Button variant="outlined" onClick={onPrevious} disabled={!hasPrevious}>
@@ -142,111 +147,98 @@ function NoticeDetailModal({
                 <div className="notice-detail-modal-body">
                     {loading ? (
                         <div className="notice-detail-loading">
-                            <div className="loading-spinner"></div>
+                            <div className="loading-spinner" />
                             <p>로딩 중...</p>
                         </div>
                     ) : notice ? (
                         <div className="notice-detail-content-wrapper">
-                            <div className="notice-main-column">
-                                <div className="notice-content-section">
-                                    <div className="notice-content-header">
-                                        <div className="notice-title-block">
-                                            {notice.category && (
-                                                <span className="notice-detail-category">{notice.category}</span>
-                                            )}
-                                            <h3 className="notice-detail-title">{notice.title}</h3>
-                                            <div className="notice-detail-inline-meta">
-                                                <span>{notice.authorEmail?.split('@')[0] || '관리자'}</span>
-                                                <span>{formatDate(notice.createdAt)}</span>
-                                                <span>조회 {notice.viewCount ?? 0}</span>
-                                            </div>
-                                        </div>
-                                        {canModify && (
-                                            <div className="notice-actions">
-                                                <button
-                                                    className="btn-edit-notice"
-                                                    onClick={handleEditNotice}
-                                                    title="수정"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    className="btn-delete-notice"
-                                                    onClick={handleDeleteNotice}
-                                                    title="삭제"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
+                            <section className="notice-detail-head" aria-label="공지 정보">
+                                <div className="notice-detail-head-top">
+                                    <div className="notice-title-block">
+                                        {notice.category && (
+                                            <span className="notice-detail-category">{notice.category}</span>
                                         )}
-                                    </div>
-                                    {isEditing ? (
-                                        <div className="notice-edit-form">
+                                        {isEditing ? (
                                             <input
                                                 type="text"
                                                 value={editTitle}
                                                 onChange={(e) => setEditTitle(e.target.value)}
-                                                className="edit-title-input"
+                                                className="notice-detail-title-input"
                                                 placeholder="제목"
+                                                aria-label="제목"
                                             />
-                                            <textarea
-                                                value={editContent}
-                                                onChange={(e) => setEditContent(e.target.value)}
-                                                className="edit-content-textarea"
-                                                rows={10}
-                                                placeholder="내용"
-                                            />
-                                            <div className="edit-actions">
-                                                <button
-                                                    className="btn-cancel-edit"
-                                                    onClick={() => setIsEditing(false)}
-                                                >
-                                                    취소
-                                                </button>
-                                                <button
-                                                    className="btn-save-edit"
-                                                    onClick={handleUpdateNotice}
-                                                    disabled={isSubmitting}
-                                                >
-                                                    {isSubmitting ? '저장 중...' : '저장'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="notice-body-content">
-                                            <ContentRenderer content={notice.content || '등록된 내용이 없습니다.'} />
+                                        ) : (
+                                            <h3 className="notice-detail-title">{notice.title}</h3>
+                                        )}
+                                    </div>
+                                    {canModify && !isEditing && (
+                                        <div className="notice-actions">
+                                            <button
+                                                type="button"
+                                                className="btn-edit-notice"
+                                                onClick={handleEditNotice}
+                                                title="수정"
+                                            >
+                                                <Edit2 size={16} aria-hidden />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn-delete-notice"
+                                                onClick={handleDeleteNotice}
+                                                title="삭제"
+                                            >
+                                                <Trash2 size={16} aria-hidden />
+                                            </button>
                                         </div>
                                     )}
                                 </div>
-                            </div>
+                                <div className="notice-detail-meta-row">
+                                    <div className="notice-detail-inline-meta">
+                                        <span>{notice.authorEmail?.split('@')[0] || '관리자'}</span>
+                                        <span>{formatDate(notice.createdAt)}</span>
+                                        <span>조회 {notice.viewCount ?? 0}</span>
+                                    </div>
+                                    <span className="notice-detail-updated">
+                                        최종수정 : {formatDate(notice.updatedAt || notice.createdAt)}
+                                    </span>
+                                </div>
+                            </section>
 
-                            <div className="notice-sidebar-column">
-                                <div className="meta-info-box">
-                                    {notice.category && (
-                                        <div className="meta-row">
-                                            <span className="meta-label">분류</span>
-                                            <span className="meta-value">{notice.category}</span>
+                            <section className="notice-detail-body-box" aria-label="공지 내용">
+                                {isEditing ? (
+                                    <div className="notice-edit-form">
+                                        <textarea
+                                            value={editContent}
+                                            onChange={(e) => setEditContent(e.target.value)}
+                                            className="edit-content-textarea"
+                                            rows={12}
+                                            placeholder="내용"
+                                            aria-label="내용"
+                                        />
+                                        <div className="edit-actions">
+                                            <button
+                                                type="button"
+                                                className="btn-cancel-edit"
+                                                onClick={() => setIsEditing(false)}
+                                            >
+                                                취소
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn-save-edit"
+                                                onClick={handleUpdateNotice}
+                                                disabled={isSubmitting}
+                                            >
+                                                {isSubmitting ? '저장 중...' : '저장'}
+                                            </button>
                                         </div>
-                                    )}
-                                    <div className="meta-row">
-                                        <span className="meta-label">작성자</span>
-                                        <span className="meta-value">{notice.authorEmail?.split('@')[0] || '관리자'}</span>
                                     </div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">작성일</span>
-                                        <span className="meta-value">{formatDate(notice.createdAt)}</span>
+                                ) : (
+                                    <div className="notice-body-content">
+                                        <ContentRenderer content={notice.content || '등록된 내용이 없습니다.'} />
                                     </div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">최근 수정</span>
-                                        <span className="meta-value">{formatDate(notice.updatedAt || notice.createdAt)}</span>
-                                    </div>
-                                    <div className="meta-divider"></div>
-                                    <div className="meta-row">
-                                        <span className="meta-label">조회수</span>
-                                        <span className="meta-value">{notice.viewCount}</span>
-                                    </div>
-                                </div>
-                            </div>
+                                )}
+                            </section>
                         </div>
                     ) : (
                         <div className="notice-detail-error">
