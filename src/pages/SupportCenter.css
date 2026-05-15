@@ -89,6 +89,10 @@
     min-width: 820px;
 }
 
+.notice-page .support-basic-table .MuiTableBody-root .MuiTableRow-root {
+    cursor: pointer;
+}
+
 .support-qna-table {
     min-width: 980px;
 }

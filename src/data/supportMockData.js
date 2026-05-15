@@ -2,6 +2,7 @@ export const mockNotices = [
   {
     id: 1005,
     title: '5월 정기 점검 안내',
+    content: '안정적인 서비스 제공을 위해 5월 정기 점검을 진행합니다.\n\n- 일시: 2026-05-20 22:00 ~ 23:30\n- 영향: 일부 관리 화면 접속 지연\n\n점검 중에는 워크스페이스 목록과 관리자 설정 화면의 응답이 느려질 수 있습니다. 작업이 완료되면 본 공지로 다시 안내드리겠습니다.',
     category: '점검',
     authorEmail: 'admin@knowlearn.co.kr',
     createdAt: '2026-05-14T10:30:00+09:00',
@@ -13,6 +14,7 @@ export const mockNotices = [
   {
     id: 1004,
     title: '지식그래프 시각화 성능 개선 예정',
+    content: '대용량 문서 분석 후 지식그래프 화면 진입 속도를 개선하는 UI 업데이트가 예정되어 있습니다.\n\n이번 개선은 노드 수가 많은 워크스페이스에서 초기 렌더링 지연을 줄이는 것을 목표로 합니다. 화면 배치와 기존 데이터에는 영향이 없습니다.',
     category: '업데이트',
     authorEmail: 'product@knowlearn.co.kr',
     createdAt: '2026-05-10T15:20:00+09:00',
@@ -24,6 +26,7 @@ export const mockNotices = [
   {
     id: 1003,
     title: '프롬프트 관리 화면 사용 권장사항',
+    content: '운영 프롬프트를 수정하기 전에는 기존 값을 복사해 백업해 주세요.\n\n권한 변경, 기본 프롬프트 연결, 도메인별 프롬프트 정책은 관리자만 수정하는 것을 권장합니다. 변경 후에는 테스트 질문을 통해 답변 톤과 근거 표시를 확인해 주세요.',
     category: '가이드',
     authorEmail: 'support@knowlearn.co.kr',
     createdAt: '2026-05-06T11:05:00+09:00',
@@ -35,6 +38,7 @@ export const mockNotices = [
   {
     id: 1002,
     title: '신규 도메인 생성 시 기본 프롬프트 연결 안내',
+    content: '도메인 생성 후 요약, 질의응답, 청킹 관련 기본 프롬프트가 정상 연결되어 있는지 확인해 주세요.\n\n특히 청킹 프롬프트가 NONE으로 설정된 경우 문서 처리 결과가 기대와 다르게 보일 수 있습니다. 도메인 관리 화면에서 프롬프트 연결 상태를 먼저 확인하는 흐름을 권장합니다.',
     category: '운영',
     authorEmail: 'support@knowlearn.co.kr',
     createdAt: '2026-05-02T13:40:00+09:00',
@@ -46,6 +50,7 @@ export const mockNotices = [
   {
     id: 1001,
     title: '고객센터 메뉴 개편 안내',
+    content: '고객센터 하위 메뉴를 공지사항, 자주 묻는 질문, 1:1 문의로 정리했습니다.\n\n공지사항에서는 운영 안내와 업데이트 내역을 확인할 수 있고, FAQ에서는 반복 문의를 빠르게 확인할 수 있습니다. 해결되지 않는 내용은 1:1 문의로 남겨 주세요.',
     category: '공지',
     authorEmail: 'admin@knowlearn.co.kr',
     createdAt: '2026-04-30T17:10:00+09:00',

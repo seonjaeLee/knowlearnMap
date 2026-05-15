@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
+import { Button } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import { noticeApi } from '../services/api';
@@ -7,7 +8,18 @@ import ContentRenderer from './ContentRenderer';
 import BaseModal from './common/modal/BaseModal';
 import './NoticeDetailModal.css';
 
-function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
+function NoticeDetailModal({
+    isOpen,
+    onClose,
+    noticeId,
+    noticeData,
+    onUpdate,
+    onBackToList,
+    onPrevious,
+    onNext,
+    hasPrevious = false,
+    hasNext = false,
+}) {
     const { user, isAdmin } = useAuth();
     const { confirm } = useDialog();
     const [notice, setNotice] = useState(null);
@@ -18,6 +30,11 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetchNotice = async () => {
+        if (noticeData) {
+            setNotice(noticeData);
+            setLoading(false);
+            return;
+        }
         if (!noticeId) return;
         setLoading(true);
         try {
@@ -31,11 +48,11 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
     };
 
     useEffect(() => {
-        if (isOpen && noticeId) {
+        if (isOpen && (noticeId || noticeData)) {
             fetchNotice();
             setIsEditing(false);
         }
-    }, [isOpen, noticeId]);
+    }, [isOpen, noticeId, noticeData]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -50,7 +67,7 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
     };
 
     const isOwner = notice && user?.email === notice.authorEmail;
-    const canModify = isOwner || isAdmin;
+    const canModify = !noticeData && (isOwner || isAdmin);
 
     const handleEditNotice = () => {
         setIsEditing(true);
@@ -98,9 +115,29 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
             open={isOpen}
             onClose={onClose}
             title="공지사항"
-            maxWidth="xl"
-            fullWidth
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={{ width: '920px', maxWidth: 'calc(100vw - 48px)', maxHeight: 'calc(100vh - 48px)' }}
             contentClassName="notice-detail-modal-content km-modal-form"
+            actionsClassName="notice-detail-modal-actions"
+            actions={(
+                <div className="notice-detail-actions-layout">
+                    <div className="notice-detail-actions-left">
+                        <Button variant="outlined" onClick={onBackToList || onClose}>
+                            목록이동
+                        </Button>
+                        <Button variant="outlined" onClick={onPrevious} disabled={!hasPrevious}>
+                            이전글
+                        </Button>
+                        <Button variant="outlined" onClick={onNext} disabled={!hasNext}>
+                            다음글
+                        </Button>
+                    </div>
+                    <Button variant="contained" onClick={onClose}>
+                        확인
+                    </Button>
+                </div>
+            )}
         >
                 <div className="notice-detail-modal-body">
                     {loading ? (
@@ -113,7 +150,17 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
                             <div className="notice-main-column">
                                 <div className="notice-content-section">
                                     <div className="notice-content-header">
-                                        <h3 className="notice-detail-title">{notice.title}</h3>
+                                        <div className="notice-title-block">
+                                            {notice.category && (
+                                                <span className="notice-detail-category">{notice.category}</span>
+                                            )}
+                                            <h3 className="notice-detail-title">{notice.title}</h3>
+                                            <div className="notice-detail-inline-meta">
+                                                <span>{notice.authorEmail?.split('@')[0] || '관리자'}</span>
+                                                <span>{formatDate(notice.createdAt)}</span>
+                                                <span>조회 {notice.viewCount ?? 0}</span>
+                                            </div>
+                                        </div>
                                         {canModify && (
                                             <div className="notice-actions">
                                                 <button
@@ -167,7 +214,7 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
                                         </div>
                                     ) : (
                                         <div className="notice-body-content">
-                                            <ContentRenderer content={notice.content} />
+                                            <ContentRenderer content={notice.content || '등록된 내용이 없습니다.'} />
                                         </div>
                                     )}
                                 </div>
@@ -175,6 +222,12 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
 
                             <div className="notice-sidebar-column">
                                 <div className="meta-info-box">
+                                    {notice.category && (
+                                        <div className="meta-row">
+                                            <span className="meta-label">분류</span>
+                                            <span className="meta-value">{notice.category}</span>
+                                        </div>
+                                    )}
                                     <div className="meta-row">
                                         <span className="meta-label">작성자</span>
                                         <span className="meta-value">{notice.authorEmail?.split('@')[0] || '관리자'}</span>
@@ -192,12 +245,6 @@ function NoticeDetailModal({ isOpen, onClose, noticeId, onUpdate }) {
                                         <span className="meta-label">조회수</span>
                                         <span className="meta-value">{notice.viewCount}</span>
                                     </div>
-                                    {notice.category && (
-                                        <div className="meta-row">
-                                            <span className="meta-label">카테고리</span>
-                                            <span className="meta-value">{notice.category}</span>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>

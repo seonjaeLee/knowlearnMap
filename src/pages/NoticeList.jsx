@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import NoticeCreateModal from '../components/NoticeCreateModal';
+import NoticeDetailModal from '../components/NoticeDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
 import { mockNotices } from '../data/supportMockData';
@@ -27,6 +28,7 @@ function NoticeList() {
   const [notices, setNotices] = useState(mockNotices);
   const [noticeSearch, setNoticeSearch] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedNoticeId, setSelectedNoticeId] = useState(null);
 
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'admin';
 
@@ -37,6 +39,15 @@ function NoticeList() {
       `${notice.title} ${notice.category} ${notice.authorEmail}`.toLowerCase().includes(q)
     ));
   }, [notices, noticeSearch]);
+
+  const selectedNotice = useMemo(
+    () => notices.find((notice) => notice.id === selectedNoticeId) || null,
+    [notices, selectedNoticeId]
+  );
+  const selectedNoticeIndex = useMemo(
+    () => filteredNotices.findIndex((notice) => notice.id === selectedNoticeId),
+    [filteredNotices, selectedNoticeId]
+  );
 
   const handleCreateNotice = async (noticeData) => {
     const nextId = notices.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
@@ -54,6 +65,20 @@ function NoticeList() {
       },
       ...prev,
     ]);
+  };
+
+  const handleNoticeClick = (notice) => {
+    setSelectedNoticeId(notice.id);
+    setNotices((prev) => prev.map((item) => (
+      item.id === notice.id ? { ...item, isRead: true, viewCount: (item.viewCount ?? 0) + 1 } : item
+    )));
+  };
+
+  const handleMoveNotice = (direction) => {
+    if (selectedNoticeIndex < 0) return;
+    const nextIndex = selectedNoticeIndex + direction;
+    const nextNotice = filteredNotices[nextIndex];
+    if (nextNotice) handleNoticeClick(nextNotice);
   };
 
   const renderNoticeCell = ({ column, row }) => {
@@ -120,6 +145,14 @@ function NoticeList() {
               columns={noticeColumns}
               data={filteredNotices}
               renderCell={renderNoticeCell}
+              onRowClick={(e, { row }) => handleNoticeClick(row)}
+              onRowKeyDown={(e, { row }) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleNoticeClick(row);
+                }
+              }}
+              rowAriaLabel={(row) => `${row.title} 공지사항 상세 보기`}
               getRowClassName={(row) => [
                 row.isPinned ? 'support-row-pinned' : '',
                 !row.isRead ? 'support-row-unread' : '',
@@ -134,6 +167,18 @@ function NoticeList() {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateNotice}
         editingNotice={null}
+      />
+
+      <NoticeDetailModal
+        isOpen={Boolean(selectedNotice)}
+        onClose={() => setSelectedNoticeId(null)}
+        noticeId={selectedNoticeId}
+        noticeData={selectedNotice}
+        onBackToList={() => setSelectedNoticeId(null)}
+        onPrevious={() => handleMoveNotice(-1)}
+        onNext={() => handleMoveNotice(1)}
+        hasPrevious={selectedNoticeIndex > 0}
+        hasNext={selectedNoticeIndex >= 0 && selectedNoticeIndex < filteredNotices.length - 1}
       />
     </div>
   );
