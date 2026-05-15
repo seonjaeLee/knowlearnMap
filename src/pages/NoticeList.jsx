@@ -1,204 +1,142 @@
-import { useState, useEffect } from 'react';
-import { Search, Plus } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Plus, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useAlert } from '../context/AlertContext';
-import { noticeApi } from '../services/api';
 import NoticeCreateModal from '../components/NoticeCreateModal';
-import NoticeDetailModal from '../components/NoticeDetailModal';
 import PageHeader from '../components/common/PageHeader';
+import BasicTable from '../components/common/BasicTable';
+import { mockNotices } from '../data/supportMockData';
 import './admin/admin-common.css';
 import './NoticeList.css';
+import './SupportCenter.css';
+
+const noticeColumns = [
+  { id: 'title', label: '제목', width: '46%', align: 'left' },
+  { id: 'category', label: '분류', width: 112, align: 'left' },
+  { id: 'author', label: '작성자', width: 120, align: 'left' },
+  { id: 'createdAt', label: '작성일', width: 120, align: 'left' },
+  { id: 'viewCount', label: '조회수', width: 88, align: 'center', ellipsis: false },
+];
+
+function formatDate(value) {
+  if (!value) return '-';
+  return new Date(value).toLocaleDateString('ko-KR');
+}
 
 function NoticeList() {
-    const { user } = useAuth();
-    const { showAlert } = useAlert();
-    const [notices, setNotices] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchKeyword, setSearchKeyword] = useState('');
-    const [totalElements, setTotalElements] = useState(0);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [editingNotice, setEditingNotice] = useState(null);
-    const [selectedNoticeId, setSelectedNoticeId] = useState(null);
-    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const { user } = useAuth();
+  const [notices, setNotices] = useState(mockNotices);
+  const [noticeSearch, setNoticeSearch] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-    const fetchNotices = async () => {
-        setLoading(true);
-        try {
-            const params = { page: currentPage, size: 10 };
-            if (searchKeyword) params.keyword = searchKeyword;
+  const isAdmin = user?.role === 'ADMIN' || user?.email === 'admin';
 
-            const response = await noticeApi.getAll(params);
-            setNotices(response.data || []);
-            setTotalElements(response.totalElements || 0);
-            setTotalPages(response.totalPages || 0);
-        } catch (error) {
-            console.error('공지사항 목록 조회 실패:', error);
-            showAlert('공지사항 목록을 불러오는데 실패했습니다.');
-        } finally {
-            setLoading(false);
-        }
-    };
+  const filteredNotices = useMemo(() => {
+    const q = noticeSearch.trim().toLowerCase();
+    if (!q) return notices;
+    return notices.filter((notice) => (
+      `${notice.title} ${notice.category} ${notice.authorEmail}`.toLowerCase().includes(q)
+    ));
+  }, [notices, noticeSearch]);
 
-    useEffect(() => {
-        fetchNotices();
-    }, [currentPage]);
+  const handleCreateNotice = async (noticeData) => {
+    const nextId = notices.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+    setNotices((prev) => [
+      {
+        id: nextId,
+        ...noticeData,
+        category: noticeData.category || '공지',
+        authorEmail: user?.email || 'admin@knowlearn.co.kr',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        viewCount: 0,
+        isPinned: false,
+        isRead: false,
+      },
+      ...prev,
+    ]);
+  };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        setCurrentPage(0);
-        fetchNotices();
-    };
+  const renderNoticeCell = ({ column, row }) => {
+    switch (column.id) {
+      case 'title':
+        return (
+          <div className="support-title-cell">
+            {row.isPinned && <span className="support-badge support-badge--danger">고정</span>}
+            <span className="support-title-text">{row.title}</span>
+            {!row.isRead && <span className="support-badge support-badge--new">N</span>}
+          </div>
+        );
+      case 'category':
+        return <span className="support-badge support-badge--soft">{row.category || '-'}</span>;
+      case 'author':
+        return row.authorEmail?.split('@')[0] || '관리자';
+      case 'createdAt':
+        return formatDate(row.createdAt);
+      case 'viewCount':
+        return row.viewCount ?? 0;
+      default:
+        return undefined;
+    }
+  };
 
-    const handleCreateNotice = async (noticeData) => {
-        try {
-            if (editingNotice) {
-                await noticeApi.update(editingNotice.id, noticeData);
-                showAlert('공지사항이 수정되었습니다.');
-            } else {
-                await noticeApi.create(noticeData);
-                showAlert('공지사항이 등록되었습니다.');
-            }
-            fetchNotices();
-        } catch (error) {
-            console.error('공지사항 저장 실패:', error);
-            showAlert('공지사항 저장에 실패했습니다.');
-            throw error;
-        }
-    };
+  return (
+    <div className="notice-page support-page">
+      <div className="km-main-sticky-head">
+        <PageHeader
+          title="공지사항"
+          breadcrumbs={['고객센터', '공지사항']}
+          actions={isAdmin ? (
+            <button type="button" className="admin-btn admin-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+              <Plus size={14} aria-hidden />
+              공지사항 등록
+            </button>
+          ) : null}
+        />
 
-    const handleNoticeClick = (noticeId) => {
-        setSelectedNoticeId(noticeId);
-        setIsDetailModalOpen(true);
-    };
-
-    const openCreateModal = () => {
-        setEditingNotice(null);
-        setIsCreateModalOpen(true);
-    };
-
-    const isAdmin = user?.role === 'ADMIN' || user?.email === 'admin';
-
-    return (
-        <div className="notice-page admin-page">
-            <div className="km-main-sticky-head">
-                <PageHeader
-                    title="공지사항"
-                    breadcrumbs={['고객센터', '공지사항']}
-                    actions={isAdmin ? (
-                        <button type="button" className="admin-btn admin-btn-primary" onClick={openCreateModal}>
-                            <Plus size={14} aria-hidden />
-                            공지사항 등록
-                        </button>
-                    ) : null}
-                />
-
-                <div className="admin-toolbar">
-                    <div className="admin-toolbar-left">
-                        <div className="admin-search">
-                            <Search size={16} className="admin-search-icon" aria-hidden />
-                            <form onSubmit={handleSearch}>
-                                <input
-                                    type="text"
-                                    className="admin-search-input"
-                                    placeholder="공지사항 검색"
-                                    value={searchKeyword}
-                                    onChange={(e) => setSearchKeyword(e.target.value)}
-                                    aria-label="공지사항 검색"
-                                />
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="notice-list-container">
-                <table className="notice-table">
-                    <thead>
-                        <tr>
-                            <th className="th-title">제목</th>
-                            <th className="th-author">작성자</th>
-                            <th className="th-created">작성일</th>
-                            <th className="th-views">조회수</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan="4" className="td-loading">로딩 중...</td>
-                            </tr>
-                        ) : notices.length === 0 ? (
-                            <tr>
-                                <td colSpan="4" className="td-empty">공지사항이 없습니다.</td>
-                            </tr>
-                        ) : (
-                            notices.map((notice) => (
-                                <tr
-                                    key={notice.id}
-                                    onClick={() => handleNoticeClick(notice.id)}
-                                    className={`notice-row ${!notice.isRead ? 'unread' : ''} ${notice.isPinned ? 'pinned' : ''}`}
-                                >
-                                    <td className="td-title">
-                                        {notice.isPinned && <span className="pin-badge">고정</span>}
-                                        <span className="notice-title-text">{notice.title}</span>
-                                        {!notice.isRead && <span className="new-badge">N</span>}
-                                    </td>
-                                    <td className="td-author">{notice.authorEmail?.split('@')[0] || '관리자'}</td>
-                                    <td className="td-created">{new Date(notice.createdAt).toLocaleDateString()}</td>
-                                    <td className="td-views">{notice.viewCount}</td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {totalPages > 1 && (
-                <div className="notice-pagination">
-                    <button
-                        type="button"
-                        className="pagination-btn"
-                        disabled={currentPage === 0}
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                    >
-                        이전
-                    </button>
-                    <span className="pagination-info">
-                        {currentPage + 1} / {totalPages}
-                    </span>
-                    <button
-                        type="button"
-                        className="pagination-btn"
-                        disabled={currentPage >= totalPages - 1}
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                    >
-                        다음
-                    </button>
-                </div>
-            )}
-
-            <NoticeCreateModal
-                isOpen={isCreateModalOpen}
-                onClose={() => {
-                    setIsCreateModalOpen(false);
-                    setEditingNotice(null);
-                }}
-                onSubmit={handleCreateNotice}
-                editingNotice={editingNotice}
+        <div className="support-toolbar">
+          <div className="support-search">
+            <Search size={16} className="support-search-icon" aria-hidden />
+            <input
+              type="text"
+              className="support-search-input"
+              placeholder="공지사항 검색"
+              value={noticeSearch}
+              onChange={(e) => {
+                setNoticeSearch(e.target.value);
+              }}
+              aria-label="공지사항 검색"
             />
-
-            <NoticeDetailModal
-                isOpen={isDetailModalOpen}
-                onClose={() => {
-                    setIsDetailModalOpen(false);
-                    setSelectedNoticeId(null);
-                }}
-                noticeId={selectedNoticeId}
-                onUpdate={fetchNotices}
-            />
+          </div>
         </div>
-    );
+      </div>
+
+      <div className="support-table-card">
+        <div className="support-table-shell basic-table-shell">
+          {filteredNotices.length === 0 ? (
+            <div className="support-empty" role="status">공지사항이 없습니다.</div>
+          ) : (
+            <BasicTable
+              className="support-basic-table"
+              columns={noticeColumns}
+              data={filteredNotices}
+              renderCell={renderNoticeCell}
+              getRowClassName={(row) => [
+                row.isPinned ? 'support-row-pinned' : '',
+                !row.isRead ? 'support-row-unread' : '',
+              ].filter(Boolean).join(' ')}
+            />
+          )}
+        </div>
+      </div>
+
+      <NoticeCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateNotice}
+        editingNotice={null}
+      />
+    </div>
+  );
 }
 
 export default NoticeList;

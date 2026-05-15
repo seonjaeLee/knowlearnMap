@@ -1,224 +1,156 @@
-import { useState, useEffect } from 'react';
-import { Search, Plus } from 'lucide-react';
-import { useAlert } from '../context/AlertContext';
-import { qnaApi } from '../services/api';
-import QnaQuestionCard from '../components/QnaQuestionCard';
+import { useMemo, useState } from 'react';
+import { Plus, Search } from 'lucide-react';
 import QnaCreateModal from '../components/QnaCreateModal';
-import QnaDetailModal from '../components/QnaDetailModal';
 import PageHeader from '../components/common/PageHeader';
+import BasicTable from '../components/common/BasicTable';
+import { mockQuestions } from '../data/supportMockData';
 import './admin/admin-common.css';
 import './QnaBoard.css';
+import './SupportCenter.css';
+
+const qnaColumns = [
+  { id: 'title', label: '제목', width: '40%', align: 'left' },
+  { id: 'domainName', label: '도메인', width: 120, align: 'left' },
+  { id: 'id', label: '문의번호', width: 96, align: 'left' },
+  { id: 'createdAt', label: '등록일', width: 120, align: 'left' },
+  { id: 'updatedAt', label: '최근 활동', width: 120, align: 'left' },
+  { id: 'status', label: '상태', width: 112, align: 'center', ellipsis: false },
+];
+
+function formatDate(value) {
+  if (!value) return '-';
+  return new Date(value).toLocaleDateString('ko-KR');
+}
 
 function QnaBoard() {
-    const { showAlert } = useAlert();
-    const [questions, setQuestions] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchKeyword, setSearchKeyword] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
-    const [totalElements, setTotalElements] = useState(0);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [editingQuestion, setEditingQuestion] = useState(null);
-    const [selectedQuestionId, setSelectedQuestionId] = useState(null);
-    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [questions, setQuestions] = useState(mockQuestions);
+  const [qnaSearch, setQnaSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-    const fetchQuestions = async () => {
-        setLoading(true);
-        try {
-            const params = { page: currentPage, size: 10 };
-            if (searchKeyword) params.keyword = searchKeyword;
-            if (statusFilter) params.status = statusFilter;
+  const filteredQuestions = useMemo(() => {
+    const q = qnaSearch.trim().toLowerCase();
+    return questions.filter((question) => {
+      const matchesStatus = !statusFilter || question.status === statusFilter;
+      const matchesSearch = !q || `${question.title} ${question.domainName} ${question.authorEmail}`.toLowerCase().includes(q);
+      return matchesStatus && matchesSearch;
+    });
+  }, [questions, qnaSearch, statusFilter]);
 
-            const response = await qnaApi.getQuestions(params);
-            setQuestions(response.data || []);
-            setTotalElements(response.totalElements || 0);
-            setTotalPages(response.totalPages || 0);
-        } catch (error) {
-            console.error('질문 목록 조회 실패:', error);
-            showAlert('질문 목록을 불러오는데 실패했습니다.');
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleCreateQuestion = async (questionData) => {
+    const nextId = questions.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+    setQuestions((prev) => [
+      {
+        id: nextId,
+        ...questionData,
+        authorEmail: 'user@knowlearn.co.kr',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        status: 'UNANSWERED',
+        answerCount: 0,
+        isPinned: false,
+      },
+      ...prev,
+    ]);
+  };
 
-    useEffect(() => {
-        fetchQuestions();
-    }, [currentPage, statusFilter]);
+  const renderQnaCell = ({ column, row }) => {
+    switch (column.id) {
+      case 'title':
+        return (
+          <div className="support-title-cell">
+            {row.isPinned && <span className="support-badge support-badge--danger">중요</span>}
+            <span className="support-title-text">{row.title}</span>
+            {row.answerCount > 0 && <span className="support-badge support-badge--soft">답변 {row.answerCount}</span>}
+          </div>
+        );
+      case 'domainName':
+        return row.domainName || '-';
+      case 'id':
+        return `#${row.id}`;
+      case 'createdAt':
+        return formatDate(row.createdAt);
+      case 'updatedAt':
+        return formatDate(row.updatedAt || row.createdAt);
+      case 'status':
+        return (
+          <span className={`support-status ${row.status === 'ANSWERED' ? 'is-answered' : 'is-waiting'}`}>
+            {row.status === 'ANSWERED' ? '답변완료' : '답변대기'}
+          </span>
+        );
+      default:
+        return undefined;
+    }
+  };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        setCurrentPage(0);
-        fetchQuestions();
-    };
+  return (
+    <div className="qna-page support-page">
+      <div className="km-main-sticky-head">
+        <PageHeader
+          title="1:1 문의"
+          breadcrumbs={['고객센터', '1:1 문의']}
+          actions={(
+            <button type="button" className="admin-btn admin-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+              <Plus size={14} aria-hidden />
+              문의 등록
+            </button>
+          )}
+        />
 
-    const handleStatusFilterChange = (status) => {
-        setStatusFilter(status);
-        setCurrentPage(0);
-    };
-
-    const handleCreateQuestion = async (questionData) => {
-        try {
-            if (editingQuestion) {
-                await qnaApi.updateQuestion(editingQuestion.id, questionData);
-                showAlert('질문이 수정되었습니다.');
-            } else {
-                await qnaApi.createQuestion(questionData);
-                showAlert('질문이 등록되었습니다.');
-            }
-            fetchQuestions();
-        } catch (error) {
-            console.error('질문 저장 실패:', error);
-            showAlert('질문 저장에 실패했습니다.');
-            throw error;
-        }
-    };
-
-    const handleQuestionClick = (questionId) => {
-        setSelectedQuestionId(questionId);
-        setIsDetailModalOpen(true);
-    };
-
-    const openCreateModal = () => {
-        setEditingQuestion(null);
-        setIsCreateModalOpen(true);
-    };
-
-    return (
-        <div className="qna-page admin-page">
-            <div className="km-main-sticky-head">
-                <PageHeader
-                    title="1:1 문의"
-                    breadcrumbs={['고객센터', '1:1 문의']}
-                    actions={(
-                        <button type="button" className="admin-btn admin-btn-primary" onClick={openCreateModal}>
-                            <Plus size={14} aria-hidden />
-                            문의 등록
-                        </button>
-                    )}
-                />
-
-                <div className="admin-toolbar">
-                    <div className="admin-toolbar-left">
-                        <div className="admin-search">
-                            <Search size={16} className="admin-search-icon" aria-hidden />
-                            <form onSubmit={handleSearch}>
-                                <input
-                                    type="text"
-                                    className="admin-search-input"
-                                    placeholder="요청 검색"
-                                    value={searchKeyword}
-                                    onChange={(e) => setSearchKeyword(e.target.value)}
-                                    aria-label="문의 검색"
-                                />
-                            </form>
-                        </div>
-                    </div>
-                    <div className="admin-toolbar-right">
-                        <span className="filter-label">상태:</span>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => handleStatusFilterChange(e.target.value)}
-                            className="status-select"
-                        >
-                            <option value="">모든 상태</option>
-                            <option value="UNANSWERED">해결 대기 중 (답변대기)</option>
-                            <option value="ANSWERED">해결됨 (답변완료)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div className="qna-list-container">
-                <table className="qna-table">
-                    <thead>
-                        <tr>
-                            <th className="th-title">제목</th>
-                            <th className="th-id">ID</th>
-                            <th className="th-created">만듦</th>
-                            <th className="th-activity">마지막 활동</th>
-                            <th className="th-status">상태</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan="5" className="td-loading">로딩 중...</td>
-                            </tr>
-                        ) : questions.length === 0 ? (
-                            <tr>
-                                <td colSpan="5" className="td-empty">문의 내역이 없습니다.</td>
-                            </tr>
-                        ) : (
-                            questions.map((question) => (
-                                <tr key={question.id} onClick={() => handleQuestionClick(question.id)} className="qna-row">
-                                    <td className="td-title">
-                                        <span className="question-title-text">{question.title}</span>
-                                    </td>
-                                    <td className="td-id">#{question.id}</td>
-                                    <td className="td-created">{new Date(question.createdAt).toLocaleDateString()}</td>
-                                    <td className="td-activity">
-                                        {question.updatedAt
-                                            ? new Date(question.updatedAt).toLocaleDateString()
-                                            : new Date(question.createdAt).toLocaleDateString()}
-                                    </td>
-                                    <td className="td-status">
-                                        <span className={`status-badge ${question.status === 'ANSWERED' ? 'solved' : 'open'}`}>
-                                            {question.status === 'ANSWERED' ? '해결' : '대기'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {totalPages > 1 && (
-                <div className="qna-pagination">
-                    <button
-                        type="button"
-                        className="pagination-btn"
-                        disabled={currentPage === 0}
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                    >
-                        이전
-                    </button>
-                    <span className="pagination-info">
-                        {currentPage + 1} / {totalPages}
-                    </span>
-                    <button
-                        type="button"
-                        className="pagination-btn"
-                        disabled={currentPage >= totalPages - 1}
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                    >
-                        다음
-                    </button>
-                </div>
-            )}
-
-            <QnaCreateModal
-                isOpen={isCreateModalOpen}
-                onClose={() => {
-                    setIsCreateModalOpen(false);
-                    setEditingQuestion(null);
-                }}
-                onSubmit={handleCreateQuestion}
-                editingQuestion={editingQuestion}
+        <div className="support-toolbar">
+          <div className="support-search">
+            <Search size={16} className="support-search-icon" aria-hidden />
+            <input
+              type="text"
+              className="support-search-input"
+              placeholder="문의 검색"
+              value={qnaSearch}
+              onChange={(e) => {
+                setQnaSearch(e.target.value);
+              }}
+              aria-label="문의 검색"
             />
-
-            <QnaDetailModal
-                isOpen={isDetailModalOpen}
-                onClose={() => {
-                    setIsDetailModalOpen(false);
-                    setSelectedQuestionId(null);
-                }}
-                questionId={selectedQuestionId}
-                onUpdate={fetchQuestions}
-            />
+          </div>
+          <div className="support-filter">
+            <span className="filter-label">상태</span>
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+              }}
+              className="support-select"
+            >
+              <option value="">모든 상태</option>
+              <option value="UNANSWERED">답변대기</option>
+              <option value="ANSWERED">답변완료</option>
+            </select>
+          </div>
         </div>
-    );
+      </div>
+
+      <div className="support-table-card">
+        <div className="support-table-shell basic-table-shell">
+          {filteredQuestions.length === 0 ? (
+            <div className="support-empty" role="status">문의 내역이 없습니다.</div>
+          ) : (
+            <BasicTable
+              className="support-basic-table support-qna-table"
+              columns={qnaColumns}
+              data={filteredQuestions}
+              renderCell={renderQnaCell}
+            />
+          )}
+        </div>
+      </div>
+
+      <QnaCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateQuestion}
+        editingQuestion={null}
+      />
+    </div>
+  );
 }
 
 export default QnaBoard;

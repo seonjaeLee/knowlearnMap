@@ -3006,3 +3006,53 @@
 
 #### 기타
 - `src/styles/km-table-icon-actions.css` — 변경 없음(관리열은 기존 `km-table-actions` / `km-table-icon-btn` 패턴 준수)
+
+## 2026-05-15
+
+### 210) 고객센터 3개 메뉴 — `BasicTable` 기반 로컬 더미 데이터 화면 구성
+
+- **목적**: 서버 미연결 상태에서도 **고객센터 > 공지사항 / 자주 묻는 질문 / 1:1 문의** 화면의 UI/UX를 검수할 수 있도록, 기존 `도메인 관리` 페이지와 같은 방식으로 페이지 껍데기에서 mock 데이터를 사용하고 `BasicTable` 패턴으로 목록을 통일
+- **영향**: 고객센터 3개 메뉴의 목록 UI; 검색·필터·등록 모달 진입 흐름; API/service 레이어는 변경하지 않고 페이지 state 기준으로 더미 행 표시
+
+#### JSX/JS 변경
+- `src/data/supportMockData.js` — 공지사항, FAQ, 1:1 문의용 로컬 더미 데이터 신규 추가
+- `src/pages/NoticeList.jsx` — 직접 `<table>` 구조를 `BasicTable`로 전환; mock 공지 데이터, 검색, 등록 시 로컬 state 추가 흐름 구성
+- `src/pages/Faq.jsx` — 직접 `<table>` 구조를 `BasicTable`로 전환; mock FAQ 데이터, 검색, 카테고리 필터, 등록 시 로컬 state 추가 흐름 구성
+- `src/pages/QnaBoard.jsx` — 직접 `<table>` 구조를 `BasicTable`로 전환; mock 문의 데이터, 검색, 상태 필터, 등록 시 로컬 state 추가 흐름 구성
+
+#### CSS 변경
+- `src/pages/SupportCenter.css` — 고객센터 공통 툴바, 검색, 필터, 테이블 카드, 배지, 상태 pill 스타일 신규 추가
+
+#### 기타
+- `src/services/api.js` — 변경 없음(기존 개발 기능/API 패턴 유지)
+- 검증: `npm run build` 통과
+
+### 211) 고객센터 목록 — 테이블 footer 영역 숨김
+
+- **목적**: `워크스페이스 관리` 화면과 동일하게 목록 카드 하단의 요약/페이지네이션 footer를 숨기고, 표 본문만 노출되도록 정리
+- **영향**: 고객센터 3개 메뉴의 `BasicTableFooter` 및 페이지네이션 미노출; mock 데이터는 필터 결과 전체를 그대로 표에 표시
+
+#### JSX/JS 변경
+- `src/pages/NoticeList.jsx` — `BasicTableFooter` / `BasicTablePaginationNav` 제거, `filteredNotices` 전체를 `BasicTable`에 전달
+- `src/pages/Faq.jsx` — `BasicTableFooter` / `BasicTablePaginationNav` 제거, `filteredFaqs` 전체를 `BasicTable`에 전달
+- `src/pages/QnaBoard.jsx` — `BasicTableFooter` / `BasicTablePaginationNav` 제거, `filteredQuestions` 전체를 `BasicTable`에 전달
+
+#### CSS 변경
+- 없음
+
+#### 기타
+- 검증: `npm run build` 통과
+
+### 212) 워크스페이스 관리 — 공유 액션 버튼 기본 배경 제거
+
+- **목적**: 테이블 `관리` 열의 아이콘 버튼 디자인을 통일하기 위해, 워크스페이스 관리의 공유 버튼이 기본 상태에서 배경색을 가지던 문제를 수정하고 hover 시에만 연한 배경이 보이도록 정리
+- **영향**: 워크스페이스 관리 목록의 공유 설정 버튼; 공유 상태가 있는 행도 기본은 투명 배경 + accent 아이콘, hover 시 배경 표시
+
+#### CSS 변경
+- `src/pages/admin/AdminWorkspaceManagement.css` — `.workspace-mgmt-share-btn--active.km-table-icon-btn--neutral`의 기본 `background` 제거
+
+#### JSX/JS 변경 (예외 기록)
+- 없음
+
+#### 기타
+- 검증: `npm run build` 통과
