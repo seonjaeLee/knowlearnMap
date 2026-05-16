@@ -1,58 +1,6 @@
 /* 워크스페이스 관리 — admin-common 미사용, BasicTable + useBasicTableColumnResize */
 
-.workspace-mgmt-page {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    max-width: 100%;
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-}
-
-.workspace-mgmt-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md);
-    flex-wrap: wrap;
-}
-
-.workspace-mgmt-toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    min-width: 0;
-}
-
-.workspace-mgmt-search {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    min-width: 0;
-    flex: 1 1 280px;
-    max-width: 400px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-secondary);
-}
-
-.workspace-mgmt-search-icon {
-    flex-shrink: 0;
-    color: var(--color-text-secondary);
-}
-
-.workspace-mgmt-search-input {
-    flex: 1 1 auto;
-    min-width: 0;
-    border: none;
-    background: transparent;
-    font-family: var(--font-family);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    outline: none;
-}
+/* PageHeader 우측 액션 높이 — PageHeader.css `.kl-header-actions` */
 
 .workspace-mgmt-btn {
     display: inline-flex;
@@ -79,8 +27,8 @@
 
 .workspace-mgmt-btn--icon {
     padding: var(--spacing-sm);
-    min-width: var(--km-table-action-hit-size);
-    min-height: var(--km-table-action-hit-size);
+    min-width: var(--kl-table-action-hit-size);
+    min-height: var(--kl-table-action-hit-size);
 }
 
 .workspace-mgmt-loading {
@@ -90,20 +38,8 @@
     font-size: var(--font-size-base);
 }
 
-.workspace-mgmt-table-card {
-    --km-table-action-hit-size: 32px;
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-lg);
-    min-width: 0;
-    overflow: hidden;
-}
-
-.workspace-mgmt-table-shell {
-    background: var(--color-bg-secondary);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    min-width: 0;
+.table-area {
+    --kl-table-action-hit-size: 32px;
 }
 
 .workspace-mgmt-basic-table {
@@ -178,7 +114,7 @@
     min-width: 0;
 }
 
-.workspace-mgmt-table-card .workspace-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .workspace-mgmt-actions-head {
+.table-area .workspace-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .workspace-mgmt-actions-head {
     padding-right: var(--spacing-sm);
 }
 
@@ -243,16 +179,16 @@
     display: inline-flex;
     justify-content: flex-end;
     align-items: center;
-    gap: var(--km-table-action-icon-gap);
+    gap: var(--kl-table-action-icon-gap);
     width: 100%;
     min-width: 0;
 }
 
-.workspace-mgmt-share-btn--active.km-table-icon-btn--neutral {
+.workspace-mgmt-share-btn--active.kl-table-icon-btn--neutral {
     color: var(--color-accent);
 }
 
-.workspace-mgmt-share-btn--active.km-table-icon-btn--neutral:hover:not(:disabled) {
+.workspace-mgmt-share-btn--active.kl-table-icon-btn--neutral:hover:not(:disabled) {
     background: color-mix(in srgb, var(--color-accent) 18%, transparent);
     color: var(--color-accent);
 }

@@ -17,10 +17,8 @@
 }
 
 .decisionContent {
-  --base-modal-content-min-height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  --base-modal-content-min-height: 0;
+  padding: var(--spacing-md) var(--spacing-lg) !important;
   text-align: center;
 }
 

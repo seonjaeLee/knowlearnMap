@@ -1,0 +1,21 @@
+/**
+ * 공통 한 줄 폼 컨트롤 (input·select) — 툴바·팝업 동일 규격
+ * 바구니만 다름: .table-toolbar, .kl-modal-form, .modal-native-field
+ * 스타일 수정은 이 파일 + 각 바구니 레이아웃(TableToolbar.css 등)
+ */
+
+:root {
+  --kl-control-height: 32px;
+  --kl-control-padding-inline: 12px;
+  --kl-control-padding-inline-end-select: 28px;
+  --kl-control-font-size: var(--font-size-sm);
+  --kl-control-font-weight: var(--font-weight-medium);
+  --kl-control-line-height: 1;
+  --kl-control-radius: var(--radius-sm);
+  --kl-control-border: 1px solid var(--color-border);
+  --kl-control-bg: var(--color-bg-secondary);
+  --kl-control-bg-hover: var(--color-bg-hover);
+  --kl-control-border-hover: var(--color-border-hover);
+  --kl-control-transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+  --kl-control-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235f6368' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}

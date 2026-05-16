@@ -1,8 +1,3 @@
-.notice-create-modal-content {
-    max-height: min(70vh, 760px);
-    overflow-y: auto;
-}
-
 .notice-hidden-file-input {
     display: none;
 }

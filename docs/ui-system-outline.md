@@ -1,13 +1,32 @@
 # UI 체계 정리 개요 (작업 가이드)
 
+## 시작하기 (인수인계·비대면)
+
+**UI를 수정할 때는 이 문서를 출발점**으로 하고, 작업 종류에 따라 아래만 연다.
+
+| 하려는 일 | 문서 / 코드 |
+|-----------|-------------|
+| **목록 화면** (제목 + 검색 툴바 + 표) | **[list-page-spec.md](./list-page-spec.md)** ← 우선 |
+| **표만** (행·헤더·페이지네이션) | [dev-guide-table-ui.md](./dev-guide-table-ui.md) |
+| **모달** | [modal-spec.md](./modal-spec.md) |
+| **색·간격 토큰** | [css-design-tokens.md](./css-design-tokens.md) → `src/index.css` |
+| **변경 이력** | [ui-history.md](./ui-history.md) (**요청 시만** 기록) |
+
+전역 CSS가 어디서 로드되는지는 [list-page-spec.md §5](./list-page-spec.md#5-css-로드-지도-전역-vs-페이지) 참고.
+
+---
+
 ## 연관 문서
 
 | 문서 | 역할 |
 |------|------|
+| **[list-page-spec.md](./list-page-spec.md)** | **목록 상단** PageHeader + `table-toolbar` + `search-area` |
 | [layout-guideline.md](./layout-guideline.md) | 앱 레이아웃 폭·브레이크포인트·여백 |
 | [css-design-tokens.md](./css-design-tokens.md) | `:root` 변수 네이밍·비활성 토큰 |
 | [mockup-guide.md](./mockup-guide.md) | 목업 산출물 형식·체크리스트 |
-| [data-table-spec.md](./data-table-spec.md) | 데이터 테이블 밀도·헤더·행·툴바 규격(초안) |
+| [data-table-spec.md](./data-table-spec.md) | 데이터 테이블 밀도·헤더·행 규격(초안) |
+| [dev-guide-table-ui.md](./dev-guide-table-ui.md) | `BasicTable` 구현·실수 방지 |
+| [modal-spec.md](./modal-spec.md) | 모달 헤더·본문·푸터 |
 | [ui-history.md](./ui-history.md) | 변경 이력(갱신: **요청 시만**, `.cursor/rules/ui-history-on-request.mdc`) |
 
 ---
@@ -19,12 +38,13 @@
 
 ## 0. 작업 순서 (권장)
 
-1. **공통 레이아웃·쉘** — `MainLayout`, 노트북 3열, 탭 영역 (아래 §1)
-2. **토큰·타이포 뎁스** — `index.css` + 표준 제목 단계 (§2)
-3. **폼 상태 매트릭스** — 표로 고정 후 코드 적용 (§3)
-4. **팝업(모달) 공통 구도** — 헤더·본문·푸터 (§4)
-5. **버튼 계층** — primary / secondary / … / disabled (§5)
-6. **MUI vs 순수 CSS 경계** — 정책 문장 + 화면별 이관 (§6)
+1. **목록 화면 chrome** — [list-page-spec.md](./list-page-spec.md) (`PageHeader`, `table-toolbar`, `search-area`)
+2. **공통 레이아웃·쉘** — `MainLayout`, 노트북 3열, 탭 영역 (아래 §1)
+3. **토큰·타이포 뎁스** — `index.css` + 표준 제목 단계 (§2)
+4. **폼 상태 매트릭스** — 표로 고정 후 코드 적용 (§3)
+5. **팝업(모달) 공통 구도** — 헤더·본문·푸터 (§4)
+6. **버튼 계층** — primary / secondary / … / disabled (§5)
+7. **MUI vs 순수 CSS 경계** — 정책 문장 + 화면별 이관 (§6)
 
 한 번에 전부 고치지 않고, **만지는 화면·컴포넌트부터** 위 순서에 맞춰 치환합니다.
 

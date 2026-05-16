@@ -1,0 +1,179 @@
+/*
+ * 목록·테이블 상단 툴바 (searchArea)
+ * - DOM: `.table-area` > `.table-toolbar` (+ PageHeader는 `kl-main-sticky-head`)
+ * - 로드: main.jsx 전역 import
+ * - 규격·수정 FAQ: docs/list-page-spec.md
+ * - 대표 예시: src/pages/admin/AdminMemberManagement.jsx
+ */
+
+.table-toolbar {
+  --kl-toolbar-control-height: var(--kl-control-height);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* 자식이 한 덩어리일 때 우측 정렬(워크스페이스 목록 등) */
+.table-toolbar--end {
+  justify-content: flex-end;
+}
+
+/* 툴바 좌·우 영역 — 검색·필터·보기 전환 등 묶음 */
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.toolbar-right {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* 툴바 검색 — 아이콘 + 입력 (searchArea, toolbar-select와 동일 32px·radius-sm) */
+.search-area {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  flex: 1 1 280px;
+  max-width: 400px;
+  height: var(--kl-control-height);
+  box-sizing: border-box;
+  padding: 0 var(--kl-control-padding-inline);
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  background-color: var(--kl-control-bg);
+  transition: var(--kl-control-transition);
+}
+
+.search-area:hover {
+  border-color: var(--kl-control-border-hover);
+  background-color: var(--kl-control-bg-hover);
+}
+
+.search-area:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+}
+
+.search-area-icon {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.search-area-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  line-height: var(--kl-control-line-height);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.search-area-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* 툴바 공통 select (네이티브) — 높이 32px, 워크스페이스 정렬 셀렉트 기준 */
+.toolbar-select {
+  box-sizing: border-box;
+  height: var(--kl-control-height);
+  min-width: 108px;
+  padding: 0 var(--kl-control-padding-inline-end-select) 0 var(--kl-control-padding-inline);
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  background-color: var(--kl-control-bg);
+  color: var(--color-text-primary);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  font-family: var(--font-family);
+  line-height: var(--kl-control-line-height);
+  cursor: pointer;
+  flex-shrink: 0;
+  appearance: none;
+  background-image: var(--kl-control-select-chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: var(--kl-control-transition);
+}
+
+.toolbar-select:hover {
+  border-color: var(--kl-control-border-hover);
+  background-color: var(--kl-control-bg-hover);
+}
+
+.toolbar-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+}
+
+/* 툴바 보기 전환(그리드/리스트 등) */
+.toolbar-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  box-sizing: border-box;
+  height: var(--kl-control-height);
+  padding: 2px;
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  background: var(--kl-control-bg);
+  flex-shrink: 0;
+}
+
+.toolbar-view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.toolbar-view-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.toolbar-view-btn.is-active {
+  background: var(--color-bg-primary);
+  color: var(--color-accent);
+  box-shadow: var(--shadow-small);
+}
+
+@media (max-width: 768px) {
+  .table-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .table-toolbar--end {
+    align-items: flex-end;
+  }
+
+  .search-area {
+    max-width: none;
+  }
+}

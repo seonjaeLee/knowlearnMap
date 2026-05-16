@@ -312,15 +312,9 @@
 }
 
 /* 콘텐츠 루트: 목록 등은 본문 높이에 맞춤(푸터를 스크롤 끝으로 밀기 위해 flex 성장 제거) */
-.main-layout .main-content-outlet-wrap .admin-page,
-.main-layout .main-content-outlet-wrap .admin-container,
-.main-layout .main-content-outlet-wrap .domain-management-container,
-.main-layout .main-content-outlet-wrap .domain-selection-container,
-.main-layout .main-content-outlet-wrap .home-container {
+.main-layout .main-content-outlet-wrap > .kl-page:not(.kl-page--fill) {
   flex: 0 1 auto;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 .main-layout .main-content-outlet-wrap .loading-screen {
@@ -328,45 +322,14 @@
   min-height: 0;
 }
 
-/* 노트북: outlet 래퍼 직계 .notebook-layout */
-.main-layout .main-content-outlet-wrap--notebook > .notebook-layout {
+/* 노트북: kl-page--fill 안의 본문 */
+.main-layout .main-content-outlet-wrap--notebook > .kl-page--fill > .notebook-layout {
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
 }
 
-/* 목록·설정: 제목 + 툴바 — sticky( main 상단 패딩 없음, 별도 음수 마진 불필요 ) */
-/* z-index: BasicTable 리사이즈 th 가 z-index 최대 40까지 쓰므로, 본문이 스티키 헤더 위로 비치지 않게 50으로 둠 */
-.main-layout .main-content .km-main-sticky-head {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  background: var(--color-bg-primary);
-  isolation: isolate;
-  padding-top:var(--spacing-sm);
-  padding-bottom:var(--spacing-sm);
-}
-
-.main-layout .main-content .km-main-sticky-head .page-header {
-  margin-bottom: 0;
-}
-
-/* 노트북 등: PageHeader가 outlet 래퍼 직계일 때 */
-.main-layout .main-content-outlet-wrap > .page-header {
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: var(--color-bg-primary);
-  padding-bottom: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-  isolation: isolate;
-  box-shadow: 0 1px 0 var(--color-border-subtle);
-}
+/* 콘텐츠 타이틀·kl-main-sticky-head → PageHeader.css (list-page-spec.md) */
 
 .gnb-right {
   display: flex;

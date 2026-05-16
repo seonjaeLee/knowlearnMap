@@ -1,57 +1,40 @@
-.domain-selection-container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    width: 100%;
-    min-width: 0;
-    min-height: 0;
-    background-color: transparent;
-    padding: 0;
-}
-
-.domain-selection-content {
-    max-width: 100%;
-    width: 100%;
-    min-width: 0;
-    text-align: left;
-}
-
 .domain-redirecting {
     display: flex;
     justify-content: center;
     margin-top: 50px;
 }
 
-.domain-add-btn {
-    padding: calc(var(--spacing-xs) + var(--spacing-xs)) var(--spacing-md);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    border: 1px solid var(--color-accent);
-    border-radius: var(--radius-sm);
-    background: var(--color-accent);
-    color: #fff;
-    cursor: pointer;
-    font-family: var(--font-family);
-    transition: background-color var(--transition-fast);
+/* 도메인 선택 — table-toolbar 안내 (기존 user-info-bar 톤, 여백은 table-area gap만) */
+.table-area > .table-toolbar {
+    width: 100%;
 }
 
-.domain-add-btn:hover {
-    background: var(--color-accent-hover);
-    border-color: var(--color-accent-hover);
+.table-area > .table-toolbar .user-info-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.table-area > .table-toolbar .domain-content-help {
+    margin: 0;
+    white-space: nowrap;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
 }
 
 /* Grid/Card styles removed */
 
-/* docs/data-table-spec.md — 밀집(km-data-table-dense); 열 폭은 DomainSelection.jsx columns에서만 지정 */
-.domain-list-container {
-    background: var(--color-bg-secondary);
-    border-radius: var(--radius-md);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid var(--color-border-subtle);
-}
-
-.domain-list-container .domain-basic-table thead .MuiTableCell-root {
+/* docs/data-table-spec.md — 밀집(kl-data-table-dense); 열 폭은 DomainSelection.jsx columns에서만 지정 */
+.table-area .domain-basic-table thead .MuiTableCell-root {
     padding-inline: var(--spacing-md);
     white-space: nowrap;
     line-height: 1.25;
@@ -59,17 +42,17 @@
     vertical-align: middle;
 }
 
-.domain-list-container .domain-basic-table thead .MuiTableCell-head:last-of-type .domain-list-actions-head {
+.table-area .domain-basic-table thead .MuiTableCell-head:last-of-type .domain-list-actions-head {
     padding-right: var(--spacing-sm);
 }
 
-.domain-list-container .domain-basic-table tbody .MuiTableCell-root {
+.table-area .domain-basic-table tbody .MuiTableCell-root {
     padding-inline: var(--spacing-md);
     line-height: 1.25;
     box-sizing: border-box;
 }
 
-.domain-list-container .domain-basic-table tbody tr:last-child .MuiTableCell-root {
+.table-area .domain-basic-table tbody tr:last-child .MuiTableCell-root {
     border-bottom: none;
 }
 
@@ -159,7 +142,7 @@
     display: inline-flex;
     justify-content: flex-end;
     align-items: center;
-    gap: var(--km-table-action-icon-gap);
+    gap: var(--kl-table-action-icon-gap);
     width: 100%;
     min-width: 0;
 }
@@ -182,25 +165,7 @@
     font-size: 0.95rem;
 }
 
-/* 삭제 아이콘 버튼: 전역 `.km-table-icon-btn.km-table-icon-btn--danger` — km-table-icon-actions.css */
-
-.user-info-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-    margin-top: var(--spacing-xl);
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-}
-
-.domain-content-help {
-    margin: 0;
-    white-space: nowrap;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-tertiary);
-}
+/* 삭제 아이콘 버튼: 전역 `.kl-table-icon-btn.kl-table-icon-btn--danger` — kl-table-icon-actions.css */
 
 .domain-add-modal-content {
     min-height: auto !important;

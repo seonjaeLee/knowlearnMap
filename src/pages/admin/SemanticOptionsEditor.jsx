@@ -82,8 +82,9 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
     };
 
     return (
-        <div className="admin-page">
-            <AdminPageHeader
+        <div className="kl-page">
+            <div className="kl-main-sticky-head">
+                <AdminPageHeader
                 icon={Layers}
                 title={title}
                 count={items.length}
@@ -103,6 +104,7 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
                     </>
                 }
             />
+            </div>
 
             {loading ? (
                 <div className="admin-loading-state">

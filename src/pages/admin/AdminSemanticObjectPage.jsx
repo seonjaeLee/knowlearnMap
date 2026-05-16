@@ -9,7 +9,7 @@ import {
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import AdminSemanticCategoryPage from './AdminSemanticCategoryPage';
 import BaseModal from '../../components/common/modal/BaseModal';
-import KmModalSelect from '../../components/common/modal/KmModalSelect';
+import KlModalSelect from '../../components/common/modal/KlModalSelect';
 import './admin-common.css';
 
 /**
@@ -150,10 +150,12 @@ function AdminSemanticObjectPage({ compact = false }) {
   );
 
   return (
-    <div className={compact ? '' : 'admin-page'}>
+    <div className={compact ? '' : 'kl-page'}>
       {!compact && (
-        <AdminPageHeader icon={Box} title="객체 & 카테고리" count={items.length}
-          subtitle="좌측에서 객체 카테고리(계층)를 선택해 우측 객체 목록을 필터링합니다." />
+        <div className="kl-main-sticky-head">
+          <AdminPageHeader icon={Box} title="객체 & 카테고리" count={items.length}
+            subtitle="좌측에서 객체 카테고리(계층)를 선택해 우측 객체 목록을 필터링합니다." />
+        </div>
       )}
       <div className="admin-semantic-split-layout">
         {/* 좌: 객체 카테고리 (type=OBJECT, 계층) */}
@@ -232,7 +234,7 @@ function AdminSemanticObjectPage({ compact = false }) {
         title={editing?.id ? 'Object 수정' : 'Object 추가'}
         onClose={() => setEditing(null)}
         maxWidth="sm"
-        contentClassName="admin-semantic-edit-content km-modal-form"
+        contentClassName="admin-semantic-edit-content kl-modal-form"
         actions={(
           <>
             <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
@@ -254,7 +256,7 @@ function AdminSemanticObjectPage({ compact = false }) {
             </div>
             <div className="admin-field">
               <label className="admin-field-label">객체 카테고리</label>
-              <KmModalSelect
+              <KlModalSelect
                 placeholder="(선택 안 함)"
                 value={editing.categoryId != null ? String(editing.categoryId) : ''}
                 onChange={(e) =>

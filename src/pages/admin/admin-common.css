@@ -114,153 +114,47 @@
     min-width: 0;
 }
 
-/* ============================================================
- * 페이지 헤더 (AdminPageHeader 컴포넌트가 사용)
- * ============================================================ */
-.admin-page-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--admin-space-md);
-    padding-bottom: var(--admin-space-md);
-    border-bottom: 1px solid var(--admin-border);
-}
-
-.admin-page-header-left {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--admin-space-md);
-    min-width: 0;
-}
-
-.admin-page-header-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    border-radius: var(--admin-radius-lg);
-    background: var(--admin-color-primary-soft);
-    color: var(--admin-color-primary);
-}
-
-.admin-page-header-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-}
-
-.admin-page-header-title {
-    margin: 0;
-    font-size: var(--admin-font-xl);
-    font-weight: 600;
-    color: var(--admin-text-primary);
-    line-height: 1.3;
-}
-
-.admin-page-header-count {
-    margin-left: var(--admin-space-sm);
-    font-size: var(--admin-font-md);
-    font-weight: 500;
-    color: var(--admin-text-muted);
-}
-
-.admin-page-header-subtitle {
-    margin: 0;
-    font-size: var(--admin-font-base);
-    color: var(--admin-text-secondary);
-    line-height: 1.5;
-}
-
-.admin-page-header-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--admin-space-sm);
-    flex-shrink: 0;
-}
+/* 페이지 헤더(제목·breadcrumb·액션) → PageHeader.css · AdminPageHeader → PageHeader.jsx */
 
 /* ============================================================
- * 툴바 (검색 + 필터 + 액션)
+ * 툴바 (검색 + 필터 + 액션) — 레이아웃·검색은 TableToolbar.css (`.table-toolbar`, `.toolbar-left`, `.toolbar-right`, `.search-area`)
  * ============================================================ */
-.admin-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--admin-space-md);
-    flex-wrap: wrap;
-}
 
-.admin-toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: var(--admin-space-sm);
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.admin-toolbar-right {
-    display: flex;
-    align-items: center;
-    gap: var(--admin-space-sm);
-    flex-shrink: 0;
-}
-
-/* PageHeader·툴바 우측: 텍스트 버튼 + 정사각 아이콘 버튼 높이 통일 */
+/* @deprecated — 신규는 PageHeader.css `.kl-header-actions` 사용. 하위 호환만 유지 */
 .admin-toolbar-actions {
+    --kl-header-action-size: 32px;
     display: inline-flex;
     align-items: center;
-    gap: var(--admin-space-sm);
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+    height: var(--kl-header-action-size);
 }
 
 .admin-toolbar-actions > .admin-btn {
-    min-height: 40px;
     box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--kl-header-action-size);
+    height: var(--kl-header-action-size);
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1;
+    font-size: var(--font-size-sm);
+    flex-shrink: 0;
 }
 
 .admin-toolbar-actions > .admin-btn.admin-btn-icon {
-    min-width: 40px;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.admin-search {
-    position: relative;
-    width: 320px;
-    max-width: 100%;
-}
-
-.admin-search-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--admin-text-muted);
-    pointer-events: none;
-}
-
-.admin-search-input {
-    width: 100%;
-    padding: 10px 12px 10px 38px;
-    border: 1px solid var(--admin-border);
-    border-radius: var(--admin-radius-md);
-    font-size: var(--admin-font-md);
-    background: var(--admin-bg-panel);
-    color: var(--admin-text-primary);
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.admin-search-input:focus {
-    outline: none;
-    border-color: var(--admin-color-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    min-width: var(--kl-header-action-size);
+    width: var(--kl-header-action-size);
+    padding: 0;
 }
 
 /* ============================================================
  * 테이블
  * ============================================================ */
-/* 가로 스크롤 두께·색: 전역 `styles/km-scrollbar-thin.css`에서 `.admin-table-wrap` 연동 */
+/* 가로 스크롤 두께·색: 전역 `styles/kl-scrollbar-thin.css`에서 `.admin-table-wrap` 연동 */
 .admin-table-wrap {
     background: var(--admin-bg-panel);
     border: 1px solid var(--admin-border);
@@ -270,16 +164,8 @@
     min-width: 0;
 }
 
-/* 테이블 + 하단 푸터를 한 카드로 묶을 때(그림자 없음, border만) */
-.admin-table-card {
-    background: var(--admin-bg-panel);
-    border: 1px solid var(--admin-border);
-    border-radius: var(--admin-radius-lg);
-    min-width: 0;
-    overflow: hidden;
-}
-
-.admin-table-card > .admin-table-wrap {
+/* 테이블 + 하단 푸터 — 외곽은 공통 `.table-area`(TableArea.css), 내부 스크롤은 `.admin-table-wrap` */
+.table-area > .admin-table-wrap {
     border: none;
     border-radius: 0;
 }
@@ -477,44 +363,44 @@
     white-space: nowrap;
 }
 
-/* 테이블 행 내 아이콘 버튼 — `styles/km-table-icon-actions.css` 기본 + 어드민 팔레트 */
-.admin-table .km-table-icon-btn:focus-visible {
+/* 테이블 행 내 아이콘 버튼 — `styles/kl-table-icon-actions.css` 기본 + 어드민 팔레트 */
+.admin-table .kl-table-icon-btn:focus-visible {
     outline-color: var(--admin-color-primary);
 }
 
-.admin-table .km-table-icon-btn--neutral {
+.admin-table .kl-table-icon-btn--neutral {
     color: var(--admin-text-secondary);
 }
 
-.admin-table .km-table-icon-btn--neutral:hover:not(:disabled) {
+.admin-table .kl-table-icon-btn--neutral:hover:not(:disabled) {
     background: color-mix(in srgb, var(--admin-text-primary) 10%, transparent);
     color: var(--admin-text-primary);
 }
 
-.admin-table .km-table-icon-btn--danger {
+.admin-table .kl-table-icon-btn--danger {
     color: var(--admin-color-danger);
 }
 
-.admin-table .km-table-icon-btn--danger:hover:not(:disabled) {
+.admin-table .kl-table-icon-btn--danger:hover:not(:disabled) {
     background: color-mix(in srgb, var(--admin-color-danger) 10%, transparent);
     color: var(--admin-color-danger-hover);
 }
 
-.admin-table .km-table-icon-btn--danger > svg {
+.admin-table .kl-table-icon-btn--danger > svg {
     color: inherit;
     stroke: currentColor;
 }
 
-.admin-table .km-table-icon-btn--success {
+.admin-table .kl-table-icon-btn--success {
     color: var(--admin-color-success);
 }
 
-.admin-table .km-table-icon-btn--success:hover:not(:disabled) {
+.admin-table .kl-table-icon-btn--success:hover:not(:disabled) {
     background: color-mix(in srgb, var(--admin-color-success) 12%, transparent);
     color: var(--admin-color-success-on-soft);
 }
 
-.admin-table .km-table-icon-btn--success > svg {
+.admin-table .kl-table-icon-btn--success > svg {
     color: inherit;
     stroke: currentColor;
 }
@@ -1170,12 +1056,12 @@
     color: #64748b;
 }
 
-/* === 표 열 리사이즈 (헤더 핸들만) — `useResizableColumns` + `.km-col-resize-handle` === */
-.km-th-col-resizable {
+/* === 표 열 리사이즈 (헤더 핸들만) — `useResizableColumns` + `.kl-col-resize-handle` === */
+.kl-th-col-resizable {
     position: relative;
 }
 
-.km-col-resize-handle {
+.kl-col-resize-handle {
     position: absolute;
     top: 0;
     right: 0;
@@ -1188,7 +1074,7 @@
     box-sizing: border-box;
 }
 
-.km-col-resize-handle:hover {
+.kl-col-resize-handle:hover {
     background-color: var(--color-accent);
     opacity: 0.28;
 }
@@ -1198,71 +1084,71 @@
  * 형제 th는 왼쪽보다 오른쪽이 위에 그려져 핸들 클릭을 가로채므로,
  * 왼쪽 열부터 더 높은 z-index를 준다. (:has 로 리사이즈 표에만 적용)
  */
-.admin-table:has(.km-col-resize-handle) thead tr > th {
+.admin-table:has(.kl-col-resize-handle) thead tr > th {
     position: relative;
     overflow: visible;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(1) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(1) {
     z-index: 24;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(2) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(2) {
     z-index: 23;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(3) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(3) {
     z-index: 22;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(4) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(4) {
     z-index: 21;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(5) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(5) {
     z-index: 20;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(6) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(6) {
     z-index: 19;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(7) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(7) {
     z-index: 18;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(8) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(8) {
     z-index: 17;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(9) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(9) {
     z-index: 16;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(10) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(10) {
     z-index: 15;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(11) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(11) {
     z-index: 14;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(12) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(12) {
     z-index: 13;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(13) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(13) {
     z-index: 12;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(14) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(14) {
     z-index: 11;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(15) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(15) {
     z-index: 10;
 }
 
-.admin-table:has(.km-col-resize-handle) thead tr > th:nth-child(16) {
+.admin-table:has(.kl-col-resize-handle) thead tr > th:nth-child(16) {
     z-index: 9;
 }

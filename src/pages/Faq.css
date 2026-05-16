@@ -87,7 +87,7 @@
 }
 
 /* 어드민과 동일 toolbar 우측 필터 */
-.faq-page .admin-toolbar-right .filter-label {
+.faq-page .toolbar-right .filter-label {
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
 }

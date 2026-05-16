@@ -11,7 +11,7 @@ import PageHeader from '../common/PageHeader';
  * - subtitle: 보조 설명문. 생략 가능.
  * - actions:  우측 액션 버튼 슬롯 (ReactNode).
  *
- * 스타일은 admin-common.css 의 .admin-page-header-* 클래스를 사용합니다.
+ * 스타일은 공통 PageHeader.css · PageHeader.jsx 를 사용합니다 (admin-page-header-* 미사용).
  */
 function AdminPageHeader({ icon: _icon, title, count, subtitle, actions, showDescription = false }) {
     const headerTitle = typeof count === 'number'

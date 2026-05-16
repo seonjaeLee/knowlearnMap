@@ -5,10 +5,11 @@ import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import axios from 'axios';
 import { API_URL } from '../config/api';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import BaseModal from '../components/common/modal/BaseModal';
 import BasicTable from '../components/common/BasicTable';
+import './admin/admin-common.css';
 import './DomainSelection.css';
 
 const isLocalAuthEnabled = import.meta.env.VITE_ENABLE_LOCAL_AUTH === 'true';
@@ -153,7 +154,7 @@ function DomainSelection() {
             {
                 id: '_actions',
                 label: <span className="domain-list-actions-head">관리</span>,
-                width: 'var(--km-table-actions-col-min)',
+                width: 'var(--kl-table-actions-col-min)',
                 align: 'right',
                 ellipsis: false,
             },
@@ -196,14 +197,14 @@ function DomainSelection() {
                             <div className="domain-list-actions">
                                 <button
                                     type="button"
-                                    className="km-table-icon-btn km-table-icon-btn--danger"
+                                    className="kl-table-icon-btn kl-table-icon-btn--danger"
                                     title="삭제"
                                     aria-label={deleting === domain.id ? '삭제 중' : '삭제'}
                                     onClick={(e) => handleDeleteDomain(e, domain)}
                                     disabled={deleting === domain.id}
                                 >
                                     {deleting === domain.id ? (
-                                        <Loader2 className="km-table-icon-btn__spin" aria-hidden />
+                                        <Loader2 className="kl-table-icon-btn__spin" aria-hidden />
                                     ) : (
                                         <Trash2 strokeWidth={1.75} aria-hidden />
                                     )}
@@ -225,32 +226,37 @@ function DomainSelection() {
     }
 
     return (
-        <div className="domain-selection-container">
+        <div className="kl-page">
             <div className="domain-selection-content">
-                <div className="km-main-sticky-head">
+                <div className="kl-main-sticky-head">
                 <PageHeader
                     title="도메인 선택"
                     breadcrumbs={['어드민센터']}
                     actions={(
                         <button
+                            type="button"
                             onClick={() => { setShowAddModal(true); setAddError(''); }}
-                            className="domain-add-btn"
+                            className="admin-btn admin-btn-primary"
                         >
-                            + 도메인 추가
+                            <Plus size={14} aria-hidden />
+                            도메인 추가
                         </button>
                     )}
                 />
 
-                <div className="user-info-bar">
-                    <span>관리자 로그인 ({user.email})</span>
-                    <span className="domain-content-help">작업할 도메인을 선택해주세요.</span>
-                </div>
                 </div>
 
                 {loading && <p>Loading domains...</p>}
                 {error && <p className="error-message">{error}</p>}
 
-                <div className="domain-list-container km-data-table-dense basic-table-shell">
+                <div className="table-area">
+                    <div className="table-toolbar">
+                        <div className="user-info-bar">
+                            <span>관리자 로그인 ({user.email})</span>
+                            <span className="domain-content-help">작업할 도메인을 선택해주세요.</span>
+                        </div>
+                    </div>
+                    <div className="basic-table-shell kl-data-table-dense">
                     {!loading && domains.length === 0 ? (
                         <div className="domain-list-empty" role="status">
                             등록된 도메인이 없습니다.
@@ -272,6 +278,7 @@ function DomainSelection() {
                             }
                         />
                     )}
+                    </div>
                 </div>
             </div>
 
@@ -280,7 +287,7 @@ function DomainSelection() {
                 title="새 도메인 추가"
                 onClose={closeAddModal}
                 maxWidth="xs"
-                contentClassName="domain-add-modal-content km-modal-form"
+                contentClassName="domain-add-modal-content kl-modal-form"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={closeAddModal} disabled={adding}>

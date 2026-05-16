@@ -1,7 +1,7 @@
 /**
- * BasicTable — 사용자 관리(admin-table-card + admin-table-wrap) 시각 기준.
+ * BasicTable — 사용자 관리(table-area + admin-table-wrap) 시각 기준.
  * admin-common 의 `.admin-table` 마크업에 의존하지 않고 동일 팔레트·행 높이·푸터를 유지합니다.
- * 스크롤 래퍼에는 전역 `basic-table-shell` + `styles/km-scrollbar-thin.css` 를 함께 쓰세요.
+ * 스크롤 래퍼에는 전역 `basic-table-shell` + `styles/kl-scrollbar-thin.css` 를 함께 쓰세요.
  */
 .wrap {
   /* admin-common :root 와 동일 값(테이블·푸터 범위) — admin-common 미 import 화면에서도 동작 */

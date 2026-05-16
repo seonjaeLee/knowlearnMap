@@ -4,6 +4,8 @@
 }
 
 .dialogPaper {
+  display: flex !important;
+  flex-direction: column !important;
   border-radius: var(--radius-xl) !important;
   border: 1px solid var(--color-border) !important;
   box-shadow: var(--shadow-medium) !important;
@@ -12,12 +14,22 @@
   min-height: var(--base-modal-paper-min-height) !important;
 }
 
+/* alert/confirm 등 — Paper·본문을 내용 높이에 맞춤 */
+.dialogPaperFit {
+  min-height: unset !important;
+}
+
+/* Form 팝업 — index `--base-modal-paper-min-height` 미적용, paperSx로 세로 확보 */
+.dialogPaperForm {
+  min-height: unset !important;
+}
+
 .header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   gap: var(--spacing-sm) !important;
-  padding: var(--spacing-md) var(--spacing-lg) !important;
+  padding: var(--spacing-sm) var(--spacing-lg) !important;
   border-bottom: 1px solid var(--color-border-subtle) !important;
 }
 
@@ -31,7 +43,7 @@
   padding: var(--spacing-md) var(--spacing-lg) !important;
 }
 
-.headerFilled + .content {
+.headerFilled + .contentShell .contentScroll {
   background-color: var(--color-bg-secondary) !important;
 }
 
@@ -73,21 +85,50 @@
   display: inline-flex !important;
 }
 
-.content {
-  padding: var(--spacing-lg) var(--spacing-xl) !important;
-  min-height: var(--base-modal-content-min-height, 120px) !important;
-  /* 스크롤 두께·색: 전역 `km-scrollbar-thin.css` → `.km-base-modal-content` */
+/* MUI DialogContent — 패딩·스크롤 없음, 내부 .contentScroll 에서 처리 */
+.contentShell {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.contentShellFit {
+  flex: 0 1 auto !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+/* 실제 스크롤·`contentClassName`(faq-modal-content 등) 적용 영역 */
+.contentScroll {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  /* 스크롤 두께·색: 전역 `kl-scrollbar-thin.css` → `.kl-base-modal-content` */
+}
+
+.contentScrollFit {
+  flex: none;
+  max-height: none;
+  overflow: visible;
 }
 
 .contentInner {
+  min-height: var(--base-modal-content-min-height, 0);
   font-family: 'Pretendard', sans-serif;
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
 }
 
+//팝업하단 버튼영역
 .actions {
   gap: var(--spacing-sm) !important;
-  padding: var(--spacing-lg) var(--spacing-lg) !important;
+  padding:  var(--spacing-md)  var(--spacing-lg) var(--spacing-lg) !important;
 }
 
 .actions > :global(:not(style) ~ :not(style)) {

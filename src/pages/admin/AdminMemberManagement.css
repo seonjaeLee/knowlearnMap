@@ -1,59 +1,5 @@
 /* 사용자 관리 — 워크스페이스/도메인 관리와 동일: BasicTable + 토큰, admin-common 미사용 */
 
-.member-mgmt-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  max-width: 100%;
-  width: 100%;
-  min-width: 0;
-  margin: 0;
-}
-
-.member-mgmt-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  flex-wrap: wrap;
-}
-
-.member-mgmt-toolbar-left {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  min-width: 0;
-}
-
-.member-mgmt-search {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  min-width: 0;
-  flex: 1 1 280px;
-  max-width: 400px;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-secondary);
-}
-
-.member-mgmt-search-icon {
-  flex-shrink: 0;
-  color: var(--color-text-secondary);
-}
-
-.member-mgmt-search-input {
-  flex: 1 1 auto;
-  min-width: 0;
-  border: none;
-  background: transparent;
-  font-family: var(--font-family);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  outline: none;
-}
-
 .member-mgmt-btn {
   display: inline-flex;
   align-items: center;
@@ -79,8 +25,8 @@
 
 .member-mgmt-btn--icon {
   padding: var(--spacing-sm);
-  min-width: var(--km-table-action-hit-size);
-  min-height: var(--km-table-action-hit-size);
+  min-width: var(--kl-table-action-hit-size);
+  min-height: var(--kl-table-action-hit-size);
 }
 
 .member-mgmt-loading {
@@ -90,28 +36,16 @@
   font-size: var(--font-size-base);
 }
 
-.member-mgmt-table-card {
-  --km-table-action-hit-size: 32px;
-  --km-table-actions-col-min: 140px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  min-width: 0;
-  overflow: hidden;
-}
-
-.member-mgmt-table-shell {
-  background: var(--color-bg-secondary);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  min-width: 0;
+.table-area {
+  --kl-table-action-hit-size: 32px;
+  --kl-table-actions-col-min: 140px;
 }
 
 .member-mgmt-basic-table {
   min-width: 1320px;
 }
 
-.member-mgmt-table-card .member-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .member-mgmt-actions-head {
+.table-area .member-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .member-mgmt-actions-head {
   padding-right: var(--spacing-sm);
 }
 
@@ -128,7 +62,7 @@
   min-width: 0;
 }
 
-.member-mgmt-table-card .member-mgmt-basic-table .MuiTableBody-root .member-mgmt-status-cell .admin-badge {
+.table-area .member-mgmt-basic-table .MuiTableBody-root .member-mgmt-status-cell .admin-badge {
   box-sizing: border-box;
   display: inline-block;
   max-width: 100%;
@@ -196,13 +130,39 @@
   min-height: auto !important;
 }
 
-.member-mgmt-modal-email-display {
-  padding: calc(var(--spacing-sm) + var(--spacing-xs)) 14px;
-  background: var(--color-bg-hover);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
+.member-mgmt-modal-field select {
+  width: 100%;
+}
+
+/* 이메일 — 수정 불가, 기존 email-display 톤(회색 배경·보조 텍스트) */
+.member-mgmt-modal-readonly-input {
+  width: 100%;
+  box-sizing: border-box;
+  height: var(--kl-control-height);
+  padding: 0 var(--kl-control-padding-inline);
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  font-family: var(--font-family);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  line-height: var(--kl-control-line-height);
+  background-color: var(--color-bg-hover);
   color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-md);
+  cursor: default;
+  pointer-events: none;
+}
+
+.kl-modal-form .member-mgmt-modal-readonly-input {
+  background-color: var(--color-bg-hover) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.kl-modal-form .member-mgmt-modal-readonly-input:focus,
+.kl-modal-form .member-mgmt-modal-readonly-input:focus-visible {
+  outline: none !important;
+  border-color: var(--color-border) !important;
+  box-shadow: none !important;
 }
 
 .member-mgmt-modal-field {

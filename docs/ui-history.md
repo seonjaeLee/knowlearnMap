@@ -1901,7 +1901,7 @@
 ### 126) 클래스 네이밍 단순화 및 DevTools 식별성 개선
 
 - **목적**: 보이는 영역 기준의 빠른 유지보수를 위해 클래스 의미를 단순화하고, 브라우저 DevTools에서 공통 모달 구조를 즉시 식별할 수 있도록 고정 클래스명 추가
-- **영향**: alert/confirm 관련 스타일 클래스가 역할 중심 이름으로 통일되고, MUI 해시 클래스와 별개로 `km-*` 고정 클래스 기준 디버깅 가능
+- **영향**: alert/confirm 관련 스타일 클래스가 역할 중심 이름으로 통일되고, MUI 해시 클래스와 별개로 `kl-*` 고정 클래스 기준 디버깅 가능
 
 #### CSS 변경
 - `src/context/DialogContext.module.scss`
@@ -1912,13 +1912,13 @@
   - 리네이밍된 decision 클래스 참조로 교체
 - `src/components/common/modal/BaseModal.jsx`
   - 주요 슬롯에 DevTools 식별용 고정 클래스 추가
-    - `km-base-modal-paper`
-    - `km-base-modal-backdrop`
-    - `km-base-modal-header`
-    - `km-base-modal-title-row`
-    - `km-base-modal-content`
-    - `km-base-modal-content-inner`
-    - `km-base-modal-actions`
+    - `kl-base-modal-paper`
+    - `kl-base-modal-backdrop`
+    - `kl-base-modal-header`
+    - `kl-base-modal-title-row`
+    - `kl-base-modal-content`
+    - `kl-base-modal-content-inner`
+    - `kl-base-modal-actions`
 
 ### 127) 로그인 영역 비밀번호 찾기 팝업 공통 모달로 정리
 
@@ -2571,23 +2571,23 @@
 #### CSS 변경
 - `src/context/DialogContext.module.scss` — `.decisionPaper` `min-width: 390px`
 
-### 176) 팝업 본문 폼 컨트롤 규격(`km-modal-form`)·`ModalFormField` 도입
+### 176) 팝업 본문 폼 컨트롤 규격(`kl-modal-form`)·`ModalFormField` 도입
 
 - **목적**: 팝업에만 공통 입력·선택·MUI Outlined·체크/라디오 톤을 한 파일에서 유지보수하고, 필드 마크업은 `ModalFormField`로 통일할 수 있게 함
-- **영향**: 전역 스타일 로드·홈 이름 변경·프롬프트 모달에 `km-modal-form` 적용(파일럿)
+- **영향**: 전역 스타일 로드·홈 이름 변경·프롬프트 모달에 `kl-modal-form` 적용(파일럿)
 
 #### 문서
 - `docs/modal-form-spec.md` — 신규
 - `docs/modal-spec.md` — §9에서 `modal-form-spec` 링크
 
 #### CSS 변경
-- `src/styles/km-modal-form.css` — `.km-modal-form` 및 하위 규칙(네이티브·MUI·`.modal-input` 팝업 내 보정)
-- `src/pages/Home.css` — `.modal-input--chunk-none` 제거(동일 규칙을 `km-modal-form`으로 이전)
+- `src/styles/kl-modal-form.css` — `.kl-modal-form` 및 하위 규칙(네이티브·MUI·`.modal-input` 팝업 내 보정)
+- `src/pages/Home.css` — `.modal-input--chunk-none` 제거(동일 규칙을 `kl-modal-form`으로 이전)
 
 #### JSX/JS 변경 (예외 기록)
-- `src/main.jsx` — `km-modal-form.css` import
+- `src/main.jsx` — `kl-modal-form.css` import
 - `src/components/common/modal/ModalFormField.jsx`, `ModalFormField.module.scss` — 신규
-- `src/pages/Home.jsx` — 워크스페이스 이름 변경·프롬프트 변경 모달 `contentClassName`에 `km-modal-form`
+- `src/pages/Home.jsx` — 워크스페이스 이름 변경·프롬프트 변경 모달 `contentClassName`에 `kl-modal-form`
 
 ### 177) 홈「프롬프트 변경」모달 — 필드 카드 테두리 제거·그리드 간격 확대
 
@@ -2596,7 +2596,7 @@
 
 #### CSS 변경
 - `src/pages/Home.css` — `.home-prompt-modal-grid` `gap`을 `var(--spacing-lg)` × `var(--spacing-xl)`, 하단 여백 `var(--spacing-md)`; `.home-prompt-field` 테두리·배경·패딩 제거(플랫 스택)
-- `src/styles/km-modal-form.css` — `.km-modal-form select:not(:disabled)` `cursor: pointer`
+- `src/styles/kl-modal-form.css` — `.kl-modal-form select:not(:disabled)` `cursor: pointer`
 
 ### 178) 홈「프롬프트 변경」— 라벨 스크린리더 전용·optgroup·select 크기
 
@@ -2604,7 +2604,7 @@
 - **영향**: 워크스페이스 프롬프트 변경 모달만 변경
 
 #### CSS 변경
-- `src/pages/Home.css` — `.home-prompt-label` 시각 숨김; `.km-modal-form .home-prompt-modal-shell select.modal-input` 패딩·min-height; `.home-prompt-none-btn` min-height; 힌트 `font-size-xs`·상단 여백
+- `src/pages/Home.css` — `.home-prompt-label` 시각 숨김; `.kl-modal-form .home-prompt-modal-shell select.modal-input` 패딩·min-height; `.home-prompt-none-btn` min-height; 힌트 `font-size-xs`·상단 여백
 
 #### JSX/JS 변경 (예외 기록)
 - `src/pages/Home.jsx` — 각 `label`에 `htmlFor`, `select`에 `id`; 옵션을 `<optgroup label="…">`로 감쌈
@@ -2628,13 +2628,13 @@
 #### CSS 변경
 - `src/pages/Home.css` — `.home-prompt-hint` `margin-left: var(--spacing-sm)`(8px)
 
-### 181) 팝업 네이티브 `select` 규격 적용(`km-modal-form`)
+### 181) 팝업 네이티브 `select` 규격 적용(`kl-modal-form`)
 
 - **목적**: `modal-form-spec`대로 `select`를 input·textarea와 분리해 최소 높이·비대칭 우패딩·라인 높이 통일; 프롬프트 변경의 NONE 버튼 높이 정렬
-- **영향**: `contentClassName`에 `km-modal-form`이 있는 모든 팝업의 네이티브 `select`; 홈 프롬프트 변경 NONE 버튼
+- **영향**: `contentClassName`에 `kl-modal-form`이 있는 모든 팝업의 네이티브 `select`; 홈 프롬프트 변경 NONE 버튼
 
 #### CSS 변경
-- `src/styles/km-modal-form.css` — `.km-modal-form select` 전용 블록; `select.modal-input` 오버라이드
+- `src/styles/kl-modal-form.css` — `.kl-modal-form select` 전용 블록; `select.modal-input` 오버라이드
 - `src/pages/Home.css` — `.home-prompt-none-btn` `min-height`·`align-self`·`box-sizing`
 
 #### 문서 변경
@@ -2643,10 +2643,10 @@
 ### 182) 프롬프트 변경 셀렉트 — 컴팩트 높이·화살표 여백·목록 샘플 보강
 
 - **목적**: 네이티브 select 세로 여백을 하단 버튼에 가깝게 줄이고, 우측 화살표 들러붙음 완화; API 목록이 짧을 때 UI용 샘플 코드로 드롭다운 항목 수 확보
-- **영향**: `km-modal-form` 내 모든 네이티브 select; 홈 프롬프트 코드 fetch·청킹 NONE 버튼
+- **영향**: `kl-modal-form` 내 모든 네이티브 select; 홈 프롬프트 코드 fetch·청킹 NONE 버튼
 
 #### CSS 변경
-- `src/styles/km-modal-form.css` — `.km-modal-form select`·`select.modal-input` 패딩·line-height·min-height 조정
+- `src/styles/kl-modal-form.css` — `.kl-modal-form select`·`select.modal-input` 패딩·line-height·min-height 조정
 - `src/pages/Home.css` — `.home-prompt-none-btn` 높이를 셀렉트와 맞추도록 `min-height` 제거·세로 패딩 `spacing-xs`
 
 #### JSX/JS 변경 (예외 기록)
@@ -2657,12 +2657,12 @@
 
 ### 183) 팝업 폼 필드 UI 통일 — `radius-sm`·패딩·가이드 보강
 
-- **목적**: 가이드(`modal-form-spec`)대로 `modal-native-field`·`km-modal-form`·동일 패턴 폼의 모서리·패딩·테두리를 한 계열로 맞춤; 과도한 라운드(`radius-md`) 완화
+- **목적**: 가이드(`modal-form-spec`)대로 `modal-native-field`·`kl-modal-form`·동일 패턴 폼의 모서리·패딩·테두리를 한 계열로 맞춤; 과도한 라운드(`radius-md`) 완화
 - **영향**: 팝업·전역 네이티브 한 줄 입력·도메인 추가·FAQ 생성 폼
 
 #### CSS 변경
 - `src/index.css` — `.modal-native-field` 입력 `border-radius` → `var(--radius-sm)`
-- `src/styles/km-modal-form.css` — 네이티브 input·textarea·select·MUI Outlined·`.modal-input` 모두 `--radius-sm`; `select` 패딩을 한 줄 입력과 세로·좌 동일·우만 화살표 여유
+- `src/styles/kl-modal-form.css` — 네이티브 input·textarea·select·MUI Outlined·`.modal-input` 모두 `--radius-sm`; `select` 패딩을 한 줄 입력과 세로·좌 동일·우만 화살표 여유
 - `src/pages/DomainSelection.css` — 도메인 추가 입력·에러 박스 `radius-sm`
 - `src/components/FaqCreateModal.css` — `.faq-form-group` 필드 토큰화·`radius-sm`·패딩 정렬
 
@@ -2680,20 +2680,20 @@
 #### 문서 변경
 - `docs/modal-form-spec.md` — 유지보수 문구에 `.modal-input` 명시
 
-### 185) 프롬프트 변경 — 네이티브 select 제거·`KmModalSelect`(MUI)로 OS 무관 통일
+### 185) 프롬프트 변경 — 네이티브 select 제거·`KlModalSelect`(MUI)로 OS 무관 통일
 
 - **목적**: 맥/윈도 등 OS별 펼침 UI 차이 제거; 트리거·화살표 여백·열린 목록을 토큰 기준으로 통일
 - **영향**: 홈 워크스페이스 프롬프트 변경 모달 전 필드; 메뉴 패널 전역 클래스는 다른 화면 재사용 가능
 
 #### CSS 변경
-- `src/styles/km-modal-form.css` — `.km-modal-select-menu-paper` 및 메뉴 아이템 토큰 스타일
+- `src/styles/kl-modal-form.css` — `.kl-modal-select-menu-paper` 및 메뉴 아이템 토큰 스타일
 
 #### JSX/JS 변경 (예외 기록)
-- `src/components/common/modal/KmModalSelect.jsx`, `KmModalSelect.module.scss` — 신규
-- `src/pages/Home.jsx` — `<select>` → `KmModalSelect`
+- `src/components/common/modal/KlModalSelect.jsx`, `KlModalSelect.module.scss` — 신규
+- `src/pages/Home.jsx` — `<select>` → `KlModalSelect`
 
 #### 문서 변경
-- `docs/modal-form-spec.md` — §6 네이티브 select 지양·`KmModalSelect` 안내
+- `docs/modal-form-spec.md` — §6 네이티브 select 지양·`KlModalSelect` 안내
 
 ### 186) 홈「프롬프트 변경」— 액션 영역 세로 여백·그리드 gap(32/48)
 
@@ -2713,19 +2713,19 @@
 
 ### 188) 홈「프롬프트 변경」— 그리드 gap 주석·액션 패딩 선택자 보강
 
-- **목적**: `gap` 행·열 의미 주석으로 재오류 방지; `.km-base-modal-actions.home-prompt-modal-actions`로 하단 패딩 덮어쓰기 확실화
+- **목적**: `gap` 행·열 의미 주석으로 재오류 방지; `.kl-base-modal-actions.home-prompt-modal-actions`로 하단 패딩 덮어쓰기 확실화
 - **영향**: 프롬프트 변경 모달만
 
 #### CSS 변경
 - `src/pages/Home.css` — 위 선택자·그리드 주석
 
-### 189) `KmModalSelect` 높이 38px·프롬프트 모달 `paperSx`(900×850)·`BaseModal` 확장
+### 189) `KlModalSelect` 높이 38px·프롬프트 모달 `paperSx`(900×850)·`BaseModal` 확장
 
 - **목적**: 셀렉트 트리거 높이 38px 고정; 프롬프트 변경 모달 가로 900·세로 상한 850px를 `Home.jsx` 상수로 조절 가능하게 함; `BaseModal`에 `paperSx` 지원
-- **영향**: 모든 `BaseModal` 호출(선택 prop); 프롬프트 변경·`KmModalSelect`·청킹 NONE 버튼 높이
+- **영향**: 모든 `BaseModal` 호출(선택 prop); 프롬프트 변경·`KlModalSelect`·청킹 NONE 버튼 높이
 
 #### CSS 변경
-- `src/components/common/modal/KmModalSelect.module.scss` — 트리거 38px
+- `src/components/common/modal/KlModalSelect.module.scss` — 트리거 38px
 - `src/pages/Home.css` — `.home-prompt-modal-content` flex 스크롤; 미사용 `.home-prompt-modal` 블록 제거; NONE 버튼 `min-height: 38px`
 
 #### JSX/JS 변경 (예외 기록)
@@ -2735,23 +2735,23 @@
 #### 문서 변경
 - `docs/modal-spec.md` — §7 `paperSx` 안내
 
-### 190) BaseModal 폼 공통 — `km-modal-form` 전반 적용·`<select>` → `KmModalSelect`
+### 190) BaseModal 폼 공통 — `kl-modal-form` 전반 적용·`<select>` → `KlModalSelect`
 
-- **목적**: 프롬프트 변경 모달과 동일하게 팝업 본문에 `km-modal-form`을 두어 입력·셀렉트 규격 통일; OS별 네이티브 `<select>` 제거
+- **목적**: 프롬프트 변경 모달과 동일하게 팝업 본문에 `kl-modal-form`을 두어 입력·셀렉트 규격 통일; OS별 네이티브 `<select>` 제거
 - **영향**: `BaseModal`을 쓰는 편집·설정류 모달·글로벌 `DialogContext` 프롬프트; 목록/필터 바의 네이티브 `<select>`는 범위 제외
 
 #### CSS 변경
-- 없음(기존 `src/styles/km-modal-form.css` 활용)
+- 없음(기존 `src/styles/kl-modal-form.css` 활용)
 
 #### JSX/JS 변경
-- `src/components/common/modal/KmModalSelect.jsx` — `optionItems` `{ value, label, disabled? }`, `includeEmptyOption`, 선택적 `id`(라벨 연결), `inputProps.id`
-- `src/context/DialogContext.jsx` — `type === 'prompt'`일 때만 콘텐츠에 `km-modal-form`
-- `<select>` → `KmModalSelect`: `DbConnectionModal`, `ScheduledImportModal`, `FaqCreateModal`, `ReportCreationModal`, `AdminSemanticObjectPage`, `AdminSemanticCategoryPage`, `AdminSemanticActionPage`, `AdminSemanticRelationPage`, `AdminMemberManagement`
-- `contentClassName`에 `km-modal-form` 병합: `ForgotPasswordModal`, `DomainSelection`, 프롬프트 `PromptFormDialog`·`EditPromptDialog`, `NoticeCreateModal`, `NoticeDetailModal`, `DictionaryView`(편집·이동 모달), `ReportResultModal`, `AddSourceModal`, `ReportGenerationModal`, `ShareSettingsModal`, `QnaCreateModal`, `QnaDetailModal`, `FaqDetailModal`, `AdminConfigManagement`(도움말), `AdminUpgradeRequests`, `NotebookDetail`(청킹·메타 모달) 등
+- `src/components/common/modal/KlModalSelect.jsx` — `optionItems` `{ value, label, disabled? }`, `includeEmptyOption`, 선택적 `id`(라벨 연결), `inputProps.id`
+- `src/context/DialogContext.jsx` — `type === 'prompt'`일 때만 콘텐츠에 `kl-modal-form`
+- `<select>` → `KlModalSelect`: `DbConnectionModal`, `ScheduledImportModal`, `FaqCreateModal`, `ReportCreationModal`, `AdminSemanticObjectPage`, `AdminSemanticCategoryPage`, `AdminSemanticActionPage`, `AdminSemanticRelationPage`, `AdminMemberManagement`
+- `contentClassName`에 `kl-modal-form` 병합: `ForgotPasswordModal`, `DomainSelection`, 프롬프트 `PromptFormDialog`·`EditPromptDialog`, `NoticeCreateModal`, `NoticeDetailModal`, `DictionaryView`(편집·이동 모달), `ReportResultModal`, `AddSourceModal`, `ReportGenerationModal`, `ShareSettingsModal`, `QnaCreateModal`, `QnaDetailModal`, `FaqDetailModal`, `AdminConfigManagement`(도움말), `AdminUpgradeRequests`, `NotebookDetail`(청킹·메타 모달) 등
 
 ### 191) 비밀번호 찾기 모달 — `ModalFormField`·네이티브 이메일 입력
 
-- **목적**: `km-modal-form` + `modal-form-spec`에 맞춰 MUI `TextField` 제거, 라벨 상단·토큰 기반 한 줄 입력으로 다른 팝업 폼과 통일
+- **목적**: `kl-modal-form` + `modal-form-spec`에 맞춰 MUI `TextField` 제거, 라벨 상단·토큰 기반 한 줄 입력으로 다른 팝업 폼과 통일
 - **영향**: 로그인 플로우「비밀번호 찾기」모달만
 
 #### CSS 변경
@@ -2763,11 +2763,11 @@
 ### 192) 포커스 링·MUI primary를 `--color-accent`와 통일
 
 - **목적**: 네이티브 입력 포커스(테두리·외곽 glow)와「메일 전송」등 primary 버튼 색이 서로 다르게 보이던 문제 완화 — MUI 기본 primary(#1976d2)와 `:root --color-accent`(#1a73e8) 불일치 제거, 포커스 링은 accent 기반 단일 토큰으로 유지보수
-- **영향**: 전역 MUI `color="primary"` 컴포넌트; `.km-modal-form`·`.modal-native-field` 포커스
+- **영향**: 전역 MUI `color="primary"` 컴포넌트; `.kl-modal-form`·`.modal-native-field` 포커스
 
 #### CSS 변경
 - `src/index.css` — `--shadow-focus-input`(accent `color-mix`); `.modal-native-field` 포커스 `box-shadow`가 해당 변수 참조
-- `src/styles/km-modal-form.css` — 네이티브·MUI Outlined 포커스 `box-shadow` → `var(--shadow-focus-input)`
+- `src/styles/kl-modal-form.css` — 네이티브·MUI Outlined 포커스 `box-shadow` → `var(--shadow-focus-input)`
 
 #### JSX/JS 변경 (예외 기록)
 - `src/main.jsx` — `palette.primary.main` `#1a73e8`, `dark` `#1557b0`
@@ -2781,18 +2781,18 @@
 - **영향**: `ForgotPasswordModal`만
 
 #### CSS 변경
-- `src/components/ForgotPasswordModal.module.scss` — `.emailInput` 기본 필드 토큰; `:global(.km-modal-form)` 하위 `:focus` / `:focus-visible`
+- `src/components/ForgotPasswordModal.module.scss` — `.emailInput` 기본 필드 토큰; `:global(.kl-modal-form)` 하위 `:focus` / `:focus-visible`
 
 #### JSX/JS 변경 (예외 기록)
 - `src/components/ForgotPasswordModal.jsx` — `isValidEmail`; `ModalFormField` `required` 제거; 전송 버튼 `disabled={loading || !emailOk}`; API 요청 본문 `email.trim()`
 
-### 194) `km-modal-form` 네이티브 포커스 — `!important`·`:invalid:focus` 보강
+### 194) `kl-modal-form` 네이티브 포커스 — `!important`·`:invalid:focus` 보강
 
 - **목적**: `type=email` 등으로 `:invalid`일 때 브라우저·다른 스타일이 `border-color`를 덮어 포커스 액센트가 취소선되어 보이던 문제 제거; MUI Dialog 하위에서도 공통 토큰 유지
-- **영향**: `.km-modal-form` 안 모든 네이티브 `input`/`select`/`textarea` 포커스; MUI Outlined 포커스 `box-shadow`
+- **영향**: `.kl-modal-form` 안 모든 네이티브 `input`/`select`/`textarea` 포커스; MUI Outlined 포커스 `box-shadow`
 
 #### CSS 변경
-- `src/styles/km-modal-form.css` — `:focus`·`:focus-visible`에 `!important`; `:invalid:focus` 보강; `.MuiOutlinedInput-root.Mui-focused` `box-shadow`에 `!important`
+- `src/styles/kl-modal-form.css` — `:focus`·`:focus-visible`에 `!important`; `:invalid:focus` 보강; `.MuiOutlinedInput-root.Mui-focused` `box-shadow`에 `!important`
 - `src/components/ForgotPasswordModal.module.scss` — 동일 포커스 규칙에 `!important`, `:invalid:focus` 포함
 
 #### 문서 변경
@@ -2809,7 +2809,7 @@
 #### JSX/JS 변경
 - `src/components/DomainManagement.jsx` — `PageHeader` → `AdminPageHeader`; `admin-common.css` import; `admin-toolbar` + `admin-search` 행; `domainSearch`/`filteredDomains`; 빈 필터 시「검색 결과가 없습니다.」; 루트에 `admin-page` 클래스 병합
 
-### 196) 도메인 추가/수정 팝업 — `BaseModal`·`km-modal-form`·`KmModalSelect` 공통화
+### 196) 도메인 추가/수정 팝업 — `BaseModal`·`kl-modal-form`·`KlModalSelect` 공통화
 
 - **목적**: 도메인 추가/수정 팝업이 기존 커스텀 오버레이/폼 스타일로 남아 있던 부분을 공통 모달 규격으로 통일해 페이지 간 모달 UI/폼 경험을 일관화
 - **영향**: `/admin/domains`의 도메인 생성·수정 팝업 헤더/본문/푸터; 프롬프트 선택 셀렉트 UI; 중복확인/경고/오류 메시지 블록
@@ -2818,11 +2818,11 @@
 - `src/components/DomainManagement.css` — 구형 `.modal-*`/`.form-*`/`.btn-*` 스타일 제거, `domain-modal-content`·`domain-input-group`·`domain-prompt-grid`·`domain-info-note`·`domain-error-note` 등 `BaseModal` 기반 클래스 추가
 
 #### JSX/JS 변경
-- `src/components/DomainManagement.jsx` — 커스텀 모달 마크업 제거 후 `BaseModal` 적용(`contentClassName="km-modal-form"`), 필드 블록을 `ModalFormField`로 전환, 프롬프트 셀렉트를 네이티브 `<select>`에서 `KmModalSelect`로 교체, `handleSelectFieldChange`·`promptSelectConfigs`로 선택 필드 로직 공통화
+- `src/components/DomainManagement.jsx` — 커스텀 모달 마크업 제거 후 `BaseModal` 적용(`contentClassName="kl-modal-form"`), 필드 블록을 `ModalFormField`로 전환, 프롬프트 셀렉트를 네이티브 `<select>`에서 `KlModalSelect`로 교체, `handleSelectFieldChange`·`promptSelectConfigs`로 선택 필드 로직 공통화
 
 ### 197) 도메인 팝업 입력 필드 배경 통일(2열 가독성 개선)
 
-- **목적**: 2열 프롬프트 영역이 복잡해 보이는 인상을 줄이기 위해 도메인 팝업 내부의 `input`/셀렉트(`KmModalSelect`) 배경을 동일한 흰색으로 통일
+- **목적**: 2열 프롬프트 영역이 복잡해 보이는 인상을 줄이기 위해 도메인 팝업 내부의 `input`/셀렉트(`KlModalSelect`) 배경을 동일한 흰색으로 통일
 - **영향**: `/admin/domains` 도메인 생성·수정 팝업의 필드 시각 밀도 완화, 입력/선택 컨트롤 일관성 향상
 
 #### CSS 변경
@@ -2851,7 +2851,7 @@
 - `src/pages/DomainSelection.css` — `.domain-list-container`·`.domain-list-table` th/td를 토큰 기반 밀집 스타일로 변경; 선택 행 강조·호버·빈 목록 셀(`.domain-list-empty`); `.domain-add-btn`·`.user-info-bar`·`.delete-btn-small` 토큰화
 
 #### JSX/JS 변경 (예외 기록)
-- `src/pages/DomainSelection.jsx` — 테이블 래퍼에 `km-data-table-dense` 클래스; 선택/관리 열 `th` 정렬용 클래스; 빈 목록 시 `colSpan` 안내 행; 삭제 버튼 `type="button"`
+- `src/pages/DomainSelection.jsx` — 테이블 래퍼에 `kl-data-table-dense` 클래스; 선택/관리 열 `th` 정렬용 클래스; 빈 목록 시 `colSpan` 안내 행; 삭제 버튼 `type="button"`
 
 ### 200) 도메인 선택 테이블 — 행 높이(참고 레이아웃)·삭제 아이콘
 
@@ -2951,8 +2951,8 @@
 
 ### 208) 테이블 UI 개발 가이드 정의·`data-table-spec` 연동 및 목록 표 공통화 적용
 
-- **목적**: 팀 공통 **테이블 마크업·밀도·헤더 정렬·액션 열·페이지네이션·열 리사이즈**를 문서와 코드로 고정하고, 어드민·도메인 선택 등 목록 화면에 동일 패턴 적용; 워크스페이스 표는 **헤더 `sticky` 미사용**(일반 `thead` 흐름); 상단 `km-main-sticky-head`는 **하단 margin/padding·하단 box-shadow 제거**로 본문과 간격 정리
-- **영향**: `docs` 테이블 규격·가이드; `admin-common` 및 도메인/워크스페이스/사용자 관리·도메인 선택 등; 메인 레이아웃 sticky 헤더 블록; Cursor 규칙(`table-ui-pitfalls`, `km-table-actions-ui`, `ui-history-on-request`)
+- **목적**: 팀 공통 **테이블 마크업·밀도·헤더 정렬·액션 열·페이지네이션·열 리사이즈**를 문서와 코드로 고정하고, 어드민·도메인 선택 등 목록 화면에 동일 패턴 적용; 워크스페이스 표는 **헤더 `sticky` 미사용**(일반 `thead` 흐름); 상단 `kl-main-sticky-head`는 **하단 margin/padding·하단 box-shadow 제거**로 본문과 간격 정리
+- **영향**: `docs` 테이블 규격·가이드; `admin-common` 및 도메인/워크스페이스/사용자 관리·도메인 선택 등; 메인 레이아웃 sticky 헤더 블록; Cursor 규칙(`table-ui-pitfalls`, `kl-table-actions-ui`, `ui-history-on-request`)
 
 #### 문서 변경
 - `docs/dev-guide-table-ui.md` — 신규(피해야 할 패턴, 체크리스트, `useResizableColumns` 안내, `dev-guide` ↔ `data-table-spec` 연계)
@@ -2961,14 +2961,14 @@
 - `docs/ui-system-outline.md`, `docs/mockup-guide.md`, `docs/modal-migration-plan.md` — 개요·교차 참조 소폭
 - `docs/ui-history_.md` — 삭제(중복·폐기)
 - `.cursor/rules/ui-history-always.mdc` — 삭제(요청 시만 `ui-history` 갱신으로 전환)
-- `.cursor/rules/ui-history-on-request.mdc`, `.cursor/rules/table-ui-pitfalls.mdc`, `.cursor/rules/km-table-actions-ui.mdc`, `.cursor/rules/workflow-confirm-before-implement.mdc` — 추가
+- `.cursor/rules/ui-history-on-request.mdc`, `.cursor/rules/table-ui-pitfalls.mdc`, `.cursor/rules/kl-table-actions-ui.mdc`, `.cursor/rules/workflow-confirm-before-implement.mdc` — 추가
 
 #### CSS·전역 스타일
 - `src/pages/admin/admin-common.css` — 테이블 카드·랩·푸터·페이지네이션·체크박스 열·프롬프트 태그·열 리사이즈 핸들 등 확장
-- `src/styles/km-scrollbar-thin.css`, `src/styles/km-table-icon-actions.css` — 신규
+- `src/styles/kl-scrollbar-thin.css`, `src/styles/kl-table-icon-actions.css` — 신규
 - `src/index.css` — 스크롤·테이블 액션·sticky thead 오프셋 등 토큰
 - `src/App.css`, `src/pages/Admin.css`, `src/main.jsx` — 전역 연동
-- `src/components/common/MainLayout.css` — `km-main-sticky-head` 하단 여백·그림자 제거, 본문 스크롤·브레이크포인트 등 정리
+- `src/components/common/MainLayout.css` — `kl-main-sticky-head` 하단 여백·그림자 제거, 본문 스크롤·브레이크포인트 등 정리
 - `src/pages/DomainSelection.css`, `src/components/DomainManagement.css`, `src/pages/admin/AdminWorkspaceManagement.css`, `src/pages/admin/AdminMemberManagement.css` — 밀집 표·카드·열·액션 정렬
 
 #### JSX/JS 변경
@@ -2987,25 +2987,25 @@
 
 ### 209) 시스템 설정 관리(`/admin/config`) — `BasicTable`·열 리사이즈·스티키 헤더·값 열 UX·툴바 토큰
 
-- **목적**: 어드민 **시스템 설정 관리** 화면을 `BasicTable` + `useBasicTableColumnResize` 패턴으로 정리; `km-main-sticky-head`와 표 헤더 `z-index` 겹침 방지; 값은 표 내 인라인 편집 없이 **모달 수정** + 한 줄 미리보기·**말줄임 시에만** `Info`로 `KmPopover` 전체 표시; 관리열은 `km-table-icon-actions`(도메인과 동일 **`FilePen`** 수정); 카테고리는 표 밖 **소제목** + 표 카드 분리; 카테고리 필터는 프롬프트 툴바와 동일 **`promptToolbarSelectSx`** MUI `Select`
+- **목적**: 어드민 **시스템 설정 관리** 화면을 `BasicTable` + `useBasicTableColumnResize` 패턴으로 정리; `kl-main-sticky-head`와 표 헤더 `z-index` 겹침 방지; 값은 표 내 인라인 편집 없이 **모달 수정** + 한 줄 미리보기·**말줄임 시에만** `Info`로 `KlPopover` 전체 표시; 관리열은 `kl-table-icon-actions`(도메인과 동일 **`FilePen`** 수정); 카테고리는 표 밖 **소제목** + 표 카드 분리; 카테고리 필터는 프롬프트 툴바와 동일 **`promptToolbarSelectSx`** MUI `Select`
 - **영향**: 시스템 설정 관리 메뉴; 공용 `admin-common`(툴바 버튼 높이·`admin-btn-outline-success`); `MainLayout` 스티키 `z-index`; 프롬프트 목록 `Select` sx 공유 파일
 
 #### 문서 변경
-- `docs/dev-guide-table-ui.md` — `BasicTable` + `km-main-sticky-head` 적층, 시스템 설정 화면 참고 안내 보강
+- `docs/dev-guide-table-ui.md` — `BasicTable` + `kl-main-sticky-head` 적층, 시스템 설정 화면 참고 안내 보강
 
 #### CSS 변경
-- `src/components/common/MainLayout.css` — `.km-main-sticky-head`의 `z-index`를 **50**으로 상향(BasicTable 리사이즈 `th` 최대 40과의 역할 분리)
+- `src/components/common/MainLayout.css` — `.kl-main-sticky-head`의 `z-index`를 **50**으로 상향(BasicTable 리사이즈 `th` 최대 40과의 역할 분리)
 - `src/pages/admin/admin-common.css` — `.admin-toolbar-actions`(우측 액션 버튼 높이 통일), `.admin-btn-outline-success`(캐시 갱신 등)
 - `src/pages/admin/AdminConfigManagement.css` — 카테고리 섹션·표 영역·값 한 줄·popover·행 호버 대비·편집 모달 `textarea` 등
 
 #### JSX/JS 변경 (예외 기록)
-- `src/pages/admin/AdminConfigManagement.jsx` — `BasicTable` + `useBasicTableColumnResize`(`km-admin-config-mgmt-v1`); `BaseModal` 편집; `KmPopover` 값 전체; `ConfigMgmtValueTableCell`(말줄임 감지·`ResizeObserver`); MUI `Select`/`MenuItem` + `promptToolbarSelectSx`
+- `src/pages/admin/AdminConfigManagement.jsx` — `BasicTable` + `useBasicTableColumnResize`(`kl-admin-config-mgmt-v1`); `BaseModal` 편집; `KlPopover` 값 전체; `ConfigMgmtValueTableCell`(말줄임 감지·`ResizeObserver`); MUI `Select`/`MenuItem` + `promptToolbarSelectSx`
 - `src/pages/admin/promptToolbarSelectSx.js` — **신규**(프롬프트 툴바 MUI `Select` sx 공통)
 - `src/prompt/components/prompts/PromptList.jsx` — `selectSx`를 `promptToolbarSelectSx` import로 통일
 - `src/data/adminConfigMockData.js` — 시스템 설정 UI용 목 데이터(기존 브랜치 맥락과 연동 시 참고)
 
 #### 기타
-- `src/styles/km-table-icon-actions.css` — 변경 없음(관리열은 기존 `km-table-actions` / `km-table-icon-btn` 패턴 준수)
+- `src/styles/kl-table-icon-actions.css` — 변경 없음(관리열은 기존 `kl-table-actions` / `kl-table-icon-btn` 패턴 준수)
 
 ## 2026-05-15
 
@@ -3049,7 +3049,7 @@
 - **영향**: 워크스페이스 관리 목록의 공유 설정 버튼; 공유 상태가 있는 행도 기본은 투명 배경 + accent 아이콘, hover 시 배경 표시
 
 #### CSS 변경
-- `src/pages/admin/AdminWorkspaceManagement.css` — `.workspace-mgmt-share-btn--active.km-table-icon-btn--neutral`의 기본 `background` 제거
+- `src/pages/admin/AdminWorkspaceManagement.css` — `.workspace-mgmt-share-btn--active.kl-table-icon-btn--neutral`의 기본 `background` 제거
 
 #### JSX/JS 변경 (예외 기록)
 - 없음
@@ -3059,22 +3059,22 @@
 
 ### 213) 고객센터 3개 메뉴 — 목록 테이블 정리·상세/작성 팝업 구조·툴바 select·관리자 권한(관리 열)
 
-- **목적**: 공지사항 / FAQ / 1:1 문의를 `BasicTable` + 공통 토큰 기준으로 통일하고, 상세·작성 팝업 레이아웃을 정리; 툴바 필터는 도메인 수정 팝업과 동일한 `KmModalSelect`로 맞춤; **관리자**에게만 목록 **관리** 열(수정·삭제) 및 등록 버튼 노출
+- **목적**: 공지사항 / FAQ / 1:1 문의를 `BasicTable` + 공통 토큰 기준으로 통일하고, 상세·작성 팝업 레이아웃을 정리; 툴바 필터는 도메인 수정 팝업과 동일한 `KlModalSelect`로 맞춤; **관리자**에게만 목록 **관리** 열(수정·삭제) 및 등록 버튼 노출
 - **영향**: 고객센터 3개 목록·상세 모달·툴바; 공용 `BasicTable` 행 호버·커서; 비관리자는 관리 열·공지/FAQ 등록 버튼 미표시(1:1 **문의 등록**은 일반 사용자 유지). 1:1 **답변 등록(대기 상태만)** 규칙은 별도 단계로 보류
 
 #### 목록 테이블 (메뉴별 열·동작)
 | 메뉴 | 열 순서 | 비고 |
 |------|---------|------|
 | 공지사항 | 분류 → 제목 → 작성자 → 작성일 → 조회수 (+ 관리*) | 고정 행 `#fbf5f3`·핀/NEW 배지; 행 클릭 → 상세 |
-| FAQ | 카테고리 → 질문 → 작성자 → 작성일 → 조회수 (+ 관리*) | 카테고리 `KmModalSelect` 필터; 행 클릭 → 상세 |
-| 1:1 문의 | 제목 → 도메인 → 문의번호 → 등록일 → 최근 활동 → 상태 (+ 관리*) | 상태 `KmModalSelect` 필터 |
+| FAQ | 카테고리 → 질문 → 작성자 → 작성일 → 조회수 (+ 관리*) | 카테고리 `KlModalSelect` 필터; 행 클릭 → 상세 |
+| 1:1 문의 | 제목 → 도메인 → 문의번호 → 등록일 → 최근 활동 → 상태 (+ 관리*) | 상태 `KlModalSelect` 필터 |
 
 \*관리 열: `user.role === 'ADMIN'` 또는 `user.email === 'admin'` 일 때만
 
 #### 권한·관리 열
 - `src/utils/supportCenterAdmin.js` — `isSupportCenterAdmin(user)` 공통 판별
 - `src/pages/supportCenterColumns.js` — 관리 열 정의(`_actions`, 라벨 `관리`)
-- `src/components/support/SupportTableAdminActions.jsx` — `km-table-icon-btn` 수정(`FilePen`) / 삭제(`Trash2`), 클릭 시 `stopPropagation`(행 상세와 분리)
+- `src/components/support/SupportTableAdminActions.jsx` — `kl-table-icon-btn` 수정(`FilePen`) / 삭제(`Trash2`), 클릭 시 `stopPropagation`(행 상세와 분리)
 - **수정**: 각 메뉴 기존 작성 모달을 `editingNotice` / `editingFaq` / `editingQuestion` 으로 열어 전 필드 편집
 - **삭제**: `useDialog().confirm` 후 로컬 state에서 제거(다른 어드민 테이블과 동일 패턴)
 - **상단 등록**: 공지·FAQ — 관리자만; 1:1 문의 등록 버튼 — 전 사용자
@@ -3082,7 +3082,7 @@
 #### 상세·작성 팝업 구조
 - **공지 상세** (`NoticeDetailModal`) — 회색 **head**(분류·제목·메타·최종수정) + 흰색 **body**(본문만); 우측 메타 중복 제거; footer 목록이동(블루 아웃라인)·확인; `BaseModal` content 패딩과 head `padding-inline` 분리 유지
 - **FAQ 상세** (`FaqDetailModal`) — 공지 상세와 동일 클래스·레이아웃; `NoticeDetailModal.css` 재사용
-- **툴바 select** — 네이티브 `<select>` 제거 → `KmModalSelect` + 부모 `km-modal-form`(스타일 단일 소스: `KmModalSelect.module.scss`, `km-modal-form.css`)
+- **툴바 select** — 네이티브 `<select>` 제거 → `KlModalSelect` + 부모 `kl-modal-form`(스타일 단일 소스: `KlModalSelect.module.scss`, `kl-modal-form.css`)
 
 #### 공용 테이블 UX
 - `BasicTable` — `onRowClick`/`onRowKeyDown` 있을 때만 `rowInteractive`·`cursor: pointer`
@@ -3090,7 +3090,7 @@
 - 제목 셀 — `.support-title-text` `font-weight: var(--font-weight-medium)` (`SupportCenter.css`)
 
 #### CSS 변경
-- `src/pages/SupportCenter.css` — 툴바 검색·`support-filter-select`(KmModalSelect 너비), 배지·상태 pill·관리 열 정렬 등
+- `src/pages/SupportCenter.css` — 툴바 검색·`support-filter-select`(KlModalSelect 너비), 배지·상태 pill·관리 열 정렬 등
 - `src/components/NoticeDetailModal.css` — 상세 head/body·footer 버튼
 - `src/pages/NoticeList.css`, `Faq.css`, `QnaBoard.css` — 페이지별 보조(고정 행·배지 등)
 

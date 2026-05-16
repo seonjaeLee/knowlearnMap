@@ -224,8 +224,8 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
             headerClassName="report-generation-modal-header"
             contentClassName={
                 isEdit
-                    ? 'report-generation-edit-modal-content report-generation-modal-content km-modal-form'
-                    : 'report-generation-list-modal-content report-generation-modal-content km-modal-form'
+                    ? 'report-generation-edit-modal-content report-generation-modal-content kl-modal-form'
+                    : 'report-generation-list-modal-content report-generation-modal-content kl-modal-form'
             }
             actionsClassName="report-generation-modal-actions"
             actions={editActions}

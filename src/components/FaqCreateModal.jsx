@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
-import KmModalSelect from './common/modal/KmModalSelect';
+import { supportFormModalPaperSx } from './common/modal/supportFormModalPaperSx';
 import './FaqCreateModal.css';
 
 function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
@@ -101,9 +101,10 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
             open={isOpen}
             onClose={onClose}
             title={editingFaq ? '자주 묻는 질문 수정' : '자주 묻는 질문 작성'}
-            maxWidth="md"
-            fullWidth
-            contentClassName="faq-modal-content km-modal-form"
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={supportFormModalPaperSx}
+            contentClassName="faq-modal-content kl-modal-form"
             actionsClassName="faq-modal-actions"
             actions={(
                 <>
@@ -137,17 +138,23 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                         <label htmlFor="faq-category">카테고리</label>
                         <div className="faq-category-input">
                             <div className="faq-category-field">
-                                <KmModalSelect
+                                <select
                                     id="faq-category"
-                                    placeholder="카테고리 선택"
                                     value={category}
                                     onChange={(e) => {
                                         const v = e.target.value;
                                         setCategory(v);
                                         if (v) setNewCategory('');
                                     }}
-                                    options={categories || []}
-                                />
+                                    aria-label="카테고리"
+                                >
+                                    <option value="">카테고리 선택</option>
+                                    {(categories || []).map((cat) => (
+                                        <option key={cat} value={cat}>
+                                            {cat}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <span className="faq-category-or" aria-hidden="true">또는</span>
                             <div className="faq-category-field">

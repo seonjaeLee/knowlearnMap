@@ -2,21 +2,22 @@
   margin: 0 !important;
 
   :global(.MuiOutlinedInput-root) {
-    border-radius: var(--radius-sm);
-    min-height: 38px !important;
-    height: 38px !important;
+    border-radius: var(--kl-control-radius);
+    min-height: var(--kl-select-height, var(--kl-control-height)) !important;
+    height: var(--kl-select-height, var(--kl-control-height)) !important;
     box-sizing: border-box !important;
   }
 
-  /* 높이 38px 고정 — 패딩은 상하 균형 유지 */
+  /* 기본 --kl-control-height(32px) · 예외 시 --kl-select-height 로 덮어쓰기 */
   :global(.MuiSelect-select) {
     display: flex !important;
     align-items: center !important;
-    line-height: 1.4 !important;
-    min-height: 38px !important;
-    height: 38px !important;
-    padding: 0 calc(var(--spacing-lg) + var(--spacing-xl)) 0 14px !important;
-    font-size: var(--font-size-base) !important;
+    line-height: var(--kl-control-line-height) !important;
+    min-height: var(--kl-select-height, var(--kl-control-height)) !important;
+    height: var(--kl-select-height, var(--kl-control-height)) !important;
+    padding: 0 var(--kl-control-padding-inline-end-select) 0 var(--kl-control-padding-inline) !important;
+    font-size: var(--kl-control-font-size) !important;
+    font-weight: var(--kl-control-font-weight) !important;
     font-family: var(--font-family) !important;
     box-sizing: border-box !important;
   }

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Typography, Box } from '@mui/material';
 import Fade from '@mui/material/Fade';
@@ -24,9 +25,23 @@ function BaseModal({
   actionsAlign = 'right',
   headerAlign = 'left',
   headerVariant = 'default',
+  /** true: alert/confirm — 본문·Paper를 내용 높이에 맞춤 (flex 확장 없음) */
+  compactBody = false,
   /** MUI Dialog Paper `sx` — 가로·세로 등 페이지별 크기 지정 시 사용 (`maxWidth={false}`·`fullWidth={false}` 와 함께 쓰는 경우 많음) */
   paperSx,
 }) {
+  const mergedPaperSx = useMemo(() => {
+    if (compactBody) {
+      return paperSx ?? {};
+    }
+    return {
+      display: 'flex',
+      flexDirection: 'column',
+      maxHeight: 'calc(100vh - 48px)',
+      ...paperSx,
+    };
+  }, [paperSx, compactBody]);
+
   const handleClose = (_, reason) => {
     if (disableBackdropClose && reason === 'backdropClick') {
       return;
@@ -52,13 +67,18 @@ function BaseModal({
         style: { transform: 'none' },
       }}
       PaperProps={{
-        className: [styles.dialogPaper, paperClassName, 'km-base-modal-paper'].filter(Boolean).join(' '),
-        sx: paperSx,
+        className: [
+          styles.dialogPaper,
+          compactBody ? styles.dialogPaperFit : styles.dialogPaperForm,
+          paperClassName,
+          'kl-base-modal-paper',
+        ].filter(Boolean).join(' '),
+        sx: mergedPaperSx,
       }}
-      BackdropProps={{ className: [styles.backdrop, 'km-base-modal-backdrop'].join(' ') }}
+      BackdropProps={{ className: [styles.backdrop, 'kl-base-modal-backdrop'].join(' ') }}
     >
-      <DialogTitle className={[styles.header, headerVariantClass, headerAlignClass, headerClassName, 'km-base-modal-header'].filter(Boolean).join(' ')}>
-        <div className={[styles.titleRow, titleRowAlignClass, 'km-base-modal-title-row'].filter(Boolean).join(' ')}>
+      <DialogTitle className={[styles.header, headerVariantClass, headerAlignClass, headerClassName, 'kl-base-modal-header'].filter(Boolean).join(' ')}>
+        <div className={[styles.titleRow, titleRowAlignClass, 'kl-base-modal-title-row'].filter(Boolean).join(' ')}>
           <Typography component="h2" className={[styles.title, titleClassName].filter(Boolean).join(' ')}>
             {title}
           </Typography>
@@ -75,12 +95,29 @@ function BaseModal({
         )}
       </DialogTitle>
 
-      <DialogContent className={`${styles.content} km-base-modal-content ${contentClassName}`.trim()}>
-        <Box className={`${styles.contentInner} km-base-modal-content-inner`.trim()}>{children}</Box>
+      <DialogContent
+        className={[
+          styles.contentShell,
+          compactBody ? styles.contentShellFit : '',
+          'kl-base-modal-content-shell',
+        ].filter(Boolean).join(' ')}
+      >
+        <div
+          className={[
+            styles.contentScroll,
+            compactBody ? styles.contentScrollFit : '',
+            'kl-base-modal-content',
+            contentClassName,
+          ].filter(Boolean).join(' ')}
+        >
+          <Box className={`${styles.contentInner} kl-base-modal-content-inner`.trim()}>
+            {children}
+          </Box>
+        </div>
       </DialogContent>
 
       {actions ? (
-        <DialogActions className={[styles.actions, actionsAlignClass, actionsClassName, 'km-base-modal-actions'].filter(Boolean).join(' ')}>
+        <DialogActions className={[styles.actions, actionsAlignClass, actionsClassName, 'kl-base-modal-actions'].filter(Boolean).join(' ')}>
           {actions}
         </DialogActions>
       ) : null}
@@ -108,6 +145,7 @@ BaseModal.propTypes = {
   actionsAlign: PropTypes.oneOf(['left', 'center', 'right']),
   headerAlign: PropTypes.oneOf(['left', 'center']),
   headerVariant: PropTypes.oneOf(['default', 'filled']),
+  compactBody: PropTypes.bool,
   paperSx: PropTypes.object,
 };
 
@@ -130,6 +168,7 @@ BaseModal.defaultProps = {
   actionsAlign: 'right',
   headerAlign: 'left',
   headerVariant: 'default',
+  compactBody: false,
   paperSx: undefined,
 };
 

@@ -59,13 +59,13 @@ function AdminArangoManagement() {
 
     const { columns: domainTableColumns, startResize: domainColumnStartResize } = useBasicTableColumnResize({
         definitions: domainTableColumnDefinitions,
-        storageKey: 'km-admin-arango-domains-v1',
+        storageKey: 'kl-arango-domains-v1',
         enabled: true,
     });
 
     const { columns: workspaceTableColumns, startResize: workspaceColumnStartResize } = useBasicTableColumnResize({
         definitions: workspaceTableColumnDefinitions,
-        storageKey: 'km-admin-arango-workspaces-v1',
+        storageKey: 'kl-arango-workspaces-v1',
         enabled: true,
     });
 
@@ -289,28 +289,30 @@ function AdminArangoManagement() {
     );
 
     return (
-        <div className="arango-mgmt-page">
-            <AdminPageHeader
-                title="ArangoDB 관리"
-                count={databases.length}
-                actions={(
-                    <button
-                        type="button"
-                        onClick={handleRefresh}
-                        className="arango-mgmt-btn arango-mgmt-btn--icon"
-                        title="새로고침"
-                        aria-label="ArangoDB 목록 새로고침"
-                    >
-                        <RotateCcw size={16} aria-hidden />
-                    </button>
-                )}
-            />
+        <div className="kl-page">
+            <div className="kl-main-sticky-head">
+                <AdminPageHeader
+                    title="ArangoDB 관리"
+                    count={databases.length}
+                    actions={(
+                        <button
+                            type="button"
+                            onClick={handleRefresh}
+                            className="admin-btn admin-btn-icon"
+                            title="새로고침"
+                            aria-label="ArangoDB 목록 새로고침"
+                        >
+                            <RotateCcw size={16} aria-hidden />
+                        </button>
+                    )}
+                />
+            </div>
 
             {loading ? (
                 <div className="arango-mgmt-loading">데이터를 불러오는 중...</div>
             ) : (
-                <div className="arango-mgmt-table-card">
-                    <div className="arango-mgmt-table-shell basic-table-shell">
+                <div className="table-area">
+                    <div className="basic-table-shell">
                         {databases.length === 0 ? (
                             <div className="arango-mgmt-empty--solo" role="status">
                                 등록된 도메인이 없습니다.

@@ -6,7 +6,6 @@ import QnaCreateModal from '../components/QnaCreateModal';
 import QnaDetailModal from '../components/QnaDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
-import KmModalSelect from '../components/common/modal/KmModalSelect';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
 import { mockQuestions } from '../data/supportMockData';
 import { isSupportCenterAdmin } from '../utils/supportCenterAdmin';
@@ -171,8 +170,8 @@ function QnaBoard() {
   }, [handleDeleteQuestion, handleOpenEditModal]);
 
   return (
-    <div className="qna-page support-page">
-      <div className="km-main-sticky-head">
+    <div className="kl-page qna-page">
+      <div className="kl-main-sticky-head">
         <PageHeader
           title="1:1 문의"
           breadcrumbs={['고객센터', '1:1 문의']}
@@ -184,42 +183,47 @@ function QnaBoard() {
           )}
         />
 
-        <div className="support-toolbar">
-          <div className="support-search">
-            <Search size={16} className="support-search-icon" aria-hidden />
-            <input
-              type="text"
-              className="support-search-input"
-              placeholder="문의 검색"
-              value={qnaSearch}
-              onChange={(e) => {
-                setQnaSearch(e.target.value);
-              }}
-              aria-label="문의 검색"
-            />
-          </div>
-          <div className="support-filter">
-            <span className="filter-label">상태</span>
-            <div className="support-filter-select km-modal-form">
-              <KmModalSelect
-                id="qna-status-filter"
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                }}
-                placeholder="모든 상태"
-                optionItems={[
-                  { value: 'UNANSWERED', label: '답변대기' },
-                  { value: 'ANSWERED', label: '답변완료' },
-                ]}
-              />
-            </div>
-          </div>
-        </div>
+        
       </div>
 
-      <div className="support-table-card">
-        <div className="support-table-shell basic-table-shell">
+      <div className="table-area">
+                    <div className="table-toolbar">
+                    <div className="toolbar-left">
+                    <div className="search-area">
+                    <Search size={16} className="search-area-icon" aria-hidden />
+                    <input
+                    type="text"
+                    className="search-area-input"
+                    placeholder="문의 검색"
+                    value={qnaSearch}
+                    onChange={(e) => {
+                    setQnaSearch(e.target.value);
+                    }}
+                    aria-label="문의 검색"
+                    />
+                    </div>
+                    </div>
+                    <div className="toolbar-right">
+                    <div className="support-filter">
+                    <span className="filter-label">상태</span>
+                    <select
+                    id="qna-status-filter"
+                    className="toolbar-select"
+                    value={statusFilter}
+                    onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    }}
+                    aria-label="상태"
+                    >
+                    <option value="">모든 상태</option>
+                    <option value="UNANSWERED">답변대기</option>
+                    <option value="ANSWERED">답변완료</option>
+                    </select>
+                    </div>
+                    </div>
+                    </div>
+
+        <div className="basic-table-shell">
           {filteredQuestions.length === 0 ? (
             <div className="support-empty" role="status">문의 내역이 없습니다.</div>
           ) : (

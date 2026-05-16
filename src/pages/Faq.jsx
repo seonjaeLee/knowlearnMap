@@ -6,7 +6,6 @@ import FaqCreateModal from '../components/FaqCreateModal';
 import FaqDetailModal from '../components/FaqDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
-import KmModalSelect from '../components/common/modal/KmModalSelect';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
 import { mockFaqs } from '../data/supportMockData';
 import { isSupportCenterAdmin } from '../utils/supportCenterAdmin';
@@ -179,8 +178,8 @@ function Faq() {
   }, [handleDeleteFaq, handleOpenEditModal]);
 
   return (
-    <div className="faq-page support-page">
-      <div className="km-main-sticky-head">
+    <div className="kl-page faq-page">
+      <div className="kl-main-sticky-head">
         <PageHeader
           title="자주 묻는 질문"
           breadcrumbs={['고객센터', '자주 묻는 질문']}
@@ -192,42 +191,48 @@ function Faq() {
           ) : null}
         />
 
-        <div className="support-toolbar">
-          <div className="support-search">
-            <Search size={16} className="support-search-icon" aria-hidden />
-            <input
-              type="text"
-              className="support-search-input"
-              placeholder="FAQ 검색"
-              value={faqSearch}
-              onChange={(e) => {
-                setFaqSearch(e.target.value);
-              }}
-              aria-label="FAQ 검색"
-            />
+      </div>
+
+      <div className="table-area">
+        <div className="table-toolbar">
+          <div className="toolbar-left">
+            <div className="search-area">
+              <Search size={16} className="search-area-icon" aria-hidden />
+              <input
+                type="text"
+                className="search-area-input"
+                placeholder="FAQ 검색"
+                value={faqSearch}
+                onChange={(e) => {
+                  setFaqSearch(e.target.value);
+                }}
+                aria-label="FAQ 검색"
+              />
+            </div>
           </div>
-          <div className="support-filter">
-            <span className="filter-label">카테고리</span>
-            <div className="support-filter-select km-modal-form">
-              <KmModalSelect
+          <div className="toolbar-right">
+            <div className="support-filter">
+              <span className="filter-label">카테고리</span>
+              <select
                 id="faq-category-filter"
+                className="toolbar-select"
                 value={selectedCategory}
                 onChange={(e) => {
                   setSelectedCategory(e.target.value);
                 }}
-                placeholder="전체"
-                optionItems={categories.map((category) => ({
-                  value: category,
-                  label: category,
-                }))}
-              />
+                aria-label="카테고리"
+              >
+                <option value="">전체</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="support-table-card">
-        <div className="support-table-shell basic-table-shell">
+        <div className="basic-table-shell">
           {filteredFaqs.length === 0 ? (
             <div className="support-empty" role="status">등록된 FAQ가 없습니다.</div>
           ) : (

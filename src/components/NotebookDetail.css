@@ -1291,7 +1291,7 @@
     line-height: var(--msg-input-line-height);
 }
 
-/* 세로 스크롤 두께·색: 전역 `km-scrollbar-thin.css` + 클래스 `km-scrollbar-thin` */
+/* 세로 스크롤 두께·색: 전역 `kl-scrollbar-thin.css` + 클래스 `kl-scrollbar-thin` */
 
 .message-input-textarea:focus:not(:disabled) {
     outline: none;

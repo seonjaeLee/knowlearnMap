@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Button } from '@mui/material';
 import {
     Search, Plus, Globe, CheckCircle, AlertCircle, Database, Layout, Info, FilePen, Trash2,
 } from 'lucide-react';
@@ -8,9 +9,9 @@ import { apiCall } from '../services/api';
 import AdminPageHeader from './admin/AdminPageHeader';
 import BaseModal from './common/modal/BaseModal';
 import ModalFormField from './common/modal/ModalFormField';
-import KmModalSelect from './common/modal/KmModalSelect';
 import BasicTable from './common/BasicTable';
 import { mockDomains, mockDomainPromptDefaults, mockPromptCodesByPurpose } from '../data/domainMockData';
+import '../pages/admin/admin-common.css';
 import './DomainManagement.css';
 
 const isDomainMockEnabled = import.meta.env.VITE_ENABLE_DOMAIN_MOCK === 'true';
@@ -368,6 +369,26 @@ function DomainManagement() {
         { key: 'aggregationStrategyPrompt', label: '집계 전략', options: aggregationStrategyPromptCodes, helper: '대규모 정형 데이터 집계 전략' },
     ];
 
+    const renderPromptCodeSelect = (fieldKey, options, { ariaLabel, warnNone = false } = {}) => {
+        const value = formData[fieldKey] ?? '';
+        const warnClass = warnNone && value === 'NONE' ? 'modal-input--chunk-none' : '';
+        return (
+            <select
+                value={value}
+                onChange={handleSelectFieldChange(fieldKey)}
+                className={warnClass || undefined}
+                aria-label={ariaLabel}
+            >
+                <option value="">-- 기본값 --</option>
+                {(options || []).map((code) => (
+                    <option key={code} value={code}>
+                        {code}
+                    </option>
+                ))}
+            </select>
+        );
+    };
+
     const renderDomainCell = useCallback(({ column, row: domain }) => {
         switch (column.id) {
             case 'name':
@@ -422,7 +443,7 @@ function DomainManagement() {
                     <div className="domain-mgmt-actions">
                         <button
                             type="button"
-                            className="km-table-icon-btn km-table-icon-btn--neutral"
+                            className="kl-table-icon-btn kl-table-icon-btn--neutral"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleOpenEditModal(domain);
@@ -434,7 +455,7 @@ function DomainManagement() {
                         </button>
                         <button
                             type="button"
-                            className="km-table-icon-btn km-table-icon-btn--danger"
+                            className="kl-table-icon-btn kl-table-icon-btn--danger"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleDelete(domain.id, domain.name);
@@ -452,38 +473,40 @@ function DomainManagement() {
     }, [handleOpenEditModal, handleDelete]);
 
     return (
-        <div className="domain-management-container domain-mgmt-page">
-            <div className="km-main-sticky-head">
+        <div className="kl-page">
+            <div className="kl-main-sticky-head">
             <AdminPageHeader
                 title="도메인 관리"
                 count={domains.length}
                 actions={(
-                    <button type="button" className="domain-mgmt-btn domain-mgmt-btn--primary" onClick={handleOpenCreateModal}>
-                        <Plus size={14} />
+                    <button type="button" className="admin-btn admin-btn-primary" onClick={handleOpenCreateModal}>
+                        <Plus size={14} aria-hidden />
                         새 도메인
                     </button>
                 )}
             />
 
-            <div className="domain-mgmt-toolbar">
-                <div className="domain-mgmt-toolbar-left">
-                    <div className="domain-mgmt-search">
-                        <Search size={16} className="domain-mgmt-search-icon" />
-                        <input
-                            type="text"
-                            className="domain-mgmt-search-input"
-                            placeholder="도메인 검색..."
-                            value={domainSearch}
-                            onChange={(e) => setDomainSearch(e.target.value)}
-                            aria-label="도메인 검색"
-                        />
-                    </div>
-                </div>
-            </div>
+            
             </div>
 
-            <div className="domain-mgmt-table-card">
-                <div className="domain-mgmt-table-shell basic-table-shell">
+            <div className="table-area">
+                    <div className="table-toolbar">
+                    <div className="toolbar-left">
+                    <div className="search-area">
+                    <Search size={16} className="search-area-icon" />
+                    <input
+                    type="text"
+                    className="search-area-input"
+                    placeholder="도메인 검색..."
+                    value={domainSearch}
+                    onChange={(e) => setDomainSearch(e.target.value)}
+                    aria-label="도메인 검색"
+                    />
+                    </div>
+                    </div>
+                    </div>
+
+                <div className="basic-table-shell">
                     {domains.length === 0 ? (
                         <div className="domain-mgmt-empty domain-mgmt-empty--solo" role="status">
                             등록된 도메인이 없습니다.
@@ -508,21 +531,20 @@ function DomainManagement() {
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 title={isEditMode ? '도메인 정보 수정' : '새 도메인 추가'}
-                contentClassName="km-modal-form domain-modal-content"
+                contentClassName="kl-modal-form domain-modal-content"
                 paperSx={{ width: '680px', maxWidth: '95vw', maxHeight: '90vh' }}
                 actions={(
                     <>
-                        <button type="button" className="domain-mgmt-btn" onClick={() => setIsModalOpen(false)}>
+                        <Button variant="outlined" onClick={() => setIsModalOpen(false)}>
                             취소
-                        </button>
-                        <button
-                            type="button"
-                            className="domain-mgmt-btn domain-mgmt-btn--primary"
+                        </Button>
+                        <Button
+                            variant="contained"
                             onClick={handleSubmit}
                             disabled={!isEditMode && !isArangoDbChecked}
                         >
                             {isEditMode ? '수정 완료' : '생성하기'}
-                        </button>
+                        </Button>
                     </>
                 )}
             >
@@ -584,12 +606,10 @@ function DomainManagement() {
                         helperClassName={formData.chunkPrompt === 'NONE' ? 'domain-helper-error' : ''}
                     >
                         <div className="domain-input-group">
-                            <KmModalSelect
-                                value={formData.chunkPrompt}
-                                onChange={handleSelectFieldChange('chunkPrompt')}
-                                options={chunkPromptCodes}
-                                warn={formData.chunkPrompt === 'NONE'}
-                            />
+                            {renderPromptCodeSelect('chunkPrompt', chunkPromptCodes, {
+                                ariaLabel: '청킹 프롬프트',
+                                warnNone: true,
+                            })}
                             <button
                                 type="button"
                                 className={`domain-mgmt-btn ${formData.chunkPrompt === 'NONE' ? 'domain-mgmt-btn--danger' : ''}`}
@@ -602,11 +622,7 @@ function DomainManagement() {
 
                     {promptSelectConfigs.map((item) => (
                         <ModalFormField key={item.key} label={item.label} helperText={item.helper}>
-                            <KmModalSelect
-                                value={formData[item.key]}
-                                onChange={handleSelectFieldChange(item.key)}
-                                options={item.options}
-                            />
+                            {renderPromptCodeSelect(item.key, item.options, { ariaLabel: item.label })}
                         </ModalFormField>
                     ))}
                 </div>

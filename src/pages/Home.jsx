@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2 } from 'lucide-react';
+import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus } from 'lucide-react';
 import { Button } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +9,8 @@ import { useDialog } from '../hooks/useDialog';
 import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
 import BaseModal from '../components/common/modal/BaseModal';
-import KmModalSelect from '../components/common/modal/KmModalSelect';
+import KlModalSelect from '../components/common/modal/KlModalSelect';
+import './admin/admin-common.css';
 import './Home.css';
 
 /**
@@ -442,63 +443,82 @@ function Home() {
         return domainName ? [domainName] : [];
     })();
 
+    const sortedNotebooks = useMemo(() => {
+        const list = [...notebooks];
+        const getName = (nb) => (nb.name || nb.title || '').trim();
+        const getTime = (nb) => {
+            const raw = nb.createdAt || nb.updatedAt || nb.date;
+            const t = raw ? new Date(raw).getTime() : 0;
+            return Number.isFinite(t) ? t : 0;
+        };
+
+        if (sortBy === '이름순') {
+            return list.sort((a, b) => getName(a).localeCompare(getName(b), 'ko'));
+        }
+        if (sortBy === '오래된순') {
+            return list.sort((a, b) => getTime(a) - getTime(b));
+        }
+        return list.sort((a, b) => getTime(b) - getTime(a));
+    }, [notebooks, sortBy]);
+
     return (
-        <div className="home-container">
-            <div className="home-page-header">
+        <div className="kl-page">
+            <div className="kl-main-sticky-head">
                 <PageHeader
                     title={pageTitle}
                     breadcrumbs={workspaceBreadcrumbs}
                     actions={(
-                        <>
-                            <div className="view-toggle">
-                                <button
-                                    type="button"
-                                    className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                                    onClick={() => setViewMode('grid')}
-                                    title="그리드 보기"
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-                                        <rect x="2" y="2" width="7" height="7" />
-                                        <rect x="11" y="2" width="7" height="7" />
-                                        <rect x="2" y="11" width="7" height="7" />
-                                        <rect x="11" y="11" width="7" height="7" />
-                                    </svg>
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-                                    onClick={() => setViewMode('list')}
-                                    title="리스트 보기"
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-                                        <rect x="2" y="3" width="16" height="2" />
-                                        <rect x="2" y="8" width="16" height="2" />
-                                        <rect x="2" y="13" width="16" height="2" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <select
-                                className="sort-select"
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
-                                aria-label="정렬"
-                            >
-                                <option value="최신순">최신순</option>
-                                <option value="오래된순">오래된순</option>
-                                <option value="이름순">이름순</option>
-                            </select>
-
-                            <button type="button" className="new-note-btn" onClick={handleCreateNew}>
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-                                    <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                </svg>
-                                새 워크스페이스
-                            </button>
-                        </>
+                        <button type="button" className="admin-btn admin-btn-primary" onClick={handleCreateNew}>
+                            <Plus size={14} aria-hidden />
+                            새 워크스페이스
+                        </button>
                     )}
                 />
             </div>
+
+            <div className="table-area">
+                <div className="table-toolbar table-toolbar--end">
+                    <div className="toolbar-right">
+                        <div className="toolbar-view-toggle">
+                            <button
+                                type="button"
+                                className={`toolbar-view-btn ${viewMode === 'grid' ? 'is-active' : ''}`}
+                                onClick={() => setViewMode('grid')}
+                                title="그리드 보기"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                    <rect x="2" y="2" width="7" height="7" />
+                                    <rect x="11" y="2" width="7" height="7" />
+                                    <rect x="2" y="11" width="7" height="7" />
+                                    <rect x="11" y="11" width="7" height="7" />
+                                </svg>
+                            </button>
+                            <button
+                                type="button"
+                                className={`toolbar-view-btn ${viewMode === 'list' ? 'is-active' : ''}`}
+                                onClick={() => setViewMode('list')}
+                                title="리스트 보기"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                    <rect x="2" y="3" width="16" height="2" />
+                                    <rect x="2" y="8" width="16" height="2" />
+                                    <rect x="2" y="13" width="16" height="2" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <select
+                            className="toolbar-select"
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            aria-label="정렬"
+                        >
+                            <option value="최신순">최신순</option>
+                            <option value="오래된순">오래된순</option>
+                            <option value="이름순">이름순</option>
+                        </select>
+                    </div>
+                </div>
 
             {/* 로딩 상태 */}
             {loading && (
@@ -551,7 +571,7 @@ function Home() {
                     </div>
 
                     {/* Notebook Cards */}
-                    {notebooks.map((notebook) => (
+                    {sortedNotebooks.map((notebook) => (
                         <div
                             key={notebook.id}
                             className={`notebook-card ${notebook.color || 'yellow'}${
@@ -714,6 +734,8 @@ function Home() {
                 </div>
             )}
 
+            </div>
+
             {/* Rename Modal */}
             <BaseModal
                 open={renameModalOpen}
@@ -721,7 +743,7 @@ function Home() {
                 title="워크스페이스 이름 변경"
                 maxWidth="xs"
                 disableBackdropClose
-                contentClassName="km-modal-form"
+                contentClassName="kl-modal-form"
                 actions={(
                     <>
                         <Button
@@ -769,7 +791,7 @@ function Home() {
                 maxWidth={false}
                 fullWidth={false}
                 paperSx={PROMPT_MODAL_PAPER_SX}
-                contentClassName="home-prompt-modal-content km-modal-form"
+                contentClassName="home-prompt-modal-content kl-modal-form"
                 actionsClassName="home-prompt-modal-actions"
                 actionsAlign="left"
                 actions={(
@@ -807,7 +829,7 @@ function Home() {
                                     청킹 프롬프트
                                 </label>
                                 <div className="home-prompt-row">
-                                    <KmModalSelect
+                                    <KlModalSelect
                                         className="home-prompt-select-flex"
                                         value={chunkPromptValue}
                                         onChange={(e) => setChunkPromptValue(e.target.value)}
@@ -832,7 +854,7 @@ function Home() {
                                 <label className="home-prompt-label">
                                     온톨로지 프롬프트
                                 </label>
-                                <KmModalSelect
+                                <KlModalSelect
                                     value={ontologyPromptValue}
                                     onChange={(e) => setOntologyPromptValue(e.target.value)}
                                     options={ontologyPromptCodes}
@@ -846,7 +868,7 @@ function Home() {
                                 <label className="home-prompt-label">
                                     채팅 프롬프트
                                 </label>
-                                <KmModalSelect
+                                <KlModalSelect
                                     value={chatResultPromptValue}
                                     onChange={(e) => setChatResultPromptValue(e.target.value)}
                                     options={chatPromptCodes}
@@ -860,7 +882,7 @@ function Home() {
                                 <label className="home-prompt-label">
                                     CONTENT 온톨로지
                                 </label>
-                                <KmModalSelect
+                                <KlModalSelect
                                     value={contentOntologyPromptValue}
                                     onChange={(e) => setContentOntologyPromptValue(e.target.value)}
                                     options={contentOntologyPromptCodes}
@@ -874,7 +896,7 @@ function Home() {
                                 <label className="home-prompt-label">
                                     스키마 분석
                                 </label>
-                                <KmModalSelect
+                                <KlModalSelect
                                     value={schemaAnalysisPromptValue}
                                     onChange={(e) => setSchemaAnalysisPromptValue(e.target.value)}
                                     options={schemaAnalysisPromptCodes}
@@ -888,7 +910,7 @@ function Home() {
                                 <label className="home-prompt-label">
                                     테이블 간 관계 분석
                                 </label>
-                                <KmModalSelect
+                                <KlModalSelect
                                     value={interTableAnalysisPromptValue}
                                     onChange={(e) => setInterTableAnalysisPromptValue(e.target.value)}
                                     options={interTableAnalysisPromptCodes}
@@ -902,7 +924,7 @@ function Home() {
                                 <label className="home-prompt-label">
                                     AQL 생성
                                 </label>
-                                <KmModalSelect
+                                <KlModalSelect
                                     value={aqlGenerationPromptValue}
                                     onChange={(e) => setAqlGenerationPromptValue(e.target.value)}
                                     options={aqlGenerationPromptCodes}
@@ -916,7 +938,7 @@ function Home() {
                                 <label className="home-prompt-label">
                                     AQL 결과 해석
                                 </label>
-                                <KmModalSelect
+                                <KlModalSelect
                                     value={aqlInterpretationPromptValue}
                                     onChange={(e) => setAqlInterpretationPromptValue(e.target.value)}
                                     options={aqlInterpretationPromptCodes}
@@ -930,7 +952,7 @@ function Home() {
                                 <label className="home-prompt-label">
                                     집계 전략
                                 </label>
-                                <KmModalSelect
+                                <KlModalSelect
                                     value={aggregationStrategyPromptValue}
                                     onChange={(e) => setAggregationStrategyPromptValue(e.target.value)}
                                     options={aggregationStrategyPromptCodes}

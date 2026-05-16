@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Popover from '@mui/material/Popover';
-import styles from './KmPopover.module.scss';
+import styles from './KlPopover.module.scss';
 
 const defaultAnchorOrigin = { vertical: 'bottom', horizontal: 'left' };
 const defaultTransformOrigin = { vertical: 'top', horizontal: 'left' };
 
 /**
- * 짧은 맥락용 MUI Popover 래퍼 — 패널 스타일은 SCSS(`KmPopover.module.scss`).
+ * 짧은 맥락용 MUI Popover 래퍼 — 패널 스타일은 SCSS(`KlPopover.module.scss`).
  */
-function KmPopover({
+function KlPopover({
   open,
   anchorEl,
   onClose,
@@ -48,7 +48,7 @@ function KmPopover({
   );
 }
 
-KmPopover.propTypes = {
+KlPopover.propTypes = {
   open: PropTypes.bool.isRequired,
   anchorEl: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   onClose: PropTypes.func.isRequired,
@@ -71,7 +71,7 @@ KmPopover.propTypes = {
   disableScrollLock: PropTypes.bool,
 };
 
-KmPopover.defaultProps = {
+KlPopover.defaultProps = {
   children: null,
   anchorOrigin: defaultAnchorOrigin,
   transformOrigin: defaultTransformOrigin,
@@ -82,4 +82,4 @@ KmPopover.defaultProps = {
   disableScrollLock: false,
 };
 
-export default KmPopover;
+export default KlPopover;

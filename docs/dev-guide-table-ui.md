@@ -2,6 +2,7 @@
 
 ## 연관 문서
 
+- [list-page-spec.md](./list-page-spec.md) — 표 **위** PageHeader·툴바·검색
 - [data-table-spec.md](./data-table-spec.md)
 - [layout-guideline.md](./layout-guideline.md)
 - **MUI 공통 표·푸터·페이지네이션**: 아래 **섹션 6** (`BasicTable` 스택)
@@ -36,7 +37,7 @@
 ### 2.3 아이콘만 있는 버튼에 이름 없음
 
 - **문제**: 보조 기술 사용자에게 동작이 전달되지 않는다.
-- **대안**: `aria-label` 또는 시각적으로 숨긴 텍스트. 프로젝트 공통은 [km-table-icon-actions.css](../src/styles/km-table-icon-actions.css) 패턴 참고.
+- **대안**: `aria-label` 또는 시각적으로 숨긴 텍스트. 프로젝트 공통은 [kl-table-icon-actions.css](../src/styles/kl-table-icon-actions.css) 패턴 참고.
 
 ### 2.4 표를 `div` + CSS 그리드로만 흉내 내기 (데이터 표인 경우)
 
@@ -49,13 +50,13 @@
 
 - [ ] 새 목록 화면이면 `data-table-spec.md` 밀도·열 정의 확인
 - [ ] 셀 간격은 **`th` / `td`의 `padding`**·토큰으로 조정 (열 너비만 `colgroup` 등으로 조정하는 경우가 많음)
-- [ ] 긴 목록 + `km-main-sticky-head` 가 있는 페이지에서 **열 제목을 스크롤에 고정**할 경우: 메인 표 **`thead th`** 에 `position: sticky`·`top: var(--km-admin-sticky-thead-top)` 등(상단 블록 높이와 맞게 페이지 CSS에서 변수 조정). 고정이 필요 없으면 적용하지 않아도 됨.
+- [ ] 긴 목록 + `kl-main-sticky-head` 가 있는 페이지에서 **열 제목을 스크롤에 고정**할 경우: 메인 표 **`thead th`** 에 `position: sticky`·`top: var(--kl-list-sticky-thead-top)` 등(상단 블록 높이와 맞게 페이지 CSS에서 변수 조정). 고정이 필요 없으면 적용하지 않아도 됨.
 - [ ] 헤더 정렬: **`admin-common.css`** 에서 **마지막 `th`만 우측**, **그 외 `th`는 좌측**(`thead tr > th:not(:last-child)` / `th:last-child`). 비마지막 열을 가운데로 둘 때만 해당 `th`에 **`admin-col-center`**. 본문 숫자·뱃지 중앙은 `td`에 **`admin-col-center`** (인라인 `style` 금지 권장).
 - [ ] 클릭 요소는 `button` / `a`, 아이콘 전용은 `aria-label`
 - [ ] 포커스 링은 `:focus-visible`, 색만으로 상태 구분하지 않기
 - [ ] 긴 텍스트 열 말줄임: `data-table-spec.md` §5.1 — `.admin-table` 안에서는 **`_ellipsis`** 클래스를 **해당 `th`/`td`에만** 옵인(전역 일괄 적용 금지)
 - [ ] 한 페이지 행 수: 클라이언트 페이지네이션은 **해당 페이지의 `PAGE_SIZE`(등) 상수**로 조절 — **메뉴(화면)마다 값이 달라도 됨** (`data-table-spec.md` §9.1)
-- [ ] 콘텐츠 내부 스크롤을 얇게: **`textarea`는 전역** 동일 규칙(`km-scrollbar-thin.css`) — 그 외 래퍼는 클래스 **`km-scrollbar-thin`** · 토큰은 `index.css`의 `--km-scrollbar-*` · BaseModal Paper 최소 높이는 `--base-modal-paper-min-height`(기본 340px, alert/confirm 제외)
+- [ ] 콘텐츠 내부 스크롤을 얇게: **`textarea`는 전역** 동일 규칙(`kl-scrollbar-thin.css`) — 그 외 래퍼는 클래스 **`kl-scrollbar-thin`** · 토큰은 `index.css`의 `--kl-scrollbar-*` · BaseModal Paper 최소 높이는 `--base-modal-paper-min-height`(기본 340px, alert/confirm 제외)
 
 ---
 
@@ -103,16 +104,16 @@
 
 1. **`table-layout: fixed`** 인 표에 사용한다.
 2. `<table>` 직후 **`{colGroup}`** 삽입.
-3. 헤더: 리사이즈할 열마다 **`km-th-col-resizable`** 클래스를 `th`에 추가하고, 열과 열 사이마다 **`km-col-resize-handle`** 요소를 둔다.  
+3. 헤더: 리사이즈할 열마다 **`kl-th-col-resizable`** 클래스를 `th`에 추가하고, 열과 열 사이마다 **`kl-col-resize-handle`** 요소를 둔다.  
    - **열이 `n`개이면 핸들은 최대 `n - 1`개**(마지막 열 오른쪽 제외).  
    - `boundaryIndex`는 `0 … n-2` (왼쪽부터 경계 번호).
 4. 핸들 예시 (실제 인덱스는 표마다 다름):
 
 ```jsx
-<th className="… km-th-col-resizable">
+<th className="… kl-th-col-resizable">
   열 제목
   <span
-    className="km-col-resize-handle"
+    className="kl-col-resize-handle"
     onMouseDown={(e) => columnResize.startResize(0, e)}
     onClick={(e) => e.stopPropagation()}
     aria-hidden
@@ -122,22 +123,22 @@
 
 5. **행 클릭으로 상세/모달이 열리는 표**에서는 핸들에서 **`click` 버블을 막지 않으면** 클릭이 행으로 전달될 수 있으므로, 위처럼 **`onClick={(e) => e.stopPropagation()}`** 를 핸들에 둔다.
 
-6. 공통 스타일은 **`admin-common.css`**에 정의되어 있다: `.km-th-col-resizable`, `.km-col-resize-handle`. 어드민 페이지는 보통 이미 `admin-common.css`를 import 한다.
+6. 공통 스타일은 **`admin-common.css`**에 정의되어 있다: `.kl-th-col-resizable`, `.kl-col-resize-handle`. 어드민 페이지는 보통 이미 `admin-common.css`를 import 한다.
 
 7. 페이지 전용 표에서 원래 **`th`/`td`에 `%`·`min-width`·`max-width`**를 쓰고 있다면, 리사이즈 모드일 때만 충돌을 피하기 위해 **모디파이어 클래스**(예: `foo-table--resizable`)로 해당 셀 규칙을 완화한다(`width`/`min-width`/`max-width`를 `auto`/`0`/`none` 등으로 조정). 도메인 관리(`DomainManagement.css`), 워크스페이스 관리(`AdminWorkspaceManagement.css`) 참고.
 
 ### 5.5 참고 구현
 
-- `src/components/DomainManagement.jsx` — `enabled: true`, 저장 키 `km-domain-mgmt-columns-v1`
-- `src/pages/admin/AdminWorkspaceManagement.jsx` — `enabled: true`, 저장 키 `km-admin-workspace-mgmt-columns-v1`
+- `src/components/DomainManagement.jsx` — `enabled: true`, 저장 키 `kl-domain-mgmt-columns-v1`
+- `src/pages/admin/AdminWorkspaceManagement.jsx` — `enabled: true`, 저장 키 `kl-admin-workspace-mgmt-columns-v1`
 
 새 화면에 적용할 때는 위 파일의 **`colgroup` 배치·헤더 핸들·`--resizable` CSS** 패턴을 복제하는 것이 안전하다.
 
 ### 5.6 헤더 드래그가 동작하지 않을 때
 
 - **증상**: 경계를 드래그해도 열 너비가 바뀌지 않거나, 핸들이 반응하지 않는다.
-- **흔한 원인**: `.km-col-resize-handle`이 `th` 오른쪽 밖으로 나가는데, **오른쪽 인접 `th`가 위에 그려져** 마우스 이벤트를 가로챈다.
-- **프로젝트 내 조치**: `admin-common.css`에서 `.admin-table:has(.km-col-resize-handle)` 인 표의 **`thead tr > th`에 좌측 열부터 더 높은 `z-index`**·`overflow: visible`을 적용해 두었다. 새 표에서도 같은 전역 규칙이 적용된다.
+- **흔한 원인**: `.kl-col-resize-handle`이 `th` 오른쪽 밖으로 나가는데, **오른쪽 인접 `th`가 위에 그려져** 마우스 이벤트를 가로챈다.
+- **프로젝트 내 조치**: `admin-common.css`에서 `.admin-table:has(.kl-col-resize-handle)` 인 표의 **`thead tr > th`에 좌측 열부터 더 높은 `z-index`**·`overflow: visible`을 적용해 두었다. 새 표에서도 같은 전역 규칙이 적용된다.
 
 ---
 
@@ -230,18 +231,18 @@ import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '…/commo
 3. 카드 + **`basic-table-shell`** 안에 `BasicTable` 배치; 푸터는 셸 밖 또는 `tableFooter` 사용 시 형제 관계 유지.
 4. 클라이언트 페이지네이션 시 **`PAGE_SIZE` 상수**·`page` state·`totalPages`·`useMemo` 슬라이스 패턴을 사용자 관리와 동일하게 맞춘다.
 5. 페이지네이션 UI는 **`BasicTablePaginationNav`** 재사용, 요약은 `basic-table-footer-summary` + `BasicTableFooter`의 `start`.
-6. 토큰·스크롤바는 [css-design-tokens.md](./css-design-tokens.md), `km-scrollbar-thin` 규칙을 따른다.
+6. 토큰·스크롤바는 [css-design-tokens.md](./css-design-tokens.md), `kl-scrollbar-thin` 규칙을 따른다.
 
-### 6.9 `km-main-sticky-head`와 `BasicTable` 헤더 셀의 `z-index` (본문이 스티키 제목 위로 비치지 않게)
+### 6.9 `kl-main-sticky-head`와 `BasicTable` 헤더 셀의 `z-index` (본문이 스티키 제목 위로 비치지 않게)
 
 - `BasicTable`에서 열 리사이즈가 켜진 열의 `th`에는 `z-index: 40 - colIndex` 식으로 **최대 40 근처**까지 올라갈 수 있다.
-- 페이지 상단 블록 **`.km-main-sticky-head`**(제목·툴바)가 `position: sticky`일 때는 이 값보다 **확실히 큰 `z-index`**(프로젝트에서는 **50**)를 두어, 스크롤 시 표 헤더·본문 텍스트가 스티키 블록 **위로 겹쳐 보이지 않게** 한다.
-- 구현 참고: `src/components/common/MainLayout.css`
+- 페이지 상단 블록 **`.kl-main-sticky-head`**(제목·툴바)가 `position: sticky`일 때는 이 값보다 **확실히 큰 `z-index`**(프로젝트에서는 **50**)를 두어, 스크롤 시 표 헤더·본문 텍스트가 스티키 블록 **위로 겹쳐 보이지 않게** 한다.
+- 구현 참고: `src/components/common/PageHeader.css`
 
 ### 6.10 참고 화면: 시스템 설정 관리(`/admin/config`)
 
 - **메뉴**: 어드민센터 → **시스템 설정 관리**
 - **표**: 카테고리별로 `BasicTable`을 나누어 배치; 카테고리명은 표 **밖** 소제목(`section` + 제목 행), 표는 `basic-table-shell` + 카드형 래퍼로만 감쌈.
-- **값 열**: 한 줄 + `text-overflow: ellipsis`; 실제로 잘린 경우에만 승인 관리와 동일한 **`Info`** 아이콘으로 `KmPopover`에 전문 표시(편집은 모달).
-- **관리 열**: 수정은 도메인 관리와 동일 **`FilePen`** + `km-table-icon-btn--neutral`; `km-table-actions`의 간격은 `:root`의 `--km-table-action-icon-gap`(기본 0)을 따른다.
+- **값 열**: 한 줄 + `text-overflow: ellipsis`; 실제로 잘린 경우에만 승인 관리와 동일한 **`Info`** 아이콘으로 `KlPopover`에 전문 표시(편집은 모달).
+- **관리 열**: 수정은 도메인 관리와 동일 **`FilePen`** + `kl-table-icon-btn--neutral`; `kl-table-actions`의 간격은 `:root`의 `--kl-table-action-icon-gap`(기본 0)을 따른다.
 - **툴바 필터**: MUI `Select`의 `sx`는 **`src/pages/admin/promptToolbarSelectSx.js`**의 `promptToolbarSelectSx`를 프롬프트 관리와 공유한다.

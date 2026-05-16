@@ -1264,7 +1264,7 @@ function NotebookDetail() {
     const showNotebookPageHeader = true;   //콘텐츠 타이틀 가리려면 false
 
     return (
-        <>
+        <div className="kl-page kl-page--fill">
             {showNotebookPageHeader && (
                 <PageHeader
                     title={notebook.name || 'Untitled notebook'}
@@ -2092,7 +2092,7 @@ function NotebookDetail() {
                     onClose={() => setChunkModalPage(null)}
                     maxWidth="md"
                     headerVariant="filled"
-                    contentClassName="chunk-modal-body km-modal-form"
+                    contentClassName="chunk-modal-body kl-modal-form"
                 >
                     {chunkModalPage ? highlightText(chunkModalPage.content, searchQuery, chunkModalPage.id) : null}
                 </BaseModal>
@@ -2135,7 +2135,7 @@ function NotebookDetail() {
                     onClose={() => setBizMetaOpen(false)}
                     maxWidth="md"
                     headerClassName="meta-modal-header"
-                    contentClassName="meta-modal-content km-modal-form"
+                    contentClassName="meta-modal-content kl-modal-form"
                     actionsClassName="meta-modal-actions"
                     actions={(
                         <>
@@ -2219,7 +2219,7 @@ function NotebookDetail() {
                     onClose={() => setItMetaOpen(false)}
                     maxWidth="md"
                     headerClassName="meta-modal-header"
-                    contentClassName="meta-modal-content km-modal-form"
+                    contentClassName="meta-modal-content kl-modal-form"
                     actionsClassName="meta-modal-actions"
                     actions={(
                         <>
@@ -2297,7 +2297,7 @@ function NotebookDetail() {
                 </BaseModal>
 
             </div>
-        </>
+        </div>
     );
 }
 

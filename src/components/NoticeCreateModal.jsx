@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
+import { supportFormModalPaperSx } from './common/modal/supportFormModalPaperSx';
 import './NoticeCreateModal.css';
 
 function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
@@ -88,9 +89,10 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
             open={isOpen}
             onClose={onClose}
             title={editingNotice ? '공지사항 수정' : '공지사항 작성'}
-            maxWidth="md"
-            fullWidth
-            contentClassName="notice-create-modal-content km-modal-form"
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={supportFormModalPaperSx}
+            contentClassName="notice-create-modal-content kl-modal-form"
             actionsClassName="notice-create-modal-actions"
             actions={(
                 <>

@@ -7,7 +7,7 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import BaseModal from '../../components/common/modal/BaseModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
-import KmPopover from '../../components/common/KmPopover';
+import KlPopover from '../../components/common/KlPopover';
 import { mockUpgradeRequests } from '../../data/upgradeRequestMockData';
 import './admin-common.css';
 import './AdminUpgradeRequests.css';
@@ -50,7 +50,7 @@ function AdminUpgradeRequests() {
 
     const { columns: upgradeTableColumns, startResize: upgradeColumnStartResize } = useBasicTableColumnResize({
         definitions: upgradeTableColumnDefinitions,
-        storageKey: 'km-admin-upgrade-requests-v1',
+        storageKey: 'kl-upgrade-requests-v1',
         enabled: true,
     });
 
@@ -181,7 +181,7 @@ function AdminUpgradeRequests() {
                                 {req.status === 'REJECTED' && (
                                     <button
                                         type="button"
-                                        className="km-table-icon-btn km-table-icon-btn--neutral admin-upgrade-reject-info-btn"
+                                        className="kl-table-icon-btn kl-table-icon-btn--neutral admin-upgrade-reject-info-btn"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             const el = e.currentTarget;
@@ -220,7 +220,7 @@ function AdminUpgradeRequests() {
                         <div className="admin-upgrade-actions">
                             <button
                                 type="button"
-                                className="km-table-icon-btn km-table-icon-btn--danger"
+                                className="kl-table-icon-btn kl-table-icon-btn--danger"
                                 onClick={() => openRejectModal(req.id)}
                                 title="거절"
                                 aria-label={`${req.email} 신청 거절`}
@@ -229,7 +229,7 @@ function AdminUpgradeRequests() {
                             </button>
                             <button
                                 type="button"
-                                className="km-table-icon-btn km-table-icon-btn--success"
+                                className="kl-table-icon-btn kl-table-icon-btn--success"
                                 onClick={() => handleApprove(req.id)}
                                 title="승인"
                                 aria-label={`${req.email} 신청 승인`}
@@ -247,18 +247,20 @@ function AdminUpgradeRequests() {
 
     if (loading) {
         return (
-            <div className="admin-upgrade-page">
+            <div className="kl-page">
                 <div className="admin-upgrade-loading">데이터를 불러오는 중...</div>
             </div>
         );
     }
 
     return (
-        <div className="admin-upgrade-page">
-            <AdminPageHeader title="승인 관리" count={requests.length} />
+        <div className="kl-page">
+            <div className="kl-main-sticky-head">
+                <AdminPageHeader title="승인 관리" count={requests.length} />
+            </div>
 
-            <div className="admin-upgrade-table-card">
-                <div className="admin-upgrade-table-shell basic-table-shell">
+            <div className="table-area">
+                <div className="basic-table-shell">
                     {requests.length === 0 ? (
                         <div className="admin-upgrade-empty admin-upgrade-empty--solo" role="status">
                             대기 중인 요청이 없습니다.
@@ -275,7 +277,7 @@ function AdminUpgradeRequests() {
                 </div>
             </div>
 
-            <KmPopover
+            <KlPopover
                 id="admin-upgrade-reject-reason-popover"
                 open={Boolean(rejectReasonPopover)}
                 anchorReference={rejectReasonPopover ? 'anchorPosition' : 'anchorEl'}
@@ -289,7 +291,7 @@ function AdminUpgradeRequests() {
                         <p className="admin-upgrade-reject-popover-text">{rejectReasonPopover.text}</p>
                     </div>
                 ) : null}
-            </KmPopover>
+            </KlPopover>
 
             {rejectModalOpen && (
                 <BaseModal
@@ -298,7 +300,7 @@ function AdminUpgradeRequests() {
                     title="거절 사유 입력"
                     maxWidth="sm"
                     fullWidth
-                    contentClassName="admin-upgrade-reject-content km-modal-form"
+                    contentClassName="admin-upgrade-reject-content kl-modal-form"
                     actions={(
                         <>
                             <Button variant="outlined" onClick={() => setRejectModalOpen(false)}>

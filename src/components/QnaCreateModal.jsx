@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
+import { supportFormModalPaperSx } from './common/modal/supportFormModalPaperSx';
 import './QnaCreateModal.css';
 
 function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
@@ -100,9 +101,10 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
             open={isOpen}
             onClose={onClose}
             title={editingQuestion ? '1:1 문의 수정' : '1:1 문의 등록'}
-            maxWidth="md"
-            fullWidth
-            contentClassName="qna-create-modal-content km-modal-form"
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={supportFormModalPaperSx}
+            contentClassName="qna-create-modal-content kl-modal-form"
             actionsClassName="qna-create-modal-actions"
             actions={(
                 <>
@@ -128,7 +130,6 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
                             onChange={(e) => setContact(e.target.value)}
                             placeholder="연락가능하신 번호를 남겨주세요. (숫자로만 입력)"
                         />
-                        <p className="form-help-text">연락가능하신 번호를 남겨주세요.(숫자로만 입력)</p>
                     </div>
 
                     <div className="qna-form-group">
@@ -140,7 +141,6 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
                             onChange={(e) => setDomainName(e.target.value)}
                             placeholder="도메인명을 입력해주세요."
                         />
-                        <p className="form-help-text">도메인명을 입력해주세요.</p>
                     </div>
 
                     <div className="qna-form-group">

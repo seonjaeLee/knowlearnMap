@@ -182,8 +182,8 @@ function NoticeList() {
   }, [handleDeleteNotice, handleOpenEditModal]);
 
   return (
-    <div className="notice-page support-page">
-      <div className="km-main-sticky-head">
+    <div className="kl-page notice-page">
+      <div className="kl-main-sticky-head">
         <PageHeader
           title="공지사항"
           breadcrumbs={['고객센터', '공지사항']}
@@ -195,25 +195,29 @@ function NoticeList() {
           ) : null}
         />
 
-        <div className="support-toolbar">
-          <div className="support-search">
-            <Search size={16} className="support-search-icon" aria-hidden />
-            <input
-              type="text"
-              className="support-search-input"
-              placeholder="공지사항 검색"
-              value={noticeSearch}
-              onChange={(e) => {
-                setNoticeSearch(e.target.value);
-              }}
-              aria-label="공지사항 검색"
-            />
-          </div>
-        </div>
+        
       </div>
 
-      <div className="support-table-card">
-        <div className="support-table-shell basic-table-shell">
+      <div className="table-area">
+                    <div className="table-toolbar">
+                    <div className="toolbar-left">
+                    <div className="search-area">
+                    <Search size={16} className="search-area-icon" aria-hidden />
+                    <input
+                    type="text"
+                    className="search-area-input"
+                    placeholder="공지사항 검색"
+                    value={noticeSearch}
+                    onChange={(e) => {
+                    setNoticeSearch(e.target.value);
+                    }}
+                    aria-label="공지사항 검색"
+                    />
+                    </div>
+                    </div>
+                    </div>
+
+        <div className="basic-table-shell">
           {filteredNotices.length === 0 ? (
             <div className="support-empty" role="status">공지사항이 없습니다.</div>
           ) : (

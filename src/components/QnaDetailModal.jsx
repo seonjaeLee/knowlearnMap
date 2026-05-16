@@ -228,7 +228,7 @@ function QnaDetailModal({
             maxWidth={false}
             fullWidth={false}
             paperSx={{ width: '920px', maxWidth: 'calc(100vw - 48px)', maxHeight: 'calc(100vh - 48px)' }}
-            contentClassName="qna-detail-modal-content km-modal-form"
+            contentClassName="qna-detail-modal-content kl-modal-form"
             actionsClassName="qna-detail-modal-actions"
             actions={renderFooterActions()}
         >

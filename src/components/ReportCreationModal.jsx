@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Button } from '@mui/material';
 import BaseModal from './common/modal/BaseModal';
-import KmModalSelect from './common/modal/KmModalSelect';
+import KlModalSelect from './common/modal/KlModalSelect';
 import './ReportCreationModal.css';
 
 function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
@@ -39,7 +39,7 @@ function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
             title="보고서 생성"
             maxWidth="md"
             fullWidth
-            contentClassName="report-creation-modal-content km-modal-form"
+            contentClassName="report-creation-modal-content kl-modal-form"
             actionsClassName="report-creation-modal-actions"
             actions={(
                 <>
@@ -64,7 +64,7 @@ function ReportCreationModal({ isOpen, onClose, templateData, onGenerate }) {
                     {/* Language Selection */}
                     <div className="form-section">
                         <label className="form-label">언어를 선택하세요</label>
-                        <KmModalSelect
+                        <KlModalSelect
                             includeEmptyOption={false}
                             value={reportLang}
                             onChange={(e) => setReportLang(e.target.value)}

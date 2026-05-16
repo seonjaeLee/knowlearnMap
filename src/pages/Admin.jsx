@@ -24,7 +24,7 @@ function Admin() {
     }
 
     return (
-        <div className="admin-container">
+        <div className="kl-page kl-page--fill kl-route-host">
             <Routes>
                 <Route path="/" element={
                     <div className="admin-content">

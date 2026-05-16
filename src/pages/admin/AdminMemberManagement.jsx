@@ -9,8 +9,8 @@ import { Users, Search, RotateCcw, FilePen, Trash2, Lock, Mail } from 'lucide-re
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
 import BaseModal from '../../components/common/modal/BaseModal';
-import KmModalSelect from '../../components/common/modal/KmModalSelect';
 import { mockAdminMembers } from '../../data/memberMockData';
+import './admin-common.css';
 import './AdminMemberManagement.css';
 
 const isMemberMockEnabled = import.meta.env.VITE_ENABLE_MEMBER_MOCK === 'true';
@@ -348,7 +348,7 @@ function AdminMemberManagement() {
                         {member.status === 'VERIFYING_EMAIL' && (
                             <button
                                 type="button"
-                                className="km-table-icon-btn km-table-icon-btn--neutral"
+                                className="kl-table-icon-btn kl-table-icon-btn--neutral"
                                 onClick={() => handleResendVerification(member)}
                                 title="인증 메일 재발송"
                                 aria-label={`${member.email} 인증 메일 재발송`}
@@ -359,7 +359,7 @@ function AdminMemberManagement() {
                         {isLocked && (
                             <button
                                 type="button"
-                                className="km-table-icon-btn km-table-icon-btn--neutral"
+                                className="kl-table-icon-btn kl-table-icon-btn--neutral"
                                 onClick={() => handleUnlock(member)}
                                 title="잠금 해제"
                                 aria-label={`${member.email} 잠금 해제`}
@@ -369,7 +369,7 @@ function AdminMemberManagement() {
                         )}
                         <button
                             type="button"
-                            className="km-table-icon-btn km-table-icon-btn--neutral"
+                            className="kl-table-icon-btn kl-table-icon-btn--neutral"
                             onClick={() => setEditMember({ ...member })}
                             title="수정"
                             aria-label={`${member.email} 수정`}
@@ -378,7 +378,7 @@ function AdminMemberManagement() {
                         </button>
                         <button
                             type="button"
-                            className="km-table-icon-btn km-table-icon-btn--danger"
+                            className="kl-table-icon-btn kl-table-icon-btn--danger"
                             onClick={() => handleDelete(member)}
                             title="삭제"
                             aria-label={`${member.email} 삭제`}
@@ -418,8 +418,8 @@ function AdminMemberManagement() {
     }, [memberTableColumns, allOnPageSelected, toggleSelectAllOnPage]);
 
     return (
-        <div className="member-mgmt-page">
-            <div className="km-main-sticky-head">
+        <div className="kl-page">
+            <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     icon={Users}
                     title="사용자 관리"
@@ -427,7 +427,7 @@ function AdminMemberManagement() {
                     actions={(
                         <button
                             type="button"
-                            className="member-mgmt-btn member-mgmt-btn--icon"
+                            className="admin-btn admin-btn-icon"
                             onClick={fetchMembers}
                             title="새로고침"
                             aria-label="사용자 목록 새로고침"
@@ -437,21 +437,7 @@ function AdminMemberManagement() {
                     )}
                 />
 
-                <div className="member-mgmt-toolbar">
-                    <div className="member-mgmt-toolbar-left">
-                        <div className="member-mgmt-search">
-                            <Search size={18} className="member-mgmt-search-icon" aria-hidden />
-                            <input
-                                type="text"
-                                className="member-mgmt-search-input"
-                                placeholder="이메일, 도메인, 권한 검색..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                aria-label="사용자 검색"
-                            />
-                        </div>
-                    </div>
-                </div>
+                
             </div>
 
             {loading ? (
@@ -459,8 +445,23 @@ function AdminMemberManagement() {
                     데이터를 불러오는 중...
                 </div>
             ) : (
-                <div className="member-mgmt-table-card">
-                    <div className="member-mgmt-table-shell basic-table-shell">
+                <div className="table-area">
+                    <div className="table-toolbar">
+                    <div className="toolbar-left">
+                    <div className="search-area">
+                    <Search size={16} className="search-area-icon" aria-hidden />
+                    <input
+                    type="text"
+                    className="search-area-input"
+                    placeholder="이메일, 도메인, 권한 검색..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    aria-label="사용자 검색"
+                    />
+                    </div>
+                    </div>
+                    </div>
+                    <div className="basic-table-shell">
                         {filteredMembers.length === 0 ? (
                             <div className="member-mgmt-empty member-mgmt-empty--solo" role="status">
                                 {members.length === 0
@@ -503,7 +504,7 @@ function AdminMemberManagement() {
                 title="사용자 수정"
                 onClose={() => setEditMember(null)}
                 maxWidth="xs"
-                contentClassName="member-mgmt-member-edit-content km-modal-form"
+                contentClassName="member-mgmt-member-edit-content kl-modal-form"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={() => setEditMember(null)}>
@@ -517,46 +518,58 @@ function AdminMemberManagement() {
             >
                 {editMember ? (
                     <>
-                        <div className="member-mgmt-modal-email-display">{editMember.email}</div>
+                        <div className="member-mgmt-modal-field">
+                            <span className="member-mgmt-modal-field-label">이메일</span>
+                            <input
+                                type="email"
+                                className="member-mgmt-modal-readonly-input"
+                                value={editMember.email}
+                                readOnly
+                                tabIndex={-1}
+                                aria-readonly="true"
+                                aria-label="이메일"
+                            />
+                        </div>
 
                         <div className="member-mgmt-modal-field">
                             <span className="member-mgmt-modal-field-label">권한 (Role)</span>
-                            <KmModalSelect
-                                includeEmptyOption={false}
+                            <select
                                 value={editMember.role}
                                 onChange={(e) => setEditMember({ ...editMember, role: e.target.value })}
-                                options={['USER', 'SYSOP', 'ADMIN']}
-                            />
+                                aria-label="권한"
+                            >
+                                <option value="USER">USER</option>
+                                <option value="SYSOP">SYSOP</option>
+                                <option value="ADMIN">ADMIN</option>
+                            </select>
                         </div>
 
                         <div className="member-mgmt-modal-field">
                             <span className="member-mgmt-modal-field-label">등급 (Grade)</span>
-                            <KmModalSelect
-                                includeEmptyOption={false}
+                            <select
                                 value={editMember.grade}
                                 onChange={(e) => setEditMember({ ...editMember, grade: e.target.value })}
-                                optionItems={[
-                                    { value: 'FREE', label: 'FREE' },
-                                    { value: 'PRO', label: 'PRO' },
-                                    { value: 'MAX', label: 'MAX' },
-                                    { value: 'SPECIAL', label: 'SPECIAL (무제한)' },
-                                ]}
-                            />
+                                aria-label="등급"
+                            >
+                                <option value="FREE">FREE</option>
+                                <option value="PRO">PRO</option>
+                                <option value="MAX">MAX</option>
+                                <option value="SPECIAL">SPECIAL (무제한)</option>
+                            </select>
                         </div>
 
                         <div className="member-mgmt-modal-field">
                             <span className="member-mgmt-modal-field-label">상태 (Status)</span>
-                            <KmModalSelect
-                                includeEmptyOption={false}
+                            <select
                                 value={editMember.status}
                                 onChange={(e) => setEditMember({ ...editMember, status: e.target.value })}
-                                options={[
-                                    'ACTIVE',
-                                    'VERIFYING_EMAIL',
-                                    'WAITING_APPROVAL',
-                                    'APPROVED_WAITING_PASSWORD',
-                                ]}
-                            />
+                                aria-label="상태"
+                            >
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="VERIFYING_EMAIL">VERIFYING_EMAIL</option>
+                                <option value="WAITING_APPROVAL">WAITING_APPROVAL</option>
+                                <option value="APPROVED_WAITING_PASSWORD">APPROVED_WAITING_PASSWORD</option>
+                            </select>
                         </div>
                     </>
                 ) : null}

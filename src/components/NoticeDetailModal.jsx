@@ -118,7 +118,7 @@ function NoticeDetailModal({
             maxWidth={false}
             fullWidth={false}
             paperSx={{ width: '920px', maxWidth: 'calc(100vw - 48px)', maxHeight: 'calc(100vh - 48px)' }}
-            contentClassName="notice-detail-modal-content km-modal-form"
+            contentClassName="notice-detail-modal-content kl-modal-form"
             actionsClassName="notice-detail-modal-actions"
             actions={(
                 <div className="notice-detail-actions-layout">

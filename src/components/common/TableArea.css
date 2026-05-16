@@ -1,0 +1,64 @@
+/*
+ * 목록형 표 영역 — BasicTable 래퍼 공통.
+ * - 표만: `.table-area` > `.basic-table-shell` > `BasicTable` (카드 외곽)
+ * - 툴바+표: `.table-area` > `.table-toolbar` + `.basic-table-shell` (툴바는 카드 밖 톤, 표만 카드)
+ * - 페이지별 열·셀: 각 화면 CSS에서 `.table-area .…-basic-table` 로만 지정.
+ */
+
+.table-area {
+  min-width: 0;
+}
+
+/* 표만 있는 영역 — 카드 외곽 */
+.table-area:not(:has(> .table-toolbar)) {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.table-area:not(:has(> .table-toolbar)) > .basic-table-shell {
+  background: var(--color-bg-secondary);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+/* 툴바 + 표 묶음 — 논리 그룹만, 시각은 툴바(페이지 배경) + 표 카드 분리 */
+.table-area:has(> .table-toolbar) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.table-area:has(> .table-toolbar) > .table-toolbar {
+  padding: 0;
+  border-bottom: none;
+}
+
+.table-area:has(> .table-toolbar) > .basic-table-shell {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+/* 푸터가 shell 직후에 올 때(사용자 관리 등) — 표 카드와 한 덩어리 */
+.table-area:has(> .table-toolbar) > .basic-table-shell:has(+ div) {
+  border-bottom: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.table-area:has(> .table-toolbar) > .basic-table-shell + div {
+  border: 1px solid var(--color-border-subtle);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  overflow: hidden;
+}

@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { adminConfigApi } from '../../services/api';
-import { Button, MenuItem, Select } from '@mui/material';
+import { Button } from '@mui/material';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
 import { attachRowSpanMeta, getRowSpanCellProps } from '../../hooks/useTableRowSpanGroups';
-import { RotateCcw, RefreshCw, HelpCircle, FilePen, ChevronDown } from 'lucide-react';
+import { RotateCcw, RefreshCw, HelpCircle, FilePen } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
-import KmPopover from '../../components/common/KmPopover';
+import KlPopover from '../../components/common/KlPopover';
 import BaseModal from '../../components/common/modal/BaseModal';
 import { mockAdminConfigCategories, mockAdminConfigItems } from '../../data/adminConfigMockData';
 import './admin-common.css';
@@ -181,37 +181,6 @@ function formatConfigValuePreview(raw) {
     return String(raw).replace(/\s+/g, ' ').trim();
 }
 
-function ConfigMgmtCategoryHeadSelect({ value, categories, onChange }) {
-    return (
-        <Select
-            value={value}
-            onChange={onChange}
-            onClick={(e) => e.stopPropagation()}
-            displayEmpty
-            variant="standard"
-            disableUnderline
-            className="config-mgmt-th-category-select"
-            inputProps={{ 'aria-label': '카테고리 필터' }}
-            IconComponent={(iconProps) => <ChevronDown {...iconProps} size={14} aria-hidden />}
-            renderValue={(selected) => (
-                <span className="config-mgmt-th-category-select-value">
-                    {selected ? '카테고리' : '카테고리 전체'}
-                </span>
-            )}
-            MenuProps={{
-                PaperProps: { className: 'config-mgmt-th-category-select-menu' },
-            }}
-        >
-            <MenuItem value="">전체 카테고리</MenuItem>
-            {categories.map((cat) => (
-                <MenuItem key={cat} value={cat}>
-                    {CATEGORY_LABELS[cat] || cat}
-                </MenuItem>
-            ))}
-        </Select>
-    );
-}
-
 function AdminConfigManagement() {
     const [configs, setConfigs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -366,14 +335,7 @@ function AdminConfigManagement() {
         () => [
             {
                 id: 'category',
-                label: (
-                    <ConfigMgmtCategoryHeadSelect
-                        value={selectedCategory}
-                        categories={categories}
-                        onChange={handleCategoryChange}
-                    />
-                ),
-                headLabelWrap: false,
+                label: '카테고리',
                 defaultWidthPx: 180,
                 minWidthPx: 120,
                 align: 'left',
@@ -392,12 +354,12 @@ function AdminConfigManagement() {
                 ellipsis: false,
             },
         ],
-        [categories, handleCategoryChange, selectedCategory]
+        []
     );
 
     const { columns: configTableColumns, startResize: configColumnStartResize } = useBasicTableColumnResize({
         definitions: configColumnDefinitions,
-        storageKey: 'km-admin-config-mgmt-v3',
+        storageKey: 'kl-config-mgmt-v3',
         enabled: true,
     });
 
@@ -420,7 +382,7 @@ function AdminConfigManagement() {
                             <span className="config-mgmt-category-cell-label">{catLabel}</span>
                             <button
                                 type="button"
-                                className="km-popover-icon-btn"
+                                className="kl-popover-icon-btn"
                                 onClick={(e) => toggleCategoryHelpPopover(cat, e)}
                                 title="카테고리 설명 보기"
                                 aria-label={`${catLabel} 설명 보기`}
@@ -462,10 +424,10 @@ function AdminConfigManagement() {
                 }
                 case '_actions':
                     return (
-                        <div className="km-table-actions">
+                        <div className="kl-table-actions">
                             <button
                                 type="button"
-                                className="km-table-icon-btn km-table-icon-btn--neutral"
+                                className="kl-table-icon-btn kl-table-icon-btn--neutral"
                                 onClick={() => openEditModal(row)}
                                 title="수정"
                                 aria-label={`${row.configKey} 수정`}
@@ -482,13 +444,13 @@ function AdminConfigManagement() {
     );
 
     return (
-        <div className="admin-page config-mgmt-page">
-            <div className="km-main-sticky-head">
+        <div className="kl-page">
+            <div className="kl-main-sticky-head">
                 <AdminPageHeader
-                    title="시스템 설정 관리"
+                    title="시스템 설정"
                     count={configs.length}
                     actions={(
-                        <div className="admin-toolbar-actions">
+                        <div className="kl-header-actions">
                             <button
                                 type="button"
                                 onClick={handleRefreshCache}
@@ -514,26 +476,51 @@ function AdminConfigManagement() {
 
             {loading ? (
                 <div className="config-mgmt-loading">데이터를 불러오는 중...</div>
-            ) : tableData.length === 0 ? (
-                <div className="config-mgmt-empty" role="status">
-                    표시할 설정이 없습니다.
-                </div>
             ) : (
-                <div className="config-mgmt-table-card">
-                    <div className="config-mgmt-table-shell basic-table-shell">
-                        <BasicTable
-                            className="config-mgmt-basic-table"
-                            columns={configTableColumns}
-                            data={tableData}
-                            renderCell={renderConfigCell}
-                            getBodyCellProps={getBodyCellProps}
-                            onColumnResizeMouseDown={configColumnStartResize}
-                        />
+                <div className="table-area">
+                    <div className="table-toolbar">
+                        <div className="toolbar-left">
+                            <div className="config-mgmt-toolbar-filter">
+                                <label htmlFor="config-mgmt-category-filter" className="config-mgmt-visually-hidden">
+                                    카테고리
+                                </label>
+                                <select
+                                    id="config-mgmt-category-filter"
+                                    className="toolbar-select"
+                                    value={selectedCategory}
+                                    onChange={handleCategoryChange}
+                                    aria-label="카테고리"
+                                >
+                                    <option value="">전체 카테고리</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat} value={cat}>
+                                            {CATEGORY_LABELS[cat] || cat}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
                     </div>
+                    {tableData.length === 0 ? (
+                        <div className="config-mgmt-empty" role="status">
+                            표시할 설정이 없습니다.
+                        </div>
+                    ) : (
+                        <div className="basic-table-shell">
+                            <BasicTable
+                                className="config-mgmt-basic-table"
+                                columns={configTableColumns}
+                                data={tableData}
+                                renderCell={renderConfigCell}
+                                getBodyCellProps={getBodyCellProps}
+                                onColumnResizeMouseDown={configColumnStartResize}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
 
-            <KmPopover
+            <KlPopover
                 id="config-mgmt-category-help-popover"
                 open={Boolean(categoryHelpPopover)}
                 anchorEl={categoryHelpPopover?.anchorEl ?? null}
@@ -559,16 +546,16 @@ function AdminConfigManagement() {
                         );
                     })()
                 ) : null}
-            </KmPopover>
+            </KlPopover>
 
             <BaseModal
                 open={Boolean(editModalRow)}
-                title="시스템 설정 관리"
+                title="시스템 설정"
                 onClose={closeEditModal}
                 maxWidth="md"
                 disableBackdropClose={saving}
                 disableEscapeKeyDown={saving}
-                contentClassName="config-mgmt-edit-modal-content km-modal-form"
+                contentClassName="config-mgmt-edit-modal-content kl-modal-form"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={closeEditModal} disabled={saving}>

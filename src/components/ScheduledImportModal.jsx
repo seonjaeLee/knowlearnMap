@@ -5,7 +5,7 @@ import { structuredApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
 import BaseModal from './common/modal/BaseModal';
-import KmModalSelect from './common/modal/KmModalSelect';
+import KlModalSelect from './common/modal/KlModalSelect';
 import './ScheduledImportModal.css';
 
 function ScheduledImportModal({ workspaceId, documents, onClose }) {
@@ -118,7 +118,7 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
             title="스케줄 임포트 관리"
             maxWidth="md"
             fullWidth
-            contentClassName="sched-modal-content km-modal-form"
+            contentClassName="sched-modal-content kl-modal-form"
             actions={actions}
         >
                 <div className="sched-modal-body">
@@ -184,7 +184,7 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                                     <div className="sched-form-grid">
                                         <div className="sched-form-group">
                                             <label>소스 유형</label>
-                                            <KmModalSelect
+                                            <KlModalSelect
                                                 includeEmptyOption={false}
                                                 value={formData.sourceType}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, sourceType: e.target.value }))}
@@ -197,7 +197,7 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                                         </div>
                                         <div className="sched-form-group">
                                             <label>매핑 기준 문서</label>
-                                            <KmModalSelect
+                                            <KlModalSelect
                                                 placeholder="-- 선택 --"
                                                 value={
                                                     formData.sourceDocumentId === '' || formData.sourceDocumentId == null

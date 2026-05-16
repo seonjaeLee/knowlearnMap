@@ -5,7 +5,7 @@
 | 파일·문서 | 역할 |
 |-----------|------|
 | `src/index.css` | `:root` 변수 **정의** |
-| `src/styles/km-scrollbar-thin.css` | 콘텐츠 내부 얇은 스크롤 — **`textarea` 전역** · 클래스 **`km-scrollbar-thin`** · `--km-scrollbar-*`(`index.css`) |
+| `src/styles/kl-scrollbar-thin.css` | 콘텐츠 내부 얇은 스크롤 — **`textarea` 전역** · 클래스 **`kl-scrollbar-thin`** · `--kl-scrollbar-*`(`index.css`) |
 | `docs/css-design-tokens.md` | 본 문서 — **규칙·표** |
 | `docs/ui-history.md` | UI 변경 이력(형식·번호는 문서 상단 안내; **갱신은 요청 시만** — `.cursor/rules/ui-history-on-request.mdc`) |
 | [layout-guideline.md](./layout-guideline.md) | 레이아웃 폭·브레이크포인트·본문 여백 |

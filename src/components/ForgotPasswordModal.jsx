@@ -55,7 +55,7 @@ const ForgotPasswordModal = memo(({ isOpen, onClose, initialEmail = '' }) => {
             title="비밀번호 찾기"
             onClose={onClose}
             maxWidth="xs"
-            contentClassName={`${styles.content} km-modal-form`}
+            contentClassName={`${styles.content} kl-modal-form`}
             actions={(
                 <>
                     <Button variant="outlined" onClick={onClose} disabled={loading}>

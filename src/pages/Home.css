@@ -1,4 +1,4 @@
-/* 워크스페이스 목록 (Home.jsx) — 인라인 스타일 대체 */
+/* 워크스페이스 목록 (Home.jsx) — 툴바·헤더 버튼은 TableToolbar.css · PageHeader.css */
 
 .home-loading-state {
   padding: 60px;
@@ -116,7 +116,7 @@
 }
 
 /* BaseModal `.actions`(세로 lg)와 충돌 시에도 프롬프트 모달만 얇게 유지 */
-.km-base-modal-actions.home-prompt-modal-actions {
+.kl-base-modal-actions.home-prompt-modal-actions {
   padding: var(--spacing-md) var(--spacing-lg) !important;
   min-height: 0 !important;
 }
@@ -174,7 +174,7 @@
 .home-prompt-none-btn {
   box-sizing: border-box;
   align-self: stretch;
-  min-height: 38px;
+  min-height: var(--kl-control-height);
   padding: var(--spacing-xs) calc(var(--spacing-sm) + var(--spacing-xs));
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
@@ -215,20 +215,4 @@
 
 .home-prompt-reset-btn {
   color: #dc2626;
-}
-
-/* MainLayout: 워크스페이스 목록 — 상단 제목·필터는 스크롤 시 고정 */
-.main-layout .main-content .home-page-header {
-  position: sticky;
-  top: 0;
-  z-index: 12;
-  flex-shrink: 0;
-  background: var(--color-bg-primary);
-  padding-bottom: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-  isolation: isolate;
-}
-
-.main-layout .main-content .home-page-header .page-header {
-  margin-bottom: var(--spacing-sm);
 }

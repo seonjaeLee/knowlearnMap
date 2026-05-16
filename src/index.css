@@ -14,25 +14,25 @@
   --color-accent-hover: #1557b0;
   --color-accent-light: #e8f0fe;
 
-  /* 테이블 행 내 삭제 등 아이콘 버튼 — `km-table-icon-actions.css`와 동일 토큰 (삭제 아이콘 기본 레드, 여기만 바꿔서 전역 일괄 조정) */
+  /* 테이블 행 내 삭제 등 아이콘 버튼 — `kl-table-icon-actions.css`와 동일 토큰 (삭제 아이콘 기본 레드, 여기만 바꿔서 전역 일괄 조정) */
   --color-icon-danger: #dc2626;
   --color-icon-danger-emphasis: #b91c1c;
-  /* 테이블 행 내 승인 등 긍정 액션 — `km-table-icon-btn--success` */
+  /* 테이블 행 내 승인 등 긍정 액션 — `kl-table-icon-btn--success` */
   --color-icon-success: #2b8a3e;
   --color-icon-success-emphasis: #1b6e2f;
 
   /* 테이블 액션 열: 아이콘 실크기·간격·클릭 영역 — 편집·삭제 버튼은 사이 간격 0(나란히) */
-  --km-table-action-icon-size: 16px;
-  --km-table-action-icon-gap: 0;
-  --km-table-action-hit-size: 36px;
+  --kl-table-action-icon-size: 16px;
+  --kl-table-action-icon-gap: 0;
+  --kl-table-action-hit-size: 36px;
   /* 편집+삭제 2개 + 좌우 셀 패딩(var(--spacing-md)*2) 시 필요 최소 폭 — 열 width와 함께 조정 */
-  --km-table-actions-col-min: 120px;
+  --kl-table-actions-col-min: 120px;
 
   /*
-   * 어드민 목록: `km-main-sticky-head`(페이지 제목+툴바) 바로 아래에 표 헤더를 붙일 때의 sticky `top`.
+   * 목록형: `kl-main-sticky-head`(페이지 제목+툴바) 바로 아래에 표 헤더를 붙일 때의 sticky `top`.
    * 실제 높이와 다르면 해당 페이지 CSS에서 덮어쓴다.
    */
-  --km-admin-sticky-thead-top: 148px;
+  --kl-list-sticky-thead-top: 148px;
 
   /* 네이티브·팝업 폼 포커스 링 — accent와 동일 색상 계열(MUI `palette.primary.main`과 맞춤, 아래 §참고) */
   --shadow-focus-input: 0 0 0 2px color-mix(in srgb, var(--color-accent) 32%, transparent);
@@ -95,10 +95,10 @@
   /* 필수 항목 별표 — 라벨·MUI FormLabel/InputLabel 공통 */
   --color-required-asterisk: #ff0000;
 
-  /* 콘텐츠 내부 스크롤(본문/body 제외) — `styles/km-scrollbar-thin.css` */
-  --km-scrollbar-size: 10px;
-  --km-scrollbar-thumb: rgba(95, 99, 104, 0.45);
-  --km-scrollbar-track: transparent;
+  /* 콘텐츠 내부 스크롤(본문/body 제외) — `styles/kl-scrollbar-thin.css` */
+  --kl-scrollbar-size: 10px;
+  --kl-scrollbar-thumb: rgba(95, 99, 104, 0.45);
+  --kl-scrollbar-track: transparent;
 
   /* BaseModal 공통 Paper(헤더·본문·푸터 포함) 최소 높이 — alert/confirm은 DialogContext에서 예외 */
   --base-modal-paper-min-height: 340px;
@@ -195,14 +195,25 @@ select {
 .modal-native-field input[type='password'],
 .modal-native-field input[type='email'] {
   width: 100%;
-  padding: calc(var(--spacing-sm) + var(--spacing-xs)) 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-base);
+  height: var(--kl-control-height);
+  padding: 0 var(--kl-control-padding-inline);
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  line-height: var(--kl-control-line-height);
   font-family: var(--font-family);
   color: var(--color-text-primary);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  background-color: var(--kl-control-bg);
+  transition: var(--kl-control-transition);
   box-sizing: border-box;
+}
+
+.modal-native-field input[type='text']:hover:not(:disabled),
+.modal-native-field input[type='password']:hover:not(:disabled),
+.modal-native-field input[type='email']:hover:not(:disabled) {
+  border-color: var(--kl-control-border-hover);
+  background-color: var(--kl-control-bg-hover);
 }
 
 .modal-native-field input[type='text']:focus,

@@ -1,65 +1,26 @@
 /* 전역 `fadeIn` 키프레임과 이름이 겹치면(CustomAlert의 scale 등) 본문이 팝업처럼 보일 수 있어 진입 애니메이션 없음 */
-.domain-management-container {
-    padding: 0;
-    max-width: 100%;
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-}
-
 /* 페이지·툴바·버튼 — admin-common 미사용, 토큰 기준 */
-.domain-mgmt-page {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    max-width: 100%;
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-}
-
-.domain-mgmt-toolbar {
+/* 툴바 안내 문구 — 도메인 선택(로그인·안내) 등. 여백은 `.table-toolbar`·`kl-main-sticky-head` gap만 사용 */
+.infotxt {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-md);
-    flex-wrap: wrap;
-}
-
-.domain-mgmt-toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
+    flex: 1 1 auto;
     min-width: 0;
-}
-
-.domain-mgmt-search {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    min-width: 0;
-    flex: 1 1 280px;
-    max-width: 400px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-secondary);
-}
-
-.domain-mgmt-search-icon {
-    flex-shrink: 0;
+    width: 100%;
+    margin: 0;
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
 }
 
-.domain-mgmt-search-input {
-    flex: 1 1 auto;
-    min-width: 0;
-    border: none;
-    background: transparent;
-    font-family: var(--font-family);
+.infotxt .domain-content-help {
+    margin: 0;
+    white-space: nowrap;
     font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    outline: none;
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
 }
 
 .domain-mgmt-btn {
@@ -112,27 +73,15 @@
     border-color: var(--color-icon-danger-emphasis);
 }
 
-.domain-mgmt-table-card {
-    --km-table-action-hit-size: 32px;
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-lg);
-    min-width: 0;
-    overflow: hidden;
-}
-
-.domain-mgmt-table-shell {
-    background: var(--color-bg-secondary);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    min-width: 0;
+.table-area {
+    --kl-table-action-hit-size: 32px;
 }
 
 .domain-mgmt-basic-table {
     min-width: 1120px;
 }
 
-.domain-mgmt-table-card .domain-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .domain-mgmt-actions-head {
+.table-area .domain-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .domain-mgmt-actions-head {
     padding-right: var(--spacing-sm);
 }
 
@@ -148,12 +97,12 @@
     display: inline-flex;
     justify-content: flex-end;
     align-items: center;
-    gap: var(--km-table-action-icon-gap);
+    gap: var(--kl-table-action-icon-gap);
     width: 100%;
     min-width: 0;
 }
 
-.domain-mgmt-table-card .domain-mgmt-basic-table .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root .domain-mgmt-ws-badge {
+.table-area .domain-mgmt-basic-table .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root .domain-mgmt-ws-badge {
     padding: 2px var(--spacing-xs);
 }
 
@@ -254,10 +203,7 @@
     overflow-y: auto;
 }
 
-.domain-modal-content input:not([type='checkbox']):not([type='radio']),
-.domain-modal-content .MuiOutlinedInput-root {
-    background-color: var(--color-bg-secondary) !important;
-}
+/* input·select — `kl-modal-form` + `kl-form-control.css` (툴바와 동일 32px) */
 
 .domain-input-group {
     display: flex;
@@ -270,8 +216,17 @@
     min-width: 0;
 }
 
-.domain-input-group > button {
+.domain-input-group select,
+.domain-input-group input:not([type='checkbox']):not([type='radio']) {
+    width: 100%;
+}
+
+.domain-input-group > button.domain-mgmt-btn {
     flex-shrink: 0;
+    height: var(--kl-control-height);
+    padding: 0 var(--kl-control-padding-inline);
+    border-radius: var(--kl-control-radius);
+    box-sizing: border-box;
 }
 
 .domain-validation-msg {

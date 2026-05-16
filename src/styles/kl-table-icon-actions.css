@@ -4,26 +4,26 @@
  * 어드민 `.admin-table` 안에서는 `admin-common.css`가 팔레트만 덮어씀.
  *
  * 사용 예:
- *   <div class="km-table-actions">…</div> 로 편집+삭제 나란히 (간격은 `:root` --km-table-action-icon-gap, 기본 0)
- *   <button type="button" class="km-table-icon-btn km-table-icon-btn--neutral" title="수정">…</button>
- *   <button type="button" class="km-table-icon-btn km-table-icon-btn--danger" title="삭제">…</button>
- *   <button type="button" class="km-table-icon-btn km-table-icon-btn--success" title="승인">…</button>
+ *   <div class="kl-table-actions">…</div> 로 편집+삭제 나란히 (간격은 `:root` --kl-table-action-icon-gap, 기본 0)
+ *   <button type="button" class="kl-table-icon-btn kl-table-icon-btn--neutral" title="수정">…</button>
+ *   <button type="button" class="kl-table-icon-btn kl-table-icon-btn--danger" title="삭제">…</button>
+ *   <button type="button" class="kl-table-icon-btn kl-table-icon-btn--success" title="승인">…</button>
  */
 
-.km-table-actions {
+.kl-table-actions {
     display: inline-flex;
     align-items: center;
     justify-content: flex-end;
-    gap: var(--km-table-action-icon-gap);
+    gap: var(--kl-table-action-icon-gap);
     min-width: 0;
 }
 
-.km-table-icon-btn {
+.kl-table-icon-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--km-table-action-hit-size);
-    height: var(--km-table-action-hit-size);
+    width: var(--kl-table-action-hit-size);
+    height: var(--kl-table-action-hit-size);
     margin: 0;
     padding: 0;
     border: none;
@@ -34,67 +34,67 @@
     transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
-.km-table-icon-btn:focus-visible {
+.kl-table-icon-btn:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 1px;
 }
 
-.km-table-icon-btn:disabled {
+.kl-table-icon-btn:disabled {
     cursor: not-allowed;
     opacity: 0.45;
 }
 
-.km-table-icon-btn > svg {
-    width: var(--km-table-action-icon-size);
-    height: var(--km-table-action-icon-size);
+.kl-table-icon-btn > svg {
+    width: var(--kl-table-action-icon-size);
+    height: var(--kl-table-action-icon-size);
     flex-shrink: 0;
 }
 
 /* 편집·일반 액션 — 기본은 보조 텍스트색, 호버 시 삭제와 같은 방식으로 연한 채움 + 진한 글자색 */
-.km-table-icon-btn--neutral {
+.kl-table-icon-btn--neutral {
     color: var(--color-text-secondary);
 }
 
-.km-table-icon-btn--neutral:hover:not(:disabled) {
+.kl-table-icon-btn--neutral:hover:not(:disabled) {
     background: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
     color: var(--color-text-primary);
 }
 
 /* 삭제: 기본 레드 유지 (이전 인라인 #dc2626과 동일 계열) */
-.km-table-icon-btn--danger {
+.kl-table-icon-btn--danger {
     color: var(--color-icon-danger);
 }
 
-.km-table-icon-btn--danger:hover:not(:disabled) {
+.kl-table-icon-btn--danger:hover:not(:disabled) {
     background: color-mix(in srgb, var(--color-icon-danger) 10%, transparent);
     color: var(--color-icon-danger-emphasis);
 }
 
-.km-table-icon-btn--danger > svg {
+.kl-table-icon-btn--danger > svg {
     color: inherit;
     stroke: currentColor;
 }
 
 /* 승인·긍정 액션 — danger와 동일 패턴(아이콘색 + 연한 톤 호버) */
-.km-table-icon-btn--success {
+.kl-table-icon-btn--success {
     color: var(--color-icon-success);
 }
 
-.km-table-icon-btn--success:hover:not(:disabled) {
+.kl-table-icon-btn--success:hover:not(:disabled) {
     background: color-mix(in srgb, var(--color-icon-success) 12%, transparent);
     color: var(--color-icon-success-emphasis);
 }
 
-.km-table-icon-btn--success > svg {
+.kl-table-icon-btn--success > svg {
     color: inherit;
     stroke: currentColor;
 }
 
-.km-table-icon-btn__spin {
-    animation: km-table-icon-spin 0.75s linear infinite;
+.kl-table-icon-btn__spin {
+    animation: kl-table-icon-spin 0.75s linear infinite;
 }
 
-@keyframes km-table-icon-spin {
+@keyframes kl-table-icon-spin {
     to {
         transform: rotate(360deg);
     }

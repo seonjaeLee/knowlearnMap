@@ -5,7 +5,7 @@ import { structuredApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
 import BaseModal from './common/modal/BaseModal';
-import KmModalSelect from './common/modal/KmModalSelect';
+import KlModalSelect from './common/modal/KlModalSelect';
 
 const DB_TYPES = [
     { value: 'MYSQL', label: 'MySQL', defaultPort: 3306 },
@@ -362,7 +362,7 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
                     <div className="db-form-row">
                         <label className="db-form-label">네트워크 유형:</label>
                         <div className="db-form-value">
-                            <KmModalSelect
+                            <KlModalSelect
                                 includeEmptyOption={false}
                                 value={form.dbType}
                                 onChange={(e) => handleFormChange('dbType', e.target.value)}
@@ -672,7 +672,7 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
             title={step === 1 ? 'DB 테이블 연결' : step === 2 ? '테이블 선택' : '임포트 완료'}
             maxWidth="lg"
             fullWidth
-            contentClassName="db-modal-content km-modal-form"
+            contentClassName="db-modal-content kl-modal-form"
             actions={actions}
             actionsAlign="left"
         >

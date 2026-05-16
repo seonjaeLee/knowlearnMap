@@ -3,10 +3,10 @@ import { FilePen, Trash2 } from 'lucide-react';
 
 function SupportTableAdminActions({ label, onEdit, onDelete }) {
   return (
-    <div className="km-table-actions">
+    <div className="kl-table-actions">
       <button
         type="button"
-        className="km-table-icon-btn km-table-icon-btn--neutral"
+        className="kl-table-icon-btn kl-table-icon-btn--neutral"
         onClick={(e) => {
           e.stopPropagation();
           onEdit();
@@ -18,7 +18,7 @@ function SupportTableAdminActions({ label, onEdit, onDelete }) {
       </button>
       <button
         type="button"
-        className="km-table-icon-btn km-table-icon-btn--danger"
+        className="kl-table-icon-btn kl-table-icon-btn--danger"
         onClick={(e) => {
           e.stopPropagation();
           onDelete();

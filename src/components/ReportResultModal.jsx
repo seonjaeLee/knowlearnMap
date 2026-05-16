@@ -30,7 +30,7 @@ function ReportResultModal({ isOpen, onClose, status, result, error, progress })
             showCloseButton={canClose}
             disableBackdropClose={!canClose}
             disableEscapeKeyDown={!canClose}
-            contentClassName="report-result-modal-content km-modal-form"
+            contentClassName="report-result-modal-content kl-modal-form"
             actionsClassName="report-result-modal-actions"
             actions={actions}
         >

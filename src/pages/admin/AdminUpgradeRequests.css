@@ -1,31 +1,8 @@
-.admin-upgrade-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  max-width: 100%;
-  min-width: 0;
-}
-
 .admin-upgrade-loading {
   padding: var(--spacing-2xl);
   text-align: center;
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
-}
-
-.admin-upgrade-table-card {
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  min-width: 0;
-  overflow: hidden;
-}
-
-.admin-upgrade-table-shell {
-  background: var(--color-bg-secondary);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  min-width: 0;
 }
 
 .admin-upgrade-basic-table {
@@ -40,7 +17,7 @@
   min-width: 0;
 }
 
-.admin-upgrade-table-card .admin-upgrade-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .admin-upgrade-actions-head {
+.table-area .admin-upgrade-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .admin-upgrade-actions-head {
   padding-right: var(--spacing-sm);
 }
 
@@ -73,7 +50,7 @@
   flex-shrink: 0;
 }
 
-/* 워크스페이스 관리 Popover와 동일: 패딩은 KmPopover `.panel`만 사용 */
+/* 워크스페이스 관리 Popover와 동일: 패딩은 KlPopover `.panel`만 사용 */
 .admin-upgrade-reject-popover-inner {
   min-width: 0;
   max-width: min(320px, 85vw);
@@ -142,7 +119,7 @@
   display: inline-flex;
   justify-content: flex-end;
   align-items: center;
-  gap: var(--km-table-action-icon-gap);
+  gap: var(--kl-table-action-icon-gap);
   width: 100%;
   min-width: 0;
 }

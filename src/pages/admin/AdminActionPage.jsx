@@ -23,15 +23,17 @@ function AdminActionPage() {
     }
   }, [workspaceId]);
 
-  if (!workspaceId) return <div className="admin-page"><p>workspaceId 가 없습니다.</p></div>;
+  if (!workspaceId) return <div className="kl-page"><p>workspaceId 가 없습니다.</p></div>;
 
   return (
-    <div className="admin-page">
-      <AdminPageHeader
-        icon={Zap}
-        title="Action 관리"
-        subtitle="온톨로지 기반 실행 Action 을 정의하고, 개념·트리플에 바인딩합니다. Excel 일괄 업다운 지원."
-      />
+    <div className="kl-page">
+      <div className="kl-main-sticky-head">
+        <AdminPageHeader
+          icon={Zap}
+          title="Action 관리"
+          subtitle="온톨로지 기반 실행 Action 을 정의하고, 개념·트리플에 바인딩합니다. Excel 일괄 업다운 지원."
+        />
+      </div>
 
       <div className="admin-semantic-subtabs">
         <button className={`admin-semantic-subtab ${subTab === 'list' ? 'active' : ''}`}

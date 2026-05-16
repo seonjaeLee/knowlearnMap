@@ -118,8 +118,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--km-table-action-hit-size);
-    height: var(--km-table-action-hit-size);
+    width: var(--kl-table-action-hit-size);
+    height: var(--kl-table-action-hit-size);
     padding: 0;
     border: none;
     border-radius: var(--radius-sm);

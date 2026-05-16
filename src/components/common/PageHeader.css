@@ -1,11 +1,57 @@
+/*
+ * 콘텐츠 타이틀(PageHeader) — 목록·설정 화면 공통
+ * - 컴포넌트: PageHeader.jsx · AdminPageHeader.jsx
+ * - DOM·마크업: docs/list-page-spec.md
+ * - 헤더·sticky·우측 버튼 규격은 이 파일만 수정 (MainLayout.css 에 두지 않음)
+ */
+
+/* ============================================================
+ * 목록형 sticky 헤더 래퍼 — kl-page > kl-main-sticky-head > PageHeader
+ * ============================================================ */
+.main-layout .main-content .kl-main-sticky-head {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  background: var(--color-bg-primary);
+  isolation: isolate;
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+}
+
+/* ============================================================
+ * .page-header — 제목 · breadcrumb · 우측 액션
+ * ============================================================ */
 .page-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
-  /* 콘텐츠 타이틀 ~ 본문: 앱 전역 16px (--spacing-md) */
+  /* 콘텐츠 타이틀 ~ 본문: 앱 전역 16px (sticky-head 안에서는 0) */
   margin-bottom: var(--spacing-md);
   min-height: 40px;
+  box-shadow: none;
+}
+
+.kl-main-sticky-head .page-header {
+  align-items: flex-end;
+  margin-bottom: 0;
+}
+
+/* 노트북 등: PageHeader가 kl-page 직계일 때 (목록형은 kl-main-sticky-head 사용) */
+.main-layout .main-content-outlet-wrap .kl-page > .page-header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--color-bg-primary);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  isolation: isolate;
+  box-shadow: none;
 }
 
 .page-header-left {
@@ -61,11 +107,106 @@
   color: #64748b;
 }
 
+/* ============================================================
+ * 우측 액션 버튼 그룹 — 높이·radius·간격 통일
+ * DOM: .page-header-actions > (.kl-header-actions?) > .admin-btn
+ * ============================================================ */
 .page-header-actions {
+  --kl-header-action-size: 32px;
+  --kl-header-action-radius: var(--radius-sm);
+
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  min-height: var(--kl-header-action-size);
+}
+
+.kl-header-actions {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-sm);
   flex-shrink: 0;
+  height: var(--kl-header-action-size);
+}
+
+.page-header-actions .admin-btn,
+.kl-header-actions > .admin-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--kl-header-action-size);
+  height: var(--kl-header-action-size);
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  border-radius: var(--kl-header-action-radius);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.page-header-actions .admin-btn svg,
+.kl-header-actions > .admin-btn svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.page-header-actions .admin-btn:not(.admin-btn-icon),
+.kl-header-actions > .admin-btn:not(.admin-btn-icon) {
+  padding-left: 14px;
+  padding-right: 14px;
+  gap: var(--spacing-xs);
+}
+
+/* 주 액션(등록·추가) — 푸른색 통일 */
+.page-header-actions .admin-btn-primary,
+.kl-header-actions > .admin-btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+.page-header-actions .admin-btn-primary:hover,
+.kl-header-actions > .admin-btn-primary:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+/* 캐시 갱신 — 녹색 아웃라인 유지, 크기·radius만 그룹과 동일 */
+.page-header-actions .admin-btn-outline-success,
+.kl-header-actions > .admin-btn-outline-success {
+  border-color: color-mix(in srgb, var(--admin-color-success) 40%, var(--admin-border-strong));
+  background: color-mix(in srgb, var(--admin-color-success-soft) 70%, var(--admin-bg-panel));
+  color: var(--admin-color-success-on-soft);
+}
+
+.page-header-actions .admin-btn-outline-success:hover,
+.kl-header-actions > .admin-btn-outline-success:hover {
+  background: var(--admin-color-success-soft);
+  border-color: color-mix(in srgb, var(--admin-color-success) 55%, var(--admin-border-strong));
+}
+
+/* 새로고침 등 아이콘 전용 */
+.page-header-actions .admin-btn-icon,
+.kl-header-actions > .admin-btn-icon {
+  min-width: var(--kl-header-action-size);
+  width: var(--kl-header-action-size);
+  padding: 0;
+  background: var(--color-bg-secondary);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.page-header-actions .admin-btn-icon:hover,
+.kl-header-actions > .admin-btn-icon:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
 }
 
 @media (max-width: 1023px) {

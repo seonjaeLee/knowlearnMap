@@ -146,8 +146,8 @@ const PromptListContent = () => {
   const selectSx = promptToolbarSelectSx;
 
   return (
-    <div className="admin-page">
-      <div className="km-main-sticky-head">
+    <div className="kl-page">
+      <div className="kl-main-sticky-head">
       <AdminPageHeader
         icon={FileText}
         title="프롬프트 관리"
@@ -161,13 +161,13 @@ const PromptListContent = () => {
         }
       />
 
-      <div className="admin-toolbar">
-        <div className="admin-toolbar-left">
-          <div className="admin-search">
-            <Search size={16} className="admin-search-icon" />
+      <div className="table-toolbar">
+        <div className="toolbar-left">
+          <div className="search-area">
+            <Search size={16} className="search-area-icon" aria-hidden />
             <input
               type="text"
-              className="admin-search-input"
+              className="search-area-input"
               placeholder="코드 / 이름으로 검색..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}

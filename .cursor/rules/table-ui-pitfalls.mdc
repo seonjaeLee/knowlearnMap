@@ -18,5 +18,5 @@ alwaysApply: false
 ## 할 것
 
 - 셀 간격은 주로 **`th`/`td` padding** + 디자인 토큰 (`index.css` `:root`, 어드민은 `admin-common.css`).
-- 행 내 아이콘 액션은 **`km-table-icon-btn`** + `--neutral` / `--danger` (`src/styles/km-table-icon-actions.css`).
+- 행 내 아이콘 액션은 **`kl-table-icon-btn`** + `--neutral` / `--danger` (`src/styles/kl-table-icon-actions.css`).
 - 헤더 정렬 관례: **텍스트 열 좌측**, 선택 열만 중앙, **마지막 액션 열만 우측** (`docs/data-table-spec.md` §4).

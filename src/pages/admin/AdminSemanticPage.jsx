@@ -14,12 +14,14 @@ function AdminSemanticPage() {
   const [subTab, setSubTab] = useState('objects');
 
   return (
-    <div className="admin-page">
-      <AdminPageHeader
-        icon={Network}
-        title="온톨로지 옵션"
-        subtitle="MAP 온톨로지 프롬프트가 참조하는 객체 / 관계 / 액션 및 각 카테고리 계층을 관리합니다."
-      />
+    <div className="kl-page">
+      <div className="kl-main-sticky-head">
+        <AdminPageHeader
+          icon={Network}
+          title="온톨로지 옵션"
+          subtitle="MAP 온톨로지 프롬프트가 참조하는 객체 / 관계 / 액션 및 각 카테고리 계층을 관리합니다."
+        />
+      </div>
 
       <div className="admin-semantic-subtabs">
         <button

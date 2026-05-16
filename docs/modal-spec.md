@@ -1,77 +1,114 @@
-# Modal Spec (확정 v1)
+# Modal Spec
 
-이 문서는 모달 UI 작업을 반복 보정 방식이 아니라 규격 기반으로 진행하기 위한 확정 기준이다.
+<div style="font-size:12px;line-height:1.45">
 
-## 1) 핵심 원칙
+**기준 코드** · `src/components/common/modal/BaseModal.{jsx,module.scss}` · Decision은 `src/context/DialogContext.{jsx,module.scss}` 가 `BaseModal`에 클래스를 추가.
 
-- 모달 구조는 `BaseModal` 기준으로 통일한다.
-- 헤더(타이틀) 규격은 하단 버튼 유무와 무관하게 동일하게 적용한다.
-- 화면별 CSS는 도메인 콘텐츠 레이아웃만 담당하고, 버튼/상태/헤더 기본 톤은 공통 규격을 따른다.
-- 본 규격은 `닫기(X) 버튼이 있는 팝업`에만 적용한다.
-- `alert / confirm / prompt`(Decision)는 본 일괄 정리 범위에서 제외한다.
+---
 
-## 2) 레이아웃 규격 (고정)
+## I. 운영 (기능·타입)
 
-- 헤더: `16px 24px`, 제목 좌측 + 닫기 버튼 우측, 하단 라인 1px
-- 콘텐츠 기본 패딩: `24px 32px`
-- 하단 액션 패딩: `24px 24px`
-- 모달 내부 기본 섹션 간격: `16px`
+### 1. 두 가지 모달
 
-## 3) 타입 분류 (운영 기준)
+| | **① 일반 팝업** | **② Decision** |
+|:--|:--|:--|
+| **용도** | 생성·수정·조회·대형 폼 | 안내·확인·짧은 입력 |
+| **호출** | JSX `<BaseModal …>` | `useDialog()` → `alert` / `confirm` / `prompt` |
+| **닫기 X** | 기본 표시 | `alert`·`confirm` 숨김 · `prompt`는 표시 |
+| **하단 버튼** | `actions` prop으로 전달 | `DialogContext`가 버튼 조립 |
+| **일괄 UI 정리** | Form / No-Footer 대상 | 범위 밖(별도 규칙) |
 
-### A. Decision (`alert` / `confirm` / `prompt`)
-- 호출: `useDialog`
-- 정렬: 제목/액션 중앙 정렬 허용
-- 타이틀·본문 글자 크기: 공통 팝업과 동일 — 제목은 `BaseModal` `.title`(`--font-size-lg`), 본문은 `.contentInner`와 동일(`--font-size-sm`)
-- 버튼: 취소(보조) + 확인(주행동)
-- 본 스펙의 Form/No-Footer 일괄 리팩터링 대상에서 제외
+### 2. ① 일반 팝업 (`BaseModal`)
 
-### B. Form (편집/생성)
-- 레이아웃: Header / Content / Footer(actions)
-- 버튼: 취소(Outlined), 저장/확인(Contained), 삭제는 필요 시 좌측 그룹
+| 타입 | 레이아웃 | 하단 버튼 |
+|:--|:--|:--|
+| **Form** | Header · Content · **하단 버튼영역** | 취소 Outlined + 저장/확인 Contained (삭제는 필요 시 좌측) |
+| **No-Footer** | Header · Content | 없음 (`actions` 미전달) |
 
-### C. No-Footer (뷰어/읽기형)
-- 레이아웃: Header / Content
-- 하단 actions 없음
-- 단, 헤더 규격은 A/B와 동일
+- 업로드·부가 행동 → **본문 우상단** / 하단에는 취소·저장만.
+- 카드 크기 → `paperSx` + 필요 시 `maxWidth={false}`.
+- 입력 폼 상세 → [`modal-form-spec.md`](./modal-form-spec.md) (`contentClassName`에 `kl-modal-form`).
 
-## 4) 버튼 규격
+### 3. ② Decision (`alert` / `confirm` / `prompt`)
 
-- 공통 radius: `4px` (`var(--radius-sm)`)
-- **일반 모달·Decision(alert / confirm / prompt) 공통** 버튼 패딩: `4px 16px` (`var(--spacing-xs)` × `var(--spacing-md)`), 글자 크기는 `--font-size-base`(14px)로 일반 액션 버튼과 통일
-- Decision만 actions **가운데 정렬**, 버튼 **`min-width: 100px`**(일반 폼 모달의 contained `min-width: 150px`와 구분)
-- Contained 기본/hover/active/disabled 색상은 공통 토큰으로 상태별 명시
-- 취소 버튼은 파란 contained 사용 금지(기본 Outlined)
+| 종류 | 버튼 | 비고 |
+|:--|:--|:--|
+| **alert** | 확인만 | 취소 없음 |
+| **confirm** | 취소 + 확인 | `tone: 'danger'`(삭제 등) |
+| **prompt** | 취소 + 확인 | 본문에 입력 필드 · `kl-modal-form` |
 
-## 5) 업로드 버튼 배치 규칙
+- 제목·본문·하단 버튼 **가운데 정렬** (`headerAlign` / `actionsAlign` center).
+- 취소는 Outlined(회색 톤) · 확인은 Contained · 취소에 파란 Contained 금지.
+- 버튼 `min-width: 100px` (일반 Form contained 150px와 구분).
 
-- "팝업 내부 업로드 버튼"은 콘텐츠 우상단에 배치한다.
-- 하단 actions에는 취소/저장 등 주행동 버튼만 둔다.
+---
 
-## 6) 현재 우선 관리 대상 (팝업 매핑)
+## II. 구조·클래스 (수정할 때)
 
-| 팝업 | 타입 | 비고 |
-|---|---|---|
-| 워크스페이스 삭제 확인 | Decision | 취소/삭제 색상 상태 고정 |
-| 페르소나 관리(목록) | No-Footer | 카드/추가 버튼 중심 |
-| 페르소나 관리(편집/신규/기초값) | Form | 하단 액션 규격 적용 |
-| 소스 추가 | No-Footer | 헤더 + 콘텐츠 중심 |
-| 비즈니스/IT 용어사전 | Form | 업로드 버튼 콘텐츠 우상단, 하단 취소/저장 |
+> DevTools `_header_xxxx` = CSS Modules 해시 → **아래 SCSS 이름**으로 검색.  
+> `kl-base-modal-*` = JSX 전용 문자열(**SCSS 파일에 없음**). 검사기·타 CSS 덮기용.
 
-## 7) 예외 처리 원칙
+**MUI 이름 ↔ 화면** · `DialogTitle` 헤더 · `DialogContent` 본문 · **`DialogActions` = 하단 버튼영역** (prop `actions`, SCSS `.actions` — `footer` 클래스 없음)
 
-- **`paperSx`**: MUI Dialog **Paper**에 넘기는 `sx` 객체. 모달 **가로·세로·`maxHeight`** 등을 페이지에서 지정할 때 사용한다. 보통 **`maxWidth={false}`** · **`fullWidth={false}`** 와 함께 쓴다. 콘텐츠 스크롤은 Paper를 `display: flex` / `flexDirection: column` 으로 두고 `DialogContent`에 `flex: 1`·`minHeight: 0`·`overflow: auto` 를 맞춘다.
-- `headerClassName`, `contentClassName`, `actionsClassName`는 간격 보정 목적만 허용한다.
-- 공통 규격을 깨는 색상/버튼 상태 오버라이드는 금지한다.
-- 예외가 필요한 경우 반드시 이 문서에 항목을 추가한 뒤 적용한다.
+### 4. ① `BaseModal` — 영역 · prop · 클래스
 
-## 8) 완료 기준 (DoD)
+| # | 화면 영역 | MUI | prop | SCSS | 전역(검사기) |
+|:--|:--|:--|:--|:--|:--|
+| 1 | 배경 딤 | Backdrop | — | `.backdrop` | `kl-base-modal-backdrop` |
+| 2 | 카드 | Paper | `paperClassName` `paperSx` | `.dialogPaper` | `kl-base-modal-paper` |
+| 3 | 헤더(타이틀바) | DialogTitle | `title` `subtitle` `headerAlign` `headerVariant` `headerClassName` | `.header` `.headerCenter` `.headerFilled` | `kl-base-modal-header` |
+| 4 | 제목 줄 | div | — | `.titleRow` `.titleRowCenter` | `kl-base-modal-title-row` |
+| 5 | 제목 글자 | Typography h2 | `titleClassName` | `.title` | — |
+| 6 | 부제 | Typography p | `subtitle` | `.subtitle` | — |
+| 7 | 닫기 X | IconButton | `showCloseButton` | `.closeButton` | — |
+| 8 | 본문 | DialogContent | `contentClassName` | `.content` | `kl-base-modal-content` |
+| 9 | 본문 안 | Box | `children` | `.contentInner` | `kl-base-modal-content-inner` |
+| 10 | **하단 버튼영역** | **DialogActions** | **`actions`** `actionsAlign` `actionsClassName` | **`.actions`** `.actionsLeft` `.actionsCenter` `.actionsRight` | **`kl-base-modal-actions`** |
 
-- 동일 타입 모달끼리 헤더/콘텐츠/액션 간격이 동일하다.
-- 버튼 상태(기본/hover/active/disabled)가 타입 내에서 동일하다.
-- 신규 모달은 생성 시 타입(A/B/C)을 문서화하고 시작한다.
+`actionsAlign` · `right`→`.actionsRight` · `center`→`.actionsCenter` · `left`→`.actionsLeft`
 
-## 9) 팝업 본문 폼 컨트롤 (입력·선택·체크 등)
+**패딩·버튼 색** · `BaseModal.module.scss` — `.header` `.content` `.actions` 및 `.actions :global(.MuiButton`  
+**스크롤바** · `src/styles/kl-scrollbar-thin.css` → `.kl-base-modal-content`
 
-- 상세 규격·클래스·적용 방법은 **[`modal-form-spec.md`](./modal-form-spec.md)** 를 따른다.
-- 요약: `BaseModal` **`contentClassName`** 에 **`km-modal-form`** 추가, 필드 블록은 **`ModalFormField`** 또는 동일 의미의 `km-modal-form-*` 클래스.
+### 5. ② Decision — `BaseModal` 위 추가 클래스
+
+`DialogContext.jsx`가 prop으로 넘김 · 스타일 `DialogContext.module.scss`
+
+| # | 화면 영역 | prop | SCSS | 비고 |
+|:--|:--|:--|:--|:--|
+| 1 | 카드 | `paperClassName` | `.decisionPaper` | min-width 350px 등 |
+| 2 | 헤더 | `headerClassName` | `.decisionHeader` | 하단 선 없음 |
+| 3 | 본문 | `contentClassName` | `.decisionContent` | 중앙 정렬 · prompt 시 +`kl-modal-form` |
+| 4 | 하단 버튼 | `actionsClassName` | `.decisionActions` | Base `.actions` + min-width 100px |
+| 5 | 메시지 | (children) | `.message` `.decisionMessage` | |
+| 6 | prompt 입력 | — | `.promptInput` | |
+| 7 | confirm 취소색 | Button className | `.decisionCancelButton` | |
+
+**검색** · 일반 하단 패딩 → `BaseModal` **`.actions`** · Decision 전용 → **`.decisionActions`** · alert/confirm 헤더 → **`.decisionHeader`**
+
+### 6. 빠른 검색
+
+| 바꿀 것 | 파일 | 검색어 |
+|:--|:--|:--|
+| 타이틀바 패딩·선 | `BaseModal.module.scss` | `.header` |
+| 제목 타이포 | ↑ | `.title` |
+| 본문 패딩 | ↑ | `.content` |
+| 하단 버튼영역 | ↑ | `.actions` |
+| Decision 레이아웃 | `DialogContext.module.scss` | `.decision` |
+
+---
+
+<details>
+<summary style="font-size:12px">부록 — 예외 · DoD · 관리 목록</summary>
+
+**예외** · `headerClassName` / `contentClassName` / `actionsClassName` → 간격 보정만 · 색·버튼 상태 공통 규칙 깨기 금지 · 예외는 여기에 기록 후 적용.
+
+**DoD** · 동일 타입끼리 헤더·본문·하단 간격 동일 · 버튼 상태 동일.
+
+**우선 관리 팝업** · 워크스페이스 삭제→Decision · 페르소나 목록→No-Footer · 페르소나 편집→Form · 소스 추가→No-Footer · 용어사전→Form.
+
+**폼 컨트롤** · [`modal-form-spec.md`](./modal-form-spec.md)
+
+</details>
+
+</div>

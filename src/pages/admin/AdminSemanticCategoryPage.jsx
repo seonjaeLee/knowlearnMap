@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BaseModal from '../../components/common/modal/BaseModal';
-import KmModalSelect from '../../components/common/modal/KmModalSelect';
+import KlModalSelect from '../../components/common/modal/KlModalSelect';
 import './admin-common.css';
 
 /**
@@ -289,14 +289,16 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
   );
 
   return (
-    <div className={compact ? '' : 'admin-page'}>
+    <div className={compact ? '' : 'kl-page'}>
       {!compact && (
-        <AdminPageHeader
-          icon={Layers}
-          title={`${typeLabel} 카테고리 관리`}
-          count={items.length}
-          subtitle={`${typeLabel} 카테고리를 계층 구조로 관리합니다 (ontology_category.type = ${type}).`}
-        />
+        <div className="kl-main-sticky-head">
+          <AdminPageHeader
+            icon={Layers}
+            title={`${typeLabel} 카테고리 관리`}
+            count={items.length}
+            subtitle={`${typeLabel} 카테고리를 계층 구조로 관리합니다 (ontology_category.type = ${type}).`}
+          />
+        </div>
       )}
       {actionsBar}
       {searchBar}
@@ -391,7 +393,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
         title={editing?.id ? `${typeLabel} 카테고리 수정` : `${typeLabel} 카테고리 추가`}
         onClose={() => setEditing(null)}
         maxWidth="sm"
-        contentClassName="admin-semantic-edit-content km-modal-form"
+        contentClassName="admin-semantic-edit-content kl-modal-form"
         actions={(
           <>
             <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
@@ -423,7 +425,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
             </div>
             <div className="admin-field">
               <label className="admin-field-label">상위 카테고리 (parent)</label>
-              <KmModalSelect
+              <KlModalSelect
                 placeholder="(루트 — 최상위)"
                 value={editing.parentId != null ? String(editing.parentId) : ''}
                 onChange={(e) =>

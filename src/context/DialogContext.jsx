@@ -152,6 +152,7 @@ export function DialogProvider({ children }) {
       <BaseModal
         open={dialogState.open}
         title={dialogState.title}
+        compactBody={isDecisionDialog}
         onClose={handleCancel}
         disableBackdropClose={dialogState.disableBackdropClose}
         disableEscapeKeyDown={dialogState.disableEscapeKeyDown}
@@ -163,7 +164,7 @@ export function DialogProvider({ children }) {
         paperClassName={isDecisionDialog ? styles.decisionPaper : ''}
         headerClassName={isDecisionDialog ? styles.decisionHeader : ''}
         contentClassName={
-          isDecisionDialog ? styles.decisionContent : isPrompt ? 'km-modal-form' : ''
+          isDecisionDialog ? styles.decisionContent : isPrompt ? 'kl-modal-form' : ''
         }
         actionsClassName={isDecisionDialog ? styles.decisionActions : ''}
         actions={(

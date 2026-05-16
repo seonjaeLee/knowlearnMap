@@ -706,7 +706,7 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
                 maxWidth="md"
                 disableEscapeKeyDown
                 headerVariant="filled"
-                contentClassName="add-source-modal-content km-modal-form"
+                contentClassName="add-source-modal-content kl-modal-form"
             >
                 <div className={`modal-container ${currentView}`}>
                     {currentView === 'main' && renderMainView()}

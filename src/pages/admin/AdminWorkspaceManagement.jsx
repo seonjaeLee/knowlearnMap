@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { workspaceApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
@@ -6,8 +6,9 @@ import { Search, RotateCcw, Share2, Trash2 } from 'lucide-react';
 import ShareSettingsModal from '../../components/ShareSettingsModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
-import KmPopover from '../../components/common/KmPopover';
+import KlPopover from '../../components/common/KlPopover';
 import { mockAdminWorkspaces } from '../../data/workspaceMockData';
+import './admin-common.css';
 import './AdminWorkspaceManagement.css';
 
 const isWorkspaceMockEnabled = import.meta.env.VITE_ENABLE_WORKSPACE_MOCK === 'true';
@@ -205,7 +206,7 @@ function AdminWorkspaceManagement() {
                                 onClick={() => handleOpenShareModal(ws)}
                                 title="공유 설정"
                                 aria-label={`${ws.name} 공유 설정`}
-                                className={`km-table-icon-btn km-table-icon-btn--neutral ${ws.shareType !== 'NONE' ? 'workspace-mgmt-share-btn--active' : ''}`}
+                                className={`kl-table-icon-btn kl-table-icon-btn--neutral ${ws.shareType !== 'NONE' ? 'workspace-mgmt-share-btn--active' : ''}`}
                             >
                                 <Share2 strokeWidth={1.75} size={16} aria-hidden />
                             </button>
@@ -214,7 +215,7 @@ function AdminWorkspaceManagement() {
                                 onClick={() => handleDelete(ws.id, ws.name)}
                                 title="삭제"
                                 aria-label={`${ws.name} 삭제`}
-                                className="km-table-icon-btn km-table-icon-btn--danger"
+                                className="kl-table-icon-btn kl-table-icon-btn--danger"
                             >
                                 <Trash2 strokeWidth={1.75} size={16} aria-hidden />
                             </button>
@@ -228,31 +229,41 @@ function AdminWorkspaceManagement() {
     );
 
     return (
-        <div className="workspace-mgmt-page">
-            <div className="km-main-sticky-head">
+        <div className="kl-page">
+            <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="워크스페이스 관리"
                     count={filteredWorkspaces.length}
                     actions={(
-                        <button
+                        <div className="kl-header-actions">
+                            <button
                             type="button"
                             onClick={fetchWorkspaces}
-                            className="workspace-mgmt-btn workspace-mgmt-btn--icon"
+                            className="admin-btn admin-btn-icon"
                             title="새로고침"
                             aria-label="워크스페이스 목록 새로고침"
                         >
                             <RotateCcw size={16} aria-hidden />
                         </button>
+                        </div>
                     )}
                 />
+            </div>
 
-                <div className="workspace-mgmt-toolbar">
-                    <div className="workspace-mgmt-toolbar-left">
-                        <div className="workspace-mgmt-search">
-                            <Search size={18} className="workspace-mgmt-search-icon" aria-hidden />
+            {loading ? (
+                <div className="workspace-mgmt-loading">
+                    데이터를 불러오는 중...
+                </div>
+            ) : (
+                <div className="table-area">
+
+                <div className="table-toolbar">
+                    <div className="toolbar-left">
+                        <div className="search-area">
+                            <Search size={16} className="search-area-icon" aria-hidden />
                             <input
                                 type="text"
-                                className="workspace-mgmt-search-input"
+                                className="search-area-input"
                                 placeholder="워크스페이스명, 도메인, 소유자 검색..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -261,15 +272,7 @@ function AdminWorkspaceManagement() {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {loading ? (
-                <div className="workspace-mgmt-loading">
-                    데이터를 불러오는 중...
-                </div>
-            ) : (
-                <div className="workspace-mgmt-table-card">
-                    <div className="workspace-mgmt-table-shell basic-table-shell">
+                    <div className="basic-table-shell">
                         {filteredWorkspaces.length === 0 ? (
                             <div className="workspace-mgmt-empty workspace-mgmt-empty--solo" role="status">
                                 {searchTerm ? '검색 결과가 없습니다.' : '워크스페이스가 없습니다.'}
@@ -297,7 +300,7 @@ function AdminWorkspaceManagement() {
                 />
             )}
 
-            <KmPopover
+            <KlPopover
                 id="workspace-mgmt-prompt-popover"
                 open={Boolean(promptPopover)}
                 anchorEl={promptPopover?.anchorEl ?? null}
@@ -320,7 +323,7 @@ function AdminWorkspaceManagement() {
                         </div>
                     </div>
                 ) : null}
-            </KmPopover>
+            </KlPopover>
         </div>
     );
 }

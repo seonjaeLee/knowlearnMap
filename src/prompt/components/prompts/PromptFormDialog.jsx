@@ -348,7 +348,7 @@ const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }
       maxWidth="md"
       disableBackdropClose
       disableEscapeKeyDown
-      contentClassName="prompt-form-modal-content km-modal-form"
+      contentClassName="prompt-form-modal-content kl-modal-form"
       actions={(
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
           {codeCheckStatus !== 'available' && (

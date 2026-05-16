@@ -48,7 +48,7 @@ function columnCellStyle(col) {
  * @param {(row: object) => string|undefined} [rowAriaLabel]
  *
  * 스타일(사용자 관리 기준): thead 행·th 높이 34px, tbody td 40px, 팔레트는 컴포넌트 내부 `--bt-*` 로 유지.
- * 가로 스크롤: 바깥 래퍼에 `basic-table-shell` + `overflow-x: auto`(얇은 스크롤바는 `km-scrollbar-thin.css`).
+ * 가로 스크롤: 바깥 래퍼에 `basic-table-shell` + `overflow-x: auto`(얇은 스크롤바는 `kl-scrollbar-thin.css`).
  * 목록 하단: `BasicTableFooter`, 페이지네이션은 `BasicTable.global.css` — `basic-table-pagination` + `basic-table-page-cluster`(번호 그룹) + `basic-table-page-btn`.
  * 선택: `tableFooter` — `enabled: true`이면 테이블 아래에 `BasicTableFooter`+`BasicTablePaginationNav`를 같이 렌더합니다. 가로 스크롤 셸(`basic-table-shell`)은 **테이블만** 감싸고 푸터는 밖에 두는 레이아웃을 권장합니다(그 경우 `tableFooter`는 `false`로 두고 페이지에서 `BasicTableFooter`를 별도 배치).
  * @param {false|object} [tableFooter] — `false`(기본) | `{ enabled?: boolean, summary?: React.ReactNode, end?: React.ReactNode, pagination: { page, totalPages, onPageChange } }`
