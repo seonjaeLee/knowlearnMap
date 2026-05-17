@@ -1,0 +1,199 @@
+/* Action 관리 — 워크스페이스 ID 입력 모달 (520px) */
+:global(.kl-base-modal-paper.action-ws-modal-paper) {
+  width: 520px !important;
+  max-width: calc(100vw - 48px) !important;
+  min-width: unset !important;
+  min-height: unset !important;
+}
+
+:global(.kl-base-modal-content.admin-action-ws-modal-content) {
+  padding: var(--spacing-lg) !important;
+  padding-bottom: var(--spacing-2xl) !important;
+  min-height: auto !important;
+}
+
+.admin-action-ws-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+}
+
+.admin-action-ws-form-row {
+  display: grid;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--spacing-md);
+}
+
+.admin-action-ws-form-row__label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.admin-action-ws-form-row__control {
+  min-width: 0;
+}
+
+.admin-action-ws-form-hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.admin-action-ws-modal-actions {
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
+}
+
+.admin-action-ws-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  min-height: 240px;
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.admin-action-ws-empty p {
+  margin: 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+.admin-action-mock-tag {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+/* 페이지 — 라우트 호스트 하위 flex · table-area 가 남은 높이 */
+.admin-action-page {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.admin-action-page > .admin-semantic-subtabs {
+  flex-shrink: 0;
+}
+
+.admin-action-page > .table-area {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.admin-action-page > .table-area > .basic-table-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* 표 영역 — 사용자·시스템 설정과 동일: table-area > basic-table-shell > BasicTable */
+.kl-page.admin-action-page .table-area:has(> .table-toolbar) > .basic-table-shell {
+  border-radius: var(--radius-md);
+}
+
+/*
+ * TableArea.css — basic-table-shell + div 는 사용자 관리 푸터용.
+ * 안내 문구(.admin-action-footnote-row)는 푸터가 아니므로 표 카드 하단 보더를 유지한다.
+ */
+.kl-page.admin-action-page .table-area:has(> .table-toolbar) > .basic-table-shell:has(+ .admin-action-footnote-row) {
+  border-bottom: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.kl-page.admin-action-page .table-area:has(> .table-toolbar) > .basic-table-shell + .admin-action-footnote-row {
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.admin-action-basic-table {
+  min-width: 880px;
+}
+
+.admin-action-log-basic-table {
+  min-width: 720px;
+}
+
+.admin-action-table-summary {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.admin-action-table-summary strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.admin-action-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.admin-action-empty {
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.admin-action-name-en {
+  font-weight: var(--font-weight-medium);
+}
+
+.admin-action-log-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.admin-action-log-error {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-area .admin-action-footnote-row {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  padding-top: var(--spacing-sm);
+}
+
+.admin-action-footnote {
+  margin: 0;
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  text-align: right;
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 768px) {
+  .admin-action-ws-form-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    row-gap: var(--spacing-xs);
+  }
+}

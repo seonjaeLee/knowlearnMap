@@ -11,7 +11,7 @@
     color: var(--color-text-secondary);
 }
 
-/* 관리 열 — kl-table-icon-actions.css 아이콘 버튼 */
+/* 관리 열 — BasicTable.global.css 아이콘 버튼 */
 .support-basic-table .kl-table-actions {
     justify-content: flex-end;
 }

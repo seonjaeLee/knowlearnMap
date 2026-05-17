@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Edit2, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import { noticeApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
 import BaseModal from './common/modal/BaseModal';
-import './NoticeDetailModal.css';
+import {
+    supportDetailModalPaperClassName,
+    supportDetailModalPaperSx,
+} from './common/modal/supportDetailModalPaperSx';
+import './CsDetailModal.css';
 
 function NoticeDetailModal({
     isOpen,
@@ -117,65 +121,70 @@ function NoticeDetailModal({
             title="공지사항"
             maxWidth={false}
             fullWidth={false}
-            paperSx={{ width: '920px', maxWidth: 'calc(100vw - 48px)', maxHeight: 'calc(100vh - 48px)' }}
-            contentClassName="notice-detail-modal-content kl-modal-form"
-            actionsClassName="notice-detail-modal-actions"
+            paperSx={supportDetailModalPaperSx}
+            paperClassName={supportDetailModalPaperClassName}
+            contentClassName="cs-detail-modal-content kl-modal-form"
+            actionsClassName="cs-detail-modal-actions"
             actions={(
-                <div className="notice-detail-actions-layout">
-                    <div className="notice-detail-actions-left">
+                <div className="cs-detail-actions-layout">
+                    <div className="cs-detail-actions-left">
                         <Button
                             variant="outlined"
-                            color="primary"
-                            className="notice-list-move-btn"
-                            onClick={onBackToList || onClose}
+                            className="cs-detail-post-nav-btn"
+                            onClick={onPrevious}
+                            disabled={!hasPrevious}
+                            startIcon={<ChevronLeft className="cs-detail-post-nav-icon" size={16} aria-hidden />}
                         >
-                            목록이동
-                        </Button>
-                        <Button variant="outlined" onClick={onPrevious} disabled={!hasPrevious}>
                             이전글
                         </Button>
-                        <Button variant="outlined" onClick={onNext} disabled={!hasNext}>
+                        <Button
+                            variant="outlined"
+                            className="cs-detail-post-nav-btn"
+                            onClick={onNext}
+                            disabled={!hasNext}
+                            endIcon={<ChevronRight className="cs-detail-post-nav-icon" size={16} aria-hidden />}
+                        >
                             다음글
                         </Button>
                     </div>
                     <Button variant="contained" onClick={onClose}>
-                        확인
+                        닫기
                     </Button>
                 </div>
             )}
         >
-                <div className="notice-detail-modal-body">
+                <div className="cs-detail-modal-body">
                     {loading ? (
-                        <div className="notice-detail-loading">
+                        <div className="cs-detail-loading">
                             <div className="loading-spinner" />
                             <p>로딩 중...</p>
                         </div>
                     ) : notice ? (
-                        <div className="notice-detail-content-wrapper">
-                            <section className="notice-detail-head" aria-label="공지 정보">
-                                <div className="notice-detail-head-top">
-                                    <div className="notice-title-block">
+                        <div className="cs-detail-content-wrapper">
+                            <section className="cs-detail-head" aria-label="공지 정보">
+                                <div className="cs-detail-head-top">
+                                    <div className="cs-detail-title-block">
                                         {notice.category && (
-                                            <span className="notice-detail-category">{notice.category}</span>
+                                            <span className="cs-detail-category">{notice.category}</span>
                                         )}
                                         {isEditing ? (
                                             <input
                                                 type="text"
                                                 value={editTitle}
                                                 onChange={(e) => setEditTitle(e.target.value)}
-                                                className="notice-detail-title-input"
+                                                className="cs-detail-title-input"
                                                 placeholder="제목"
                                                 aria-label="제목"
                                             />
                                         ) : (
-                                            <h3 className="notice-detail-title">{notice.title}</h3>
+                                            <h3 className="cs-detail-title">{notice.title}</h3>
                                         )}
                                     </div>
                                     {canModify && !isEditing && (
-                                        <div className="notice-actions">
+                                        <div className="cs-detail-actions">
                                             <button
                                                 type="button"
-                                                className="btn-edit-notice"
+                                                className="cs-detail-btn-edit"
                                                 onClick={handleEditNotice}
                                                 title="수정"
                                             >
@@ -183,7 +192,7 @@ function NoticeDetailModal({
                                             </button>
                                             <button
                                                 type="button"
-                                                className="btn-delete-notice"
+                                                className="cs-detail-btn-delete"
                                                 onClick={handleDeleteNotice}
                                                 title="삭제"
                                             >
@@ -192,40 +201,43 @@ function NoticeDetailModal({
                                         </div>
                                     )}
                                 </div>
-                                <div className="notice-detail-meta-row">
-                                    <div className="notice-detail-inline-meta">
+                                <div className="cs-detail-meta-row">
+                                    <div className="cs-detail-inline-meta">
                                         <span>{notice.authorEmail?.split('@')[0] || '관리자'}</span>
                                         <span>{formatDate(notice.createdAt)}</span>
                                         <span>조회 {notice.viewCount ?? 0}</span>
                                     </div>
-                                    <span className="notice-detail-updated">
+                                    <span className="cs-detail-updated">
                                         최종수정 : {formatDate(notice.updatedAt || notice.createdAt)}
                                     </span>
                                 </div>
                             </section>
 
-                            <section className="notice-detail-body-box" aria-label="공지 내용">
+                            <section
+                                className={`cs-detail-body-box${isEditing ? '' : ' cs-detail-body-box--view'}`}
+                                aria-label="공지 내용"
+                            >
                                 {isEditing ? (
-                                    <div className="notice-edit-form">
+                                    <div className="cs-detail-edit-form">
                                         <textarea
                                             value={editContent}
                                             onChange={(e) => setEditContent(e.target.value)}
-                                            className="edit-content-textarea"
+                                            className="cs-detail-edit-textarea"
                                             rows={12}
                                             placeholder="내용"
                                             aria-label="내용"
                                         />
-                                        <div className="edit-actions">
+                                        <div className="cs-detail-edit-actions">
                                             <button
                                                 type="button"
-                                                className="btn-cancel-edit"
+                                                className="cs-detail-btn-cancel"
                                                 onClick={() => setIsEditing(false)}
                                             >
                                                 취소
                                             </button>
                                             <button
                                                 type="button"
-                                                className="btn-save-edit"
+                                                className="cs-detail-btn-save"
                                                 onClick={handleUpdateNotice}
                                                 disabled={isSubmitting}
                                             >
@@ -234,14 +246,14 @@ function NoticeDetailModal({
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="notice-body-content">
+                                    <div className="cs-detail-body-content">
                                         <ContentRenderer content={notice.content || '등록된 내용이 없습니다.'} />
                                     </div>
                                 )}
                             </section>
                         </div>
                     ) : (
-                        <div className="notice-detail-error">
+                        <div className="cs-detail-error">
                             공지사항을 불러올 수 없습니다.
                         </div>
                     )}

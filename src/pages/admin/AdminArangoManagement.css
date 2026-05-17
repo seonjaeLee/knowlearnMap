@@ -7,10 +7,6 @@
   font-size: var(--font-size-base);
 }
 
-.table-area {
-  --kl-table-action-hit-size: 32px;
-}
-
 .arango-mgmt-basic-table {
   min-width: 1040px;
 }
@@ -25,7 +21,7 @@
 .arango-mgmt-expand-cell {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   color: var(--color-text-secondary);
 }
 
@@ -54,7 +50,6 @@
 }
 
 .arango-mgmt-num {
-  text-align: center;
   color: var(--color-text-primary);
 }
 

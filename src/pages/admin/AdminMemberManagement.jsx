@@ -5,10 +5,14 @@ import { Button } from '@mui/material';
 import { memberApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
-import { Users, Search, RotateCcw, FilePen, Trash2, Lock, Mail } from 'lucide-react';
+import { Users, Search, RotateCcw, Pencil, Trash2, Lock, Mail } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
 import BaseModal from '../../components/common/modal/BaseModal';
+import {
+    memberFormModalPaperClassName,
+    memberFormModalPaperSx,
+} from '../../components/common/modal/supportFormModalPaperSx';
 import { mockAdminMembers } from '../../data/memberMockData';
 import './admin-common.css';
 import './AdminMemberManagement.css';
@@ -344,7 +348,7 @@ function AdminMemberManagement() {
                 return <span className="member-mgmt-col-date">{formatDate(member.createdAt)}</span>;
             case 'actions':
                 return (
-                    <div className="member-mgmt-actions">
+                    <div className="kl-table-actions">
                         {member.status === 'VERIFYING_EMAIL' && (
                             <button
                                 type="button"
@@ -374,7 +378,7 @@ function AdminMemberManagement() {
                             title="수정"
                             aria-label={`${member.email} 수정`}
                         >
-                            <FilePen strokeWidth={1.75} aria-hidden />
+                            <Pencil strokeWidth={1.75} aria-hidden />
                         </button>
                         <button
                             type="button"
@@ -427,7 +431,7 @@ function AdminMemberManagement() {
                     actions={(
                         <button
                             type="button"
-                            className="admin-btn admin-btn-icon"
+                            className="kl-btn kl-btn--icon"
                             onClick={fetchMembers}
                             title="새로고침"
                             aria-label="사용자 목록 새로고침"
@@ -503,8 +507,13 @@ function AdminMemberManagement() {
                 open={Boolean(editMember)}
                 title="사용자 수정"
                 onClose={() => setEditMember(null)}
-                maxWidth="xs"
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={memberFormModalPaperSx}
+                paperClassName={memberFormModalPaperClassName}
                 contentClassName="member-mgmt-member-edit-content kl-modal-form"
+                actionsClassName="member-mgmt-modal-actions"
+                actionsAlign="right"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={() => setEditMember(null)}>
@@ -517,61 +526,77 @@ function AdminMemberManagement() {
                 )}
             >
                 {editMember ? (
-                    <>
-                        <div className="member-mgmt-modal-field">
-                            <span className="member-mgmt-modal-field-label">이메일</span>
-                            <input
-                                type="email"
-                                className="member-mgmt-modal-readonly-input"
-                                value={editMember.email}
-                                readOnly
-                                tabIndex={-1}
-                                aria-readonly="true"
-                                aria-label="이메일"
-                            />
+                    <form className="member-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
+                        <div className="member-form-row">
+                            <label className="member-form-row__label" htmlFor="member-edit-email">
+                                이메일
+                            </label>
+                            <div className="member-form-row__control">
+                                <input
+                                    id="member-edit-email"
+                                    type="email"
+                                    className="kl-form-readonly kl-form-readonly--control"
+                                    value={editMember.email}
+                                    readOnly
+                                    aria-readonly="true"
+                                    autoComplete="off"
+                                />
+                            </div>
                         </div>
 
-                        <div className="member-mgmt-modal-field">
-                            <span className="member-mgmt-modal-field-label">권한 (Role)</span>
-                            <select
-                                value={editMember.role}
-                                onChange={(e) => setEditMember({ ...editMember, role: e.target.value })}
-                                aria-label="권한"
-                            >
-                                <option value="USER">USER</option>
-                                <option value="SYSOP">SYSOP</option>
-                                <option value="ADMIN">ADMIN</option>
-                            </select>
+                        <div className="member-form-row">
+                            <label className="member-form-row__label" htmlFor="member-edit-role">
+                                권한 (Role)
+                            </label>
+                            <div className="member-form-row__control">
+                                <select
+                                    id="member-edit-role"
+                                    value={editMember.role}
+                                    onChange={(e) => setEditMember({ ...editMember, role: e.target.value })}
+                                >
+                                    <option value="USER">USER</option>
+                                    <option value="SYSOP">SYSOP</option>
+                                    <option value="ADMIN">ADMIN</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div className="member-mgmt-modal-field">
-                            <span className="member-mgmt-modal-field-label">등급 (Grade)</span>
-                            <select
-                                value={editMember.grade}
-                                onChange={(e) => setEditMember({ ...editMember, grade: e.target.value })}
-                                aria-label="등급"
-                            >
-                                <option value="FREE">FREE</option>
-                                <option value="PRO">PRO</option>
-                                <option value="MAX">MAX</option>
-                                <option value="SPECIAL">SPECIAL (무제한)</option>
-                            </select>
+                        <div className="member-form-row">
+                            <label className="member-form-row__label" htmlFor="member-edit-grade">
+                                등급 (Grade)
+                            </label>
+                            <div className="member-form-row__control">
+                                <select
+                                    id="member-edit-grade"
+                                    value={editMember.grade}
+                                    onChange={(e) => setEditMember({ ...editMember, grade: e.target.value })}
+                                >
+                                    <option value="FREE">FREE</option>
+                                    <option value="PRO">PRO</option>
+                                    <option value="MAX">MAX</option>
+                                    <option value="SPECIAL">SPECIAL (무제한)</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div className="member-mgmt-modal-field">
-                            <span className="member-mgmt-modal-field-label">상태 (Status)</span>
-                            <select
-                                value={editMember.status}
-                                onChange={(e) => setEditMember({ ...editMember, status: e.target.value })}
-                                aria-label="상태"
-                            >
-                                <option value="ACTIVE">ACTIVE</option>
-                                <option value="VERIFYING_EMAIL">VERIFYING_EMAIL</option>
-                                <option value="WAITING_APPROVAL">WAITING_APPROVAL</option>
-                                <option value="APPROVED_WAITING_PASSWORD">APPROVED_WAITING_PASSWORD</option>
-                            </select>
+                        <div className="member-form-row">
+                            <label className="member-form-row__label" htmlFor="member-edit-status">
+                                상태 (Status)
+                            </label>
+                            <div className="member-form-row__control">
+                                <select
+                                    id="member-edit-status"
+                                    value={editMember.status}
+                                    onChange={(e) => setEditMember({ ...editMember, status: e.target.value })}
+                                >
+                                    <option value="ACTIVE">ACTIVE</option>
+                                    <option value="VERIFYING_EMAIL">VERIFYING_EMAIL</option>
+                                    <option value="WAITING_APPROVAL">WAITING_APPROVAL</option>
+                                    <option value="APPROVED_WAITING_PASSWORD">APPROVED_WAITING_PASSWORD</option>
+                                </select>
+                            </div>
                         </div>
-                    </>
+                    </form>
                 ) : null}
             </BaseModal>
         </div>

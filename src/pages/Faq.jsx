@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
@@ -7,10 +7,12 @@ import FaqDetailModal from '../components/FaqDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
+import { isSupportMockEnabled } from '../config/supportMock';
 import { mockFaqs } from '../data/supportMockData';
+import { faqApi } from '../services/api';
+import { normalizeSupportListPayload } from '../utils/supportListResponse';
 import { isSupportCenterAdmin } from '../utils/supportCenterAdmin';
 import { SUPPORT_ADMIN_ACTIONS_COLUMN } from './supportCenterColumns';
-import './admin/admin-common.css';
 import './Faq.css';
 import './SupportCenter.css';
 
@@ -38,8 +40,11 @@ function sortFaqsForList(items) {
 
 function Faq() {
   const { user } = useAuth();
-  const { confirm } = useDialog();
-  const [faqs, setFaqs] = useState(mockFaqs);
+  const { confirm, alert } = useDialog();
+  const [faqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [apiCategories, setApiCategories] = useState([]);
   const [faqSearch, setFaqSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -48,15 +53,47 @@ function Faq() {
 
   const isAdmin = isSupportCenterAdmin(user);
 
+  const fetchFaqs = useCallback(async () => {
+    try {
+      setLoading(true);
+      setLoadError(null);
+      if (isSupportMockEnabled) {
+        setFaqs(sortFaqsForList(mockFaqs.map((item) => ({ ...item }))));
+        return;
+      }
+      const data = await faqApi.getAll();
+      setFaqs(sortFaqsForList(normalizeSupportListPayload(data)));
+    } catch (error) {
+      console.error('FAQ 목록 조회 실패:', error);
+      setFaqs([]);
+      setLoadError(error.message || 'FAQ를 불러오지 못했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchCategories = useCallback(async () => {
+    if (isSupportMockEnabled) { setApiCategories([]); return; }
+    try {
+      const data = await faqApi.getCategories();
+      setApiCategories(normalizeSupportListPayload(data));
+    } catch (error) {
+      console.error('FAQ 카테고리 조회 실패:', error);
+      setApiCategories([]);
+    }
+  }, []);
+
+  useEffect(() => { fetchFaqs(); fetchCategories(); }, [fetchFaqs, fetchCategories]);
+
   const faqColumns = useMemo(
     () => (isAdmin ? [...FAQ_BASE_COLUMNS, SUPPORT_ADMIN_ACTIONS_COLUMN] : FAQ_BASE_COLUMNS),
     [isAdmin],
   );
 
-  const categories = useMemo(
-    () => [...new Set(faqs.map((faq) => faq.category).filter(Boolean))],
-    [faqs]
-  );
+  const categories = useMemo(() => {
+    const fromList = faqs.map((f) => f.category).filter(Boolean);
+    return [...new Set([...apiCategories, ...fromList])];
+  }, [apiCategories, faqs]);
 
   const filteredFaqs = useMemo(() => {
     const q = faqSearch.trim().toLowerCase();
@@ -78,36 +115,30 @@ function Faq() {
   );
 
   const handleSaveFaq = async (faqData) => {
-    if (editingFaq) {
-      setFaqs((prev) => prev.map((item) => (
-        item.id === editingFaq.id
-          ? {
-            ...item,
-            ...faqData,
-            category: faqData.category || item.category || '일반',
-            updatedAt: new Date().toISOString(),
-          }
-          : item
-      )));
+    if (isSupportMockEnabled) {
+      if (editingFaq) {
+        setFaqs((prev) => prev.map((item) => (
+          item.id === editingFaq.id ? { ...item, ...faqData, category: faqData.category || item.category || '일반', updatedAt: new Date().toISOString() } : item
+        )));
+      } else {
+        const nextId = faqs.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+        setFaqs((prev) => sortFaqsForList([{ id: nextId, ...faqData, category: faqData.category || '일반',
+          authorEmail: user?.email || 'admin@knowlearn.co.kr', createdBy: 'admin',
+          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+          viewCount: 0, displayOrder: faqData.displayOrder ?? 0, isActive: faqData.isActive !== false }, ...prev]));
+      }
       return;
     }
-
-    const nextId = faqs.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
-    setFaqs((prev) => [
-      {
-        id: nextId,
-        ...faqData,
-        category: faqData.category || '일반',
-        authorEmail: user?.email || 'admin@knowlearn.co.kr',
-        createdBy: 'admin',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        viewCount: 0,
-        displayOrder: faqData.displayOrder ?? 0,
-        isActive: faqData.isActive !== false,
-      },
-      ...prev,
-    ]);
+    try {
+      const payload = { title: faqData.title, content: faqData.content, category: faqData.category,
+        displayOrder: faqData.displayOrder ?? 0, isActive: faqData.isActive !== false };
+      if (editingFaq) await faqApi.update(editingFaq.id, payload); else await faqApi.create(payload);
+      await fetchFaqs(); await fetchCategories();
+    } catch (error) {
+      console.error('FAQ 저장 실패:', error);
+      await alert(error.message || 'FAQ 저장에 실패했습니다.');
+      throw error;
+    }
   };
 
   const handleOpenCreateModal = useCallback(() => {
@@ -128,18 +159,23 @@ function Faq() {
   const handleDeleteFaq = useCallback(async (faq) => {
     const confirmed = await confirm(`"${faq.title}" FAQ를 삭제하시겠습니까?`);
     if (!confirmed) return;
-    setFaqs((prev) => prev.filter((item) => item.id !== faq.id));
-    if (selectedFaqId === faq.id) {
-      setSelectedFaqId(null);
+    if (isSupportMockEnabled) {
+      setFaqs((prev) => prev.filter((item) => item.id !== faq.id));
+      if (selectedFaqId === faq.id) setSelectedFaqId(null);
+      return;
     }
-  }, [confirm, selectedFaqId]);
+    try {
+      await faqApi.delete(faq.id);
+      if (selectedFaqId === faq.id) setSelectedFaqId(null);
+      await fetchFaqs();
+    } catch (error) {
+      console.error('FAQ 삭제 실패:', error);
+      await alert(error.message || 'FAQ 삭제에 실패했습니다.');
+    }
+  }, [confirm, alert, selectedFaqId, fetchFaqs]);
 
-  const handleFaqClick = (faq) => {
-    setSelectedFaqId(faq.id);
-    setFaqs((prev) => prev.map((item) => (
-      item.id === faq.id ? { ...item, viewCount: (item.viewCount ?? 0) + 1 } : item
-    )));
-  };
+  const handleFaqClick = useCallback((faq) => { setSelectedFaqId(faq.id); }, []);
+  const handleDetailUpdate = useCallback(() => { fetchFaqs(); }, [fetchFaqs]);
 
   const handleMoveFaq = (direction) => {
     if (selectedFaqIndex < 0) return;
@@ -184,7 +220,7 @@ function Faq() {
           title="자주 묻는 질문"
           breadcrumbs={['고객센터', '자주 묻는 질문']}
           actions={isAdmin ? (
-            <button type="button" className="admin-btn admin-btn-primary" onClick={handleOpenCreateModal}>
+            <button type="button" className="kl-btn kl-btn--primary" onClick={handleOpenCreateModal}>
               <Plus size={14} aria-hidden />
               자주 묻는 질문 작성
             </button>
@@ -233,7 +269,11 @@ function Faq() {
           </div>
         </div>
         <div className="basic-table-shell">
-          {filteredFaqs.length === 0 ? (
+          {loading ? (
+            <div className="support-empty" role="status">FAQ를 불러오는 중입니다.</div>
+          ) : loadError ? (
+            <div className="support-empty" role="alert">{loadError}</div>
+          ) : filteredFaqs.length === 0 ? (
             <div className="support-empty" role="status">등록된 FAQ가 없습니다.</div>
           ) : (
             <BasicTable
@@ -263,10 +303,11 @@ function Faq() {
       />
 
       <FaqDetailModal
-        isOpen={Boolean(selectedFaq)}
+        isOpen={Boolean(selectedFaqId)}
         onClose={() => setSelectedFaqId(null)}
         faqId={selectedFaqId}
-        faqData={selectedFaq}
+        faqData={isSupportMockEnabled ? selectedFaq : undefined}
+        onUpdate={isSupportMockEnabled ? undefined : handleDetailUpdate}
         onBackToList={() => setSelectedFaqId(null)}
         onPrevious={() => handleMoveFaq(-1)}
         onNext={() => handleMoveFaq(1)}

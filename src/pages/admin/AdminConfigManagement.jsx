@@ -4,11 +4,15 @@ import { Button } from '@mui/material';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
 import { attachRowSpanMeta, getRowSpanCellProps } from '../../hooks/useTableRowSpanGroups';
-import { RotateCcw, RefreshCw, HelpCircle, FilePen } from 'lucide-react';
+import { RotateCcw, RefreshCw, HelpCircle, Pencil } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import KlPopover from '../../components/common/KlPopover';
 import BaseModal from '../../components/common/modal/BaseModal';
+import {
+    configFormModalPaperClassName,
+    configFormModalPaperSx,
+} from '../../components/common/modal/supportFormModalPaperSx';
 import { mockAdminConfigCategories, mockAdminConfigItems } from '../../data/adminConfigMockData';
 import './admin-common.css';
 import './AdminConfigManagement.css';
@@ -432,7 +436,7 @@ function AdminConfigManagement() {
                                 title="수정"
                                 aria-label={`${row.configKey} 수정`}
                             >
-                                <FilePen strokeWidth={1.75} aria-hidden />
+                                <Pencil strokeWidth={1.75} aria-hidden />
                             </button>
                         </div>
                     );
@@ -454,7 +458,7 @@ function AdminConfigManagement() {
                             <button
                                 type="button"
                                 onClick={handleRefreshCache}
-                                className="admin-btn admin-btn-outline-success"
+                                className="kl-btn kl-btn--outline-success"
                                 title="캐시 새로고침"
                             >
                                 <RefreshCw size={14} aria-hidden />
@@ -463,7 +467,7 @@ function AdminConfigManagement() {
                             <button
                                 type="button"
                                 onClick={handleRefreshList}
-                                className="admin-btn admin-btn-icon"
+                                className="kl-btn kl-btn--icon"
                                 title="목록 새로고침"
                                 aria-label="설정 목록 새로고침"
                             >
@@ -478,8 +482,7 @@ function AdminConfigManagement() {
                 <div className="config-mgmt-loading">데이터를 불러오는 중...</div>
             ) : (
                 <div className="table-area">
-                    <div className="table-toolbar">
-                        <div className="toolbar-left">
+                    <div className="table-toolbar table-toolbar--end">
                             <div className="config-mgmt-toolbar-filter">
                                 <label htmlFor="config-mgmt-category-filter" className="config-mgmt-visually-hidden">
                                     카테고리
@@ -499,7 +502,6 @@ function AdminConfigManagement() {
                                     ))}
                                 </select>
                             </div>
-                        </div>
                     </div>
                     {tableData.length === 0 ? (
                         <div className="config-mgmt-empty" role="status">
@@ -552,10 +554,15 @@ function AdminConfigManagement() {
                 open={Boolean(editModalRow)}
                 title="시스템 설정"
                 onClose={closeEditModal}
-                maxWidth="md"
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={configFormModalPaperSx}
+                paperClassName={configFormModalPaperClassName}
                 disableBackdropClose={saving}
                 disableEscapeKeyDown={saving}
                 contentClassName="config-mgmt-edit-modal-content kl-modal-form"
+                actionsClassName="config-mgmt-modal-actions"
+                actionsAlign="right"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={closeEditModal} disabled={saving}>
@@ -568,45 +575,90 @@ function AdminConfigManagement() {
                 )}
             >
                 {editModalRow ? (
-                    <dl className="config-mgmt-edit-modal-form">
-                        <div className="config-mgmt-edit-modal-row">
-                            <dt className="config-mgmt-edit-modal-label">카테고리</dt>
-                            <dd className="config-mgmt-edit-modal-value">
-                                {CATEGORY_LABELS[editModalRow.category] || editModalRow.category || '-'}
-                            </dd>
+                    <form className="config-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
+                        <div className="config-form-row">
+                            <label className="config-form-row__label" htmlFor="config-edit-category">
+                                카테고리
+                            </label>
+                            <div className="config-form-row__control">
+                                <input
+                                    id="config-edit-category"
+                                    type="text"
+                                    className="kl-form-readonly kl-form-readonly--control"
+                                    value={CATEGORY_LABELS[editModalRow.category] || editModalRow.category || '-'}
+                                    readOnly
+                                    aria-readonly="true"
+                                    autoComplete="off"
+                                />
+                            </div>
                         </div>
-                        <div className="config-mgmt-edit-modal-row">
-                            <dt className="config-mgmt-edit-modal-label">키</dt>
-                            <dd className="config-mgmt-edit-modal-value config-mgmt-edit-modal-value--mono">
-                                {editModalRow.configKey}
-                            </dd>
+                        <div className="config-form-row">
+                            <label className="config-form-row__label" htmlFor="config-edit-key">
+                                키
+                            </label>
+                            <div className="config-form-row__control">
+                                <input
+                                    id="config-edit-key"
+                                    type="text"
+                                    className="kl-form-readonly kl-form-readonly--control config-mgmt-edit-key-input"
+                                    value={editModalRow.configKey || ''}
+                                    readOnly
+                                    aria-readonly="true"
+                                    autoComplete="off"
+                                />
+                            </div>
                         </div>
-                        <div className="config-mgmt-edit-modal-row">
-                            <dt className="config-mgmt-edit-modal-label">타입</dt>
-                            <dd className="config-mgmt-edit-modal-value">
-                                {editModalRow.dataType || '-'}
-                            </dd>
+                        <div className="config-form-row">
+                            <label className="config-form-row__label" htmlFor="config-edit-type">
+                                타입
+                            </label>
+                            <div className="config-form-row__control">
+                                <input
+                                    id="config-edit-type"
+                                    type="text"
+                                    className="kl-form-readonly kl-form-readonly--control"
+                                    value={editModalRow.dataType || '-'}
+                                    readOnly
+                                    aria-readonly="true"
+                                    autoComplete="off"
+                                />
+                            </div>
                         </div>
-                        <div className="config-mgmt-edit-modal-row">
-                            <dt className="config-mgmt-edit-modal-label">설명</dt>
-                            <dd className="config-mgmt-edit-modal-value">
-                                {editModalRow.description || '등록된 설명이 없습니다. 관리자에게 문의하세요.'}
-                            </dd>
+                        <div className="config-form-row">
+                            <label className="config-form-row__label" htmlFor="config-edit-description">
+                                설명
+                            </label>
+                            <div className="config-form-row__control">
+                                <input
+                                    id="config-edit-description"
+                                    type="text"
+                                    className="kl-form-readonly kl-form-readonly--control"
+                                    value={
+                                        editModalRow.description
+                                        || '등록된 설명이 없습니다. 관리자에게 문의하세요.'
+                                    }
+                                    readOnly
+                                    aria-readonly="true"
+                                    autoComplete="off"
+                                />
+                            </div>
                         </div>
-                        <div className="config-mgmt-edit-modal-row config-mgmt-edit-modal-row--value">
-                            <dt className="config-mgmt-edit-modal-label">값</dt>
-                            <dd className="config-mgmt-edit-modal-value">
+                        <div className="config-form-row config-form-row--start">
+                            <label className="config-form-row__label" htmlFor="config-edit-value">
+                                값
+                            </label>
+                            <div className="config-form-row__control">
                                 <textarea
-                                    className="config-mgmt-edit-modal-textarea"
+                                    id="config-edit-value"
                                     value={editDraft}
                                     onChange={(e) => setEditDraft(e.target.value)}
-                                    rows={usesTextareaValuePresentation(editModalRow) ? 12 : 6}
+                                    rows={usesTextareaValuePresentation(editModalRow) ? 6 : 3}
                                     aria-label="설정 값"
                                     disabled={saving}
                                 />
-                            </dd>
+                            </div>
                         </div>
-                    </dl>
+                    </form>
                 ) : null}
             </BaseModal>
         </div>

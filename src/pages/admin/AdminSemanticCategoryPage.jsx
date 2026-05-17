@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@mui/material';
 import { adminSemanticApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
@@ -253,19 +253,19 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
         {searchLower ? `검색 ${visibleItems.length} / 전체 ${items.length}` : `총 ${items.length}개`} {typeLabel} 카테고리
       </span>
       <div className="admin-inline-actions">
-        <button className="admin-btn admin-btn-sm" onClick={fetchItems} title="새로고침"><RotateCcw size={13} /></button>
-        <button className="admin-btn admin-btn-sm" onClick={expandAll} title="모두 펼침"><Maximize2 size={13} /></button>
-        <button className="admin-btn admin-btn-sm" onClick={collapseAll} title="모두 접음"><Minimize2 size={13} /></button>
+        <button className="kl-btn kl-btn--sm" onClick={fetchItems} title="새로고침"><RotateCcw size={13} /></button>
+        <button className="kl-btn kl-btn--sm" onClick={expandAll} title="모두 펼침"><Maximize2 size={13} /></button>
+        <button className="kl-btn kl-btn--sm" onClick={collapseAll} title="모두 접음"><Minimize2 size={13} /></button>
         {!collapsed && (
           <>
-            <button className="admin-btn admin-btn-sm" onClick={handleTemplate} title="양식"><FileDown size={13} /> 양식</button>
-            <button className="admin-btn admin-btn-sm" onClick={handleExport} title="Excel 다운로드"><Download size={13} /> 다운로드</button>
-            <button className="admin-btn admin-btn-sm" onClick={handleImportClick} disabled={importing} title="Excel 업로드">
+            <button className="kl-btn kl-btn--sm" onClick={handleTemplate} title="양식"><FileDown size={13} /> 양식</button>
+            <button className="kl-btn kl-btn--sm" onClick={handleExport} title="Excel 다운로드"><Download size={13} /> 다운로드</button>
+            <button className="kl-btn kl-btn--sm" onClick={handleImportClick} disabled={importing} title="Excel 업로드">
               <Upload size={13} /> {importing ? '...' : '업로드'}
             </button>
           </>
         )}
-        <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={openCreate}><Plus size={13} /> 추가</button>
+        <button className="kl-btn kl-btn--primary kl-btn--sm" onClick={openCreate}><Plus size={13} /> 추가</button>
         <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="admin-hidden-file-input" onChange={handleImportFile} />
       </div>
     </div>
@@ -281,7 +281,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
         onChange={(e) => setSearchText(e.target.value)}
       />
       {searchText && (
-        <button className="admin-btn admin-btn-icon admin-btn-sm" onClick={() => setSearchText('')} title="검색 초기화">
+        <button className="kl-btn kl-btn--icon kl-btn--sm" onClick={() => setSearchText('')} title="검색 초기화">
           <X size={12} />
         </button>
       )}
@@ -372,9 +372,9 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
                       {!collapsed && <td className="admin-code-mono">{item.code || '-'}</td>}
                       {!collapsed && <td className="admin-text-secondary">{item.description || '-'}</td>}
                       <td className="admin-col-actions" onClick={(e) => e.stopPropagation()}>
-                        <button className="admin-btn admin-btn-icon" onClick={() => openEdit(item)} title="수정"><Pencil size={14} /></button>
+                        <button className="kl-btn kl-btn--icon" onClick={() => openEdit(item)} title="수정"><Pencil size={14} /></button>
                         {!collapsed && (
-                          <button className="admin-btn admin-btn-icon admin-btn-danger-soft admin-action-gap-left" onClick={() => handleDelete(item)} title="삭제">
+                          <button className="kl-btn kl-btn--icon kl-btn--danger-soft admin-action-gap-left" onClick={() => handleDelete(item)} title="삭제">
                             <Trash2 size={14} />
                           </button>
                         )}

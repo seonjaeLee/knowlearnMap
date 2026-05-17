@@ -118,3 +118,74 @@
 
 #### JSX 변경
 - `src/pages/admin/AdminWorkspaceManagement.jsx` — 헤더 새로고침을 `workspace-mgmt-header-actions`로 감쌈
+
+---
+
+## 2026-05-17
+
+### 8) 팝업 구조 — `BaseModal` + paper·`kl-modal-form` 통합(고객센터·도메인·어드민 폼)
+
+- **목적:** 메뉴별로 흩어진 오버레이·`paperSx`·폭 정의를 공통 모듈로 모으고, 콘텐츠는 `kl-modal-form` + 도메인 CSS로만 차이를 두어 팝업 골격·폼 컨트롤 규격을 한 줄로 맞춤
+- **영향:** 고객센터 상세·작성, 도메인 관리 수정, 사용자·설정·공유 등 `BaseModal` 기반 폼 팝업; `modal-form-spec.md` / `modal-spec.md`와 동일 높이·테두리·포커스 토큰
+
+#### 공통 모듈
+- `src/components/common/modal/supportCsModalPaper.js` — **신규** · 고객센터·도메인·멤버·설정·Action 워크스페이스 등 **paper 폭·`paperClassName`·`paperSx`** 단일 정의(`SUPPORT_CS_MODAL_WIDTH`, `QNA_FORM_MODAL_WIDTH` 등)
+- `src/components/common/modal/supportFormModalPaperSx.js` — 위 모듈 **re-export** 허브(작성·수정 모달 import 경로 통일)
+- `src/components/common/modal/supportDetailModalPaperSx.js` — **신규** · 공지·FAQ·QnA **상세** 팝업 paper 공통
+
+#### JSX 변경 (대표)
+- `src/components/NoticeDetailModal.jsx`, `FaqDetailModal.jsx`, `QnaDetailModal.jsx` — `supportDetailModalPaperSx` + `contentClassName`에 `kl-modal-form` · head/body 분리(`CsDetailModal.css` 등)
+- `src/components/NoticeCreateModal.jsx`, `FaqCreateModal.jsx`, `QnaCreateModal.jsx` — `noticeFormModalPaperSx` / `faqFormModalPaperSx` / `qnaFormModalPaperSx`
+- `src/components/DomainManagement.jsx` — `domainFormModalPaperSx`
+- 기타 어드민·공유·설정 폼 모달 — 동일 paper 모듈에서 폭·클래스 import
+
+#### CSS 변경
+- `src/components/CsDetailModal.css`, `QnaDetailModal.css` — 상세 head(메타)·body(본문)·footer 액션
+- `src/styles/kl-form-control.css`, `kl-form-readonly.css` — 모달·툴바 공용 input/select 규격(`--kl-control-*`)
+- `src/styles/kl-outlined-primary-btn.css` — 팝업·목록 하단 아웃라인 primary 버튼(공지 상세 「목록이동」 등)
+
+#### 기타
+- `docs/modal-form-spec.md`, `docs/modal-spec.md` — `kl-modal-form` 적용·Decision 제외 안내와 정합
+
+---
+
+### 9) 툴바·서브탭 공통 UI 재정의 (`kl-form-control` · `toolbar-input-composer` · 서브탭)
+
+- **목적:** 목록 툴바의 검색·select와 **동일 32px·테두리·포커스**를 모달 밖 툴바에도 적용하고, **input+버튼 밀착** 패턴(노트북 채팅 composer 유사)을 재사용 가능한 클래스로 고정; 어드민 서브탭은 **아이콘+라벨 가로 정렬**·활성 시 **굵기 변경 없음**(탭 전환 시 흔들림 제거)
+- **영향:** `TableToolbar.css` 전역; Action 관리 실행 이력 툴바; `admin-semantic-subtab` 사용 화면(온톨로지 옵션·Action 관리)
+
+#### CSS 변경
+- `src/styles/kl-form-control.css` — `--kl-control-height` 등 토큰·네이티브 input hover/focus 배경 정리
+- `src/components/common/TableToolbar.css`
+  - `.toolbar-field-group`, `.toolbar-field-group__label` — 라벨 + 컨트롤 묶음
+  - `.toolbar-input-composer` — 외곽 테두리 1개, 내부 input·버튼 **무간격 밀착**
+  - **호버:** composer 테두리 `--kl-control-border-hover` ↔ 버튼 배경 동일색
+  - **포커스(`:focus-within`):** 테두리 `--color-accent` ↔ 버튼 배경·글자 흰색
+  - 기본 버튼: 연한 회색 배경 + 「조회」 텍스트(블루 솔리드 제거)
+- `src/pages/admin/admin-common.css` — `.admin-semantic-subtab` `inline-flex` + `gap`; `.active` **font-weight 변경 제거**; `transition`을 color·border-color만
+
+#### JSX 변경
+- `src/pages/admin/AdminActionPage.jsx` — 실행 이력: `table-toolbar--end` 우측 · `Action ID` + `toolbar-input-composer`(input + **조회**)
+
+---
+
+### 10) Action 관리(`/admin/action`) — 목록·실행 이력·워크스페이스 모달
+
+- **목적:** `window.prompt` 제거, **목록 화면 공통 chrome**(`table-area` · `BasicTable` · `kl-icon-label-btn` 새로고침) 적용, API 미연결 시 **로컬 더미**로 UI 검수; 실행 이력은 **Action ID 기준 조회** UX 명확화
+- **영향:** Action 관리 메뉴(목록 탭 읽기 전용 · 실행 이력 탭); `VITE_ENABLE_ACTION_MOCK` · dev 시 이력 탭 ID `1` 자동 로드
+
+#### JSX/JS
+- `src/pages/admin/AdminActionPage.jsx`
+  - 워크스페이스 ID — `BaseModal` 520px(`actionWsModalPaperSx`) · localStorage 유지
+  - 서브탭 — `List` / `Clock` 아이콘 + 라벨
+  - 목록 — `BasicTable` + `renderCell({ column, row })` · 툴바 요약(상단 `ws #` 제거) · footnote
+  - 실행 이력 — `toolbar-input-composer` · `actionApi.logs(id)` / 더미 fallback
+- `src/data/actionAdminMockData.js` — ws #71 Action 6건 · 이력 ID 1~6
+
+#### CSS
+- `src/pages/admin/AdminActionPage.css`
+  - `table-area` flex·footnote는 표 카드 **밖**( `TableArea.css` 푸터 `+ div` 규칙 **예외** — 표 하단 보더 유지)
+  - 페이지·로그 툴바 보조 스타일
+
+#### 환경·문서
+- `.env.local.example` — `VITE_ENABLE_ACTION_MOCK` · dev 이력 샘플 안내

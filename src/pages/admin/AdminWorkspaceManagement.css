@@ -27,8 +27,8 @@
 
 .workspace-mgmt-btn--icon {
     padding: var(--spacing-sm);
-    min-width: var(--kl-table-action-hit-size);
-    min-height: var(--kl-table-action-hit-size);
+    min-width: 28px;
+    min-height: 28px;
 }
 
 .workspace-mgmt-loading {
@@ -36,10 +36,6 @@
     text-align: center;
     color: var(--color-text-secondary);
     font-size: var(--font-size-base);
-}
-
-.table-area {
-    --kl-table-action-hit-size: 32px;
 }
 
 .workspace-mgmt-basic-table {
@@ -173,24 +169,6 @@
 .workspace-mgmt-share-badge.share-none {
     background-color: var(--color-bg-hover);
     color: var(--color-text-tertiary);
-}
-
-.workspace-mgmt-actions {
-    display: inline-flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: var(--kl-table-action-icon-gap);
-    width: 100%;
-    min-width: 0;
-}
-
-.workspace-mgmt-share-btn--active.kl-table-icon-btn--neutral {
-    color: var(--color-accent);
-}
-
-.workspace-mgmt-share-btn--active.kl-table-icon-btn--neutral:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--color-accent) 18%, transparent);
-    color: var(--color-accent);
 }
 
 .workspace-mgmt-empty {

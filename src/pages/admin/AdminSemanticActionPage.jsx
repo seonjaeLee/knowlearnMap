@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@mui/material';
 import { adminSemanticApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
@@ -138,11 +138,11 @@ function AdminSemanticActionPage({ compact = false }) {
         : <strong>{filtered.length}</strong>개 Action
       </span>
       <div className="admin-inline-actions">
-        <button className="admin-btn admin-btn-sm" onClick={fetchItems} title="새로고침"><RotateCcw size={13} /></button>
-        <button className="admin-btn admin-btn-sm" onClick={handleTemplate} title="양식"><FileDown size={13} /> 양식</button>
-        <button className="admin-btn admin-btn-sm" onClick={handleExport} title="다운로드"><Download size={13} /> 다운로드</button>
-        <button className="admin-btn admin-btn-sm" onClick={handleImportClick} disabled={importing}><Upload size={13} /> {importing ? '...' : '업로드'}</button>
-        <button className="admin-btn admin-btn-primary admin-btn-sm" onClick={openCreate}><Plus size={13} /> 추가</button>
+        <button className="kl-btn kl-btn--sm" onClick={fetchItems} title="새로고침"><RotateCcw size={13} /></button>
+        <button className="kl-btn kl-btn--sm" onClick={handleTemplate} title="양식"><FileDown size={13} /> 양식</button>
+        <button className="kl-btn kl-btn--sm" onClick={handleExport} title="다운로드"><Download size={13} /> 다운로드</button>
+        <button className="kl-btn kl-btn--sm" onClick={handleImportClick} disabled={importing}><Upload size={13} /> {importing ? '...' : '업로드'}</button>
+        <button className="kl-btn kl-btn--primary kl-btn--sm" onClick={openCreate}><Plus size={13} /> 추가</button>
         <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="admin-hidden-file-input" onChange={handleImportFile} />
       </div>
     </div>
@@ -168,11 +168,11 @@ function AdminSemanticActionPage({ compact = false }) {
               {leftExpanded ? '액션 카테고리' : '카테고리'}
             </h4>
             <div className="admin-semantic-panel-head-actions">
-              <button className="admin-btn admin-btn-sm"
+              <button className="kl-btn kl-btn--sm"
                 onClick={() => { setSelectedCategoryId(null); setLeftExpandedPersist(true); }}
                 disabled={selectedCategoryId == null}
                 title="필터 해제 + 펼침">전체</button>
-              <button className="admin-btn admin-btn-sm"
+              <button className="kl-btn kl-btn--sm"
                 onClick={() => setLeftExpandedPersist(!leftExpanded)}
                 title={leftExpanded ? '접기' : '펼치기'}>
                 {leftExpanded ? <ChevronLeft size={13} /> : <ChevronRight size={13} />}
@@ -215,8 +215,8 @@ function AdminSemanticActionPage({ compact = false }) {
                           : <span className="admin-text-tertiary">-</span>}</td>
                         <td className="admin-text-secondary">{item.description || '-'}</td>
                         <td className="admin-col-actions">
-                          <button className="admin-btn admin-btn-icon" onClick={() => openEdit(item)} title="수정"><Pencil size={14} /></button>
-                          <button className="admin-btn admin-btn-icon admin-btn-danger-soft admin-action-gap-left" onClick={() => handleDelete(item)} title="삭제"><Trash2 size={14} /></button>
+                          <button className="kl-btn kl-btn--icon" onClick={() => openEdit(item)} title="수정"><Pencil size={14} /></button>
+                          <button className="kl-btn kl-btn--icon kl-btn--danger-soft admin-action-gap-left" onClick={() => handleDelete(item)} title="삭제"><Trash2 size={14} /></button>
                         </td>
                       </tr>
                     ))

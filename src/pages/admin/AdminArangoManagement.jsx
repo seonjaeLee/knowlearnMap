@@ -28,16 +28,16 @@ function AdminArangoManagement() {
 
     const domainTableColumnDefinitions = useMemo(
         () => [
-            { id: '_expand', label: '', defaultWidthPx: 44, minWidthPx: 40, align: 'center', ellipsis: false },
+            { id: '_expand', label: '', defaultWidthPx: 44, minWidthPx: 40, align: 'left', ellipsis: false },
             { id: 'domainName', label: '도메인', defaultWidthPx: 168, minWidthPx: 120, align: 'left' },
             { id: 'arangoDbName', label: 'DB명', defaultWidthPx: 160, minWidthPx: 120, align: 'left' },
-            { id: 'objectNodeCount', label: 'Objects', defaultWidthPx: 100, minWidthPx: 88, align: 'center' },
-            { id: 'relationNodeCount', label: 'Relations', defaultWidthPx: 100, minWidthPx: 88, align: 'center' },
-            { id: 'edgeCount', label: 'Edges', defaultWidthPx: 88, minWidthPx: 80, align: 'center' },
-            { id: 'rdbWorkspaceCount', label: 'WS(RDB)', defaultWidthPx: 88, minWidthPx: 80, align: 'center' },
-            { id: 'arangoWorkspaceCount', label: 'WS(Arango)', defaultWidthPx: 104, minWidthPx: 92, align: 'center' },
-            { id: 'orphanWorkspaceCount', label: '고아', defaultWidthPx: 72, minWidthPx: 64, align: 'center' },
-            { id: 'dbExists', label: 'DB상태', defaultWidthPx: 88, minWidthPx: 80, align: 'center', ellipsis: false },
+            { id: 'objectNodeCount', label: 'Objects', defaultWidthPx: 100, minWidthPx: 88, align: 'left' },
+            { id: 'relationNodeCount', label: 'Relations', defaultWidthPx: 100, minWidthPx: 88, align: 'left' },
+            { id: 'edgeCount', label: 'Edges', defaultWidthPx: 88, minWidthPx: 80, align: 'left' },
+            { id: 'rdbWorkspaceCount', label: 'WS(RDB)', defaultWidthPx: 88, minWidthPx: 80, align: 'left' },
+            { id: 'arangoWorkspaceCount', label: 'WS(Arango)', defaultWidthPx: 104, minWidthPx: 92, align: 'left' },
+            { id: 'orphanWorkspaceCount', label: '고아', defaultWidthPx: 72, minWidthPx: 64, align: 'left' },
+            { id: 'dbExists', label: 'DB상태', defaultWidthPx: 88, minWidthPx: 80, align: 'left', ellipsis: false },
         ],
         []
     );
@@ -47,12 +47,12 @@ function AdminArangoManagement() {
             { id: 'workspaceId', label: 'WS ID', defaultWidthPx: 100, minWidthPx: 88, align: 'left' },
             { id: 'workspaceName', label: '워크스페이스명', defaultWidthPx: 200, minWidthPx: 140, align: 'left' },
             { id: 'createdBy', label: '소유자', defaultWidthPx: 160, minWidthPx: 120, align: 'left' },
-            { id: 'objectNodeCount', label: 'Objects', defaultWidthPx: 88, minWidthPx: 80, align: 'center' },
-            { id: 'relationNodeCount', label: 'Relations', defaultWidthPx: 88, minWidthPx: 80, align: 'center' },
-            { id: 'edgeCount', label: 'Edges', defaultWidthPx: 80, minWidthPx: 72, align: 'center' },
-            { id: 'arangoDocumentCount', label: '문서(Arango)', defaultWidthPx: 112, minWidthPx: 96, align: 'center' },
-            { id: 'rdbDocumentCount', label: '문서(RDB)', defaultWidthPx: 104, minWidthPx: 88, align: 'center' },
-            { id: '_status', label: '상태', defaultWidthPx: 88, minWidthPx: 80, align: 'center', ellipsis: false },
+            { id: 'objectNodeCount', label: 'Objects', defaultWidthPx: 88, minWidthPx: 80, align: 'left' },
+            { id: 'relationNodeCount', label: 'Relations', defaultWidthPx: 88, minWidthPx: 80, align: 'left' },
+            { id: 'edgeCount', label: 'Edges', defaultWidthPx: 80, minWidthPx: 72, align: 'left' },
+            { id: 'arangoDocumentCount', label: '문서(Arango)', defaultWidthPx: 112, minWidthPx: 96, align: 'left' },
+            { id: 'rdbDocumentCount', label: '문서(RDB)', defaultWidthPx: 104, minWidthPx: 88, align: 'left' },
+            { id: '_status', label: '상태', defaultWidthPx: 88, minWidthPx: 80, align: 'left', ellipsis: false },
         ],
         []
     );
@@ -298,7 +298,7 @@ function AdminArangoManagement() {
                         <button
                             type="button"
                             onClick={handleRefresh}
-                            className="admin-btn admin-btn-icon"
+                            className="kl-btn kl-btn--icon"
                             title="새로고침"
                             aria-label="ArangoDB 목록 새로고침"
                         >

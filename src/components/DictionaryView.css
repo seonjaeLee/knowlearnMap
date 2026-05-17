@@ -949,11 +949,7 @@
     color: #333;
 }
 
-.edit-form input[readonly] {
-    background-color: #f5f5f5;
-    color: #666;
-    cursor: not-allowed;
-}
+/* readonly 톤 — 전역 kl-form-readonly.css */
 
 /* 지식 그래프(.kg-*) 스타일은 KnowledgeGraphModal.css 단일 소스 — 중복 시 번들 순서로 14px·패딩이 덮어씀 */
 

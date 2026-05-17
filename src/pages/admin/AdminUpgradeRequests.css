@@ -46,10 +46,6 @@
   min-width: 0;
 }
 
-.admin-upgrade-reject-info-btn {
-  flex-shrink: 0;
-}
-
 /* 워크스페이스 관리 Popover와 동일: 패딩은 KlPopover `.panel`만 사용 */
 .admin-upgrade-reject-popover-inner {
   min-width: 0;
@@ -113,15 +109,6 @@
 
 .admin-upgrade-status.status-pending {
   color: #f08c00;
-}
-
-.admin-upgrade-actions {
-  display: inline-flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: var(--kl-table-action-icon-gap);
-  width: 100%;
-  min-width: 0;
 }
 
 .admin-upgrade-reject-content {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, Save, RotateCcw, Layers } from 'lucide-react';
 import { useDialog } from '../../hooks/useDialog';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
@@ -91,11 +91,11 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
                 subtitle={subtitle}
                 actions={
                     <>
-                        <button className="admin-btn" onClick={handleReset} disabled={loading || saving}>
+                        <button className="kl-btn" onClick={handleReset} disabled={loading || saving}>
                             <RotateCcw size={14} /> 새로고침
                         </button>
                         <button
-                            className="admin-btn admin-btn-primary"
+                            className="kl-btn kl-btn--primary"
                             onClick={handleSave}
                             disabled={saving || !dirty}
                         >
@@ -156,7 +156,7 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
                                         </td>
                                         <td className="admin-col-actions">
                                             <button
-                                                className="admin-btn admin-btn-icon admin-btn-danger-soft"
+                                                className="kl-btn kl-btn--icon kl-btn--danger-soft"
                                                 onClick={() => handleDelete(idx)}
                                                 title="삭제"
                                             >
@@ -172,7 +172,7 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
             )}
 
             <div style={{ marginTop: 12 }}>
-                <button className="admin-btn" onClick={handleAdd} disabled={loading || saving}>
+                <button className="kl-btn" onClick={handleAdd} disabled={loading || saving}>
                     <Plus size={14} /> 행 추가
                 </button>
                 {dirty && (

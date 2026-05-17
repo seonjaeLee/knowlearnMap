@@ -10,7 +10,6 @@ import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
 import BaseModal from '../components/common/modal/BaseModal';
 import KlModalSelect from '../components/common/modal/KlModalSelect';
-import './admin/admin-common.css';
 import './Home.css';
 
 /**
@@ -468,7 +467,7 @@ function Home() {
                     title={pageTitle}
                     breadcrumbs={workspaceBreadcrumbs}
                     actions={(
-                        <button type="button" className="admin-btn admin-btn-primary" onClick={handleCreateNew}>
+                        <button type="button" className="kl-btn kl-btn--primary" onClick={handleCreateNew}>
                             <Plus size={14} aria-hidden />
                             새 워크스페이스
                         </button>

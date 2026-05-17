@@ -7,18 +7,17 @@ alwaysApply: false
 
 구현·수정 시 아래를 우선한다.
 
-## 토큰 (`src/index.css` `:root`)
+## 크기 (`BasicTable.global.css`에만 정의)
 
-- **`--kl-table-action-icon-size`** — 아이콘 실크기(기본 **16px**).
-- **`--kl-table-action-icon-gap`** — 두 버튼 사이 간격(기본 **0** — 나란히 붙임).
-- **`--kl-table-action-hit-size`** — 클릭 영역 한 변(기본 36px).
-- **`--kl-table-actions-col-min`** — 편집+삭제 열 최소 너비(기본 120px; 두 히트+간격+셀 좌우 패딩 고려).
+- **버튼** 28×28px · **아이콘** 16×16px · **gap·padding** `--spacing-xs`(4px).
+- 관리 열 `width`는 페이지 컬럼 정의에서 직접 지정(예: 버튼 2개 `92px` = 28×2+4+32).
+- 래퍼는 **`.kl-table-actions`**만 사용(화면별 `*-actions` 클래스 추가 금지).
 - **삭제 색**: **`--color-icon-danger`** — 삭제·거절 등 위험 액션. 임의로 회색으로 바꾸지 않는다.
 - **승인·긍정 색**: **`--color-icon-success`**, **`--color-icon-success-emphasis`** — 승인 등 긍정 액션(`kl-table-icon-btn--success`).
 
 ## 스타일 단일 소스
 
-- `src/styles/kl-table-icon-actions.css` — `.kl-table-icon-btn`, `--neutral` / `--danger` / **`--success`**, 행 내 `svg` 크기는 위 토큰으로만 제어.
+- `src/components/common/BasicTable.global.css` — `.kl-table-actions`, `.kl-table-icon-btn`, `--neutral` / `--danger` / **`--success`**.
 - 어드민 테이블: `admin-common.css`의 `.admin-table .kl-table-icon-btn-*` 가 팔레트만 덮어쓴다.
 
 ## 데이터 테이블 규격

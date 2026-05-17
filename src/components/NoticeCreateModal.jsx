@@ -4,7 +4,11 @@ import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
-import { supportFormModalPaperSx } from './common/modal/supportFormModalPaperSx';
+import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
+import {
+    noticeFormModalPaperClassName,
+    noticeFormModalPaperSx,
+} from './common/modal/supportFormModalPaperSx';
 import './NoticeCreateModal.css';
 
 function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
@@ -47,7 +51,7 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                 const newContent = content.substring(0, start) + imageTag + content.substring(end);
                 setContent(newContent);
             } else {
-                setContent(prev => prev + imageTag);
+                setContent((prev) => prev + imageTag);
             }
         } catch (error) {
             console.error('이미지 업로드 실패:', error);
@@ -91,9 +95,11 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
             title={editingNotice ? '공지사항 수정' : '공지사항 작성'}
             maxWidth={false}
             fullWidth={false}
-            paperSx={supportFormModalPaperSx}
+            paperSx={noticeFormModalPaperSx}
+            paperClassName={noticeFormModalPaperClassName}
             contentClassName="notice-create-modal-content kl-modal-form"
-            actionsClassName="notice-create-modal-actions"
+            actionsClassName="notice-modal-actions"
+            actionsAlign="right"
             actions={(
                 <>
                     <Button variant="outlined" onClick={onClose}>취소</Button>
@@ -103,14 +109,17 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                         form="notice-create-form"
                         disabled={!title.trim() || !content.trim() || isSubmitting}
                     >
-                        {isSubmitting ? '저장 중...' : (editingNotice ? '수정' : '등록')}
+                        {getModalSubmitLabel(Boolean(editingNotice), isSubmitting)}
                     </Button>
                 </>
             )}
         >
-                <form id="notice-create-form" onSubmit={handleSubmit} className="notice-create-modal-form">
-                    <div className="notice-form-group">
-                        <label htmlFor="notice-title">제목 <span className="required-asterisk" aria-hidden="true">*</span></label>
+            <form id="notice-create-form" onSubmit={handleSubmit} className="notice-modal-form">
+                <div className="notice-form-row">
+                    <label className="notice-form-row__label" htmlFor="notice-title">
+                        제목 <span className="notice-required" aria-hidden="true">*</span>
+                    </label>
+                    <div className="notice-form-row__control">
                         <input
                             id="notice-title"
                             type="text"
@@ -121,9 +130,13 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                             required
                         />
                     </div>
+                </div>
 
-                    <div className="notice-form-group">
-                        <label htmlFor="notice-category">카테고리</label>
+                <div className="notice-form-row">
+                    <label className="notice-form-row__label" htmlFor="notice-category">
+                        카테고리
+                    </label>
+                    <div className="notice-form-row__control">
                         <input
                             id="notice-category"
                             type="text"
@@ -133,40 +146,42 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                             maxLength={50}
                         />
                     </div>
+                </div>
 
-                    <div className="notice-form-group">
-                        <label htmlFor="notice-content">내용 <span className="required-asterisk" aria-hidden="true">*</span></label>
-                        <div className="notice-content-toolbar">
-                            <button
-                                type="button"
-                                className="btn-attach-image"
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploading}
-                                title="이미지 첨부"
-                            >
-                                <ImagePlus size={16} />
-                                {isUploading ? '업로드 중...' : '이미지 첨부'}
-                            </button>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/jpeg,image/png,image/gif,image/webp"
-                                onChange={handleImageUpload}
-                                className="notice-hidden-file-input"
-                            />
-                        </div>
-                        <textarea
-                            id="notice-content"
-                            ref={textareaRef}
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="내용을 입력하세요"
-                            rows={10}
-                            required
+                <div className="notice-form-content">
+                    <label className="notice-form-content__label" htmlFor="notice-content">
+                        내용 <span className="notice-required" aria-hidden="true">*</span>
+                    </label>
+                    <div className="notice-content-toolbar">
+                        <button
+                            type="button"
+                            className="kl-icon-label-btn"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                            title="이미지 첨부"
+                        >
+                            <ImagePlus size={16} aria-hidden />
+                            {isUploading ? '업로드 중...' : '이미지 첨부'}
+                        </button>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/jpeg,image/png,image/gif,image/webp"
+                            onChange={handleImageUpload}
+                            className="notice-hidden-file-input"
                         />
                     </div>
-
-                </form>
+                    <textarea
+                        id="notice-content"
+                        ref={textareaRef}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder="내용을 입력해주세요."
+                        rows={8}
+                        required
+                    />
+                </div>
+            </form>
         </BaseModal>
     );
 }

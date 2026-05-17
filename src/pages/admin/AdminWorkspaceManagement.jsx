@@ -200,15 +200,15 @@ function AdminWorkspaceManagement() {
                     return <span className="workspace-mgmt-date-text">{formatWorkspaceDate(ws.createdAt)}</span>;
                 case '_actions':
                     return (
-                        <div className="workspace-mgmt-actions">
+                        <div className="kl-table-actions">
                             <button
                                 type="button"
                                 onClick={() => handleOpenShareModal(ws)}
                                 title="공유 설정"
                                 aria-label={`${ws.name} 공유 설정`}
-                                className={`kl-table-icon-btn kl-table-icon-btn--neutral ${ws.shareType !== 'NONE' ? 'workspace-mgmt-share-btn--active' : ''}`}
+                                className={`kl-table-icon-btn kl-table-icon-btn--neutral${ws.shareType !== 'NONE' ? ' kl-table-icon-btn--accent' : ''}`}
                             >
-                                <Share2 strokeWidth={1.75} size={16} aria-hidden />
+                                <Share2 strokeWidth={1.75} aria-hidden />
                             </button>
                             <button
                                 type="button"
@@ -217,7 +217,7 @@ function AdminWorkspaceManagement() {
                                 aria-label={`${ws.name} 삭제`}
                                 className="kl-table-icon-btn kl-table-icon-btn--danger"
                             >
-                                <Trash2 strokeWidth={1.75} size={16} aria-hidden />
+                                <Trash2 strokeWidth={1.75} aria-hidden />
                             </button>
                         </div>
                     );
@@ -239,7 +239,7 @@ function AdminWorkspaceManagement() {
                             <button
                             type="button"
                             onClick={fetchWorkspaces}
-                            className="admin-btn admin-btn-icon"
+                            className="kl-btn kl-btn--icon"
                             title="새로고침"
                             aria-label="워크스페이스 목록 새로고침"
                         >

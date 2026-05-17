@@ -213,11 +213,7 @@
     resize: none;
 }
 
-.persona-readonly-textarea {
-    background-color: #ffffff;
-    color: #202124;
-    cursor: default;
-}
+/* readonly 톤 — 전역 kl-form-readonly.css */
 
 .persona-actions-left {
     display: flex;

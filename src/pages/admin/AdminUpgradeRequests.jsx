@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, TextField, Typography } from '@mui/material';
-import { Check, Ban, Info } from 'lucide-react';
+import { Check, Ban, HelpCircle } from 'lucide-react';
 import { upgradeApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
@@ -181,7 +181,7 @@ function AdminUpgradeRequests() {
                                 {req.status === 'REJECTED' && (
                                     <button
                                         type="button"
-                                        className="kl-table-icon-btn kl-table-icon-btn--neutral admin-upgrade-reject-info-btn"
+                                        className="kl-popover-icon-btn"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             const el = e.currentTarget;
@@ -207,7 +207,7 @@ function AdminUpgradeRequests() {
                                         aria-haspopup="true"
                                         aria-controls="admin-upgrade-reject-reason-popover"
                                     >
-                                        <Info strokeWidth={1.75} size={16} aria-hidden />
+                                        <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
                                     </button>
                                 )}
                             </div>
@@ -217,7 +217,7 @@ function AdminUpgradeRequests() {
                 case 'actions':
                     if (req.status !== 'PENDING') return null;
                     return (
-                        <div className="admin-upgrade-actions">
+                        <div className="kl-table-actions">
                             <button
                                 type="button"
                                 className="kl-table-icon-btn kl-table-icon-btn--danger"

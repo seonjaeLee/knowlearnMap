@@ -1,134 +1,150 @@
+/* FAQ 등록·수정 — 520px, 1:1 문의 등록 팝업과 동일 레이아웃 리듬 */
+:global(.kl-base-modal-paper.faq-form-modal-paper) {
+    width: 520px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
+    min-height: unset !important;
+}
+
+:global(.kl-base-modal-content.faq-create-modal-content) {
+    padding: var(--spacing-lg) !important;
+    padding-bottom: var(--spacing-2xl) !important;
+}
+
 .faq-hidden-file-input {
     display: none;
 }
 
 .faq-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
     padding: 0;
 }
 
-.faq-form-group {
-    margin-bottom: var(--spacing-md);
+.faq-form-row {
+    display: grid;
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--spacing-md);
 }
 
-.faq-form-group > label {
-    display: block;
-    margin-bottom: var(--spacing-sm);
-    font-size: var(--font-size-base);
+.faq-form-row--start {
+    align-items: start;
+}
+
+.faq-form-row__label {
+    margin: 0;
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
+    line-height: 1.4;
 }
 
-/* input·select·textarea 규격 — 부모 `kl-modal-form` + `kl-form-control.css` (툴바와 동일) */
-.faq-form-group textarea {
-    resize: vertical;
-    min-height: 150px;
+.faq-form-row__control {
+    min-width: 0;
+}
+
+.faq-required {
+    color: #dc2626;
+}
+
+/* 내용 — 라벨(좌) · 이미지 첨부(우), textarea 전체 너비 */
+.faq-form-content {
+    display: grid;
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    column-gap: var(--spacing-md);
+    row-gap: var(--spacing-xs);
+}
+
+.faq-form-content__label {
+    margin: 0;
+    align-self: center;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    line-height: 1.4;
 }
 
 .faq-content-toolbar {
     display: flex;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
+    justify-content: flex-end;
+    min-width: 0;
 }
 
-.btn-attach-image {
+.faq-form-content textarea {
+    grid-column: 1 / -1;
+    min-height: 140px;
+    resize: vertical;
+}
+
+/* 표시 순서 — KlCategorySelectInput.wrap--withInput 과 동일 2열 (select | input) */
+.faq-order-active-control {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
-    padding: 6px 12px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-secondary);
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-    cursor: pointer;
-    transition: border-color var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
-}
-
-.btn-attach-image:hover:not(:disabled) {
-    background: var(--color-bg-hover);
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-}
-
-.btn-attach-image:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* 카테고리 — select · 또는 · input 반반 */
-.faq-category-input {
-    display: flex;
-    align-items: center;
+    flex-wrap: nowrap;
     gap: var(--spacing-sm);
     width: 100%;
 }
 
-.faq-category-field {
-    flex: 1 1 0;
+.faq-order-input-wrap {
+    flex: 0 0 38%;
+    width: 38%;
+    max-width: 9.5rem;
     min-width: 0;
 }
 
-.faq-category-field select,
-.faq-category-field input[type="text"] {
-    width: 100%;
-}
-
-.faq-category-or {
-    flex: 0 0 auto;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    white-space: nowrap;
-}
-
-/* 표시 순서(반쪽) + 활성화 체크박스 — 입력 높이에 맞춰 정렬 */
-.faq-form-row {
-    display: flex;
-    gap: var(--spacing-lg);
-    align-items: flex-end;
-}
-
-.faq-form-group--half {
-    flex: 1 1 0;
-    min-width: 0;
-    margin-bottom: 0;
-}
-
-.faq-order-active-check {
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    align-items: center;
+.faq-order-input-wrap .faq-order-input {
+    width: 100% !important;
+    max-width: none;
 }
 
 .faq-active-checkbox {
     display: inline-flex;
     align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
     gap: var(--spacing-sm);
     margin: 0;
     padding: 0;
     cursor: pointer;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-normal);
     line-height: 1;
     color: var(--color-text-primary);
     white-space: nowrap;
 }
 
-.faq-active-checkbox span {
-    line-height: var(--font-size-base);
-}
-
-.faq-active-checkbox input[type="checkbox"] {
+.faq-active-checkbox input[type='checkbox'] {
     width: 16px;
     height: 16px;
     margin: 0;
-    padding: 0;
-    cursor: pointer;
     flex-shrink: 0;
+    cursor: pointer;
     accent-color: var(--color-accent);
-    vertical-align: middle;
 }
 
 .faq-modal-actions {
-    padding: var(--spacing-lg) var(--spacing-lg) !important;
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
+}
+
+@media (max-width: 768px) {
+    :global(.kl-base-modal-paper.faq-form-modal-paper) {
+        width: calc(100vw - 48px) !important;
+    }
+
+    .faq-form-row,
+    .faq-form-content {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+        row-gap: var(--spacing-xs);
+    }
+
+    .faq-form-content textarea {
+        grid-column: 1;
+    }
+
+    .faq-order-active-control {
+        flex-wrap: wrap;
+    }
 }

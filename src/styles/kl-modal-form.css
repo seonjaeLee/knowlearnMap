@@ -48,7 +48,7 @@
 }
 
 /* ---------- 네이티브: 한 줄 input·select (툴바 .toolbar-select / .search-area-input 과 동일) ---------- */
-.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']) {
+.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not([readonly]) {
   width: 100%;
   box-sizing: border-box;
   height: var(--kl-control-height);
@@ -64,7 +64,7 @@
   transition: var(--kl-control-transition);
 }
 
-.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):hover:not(:disabled) {
+.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not([readonly]):hover:not(:disabled) {
   border-color: var(--kl-control-border-hover);
   background-color: var(--kl-control-bg-hover);
 }
@@ -127,8 +127,8 @@
 }
 
 /* UA·MUI·`:invalid`(type=email 등)가 덮는 경우 대비 — 팝업 공통 포커스 토큰 강제 */
-.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):focus,
-.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):focus-visible,
+.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):not([readonly]):focus,
+.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):not([readonly]):focus-visible,
 .kl-modal-form select:focus,
 .kl-modal-form select:focus-visible,
 .kl-modal-form textarea:focus,
@@ -136,11 +136,12 @@
   outline: none !important;
   border-color: var(--color-accent) !important;
   box-shadow: var(--shadow-focus-input) !important;
+  background-color: var(--kl-control-bg-focus) !important;
 }
 
 /* 형식 오류 중에도 포커스 테두리는 액센트 유지(브라우저 `:invalid` 테두리 무시) */
-.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):invalid:focus,
-.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):invalid:focus-visible,
+.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):not([readonly]):invalid:focus,
+.kl-modal-form input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='hidden']):not([readonly]):invalid:focus-visible,
 .kl-modal-form textarea:invalid:focus,
 .kl-modal-form textarea:invalid:focus-visible {
   border-color: var(--color-accent) !important;
@@ -232,6 +233,10 @@
 
 .kl-modal-form .MuiOutlinedInput-notchedOutline {
   border-color: var(--color-border) !important;
+}
+
+.kl-modal-form .MuiOutlinedInput-root.Mui-focused {
+  background-color: var(--kl-control-bg-focus) !important;
 }
 
 .kl-modal-form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {

@@ -8,8 +8,11 @@ import { API_URL } from '../config/api';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import BaseModal from '../components/common/modal/BaseModal';
+import {
+    domainFormModalPaperClassName,
+    domainFormModalPaperSx,
+} from '../components/common/modal/supportFormModalPaperSx';
 import BasicTable from '../components/common/BasicTable';
-import './admin/admin-common.css';
 import './DomainSelection.css';
 
 const isLocalAuthEnabled = import.meta.env.VITE_ENABLE_LOCAL_AUTH === 'true';
@@ -154,7 +157,7 @@ function DomainSelection() {
             {
                 id: '_actions',
                 label: <span className="domain-list-actions-head">관리</span>,
-                width: 'var(--kl-table-actions-col-min)',
+                width: '92px',
                 align: 'right',
                 ellipsis: false,
             },
@@ -194,7 +197,7 @@ function DomainSelection() {
                 case '_actions':
                     return (
                         <div className="domain-list-action">
-                            <div className="domain-list-actions">
+                            <div className="kl-table-actions">
                                 <button
                                     type="button"
                                     className="kl-table-icon-btn kl-table-icon-btn--danger"
@@ -236,7 +239,7 @@ function DomainSelection() {
                         <button
                             type="button"
                             onClick={() => { setShowAddModal(true); setAddError(''); }}
-                            className="admin-btn admin-btn-primary"
+                            className="kl-btn kl-btn--primary"
                         >
                             <Plus size={14} aria-hidden />
                             도메인 추가
@@ -286,8 +289,13 @@ function DomainSelection() {
                 open={showAddModal}
                 title="새 도메인 추가"
                 onClose={closeAddModal}
-                maxWidth="xs"
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={domainFormModalPaperSx}
+                paperClassName={domainFormModalPaperClassName}
                 contentClassName="domain-add-modal-content kl-modal-form"
+                actionsClassName="domain-add-modal-actions"
+                actionsAlign="right"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={closeAddModal} disabled={adding}>
@@ -299,56 +307,67 @@ function DomainSelection() {
                     </>
                 )}
             >
-                <div className="domain-add-form">
-                    <div className="domain-add-form-group">
-                        <label htmlFor="domain-add-name">
-                            도메인명 <span className="required-asterisk" aria-hidden="true">*</span>
+                <form className="domain-add-modal-form" onSubmit={(e) => e.preventDefault()}>
+                    <div className="domain-form-row">
+                        <label className="domain-form-row__label" htmlFor="domain-add-name">
+                            도메인명 <span className="domain-required" aria-hidden="true">*</span>
                         </label>
-                        <input
-                            id="domain-add-name"
-                            type="text"
-                            value={addForm.name}
-                            onChange={(e) => setAddForm((p) => ({ ...p, name: e.target.value }))}
-                            placeholder="도메인 이름"
-                            autoFocus
-                            autoComplete="off"
-                        />
+                        <div className="domain-form-row__control">
+                            <input
+                                id="domain-add-name"
+                                type="text"
+                                value={addForm.name}
+                                onChange={(e) => setAddForm((p) => ({ ...p, name: e.target.value }))}
+                                placeholder="도메인 이름"
+                                autoFocus
+                                autoComplete="off"
+                            />
+                        </div>
                     </div>
 
-                    <div className="domain-add-form-group">
-                        <label htmlFor="domain-add-desc">설명</label>
-                        <input
-                            id="domain-add-desc"
-                            type="text"
-                            value={addForm.description}
-                            onChange={(e) => setAddForm((p) => ({ ...p, description: e.target.value }))}
-                            placeholder="도메인 설명 (선택)"
-                            autoComplete="off"
-                        />
+                    <div className="domain-form-row">
+                        <label className="domain-form-row__label" htmlFor="domain-add-desc">
+                            설명
+                        </label>
+                        <div className="domain-form-row__control">
+                            <input
+                                id="domain-add-desc"
+                                type="text"
+                                value={addForm.description}
+                                onChange={(e) => setAddForm((p) => ({ ...p, description: e.target.value }))}
+                                placeholder="도메인 설명 (선택)"
+                                autoComplete="off"
+                            />
+                        </div>
                     </div>
 
-                    <div className="domain-add-form-group">
-                        <label htmlFor="domain-add-arango">
-                            ArangoDB 데이터베이스명 <span className="required-asterisk" aria-hidden="true">*</span>
+                    <div className="domain-form-row domain-form-row--start">
+                        <label className="domain-form-row__label domain-form-row__label--stacked" htmlFor="domain-add-arango">
+                            <span className="domain-form-row__label-line">ArangoDB</span>
+                            <span className="domain-form-row__label-line">
+                                데이터베이스명 <span className="domain-required" aria-hidden="true">*</span>
+                            </span>
                         </label>
-                        <input
-                            id="domain-add-arango"
-                            type="text"
-                            value={addForm.arangoDbName}
-                            onChange={(e) => {
-                                const v = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
-                                setAddForm((p) => ({ ...p, arangoDbName: v }));
-                            }}
-                            placeholder="예: my_domain-01"
-                            autoComplete="off"
-                        />
-                        <p className="domain-add-help">
-                            사용 가능: 영문 소문자, 숫자, 하이픈(-), 언더스코어(_) · 생성 후 변경 불가
-                        </p>
+                        <div className="domain-form-row__control">
+                            <input
+                                id="domain-add-arango"
+                                type="text"
+                                value={addForm.arangoDbName}
+                                onChange={(e) => {
+                                    const v = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+                                    setAddForm((p) => ({ ...p, arangoDbName: v }));
+                                }}
+                                placeholder="예: my_domain-01"
+                                autoComplete="off"
+                            />
+                            <p className="domain-add-help">
+                                사용 가능: 영문 소문자, 숫자, 하이픈(-), 언더스코어(_) · 생성 후 변경 불가
+                            </p>
+                        </div>
                     </div>
 
                     {addError && <div className="domain-add-error">{addError}</div>}
-                </div>
+                </form>
             </BaseModal>
         </div>
     );

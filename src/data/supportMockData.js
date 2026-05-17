@@ -1,3 +1,5 @@
+/** `VITE_ENABLE_SUPPORT_MOCK=true` 일 때만 고객센터 3개 목록 페이지에서 사용 */
+
 export const mockNotices = [
   {
     id: 1005,

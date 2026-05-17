@@ -1,0 +1,178 @@
+/**
+ * 읽기 전용 폼 컨트롤 — 전역
+ *
+ * 적용 방법
+ * - input / textarea: `readonly` 또는 `readOnly` (HTML readonly)
+ * - 팝업 한 줄(이메일 등): `kl-form-readonly kl-form-readonly--control` — select와 동일 크기(흰 배경·테두리=배경색)
+ * - select: `className="kl-form-readonly"` + `disabled` 또는 `aria-readonly="true"` + pointer-events 차단
+ * - MUI Outlined: 내부 input·textarea에 readonly
+ * - 컨테이너: `.kl-form-readonly` 래퍼로 하위 input·textarea·select 일괄 적용
+ *
+ * `:disabled` 는 편집 불가·회색 톤 유지(기존 kl-modal-form 규칙). 조회 전용은 readonly·kl-form-readonly 사용.
+ */
+
+/* 네이티브 input 타입 (checkbox·radio·button 등 제외) */
+:is(
+  input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
+  textarea[readonly],
+  select.kl-form-readonly,
+  input.kl-form-readonly:not(.kl-form-readonly--control),
+  textarea.kl-form-readonly,
+  .kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control),
+  .kl-form-readonly textarea,
+  .kl-form-readonly select
+) {
+  border: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: var(--kl-control-readonly-bg) !important;
+  color: var(--kl-control-readonly-text) !important;
+  cursor: var(--kl-control-readonly-cursor) !important;
+  -webkit-text-fill-color: var(--kl-control-readonly-text);
+}
+
+:is(
+  input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
+  textarea[readonly],
+  select.kl-form-readonly,
+  input.kl-form-readonly:not(.kl-form-readonly--control),
+  textarea.kl-form-readonly,
+  .kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control),
+  .kl-form-readonly textarea,
+  .kl-form-readonly select
+):hover,
+:is(
+  input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
+  textarea[readonly],
+  select.kl-form-readonly,
+  input.kl-form-readonly:not(.kl-form-readonly--control),
+  textarea.kl-form-readonly,
+  .kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control),
+  .kl-form-readonly textarea,
+  .kl-form-readonly select
+):focus,
+:is(
+  input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
+  textarea[readonly],
+  select.kl-form-readonly,
+  input.kl-form-readonly:not(.kl-form-readonly--control),
+  textarea.kl-form-readonly,
+  .kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control),
+  .kl-form-readonly textarea,
+  .kl-form-readonly select
+):focus-visible {
+  border: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: var(--kl-control-readonly-bg) !important;
+}
+
+/* 한 줄 input — 본문 텍스트처럼 (--control 제외) */
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
+input.kl-form-readonly:not(.kl-form-readonly--control),
+.kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control) {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+/* 팝업 폼 행 — 활성 input·select와 동일 박스(흰 배경, 테두리=배경색으로 외곽만 맞춤) */
+input.kl-form-readonly.kl-form-readonly--control,
+.kl-modal-form input.kl-form-readonly.kl-form-readonly--control[readonly] {
+  width: 100%;
+  box-sizing: border-box;
+  height: var(--kl-control-height) !important;
+  min-height: var(--kl-control-height) !important;
+  padding: 0 var(--kl-control-padding-inline) !important;
+  border: 1px solid var(--kl-control-bg) !important;
+  border-radius: var(--kl-control-radius) !important;
+  background-color: var(--kl-control-bg) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  font-family: var(--font-family);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  line-height: var(--kl-control-line-height);
+  color: var(--kl-control-readonly-text) !important;
+  cursor: var(--kl-control-readonly-cursor) !important;
+  -webkit-text-fill-color: var(--kl-control-readonly-text);
+  transition: var(--kl-control-transition);
+}
+
+input.kl-form-readonly.kl-form-readonly--control:hover,
+input.kl-form-readonly.kl-form-readonly--control:focus,
+input.kl-form-readonly.kl-form-readonly--control:focus-visible,
+.kl-modal-form input.kl-form-readonly.kl-form-readonly--control[readonly]:hover,
+.kl-modal-form input.kl-form-readonly.kl-form-readonly--control[readonly]:focus,
+.kl-modal-form input.kl-form-readonly.kl-form-readonly--control[readonly]:focus-visible {
+  border: 1px solid var(--kl-control-bg) !important;
+  border-color: var(--kl-control-bg) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: var(--kl-control-bg) !important;
+}
+
+textarea[readonly],
+textarea.kl-form-readonly,
+.kl-form-readonly textarea {
+  min-height: 0 !important;
+  padding: 0 !important;
+  resize: none !important;
+}
+
+select.kl-form-readonly,
+.kl-form-readonly select {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  appearance: none !important;
+  background-image: none !important;
+  pointer-events: none !important;
+}
+
+/* ---------- MUI Outlined (kl-modal-form 등) ---------- */
+.kl-modal-form .MuiOutlinedInput-root:has(input[readonly]),
+.kl-modal-form .MuiOutlinedInput-root:has(textarea[readonly]),
+.kl-modal-form .MuiOutlinedInput-root.kl-form-readonly {
+  min-height: 0 !important;
+  height: auto !important;
+  background-color: var(--kl-control-readonly-bg) !important;
+  cursor: var(--kl-control-readonly-cursor) !important;
+}
+
+.kl-modal-form .MuiOutlinedInput-root:has(input[readonly]) .MuiOutlinedInput-notchedOutline,
+.kl-modal-form .MuiOutlinedInput-root:has(textarea[readonly]) .MuiOutlinedInput-notchedOutline,
+.kl-modal-form .MuiOutlinedInput-root.kl-form-readonly .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+  border-color: transparent !important;
+}
+
+.kl-modal-form .MuiOutlinedInput-root:has(input[readonly]):hover,
+.kl-modal-form .MuiOutlinedInput-root:has(textarea[readonly]):hover,
+.kl-modal-form .MuiOutlinedInput-root.kl-form-readonly:hover,
+.kl-modal-form .MuiOutlinedInput-root:has(input[readonly]).Mui-focused,
+.kl-modal-form .MuiOutlinedInput-root:has(textarea[readonly]).Mui-focused,
+.kl-modal-form .MuiOutlinedInput-root.kl-form-readonly.Mui-focused {
+  background-color: var(--kl-control-readonly-bg) !important;
+}
+
+.kl-modal-form .MuiOutlinedInput-root:has(input[readonly]):hover .MuiOutlinedInput-notchedOutline,
+.kl-modal-form .MuiOutlinedInput-root:has(textarea[readonly]):hover .MuiOutlinedInput-notchedOutline,
+.kl-modal-form .MuiOutlinedInput-root.kl-form-readonly:hover .MuiOutlinedInput-notchedOutline,
+.kl-modal-form .MuiOutlinedInput-root:has(input[readonly]).Mui-focused .MuiOutlinedInput-notchedOutline,
+.kl-modal-form .MuiOutlinedInput-root:has(textarea[readonly]).Mui-focused .MuiOutlinedInput-notchedOutline,
+.kl-modal-form .MuiOutlinedInput-root.kl-form-readonly.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.kl-modal-form .MuiOutlinedInput-root:has(input[readonly]) .MuiOutlinedInput-input,
+.kl-modal-form .MuiOutlinedInput-root:has(textarea[readonly]) .MuiOutlinedInput-input,
+.kl-modal-form .MuiOutlinedInput-root.kl-form-readonly .MuiOutlinedInput-input {
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  cursor: var(--kl-control-readonly-cursor) !important;
+}

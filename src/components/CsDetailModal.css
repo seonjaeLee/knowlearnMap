@@ -1,45 +1,80 @@
-.notice-detail-modal-content {
+/**
+ * 고객센터 팝업 공통 (공지·FAQ·1:1 문의)
+ * - 상세: head·본문 / 작성·수정: 가로·본문 하단 여백
+ */
+
+.cs-detail-modal-content {
     --base-modal-content-min-height: 0;
-    max-height: calc(100vh - 168px);
-    overflow: auto;
     background: var(--color-bg-primary);
 }
 
-.notice-detail-modal-body {
-    min-height: 420px;
+/* 상세 팝업 — 가로 800px, 내용 높이에 맞춤, 긴 본문만 뷰포트 내 스크롤 */
+:global(.kl-base-modal-paper.cs-detail-modal-paper),
+:global(.kl-base-modal-paper.cs-form-modal-paper) {
+    width: 800px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
 }
 
-.notice-detail-content-wrapper {
+:global(.kl-base-modal-paper.cs-detail-modal-paper) {
+    height: auto !important;
+    max-height: calc(100vh - 48px) !important;
+    min-height: unset !important;
+}
+
+:global(.kl-base-modal-paper.cs-detail-modal-paper .kl-base-modal-content-shell) {
+    flex: 0 1 auto !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+:global(.kl-base-modal-paper.cs-detail-modal-paper .cs-detail-modal-content) {
+    flex: none;
+    max-height: calc(100vh - 180px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.cs-detail-modal-body {
+    min-height: 0;
+    padding-bottom: var(--spacing-2xl);
+}
+
+/* 고객센터 작성·수정 팝업 본문 하단 여백 (48px) */
+:global(.kl-base-modal-content.cs-form-modal-content) {
+    padding-bottom: var(--spacing-2xl) !important;
+}
+
+.cs-detail-content-wrapper {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
 }
 
-/* 분류·제목·메타 — 상·하 패딩 없음, 좌우만 */
-.notice-detail-head {
+/* 분류·제목·메타 */
+.cs-detail-head {
     padding-block: 0;
-    padding-inline: var(--spacing-lg);
     background: transparent;
 }
 
-.notice-detail-head-top {
+.cs-detail-head-top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: var(--spacing-md);
 }
 
-.notice-title-block {
+.cs-detail-title-block {
     min-width: 0;
     flex: 1;
 }
 
-.notice-detail-category {
+.cs-detail-category {
     display: inline-flex;
     align-items: center;
     min-height: 22px;
     padding: 2px var(--spacing-xs);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
     border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--color-accent) 10%, white);
     color: var(--color-accent);
@@ -47,7 +82,7 @@
     font-weight: var(--font-weight-medium);
 }
 
-.notice-detail-title {
+.cs-detail-title {
     margin: 0;
     color: var(--color-text-primary);
     font-size: 20px;
@@ -56,7 +91,7 @@
     letter-spacing: 0;
 }
 
-.notice-detail-title-input {
+.cs-detail-title-input {
     display: block;
     width: 100%;
     box-sizing: border-box;
@@ -72,7 +107,7 @@
     line-height: 1.35;
 }
 
-.notice-detail-meta-row {
+.cs-detail-meta-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -80,7 +115,7 @@
     margin-top: var(--spacing-sm);
 }
 
-.notice-detail-inline-meta {
+.cs-detail-inline-meta {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -90,7 +125,7 @@
     font-size: var(--font-size-xs);
 }
 
-.notice-detail-inline-meta span:not(:last-child)::after {
+.cs-detail-inline-meta > span:not(:last-child)::after {
     content: "";
     display: inline-block;
     width: 1px;
@@ -100,26 +135,26 @@
     vertical-align: middle;
 }
 
-.notice-detail-updated {
+.cs-detail-updated {
     flex-shrink: 0;
-    color: var(--color-icon-danger, #dc2626);
+    color: var(--color-text-secondary);
     font-size: var(--font-size-xs);
     white-space: nowrap;
 }
 
-.notice-actions {
+.cs-detail-actions {
     display: flex;
     gap: var(--spacing-xs);
     flex-shrink: 0;
 }
 
-.btn-edit-notice,
-.btn-delete-notice {
+.cs-detail-btn-edit,
+.cs-detail-btn-delete {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--kl-table-action-hit-size);
-    height: var(--kl-table-action-hit-size);
+    width: 28px;
+    height: 28px;
     padding: 0;
     border: none;
     border-radius: var(--radius-sm);
@@ -129,42 +164,46 @@
     transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
-.btn-edit-notice:hover {
+.cs-detail-btn-edit:hover {
     background: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
     color: var(--color-text-primary);
 }
 
-.btn-delete-notice {
+.cs-detail-btn-delete {
     color: var(--color-icon-danger);
 }
 
-.btn-delete-notice:hover {
+.cs-detail-btn-delete:hover {
     background: color-mix(in srgb, var(--color-icon-danger) 10%, transparent);
     color: var(--color-icon-danger-emphasis);
 }
 
-/* 본문 — 흰색 박스 */
-.notice-detail-body-box {
-    min-height: 280px;
+/* 본문 — 편집 시 입력 박스, 조회 시 border 없음 · 높이는 내용에 맞춤 */
+.cs-detail-body-box {
+    min-height: 0;
     padding: var(--spacing-lg);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-md);
     background: var(--color-bg-secondary);
 }
 
-.notice-body-content {
+.cs-detail-body-box--view {
+    border: none;
+}
+
+.cs-detail-body-content {
     color: var(--color-text-primary);
     font-size: var(--font-size-base);
     line-height: 1.75;
 }
 
-.notice-edit-form {
+.cs-detail-edit-form {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
 }
 
-.edit-content-textarea {
+.cs-detail-edit-textarea {
     width: 100%;
     box-sizing: border-box;
     border: 1px solid var(--color-border);
@@ -177,14 +216,14 @@
     min-height: 220px;
 }
 
-.edit-actions {
+.cs-detail-edit-actions {
     display: flex;
     justify-content: flex-end;
     gap: var(--spacing-sm);
 }
 
-.btn-cancel-edit,
-.btn-save-edit {
+.cs-detail-btn-cancel,
+.cs-detail-btn-save {
     border-radius: var(--radius-sm);
     padding: var(--spacing-xs) var(--spacing-md);
     font-size: var(--font-size-base);
@@ -192,34 +231,34 @@
     cursor: pointer;
 }
 
-.btn-cancel-edit {
+.cs-detail-btn-cancel {
     border: 1px solid #6b7280;
     background: #f3f4f6;
     color: #6b7280;
 }
 
-.btn-save-edit {
+.cs-detail-btn-save {
     border: 1px solid var(--color-accent);
     background: var(--color-accent);
     color: #fff;
 }
 
-.notice-detail-loading,
-.notice-detail-error {
+.cs-detail-loading,
+.cs-detail-error {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 360px;
+    min-height: 0;
+    padding: var(--spacing-2xl) var(--spacing-md);
     color: var(--color-text-secondary);
 }
 
-/* 액션: BaseModal 공통(상단 라인 없음·contained min-width 150px) — 별도 border/버튼 크기 오버라이드 없음 */
-.notice-detail-modal-actions {
+.cs-detail-modal-actions {
     background: var(--color-bg-primary);
 }
 
-.notice-detail-actions-layout {
+.cs-detail-actions-layout {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -227,56 +266,81 @@
     gap: var(--spacing-md);
 }
 
-.notice-detail-actions-left {
+.cs-detail-actions-left {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-sm);
     min-width: 0;
 }
 
-.notice-detail-actions-left .MuiButton-root {
+.cs-detail-actions-left .MuiButton-root {
     min-width: 88px !important;
 }
 
-/* 목록이동 — 파란 outline (이전글/다음글은 회색 outlined 유지) */
-.notice-detail-modal-actions :global(.notice-list-move-btn) {
+/* 상세 푸터 「목록이동」— outlinedPrimary 톤 (기본 크기) */
+.cs-detail-modal-actions :global(.cs-detail-list-move-btn) {
     border-color: var(--color-accent) !important;
     color: var(--color-accent) !important;
     background-color: var(--color-bg-secondary) !important;
 }
 
-.notice-detail-modal-actions :global(.notice-list-move-btn:hover) {
+.cs-detail-modal-actions :global(.cs-detail-list-move-btn:hover) {
     border-color: var(--color-accent-hover) !important;
     color: var(--color-accent-hover) !important;
     background-color: #f0f7ff !important;
 }
 
+/* 이전글·다음글 — 아이콘은 라벨보다 밝은 톤(같은 hue), 비활성 회색과 구분 */
+.cs-detail-modal-actions :global(.cs-detail-post-nav-btn) .cs-detail-post-nav-icon {
+    color: color-mix(in srgb, currentColor 62%, #ffffff);
+}
+
+.cs-detail-modal-actions :global(.cs-detail-post-nav-btn:hover:not(.Mui-disabled)) .cs-detail-post-nav-icon {
+    color: color-mix(in srgb, currentColor 78%, #ffffff);
+}
+
+/* 이전글·다음글 — 아이콘↔라벨 4px, 바깥쪽 -8px (패딩은 MUI outlined 기본값) */
+.cs-detail-modal-actions .cs-detail-post-nav-btn.MuiButton-root .MuiButton-startIcon {
+    margin-right: var(--spacing-xs) !important;
+    margin-left: calc(-2 * var(--spacing-xs)) !important;
+}
+
+.cs-detail-modal-actions .cs-detail-post-nav-btn.MuiButton-root .MuiButton-endIcon {
+    margin-left: var(--spacing-xs) !important;
+    margin-right: calc(-2 * var(--spacing-xs)) !important;
+}
+
 @media (max-width: 768px) {
-    .notice-detail-modal-content {
-        max-height: calc(100vh - 148px);
+    :global(.kl-base-modal-paper.cs-detail-modal-paper),
+    :global(.kl-base-modal-paper.cs-form-modal-paper) {
+        width: calc(100vw - 48px) !important;
     }
 
-    .notice-detail-meta-row {
+    :global(.kl-base-modal-paper.cs-detail-modal-paper .cs-detail-modal-content) {
+        max-height: calc(100vh - 160px);
+    }
+
+    .cs-detail-meta-row {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .notice-detail-updated {
+    .cs-detail-updated {
         white-space: normal;
     }
 
-    .notice-detail-actions-layout {
+    .cs-detail-actions-layout {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .notice-detail-actions-left {
+    .cs-detail-actions-left {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         width: 100%;
     }
 
-    .notice-detail-actions-layout > :global(.MuiButton-contained) {
+    .cs-detail-actions-layout > :global(.MuiButton-contained) {
         width: 100%;
     }
 }

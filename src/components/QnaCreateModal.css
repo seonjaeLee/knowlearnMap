@@ -1,93 +1,82 @@
+/* 1:1 문의 등록·수정 — 520px (`qna-form-modal-paper`) */
+:global(.kl-base-modal-paper.qna-form-modal-paper) {
+    width: 520px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
+    min-height: unset !important;
+}
+
+:global(.kl-base-modal-content.qna-create-modal-content) {
+    padding: var(--spacing-lg) !important;
+    padding-bottom: var(--spacing-2xl) !important;
+}
+
 .qna-hidden-file-input {
     display: none;
 }
 
 .qna-create-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
     padding: 0;
 }
 
-.qna-form-group {
-    margin-bottom: 20px;
+/* 라벨(좌) · 입력(우) 한 줄 */
+.qna-form-row {
+    display: grid;
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--spacing-md);
 }
 
-.qna-form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #202124;
+.qna-form-row__label {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    line-height: 1.4;
 }
 
-.qna-form-group input[type="text"],
-.qna-form-group textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #202124;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    box-sizing: border-box;
+.qna-form-row__control {
+    min-width: 0;
 }
 
-.qna-form-group input:focus,
-.qna-form-group textarea:focus {
-    outline: none;
-    border-color: #1a73e8;
-    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+/* 내용 — 라벨(좌) · 이미지 첨부(우), textarea 전체 너비 */
+.qna-form-content {
+    display: grid;
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    column-gap: var(--spacing-md);
+    row-gap: var(--spacing-xs);
 }
 
-.qna-form-group textarea {
-    resize: vertical;
-    min-height: 120px;
-    font-family: inherit;
+.qna-form-content__label {
+    margin: 0;
+    align-self: center;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    line-height: 1.4;
 }
 
 .qna-content-toolbar {
     display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
+    justify-content: flex-end;
+    min-width: 0;
 }
 
-.btn-attach-image {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    background: #fff;
-    color: #5f6368;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
+.qna-form-content textarea {
+    grid-column: 1 / -1;
 }
 
-.btn-attach-image:hover:not(:disabled) {
-    background: #f1f3f4;
-    border-color: #1a73e8;
-    color: #1a73e8;
+.qna-form-content textarea {
+    min-height: 140px;
+    resize: vertical;
 }
 
-.btn-attach-image:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.qna-privacy-agreement {
+    margin: 0;
 }
-
-.form-help-text {
-    font-size: 12px;
-    color: #888;
-    margin-top: 4px;
-    margin-bottom: 0;
-}
-
-/* .qna-privacy-agreement {
-    margin: 20px 0;
-    padding: 16px;
-    background-color: #f9f9f9;
-    border: 1px solid #eee;
-    border-radius: 4px;
-} */
 
 .qna-privacy-consent {
     display: inline-flex;
@@ -102,7 +91,7 @@
     color: var(--color-text-primary);
 }
 
-.qna-privacy-consent input[type="checkbox"] {
+.qna-privacy-consent input[type='checkbox'] {
     width: 16px;
     height: 16px;
     margin: 0;
@@ -116,13 +105,30 @@
 }
 
 .privacy-text {
-    font-size: 12px;
-    color: #666;
-    line-height: 1.5;
     margin: 0;
-    white-space: pre-wrap;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
 }
 
 .qna-create-modal-actions {
-    padding: var(--spacing-lg) var(--spacing-lg) !important;
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
+}
+
+@media (max-width: 768px) {
+    :global(.kl-base-modal-paper.qna-form-modal-paper) {
+        width: calc(100vw - 48px) !important;
+    }
+
+    .qna-form-row,
+    .qna-form-content {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+        row-gap: var(--spacing-xs);
+    }
+
+    .qna-form-content textarea {
+        grid-column: 1;
+    }
 }

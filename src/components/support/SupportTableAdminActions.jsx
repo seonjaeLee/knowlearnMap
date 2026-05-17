@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { FilePen, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 function SupportTableAdminActions({ label, onEdit, onDelete }) {
   return (
@@ -14,7 +14,7 @@ function SupportTableAdminActions({ label, onEdit, onDelete }) {
         title="수정"
         aria-label={`${label} 수정`}
       >
-        <FilePen strokeWidth={1.75} size={16} aria-hidden />
+        <Pencil strokeWidth={1.75} aria-hidden />
       </button>
       <button
         type="button"

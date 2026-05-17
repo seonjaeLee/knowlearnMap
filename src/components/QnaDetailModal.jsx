@@ -7,6 +7,11 @@ import { useDialog } from '../hooks/useDialog';
 import { qnaApi, imageApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
 import BaseModal from './common/modal/BaseModal';
+import {
+    supportDetailModalPaperClassName,
+    supportDetailModalPaperSx,
+} from './common/modal/supportDetailModalPaperSx';
+import './CsDetailModal.css';
 import './QnaDetailModal.css';
 
 function QnaDetailModal({
@@ -227,43 +232,44 @@ function QnaDetailModal({
             title="1:1문의"
             maxWidth={false}
             fullWidth={false}
-            paperSx={{ width: '920px', maxWidth: 'calc(100vw - 48px)', maxHeight: 'calc(100vh - 48px)' }}
-            contentClassName="qna-detail-modal-content kl-modal-form"
+            paperSx={supportDetailModalPaperSx}
+            paperClassName={supportDetailModalPaperClassName}
+            contentClassName="cs-detail-modal-content kl-modal-form"
             actionsClassName="qna-detail-modal-actions"
             actions={renderFooterActions()}
         >
-            <div className="qna-detail-modal-body">
+            <div className="cs-detail-modal-body">
                 {loading ? (
-                    <div className="qna-detail-loading">
+                    <div className="cs-detail-loading">
                         <div className="loading-spinner" aria-hidden />
                         <p>로딩 중...</p>
                     </div>
                 ) : question ? (
-                    <div className="qna-detail-content-wrapper">
-                        <section className="qna-detail-head" aria-label="문의 정보">
-                            <div className="qna-detail-head-top">
-                                <div className="qna-title-block">
+                    <div className="cs-detail-content-wrapper">
+                        <section className="cs-detail-head" aria-label="문의 정보">
+                            <div className="cs-detail-head-top">
+                                <div className="cs-detail-title-block">
                                     {question.domainName && (
-                                        <span className="qna-detail-domain">{question.domainName}</span>
+                                        <span className="cs-detail-category">{question.domainName}</span>
                                     )}
                                     {isEditingQuestion ? (
                                         <input
                                             type="text"
                                             value={editQuestionTitle}
                                             onChange={(e) => setEditQuestionTitle(e.target.value)}
-                                            className="qna-detail-title-input"
+                                            className="cs-detail-title-input"
                                             placeholder="제목"
                                             aria-label="제목"
                                         />
                                     ) : (
-                                        <h3 className="qna-detail-title">{question.title}</h3>
+                                        <h3 className="cs-detail-title">{question.title}</h3>
                                     )}
                                 </div>
                                 {canEditQuestion && !isEditingQuestion && (
-                                    <div className="qna-question-actions">
+                                    <div className="cs-detail-actions">
                                         <button
                                             type="button"
-                                            className="btn-edit-question"
+                                            className="cs-detail-btn-edit"
                                             onClick={handleStartEditQuestion}
                                             title="수정"
                                             aria-label="문의 수정"
@@ -272,7 +278,7 @@ function QnaDetailModal({
                                         </button>
                                         <button
                                             type="button"
-                                            className="btn-delete-question"
+                                            className="cs-detail-btn-delete"
                                             onClick={handleDeleteQuestion}
                                             title="삭제"
                                             aria-label="문의 삭제"
@@ -282,36 +288,39 @@ function QnaDetailModal({
                                     </div>
                                 )}
                             </div>
-                            <div className="qna-detail-meta-row">
-                                <div className="qna-detail-inline-meta">
+                            <div className="cs-detail-meta-row">
+                                <div className="cs-detail-inline-meta">
                                     <span>{question.authorEmail?.split('@')[0] || '익명'}</span>
                                     <span>{formatDate(question.createdAt)}</span>
                                     <span>#{question.id}</span>
                                     <span
-                                        className={`qna-detail-status ${question.status === 'ANSWERED' ? 'is-answered' : 'is-waiting'}`}
+                                        className={`cs-detail-meta-status ${question.status === 'ANSWERED' ? 'is-answered' : 'is-waiting'}`}
                                     >
                                         {question.status === 'ANSWERED' ? '답변완료' : '답변대기'}
                                     </span>
                                     {question.contact ? <span>{question.contact}</span> : null}
                                 </div>
-                                <span className="qna-detail-updated">
+                                <span className="cs-detail-updated">
                                     최종수정 : {formatDate(question.updatedAt || question.createdAt)}
                                 </span>
                             </div>
                         </section>
 
-                        <section className="qna-detail-body-box" aria-label="문의 내용">
+                        <section
+                            className={`cs-detail-body-box${isEditingQuestion ? '' : ' cs-detail-body-box--view'}`}
+                            aria-label="문의 내용"
+                        >
                             {isEditingQuestion ? (
                                 <textarea
                                     value={editQuestionContent}
                                     onChange={(e) => setEditQuestionContent(e.target.value)}
-                                    className="qna-edit-content-textarea"
+                                    className="cs-detail-edit-textarea"
                                     rows={12}
                                     placeholder="내용"
                                     aria-label="내용"
                                 />
                             ) : (
-                                <div className="qna-body-content">
+                                <div className="cs-detail-body-content">
                                     <ContentRenderer content={question.content || '등록된 내용이 없습니다.'} />
                                 </div>
                             )}
@@ -330,7 +339,7 @@ function QnaDetailModal({
                                                 {!readOnly && isAdmin && (
                                                     <button
                                                         type="button"
-                                                        className="btn-delete-answer"
+                                                        className="qna-answer-btn-delete"
                                                         onClick={() => handleDeleteAnswer(answer.id)}
                                                         title="삭제"
                                                         aria-label="답변 삭제"
@@ -357,7 +366,7 @@ function QnaDetailModal({
                                         <div className="qna-answer-toolbar">
                                             <button
                                                 type="button"
-                                                className="btn-attach-image"
+                                                className="kl-icon-label-btn"
                                                 onClick={() => answerFileInputRef.current?.click()}
                                                 disabled={isUploadingAnswer}
                                                 title="이미지 첨부"
@@ -381,13 +390,15 @@ function QnaDetailModal({
                                             rows={4}
                                         />
                                         <div className="qna-answer-form-actions">
-                                            <button
+                                            <Button
                                                 type="submit"
-                                                className="btn-submit-answer"
+                                                variant="outlined"
+                                                color="primary"
+                                                className="outlinedPrimary-sm"
                                                 disabled={!answerContent.trim() || isSubmitting}
                                             >
                                                 답변 등록
-                                            </button>
+                                            </Button>
                                         </div>
                                     </form>
                                 </div>
@@ -395,7 +406,7 @@ function QnaDetailModal({
                         </section>
                     </div>
                 ) : (
-                    <div className="qna-detail-error">질문을 불러올 수 없습니다.</div>
+                    <div className="cs-detail-error">질문을 불러올 수 없습니다.</div>
                 )}
             </div>
         </BaseModal>

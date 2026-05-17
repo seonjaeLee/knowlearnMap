@@ -163,6 +163,105 @@
   box-shadow: var(--shadow-small);
 }
 
+/* 툴바 라벨 + input·버튼 한 덩어리 (외곽 테두리 1개, 내부 input·btn 밀착) */
+.toolbar-field-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.toolbar-field-group__label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.toolbar-input-composer {
+  --toolbar-composer-btn-bg: var(--color-bg-hover);
+  --toolbar-composer-btn-fg: var(--color-text-primary);
+
+  display: inline-flex;
+  align-items: stretch;
+  box-sizing: border-box;
+  height: var(--kl-control-height);
+  min-width: 0;
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  background-color: var(--kl-control-bg);
+  overflow: hidden;
+  transition: var(--kl-control-transition);
+}
+
+.toolbar-input-composer:hover {
+  border-color: var(--kl-control-border-hover);
+  --toolbar-composer-btn-bg: var(--kl-control-border-hover);
+}
+
+.toolbar-input-composer:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+  --toolbar-composer-btn-bg: var(--color-accent);
+  --toolbar-composer-btn-fg: #fff;
+}
+
+.toolbar-input-composer__input {
+  box-sizing: border-box;
+  width: 100px;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--kl-control-padding-inline);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  line-height: var(--kl-control-line-height);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.toolbar-input-composer__input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.toolbar-input-composer__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 100%;
+  padding: 0 var(--spacing-md);
+  border: none;
+  border-left: 1px solid var(--color-border);
+  border-radius: 0;
+  background-color: var(--toolbar-composer-btn-bg);
+  color: var(--toolbar-composer-btn-fg);
+  font-family: var(--font-family);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--kl-control-line-height);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.toolbar-input-composer__btn:focus-visible {
+  outline: none;
+}
+
+.toolbar-input-composer__btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 @media (max-width: 768px) {
   .table-toolbar {
     align-items: stretch;

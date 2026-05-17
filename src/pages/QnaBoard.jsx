@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
@@ -7,10 +7,12 @@ import QnaDetailModal from '../components/QnaDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
+import { isSupportMockEnabled } from '../config/supportMock';
 import { mockQuestions } from '../data/supportMockData';
+import { qnaApi } from '../services/api';
+import { normalizeSupportListPayload } from '../utils/supportListResponse';
 import { isSupportCenterAdmin } from '../utils/supportCenterAdmin';
 import { SUPPORT_ADMIN_ACTIONS_COLUMN } from './supportCenterColumns';
-import './admin/admin-common.css';
 import './QnaBoard.css';
 import './SupportCenter.css';
 
@@ -30,8 +32,10 @@ function formatDate(value) {
 
 function QnaBoard() {
   const { user } = useAuth();
-  const { confirm } = useDialog();
-  const [questions, setQuestions] = useState(mockQuestions);
+  const { confirm, alert } = useDialog();
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [qnaSearch, setQnaSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -39,6 +43,30 @@ function QnaBoard() {
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
 
   const isAdmin = isSupportCenterAdmin(user);
+
+  const fetchQuestions = useCallback(async () => {
+    try {
+      setLoading(true);
+      setLoadError(null);
+      if (isSupportMockEnabled) {
+        let list = mockQuestions.map((item) => ({ ...item }));
+        if (statusFilter) list = list.filter((q) => q.status === statusFilter);
+        setQuestions(list);
+        return;
+      }
+      const params = statusFilter ? { status: statusFilter } : {};
+      const data = await qnaApi.getQuestions(params);
+      setQuestions(normalizeSupportListPayload(data));
+    } catch (error) {
+      console.error('1:1 문의 목록 조회 실패:', error);
+      setQuestions([]);
+      setLoadError(error.message || '문의 내역을 불러오지 못했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, [statusFilter]);
+
+  useEffect(() => { fetchQuestions(); }, [fetchQuestions]);
 
   const selectedQuestion = useMemo(
     () => questions.find((q) => q.id === selectedQuestionId) || null,
@@ -60,33 +88,29 @@ function QnaBoard() {
   }, [questions, qnaSearch, statusFilter]);
 
   const handleSaveQuestion = async (questionData) => {
-    if (editingQuestion) {
-      setQuestions((prev) => prev.map((item) => (
-        item.id === editingQuestion.id
-          ? {
-            ...item,
-            ...questionData,
-            updatedAt: new Date().toISOString(),
-          }
-          : item
-      )));
+    if (isSupportMockEnabled) {
+      if (editingQuestion) {
+        setQuestions((prev) => prev.map((item) => (
+          item.id === editingQuestion.id ? { ...item, ...questionData, updatedAt: new Date().toISOString() } : item
+        )));
+      } else {
+        const nextId = questions.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+        setQuestions((prev) => [{ id: nextId, ...questionData, authorEmail: user?.email || 'user@knowlearn.co.kr',
+          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+          status: 'UNANSWERED', answerCount: 0, isPinned: false }, ...prev]);
+      }
       return;
     }
-
-    const nextId = questions.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
-    setQuestions((prev) => [
-      {
-        id: nextId,
-        ...questionData,
-        authorEmail: user?.email || 'user@knowlearn.co.kr',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        status: 'UNANSWERED',
-        answerCount: 0,
-        isPinned: false,
-      },
-      ...prev,
-    ]);
+    try {
+      const payload = { title: questionData.title, content: questionData.content, contact: questionData.contact, domainName: questionData.domainName };
+      if (editingQuestion) await qnaApi.updateQuestion(editingQuestion.id, payload);
+      else await qnaApi.createQuestion(payload);
+      await fetchQuestions();
+    } catch (error) {
+      console.error('1:1 문의 저장 실패:', error);
+      await alert(error.message || '문의 저장에 실패했습니다.');
+      throw error;
+    }
   };
 
   const handleOpenCreateModal = useCallback(() => {
@@ -107,30 +131,42 @@ function QnaBoard() {
   const handleDeleteQuestion = useCallback(async (question) => {
     const confirmed = await confirm(`"${question.title}" 문의를 삭제하시겠습니까?`);
     if (!confirmed) return;
-    setQuestions((prev) => prev.filter((item) => item.id !== question.id));
-    if (selectedQuestionId === question.id) {
-      setSelectedQuestionId(null);
+    if (isSupportMockEnabled) {
+      setQuestions((prev) => prev.filter((item) => item.id !== question.id));
+      if (selectedQuestionId === question.id) setSelectedQuestionId(null);
+      return;
     }
-  }, [confirm, selectedQuestionId]);
+    try {
+      await qnaApi.deleteQuestion(question.id);
+      if (selectedQuestionId === question.id) setSelectedQuestionId(null);
+      await fetchQuestions();
+    } catch (error) {
+      console.error('1:1 문의 삭제 실패:', error);
+      await alert(error.message || '문의 삭제에 실패했습니다.');
+    }
+  }, [confirm, alert, selectedQuestionId, fetchQuestions]);
 
   const handleQuestionClick = useCallback((question) => {
     setSelectedQuestionId(question.id);
   }, []);
 
   const handleQuestionDetailUpdate = useCallback((payload) => {
-    if (payload?.deleted) {
-      setQuestions((prev) => prev.filter((item) => item.id !== payload.id));
-      setSelectedQuestionId(null);
+    if (isSupportMockEnabled) {
+      if (payload?.deleted) {
+        setQuestions((prev) => prev.filter((item) => item.id !== payload.id));
+        setSelectedQuestionId(null);
+        return;
+      }
+      if (payload?.id) {
+        setQuestions((prev) => prev.map((item) => (item.id === payload.id ? { ...item, ...payload } : item)));
+      }
       return;
     }
-    if (payload?.id) {
-      setQuestions((prev) => prev.map((item) => (item.id === payload.id ? { ...item, ...payload } : item)));
-    }
-  }, []);
+    fetchQuestions();
+  }, [fetchQuestions]);
 
-  const isSelectedQuestionOwner = Boolean(
-    selectedQuestion && user?.email === selectedQuestion.authorEmail,
-  );
+  const isSelectedQuestionOwner = Boolean(selectedQuestion && user?.email === selectedQuestion.authorEmail);
+  const isDetailReadOnly = !isAdmin && !isSelectedQuestionOwner;
 
   const renderQnaCell = useCallback(({ column, row }) => {
     switch (column.id) {
@@ -176,7 +212,7 @@ function QnaBoard() {
           title="1:1 문의"
           breadcrumbs={['고객센터', '1:1 문의']}
           actions={(
-            <button type="button" className="admin-btn admin-btn-primary" onClick={handleOpenCreateModal}>
+            <button type="button" className="kl-btn kl-btn--primary" onClick={handleOpenCreateModal}>
               <Plus size={14} aria-hidden />
               1:1 문의 등록
             </button>
@@ -224,7 +260,11 @@ function QnaBoard() {
                     </div>
 
         <div className="basic-table-shell">
-          {filteredQuestions.length === 0 ? (
+          {loading ? (
+            <div className="support-empty" role="status">문의 내역을 불러오는 중입니다.</div>
+          ) : loadError ? (
+            <div className="support-empty" role="alert">{loadError}</div>
+          ) : filteredQuestions.length === 0 ? (
             <div className="support-empty" role="status">문의 내역이 없습니다.</div>
           ) : (
             <BasicTable
@@ -253,11 +293,11 @@ function QnaBoard() {
       />
 
       <QnaDetailModal
-        isOpen={Boolean(selectedQuestion)}
+        isOpen={Boolean(selectedQuestionId)}
         onClose={() => setSelectedQuestionId(null)}
         questionId={selectedQuestionId}
-        questionData={selectedQuestion}
-        readOnly={!isSelectedQuestionOwner}
+        questionData={isSupportMockEnabled ? selectedQuestion : undefined}
+        readOnly={isDetailReadOnly}
         onUpdate={handleQuestionDetailUpdate}
       />
     </div>

@@ -5,7 +5,17 @@ import { workspaceApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
 import { useAuth } from '../context/AuthContext';
 import BaseModal from './common/modal/BaseModal';
+import {
+    shareFormModalPaperClassName,
+    shareFormModalPaperSx,
+} from './common/modal/supportFormModalPaperSx';
+import {
+    getMockSharedMembers,
+    mockMemberSearchSuggestions,
+} from '../data/workspaceShareMockData';
 import './ShareSettingsModal.css';
+
+const isWorkspaceMockEnabled = import.meta.env.VITE_ENABLE_WORKSPACE_MOCK === 'true';
 
 function ShareSettingsModal({ workspace, onClose, onSaved }) {
     const [shareType, setShareType] = useState(workspace?.shareType || 'NONE');
@@ -25,10 +35,18 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
     const suggestionsRef = useRef(null);
 
     useEffect(() => {
-        if (workspace && (workspace.shareType === 'INDIVIDUAL' || shareType === 'INDIVIDUAL')) {
-            fetchMembers();
+        if (!workspace) return;
+        setShareType(workspace.shareType || 'NONE');
+        if (workspace.shareType === 'INDIVIDUAL') {
+            if (isWorkspaceMockEnabled) {
+                setMembers(getMockSharedMembers(workspace.id));
+            } else {
+                fetchMembers();
+            }
+        } else {
+            setMembers([]);
         }
-    }, [workspace]);
+    }, [workspace?.id]);
 
     // 외부 클릭 시 자동완성 닫기
     useEffect(() => {
@@ -43,6 +61,10 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
     }, []);
 
     const fetchMembers = async () => {
+        if (isWorkspaceMockEnabled) {
+            setMembers(getMockSharedMembers(workspace.id));
+            return;
+        }
         try {
             const data = await workspaceApi.getSharedMembers(workspace.id);
             setMembers(data || []);
@@ -58,12 +80,22 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
             return;
         }
         try {
-            const results = await workspaceApi.searchMembers(query.trim());
-            // 이미 추가된 멤버 제외
-            const existingIds = new Set(members.map(m => m.memberId));
-            const filtered = (results || []).filter(r => !existingIds.has(r.memberId));
-            setSuggestions(filtered);
-            setShowSuggestions(filtered.length > 0);
+            const q = query.trim().toLowerCase();
+            const existingIds = new Set(members.map((m) => m.memberId));
+            const existingEmails = new Set(members.map((m) => (m.email || '').toLowerCase()));
+            let results;
+            if (isWorkspaceMockEnabled) {
+                results = mockMemberSearchSuggestions.filter(
+                    (r) => r.email.toLowerCase().includes(q)
+                        && !existingIds.has(r.memberId)
+                        && !existingEmails.has(r.email.toLowerCase()),
+                );
+            } else {
+                results = await workspaceApi.searchMembers(q);
+                results = (results || []).filter((r) => !existingIds.has(r.memberId));
+            }
+            setSuggestions(results);
+            setShowSuggestions(results.length > 0);
             setSelectedIndex(-1);
         } catch (err) {
             console.error('멤버 검색 실패:', err);
@@ -117,11 +149,15 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
     const handleSave = async () => {
         setLoading(true);
         try {
-            // INDIVIDUAL 모드: 현재 멤버 이메일 목록을 함께 전달하여 일괄 저장
             const memberEmails = shareType === 'INDIVIDUAL'
-                ? members.map(m => m.email).filter(Boolean)
+                ? members.map((m) => m.email).filter(Boolean)
                 : undefined;
-            const updated = await workspaceApi.updateShare(workspace.id, shareType, memberEmails);
+            let updated;
+            if (isWorkspaceMockEnabled) {
+                updated = { ...workspace, shareType, memberCount: memberEmails?.length ?? 0 };
+            } else {
+                updated = await workspaceApi.updateShare(workspace.id, shareType, memberEmails);
+            }
             showAlert('공유 설정이 변경되었습니다.');
             onSaved?.(updated);
             onClose();
@@ -142,11 +178,25 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
         setAddingMember(true);
         setShowSuggestions(false);
         try {
-            const added = await workspaceApi.addSharedMember(workspace.id, email);
-            setMembers(prev => [...prev, added]);
+            let added;
+            if (isWorkspaceMockEnabled) {
+                const store = getMockSharedMembers(workspace.id);
+                if (store.some((m) => (m.email || '').toLowerCase() === email.toLowerCase())) {
+                    showAlert('이미 추가된 멤버입니다.');
+                    return;
+                }
+                added = {
+                    memberId: `mock-share-${workspace.id}-${Date.now()}`,
+                    email,
+                    sharedAt: new Date().toISOString(),
+                };
+                store.push(added);
+            } else {
+                added = await workspaceApi.addSharedMember(workspace.id, email);
+            }
+            setMembers((prev) => [...prev, added]);
             setNewEmail('');
             setSuggestions([]);
-            // 멤버 추가 시 자동으로 shareType을 INDIVIDUAL로 동기화
             setShareType('INDIVIDUAL');
         } catch (err) {
             console.error('멤버 추가 실패:', err);
@@ -158,8 +208,15 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
 
     const handleRemoveMember = async (memberId) => {
         try {
-            await workspaceApi.removeSharedMember(workspace.id, memberId);
-            setMembers(prev => prev.filter(m => m.memberId !== memberId));
+            if (isWorkspaceMockEnabled) {
+                const store = getMockSharedMembers(workspace.id);
+                const next = store.filter((m) => m.memberId !== memberId);
+                store.length = 0;
+                store.push(...next);
+            } else {
+                await workspaceApi.removeSharedMember(workspace.id, memberId);
+            }
+            setMembers((prev) => prev.filter((m) => m.memberId !== memberId));
         } catch (err) {
             console.error('멤버 삭제 실패:', err);
             showAlert('멤버 삭제에 실패했습니다.');
@@ -186,8 +243,10 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
             onClose={onClose}
             title="공유 설정"
             subtitle={`워크스페이스 - ${workspace?.name || '-'}`}
-            maxWidth="sm"
-            fullWidth
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={shareFormModalPaperSx}
+            paperClassName={shareFormModalPaperClassName}
             contentClassName="share-modal-content kl-modal-form"
             actionsClassName="share-modal-actions"
             actionsAlign="right"
@@ -271,67 +330,78 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
 
                     {shareType === 'INDIVIDUAL' && (
                         <div className="share-members-section">
-                            <h3>공유 멤버 ({members.length})</h3>
-                            <div className="share-member-input-row">
-                                <input
-                                    ref={inputRef}
-                                    type="text"
-                                    placeholder="사용자 이메일 입력 (자동완성)"
-                                    value={newEmail}
-                                    onChange={handleEmailChange}
-                                    onKeyDown={handleKeyDown}
-                                    onFocus={() => {
-                                        if (suggestions.length > 0) setShowSuggestions(true);
-                                    }}
-                                    autoComplete="off"
-                                />
-                                <button
-                                    onClick={handleAddMember}
-                                    disabled={addingMember || !newEmail.trim()}
-                                >
-                                    {addingMember ? '...' : '추가'}
-                                </button>
-
-                                {/* 자동완성 드롭다운 */}
-                                {showSuggestions && suggestions.length > 0 && (
-                                    <div ref={suggestionsRef} className="share-autocomplete-dropdown">
-                                        {suggestions.map((s, idx) => (
-                                            <div
-                                                key={s.memberId}
-                                                className={`share-autocomplete-item ${idx === selectedIndex ? 'selected' : ''}`}
-                                                onClick={() => handleSelectSuggestion(s.email)}
-                                                onMouseEnter={() => setSelectedIndex(idx)}
-                                            >
-                                                {s.email}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="share-member-list">
-                                {members.length > 0 ? (
-                                    members.map((m) => (
-                                        <div key={m.memberId} className="share-member-item">
-                                            <div>
-                                                <span className="member-email">{m.email}</span>
-                                                <span className="member-date share-member-date">
-                                                    {formatDate(m.sharedAt)}
-                                                </span>
-                                            </div>
-                                            <button
-                                                className="remove-btn"
-                                                onClick={() => handleRemoveMember(m.memberId)}
-                                                title="삭제"
-                                            >
-                                                <X size={14} />
-                                            </button>
+                            <div className="share-form-row share-form-row--start">
+                                <label className="share-form-row__label" htmlFor="share-member-email">
+                                    공유 멤버 ({members.length})
+                                </label>
+                                <div className="share-form-row__control">
+                                    <div className="share-member-input-group">
+                                        <div className="share-member-input-field">
+                                            <input
+                                                id="share-member-email"
+                                                ref={inputRef}
+                                                type="text"
+                                                placeholder="사용자 이메일 입력 (자동완성)"
+                                                value={newEmail}
+                                                onChange={handleEmailChange}
+                                                onKeyDown={handleKeyDown}
+                                                onFocus={() => {
+                                                    if (suggestions.length > 0) setShowSuggestions(true);
+                                                }}
+                                                autoComplete="off"
+                                            />
+                                            {showSuggestions && suggestions.length > 0 ? (
+                                                <div ref={suggestionsRef} className="share-autocomplete-dropdown">
+                                                    {suggestions.map((s, idx) => (
+                                                        <div
+                                                            key={s.memberId}
+                                                            className={`share-autocomplete-item ${idx === selectedIndex ? 'selected' : ''}`}
+                                                            onClick={() => handleSelectSuggestion(s.email)}
+                                                            onMouseEnter={() => setSelectedIndex(idx)}
+                                                        >
+                                                            {s.email}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : null}
                                         </div>
-                                    ))
-                                ) : (
-                                    <div className="share-member-empty">
-                                        공유된 멤버가 없습니다
+                                        <button
+                                            type="button"
+                                            className="kl-btn-primary-sm"
+                                            onClick={handleAddMember}
+                                            disabled={addingMember || !newEmail.trim()}
+                                        >
+                                            {addingMember ? '...' : '추가'}
+                                        </button>
                                     </div>
-                                )}
+                                    <ul className="share-member-attach-list" aria-label="공유 멤버 목록">
+                                        {members.length > 0 ? (
+                                            members.map((m) => (
+                                                <li key={m.memberId} className="share-member-attach-item">
+                                                    <div className="share-member-attach-item__body">
+                                                        <span className="share-member-attach-item__email">{m.email}</span>
+                                                        {m.sharedAt ? (
+                                                            <span className="share-member-attach-item__date">
+                                                                공유 {formatDate(m.sharedAt)}
+                                                            </span>
+                                                        ) : null}
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className="kl-chip-dismiss-btn"
+                                                        onClick={() => handleRemoveMember(m.memberId)}
+                                                        title="삭제"
+                                                        aria-label={`${m.email} 삭제`}
+                                                    >
+                                                        <X size={14} aria-hidden />
+                                                    </button>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <li className="share-member-attach-empty">공유된 멤버가 없습니다</li>
+                                        )}
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     )}

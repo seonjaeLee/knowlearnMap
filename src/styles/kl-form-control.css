@@ -1,6 +1,7 @@
 /**
  * 공통 한 줄 폼 컨트롤 (input·select) — 툴바·팝업 동일 규격
  * 바구니만 다름: .table-toolbar, .kl-modal-form, .modal-native-field
+ * 읽기 전용: kl-form-readonly.css (`readonly`, `.kl-form-readonly`)
  * 스타일 수정은 이 파일 + 각 바구니 레이아웃(TableToolbar.css 등)
  */
 
@@ -14,8 +15,26 @@
   --kl-control-radius: var(--radius-sm);
   --kl-control-border: 1px solid var(--color-border);
   --kl-control-bg: var(--color-bg-secondary);
-  --kl-control-bg-hover: var(--color-bg-hover);
+  /* input·textarea hover·focus — 흰색(짙은 회색 `--color-bg-hover` 미사용) */
+  --kl-control-bg-hover: var(--color-bg-secondary);
+  --kl-control-bg-focus: var(--color-bg-secondary);
   --kl-control-border-hover: var(--color-border-hover);
   --kl-control-transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
   --kl-control-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235f6368' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  --kl-control-readonly-bg: transparent;
+  --kl-control-readonly-text: var(--color-text-primary);
+  --kl-control-readonly-cursor: default;
+}
+
+/* 네이티브 input·textarea — hover·focus 배경 흰색 (kl-modal-form·툴바 외 페이지 포함) */
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):hover:not(:disabled):not([readonly]),
+textarea:hover:not(:disabled):not([readonly]) {
+  background-color: var(--kl-control-bg-hover);
+}
+
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):focus:not(:disabled):not([readonly]),
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):focus-visible:not(:disabled):not([readonly]),
+textarea:focus:not(:disabled):not([readonly]),
+textarea:focus-visible:not(:disabled):not([readonly]) {
+  background-color: var(--kl-control-bg-focus);
 }

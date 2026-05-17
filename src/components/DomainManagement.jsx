@@ -1,17 +1,20 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@mui/material';
 import {
-    Search, Plus, Globe, CheckCircle, AlertCircle, Database, Layout, Info, FilePen, Trash2,
+    Search, Plus, Globe, CheckCircle, AlertCircle, Database, Layout, Info, Pencil, Trash2,
 } from 'lucide-react';
 import { useDialog } from '../hooks/useDialog';
 import { useBasicTableColumnResize } from '../hooks/useBasicTableColumnResize';
 import { apiCall } from '../services/api';
 import AdminPageHeader from './admin/AdminPageHeader';
 import BaseModal from './common/modal/BaseModal';
-import ModalFormField from './common/modal/ModalFormField';
+import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
+import {
+    domainFormModalPaperClassName,
+    domainFormModalPaperSx,
+} from './common/modal/supportFormModalPaperSx';
 import BasicTable from './common/BasicTable';
 import { mockDomains, mockDomainPromptDefaults, mockPromptCodesByPurpose } from '../data/domainMockData';
-import '../pages/admin/admin-common.css';
 import './DomainManagement.css';
 
 const isDomainMockEnabled = import.meta.env.VITE_ENABLE_DOMAIN_MOCK === 'true';
@@ -361,7 +364,13 @@ function DomainManagement() {
     const promptSelectConfigs = [
         { key: 'ontologyPrompt', label: '온톨로지 프롬프트', options: ontologyPromptCodes, helper: 'Chunk → LLM 온톨로지 추출' },
         { key: 'chatResultPrompt', label: '채팅 프롬프트', options: chatPromptCodes, helper: 'Chat 응답 생성' },
-        { key: 'contentOntologyPrompt', label: 'CONTENT 온톨로지', options: contentOntologyPromptCodes, helper: '정형 Chunk → LLM 온톨로지' },
+        {
+            key: 'contentOntologyPrompt',
+            label: 'CONTENT 온톨로지',
+            labelLines: ['CONTENT', '온톨로지'],
+            options: contentOntologyPromptCodes,
+            helper: '정형 Chunk → LLM 온톨로지',
+        },
         { key: 'schemaAnalysisPrompt', label: '스키마 분석', options: schemaAnalysisPromptCodes, helper: 'CSV/DB 스키마 자동 분석' },
         { key: 'interTableAnalysisPrompt', label: '테이블 간 관계 분석', options: interTableAnalysisPromptCodes, helper: '다건 테이블 간 FK/관계 분석' },
         { key: 'aqlGenerationPrompt', label: 'AQL 생성', options: aqlGenerationPromptCodes, helper: '자연어 → AQL 쿼리 생성' },
@@ -369,11 +378,12 @@ function DomainManagement() {
         { key: 'aggregationStrategyPrompt', label: '집계 전략', options: aggregationStrategyPromptCodes, helper: '대규모 정형 데이터 집계 전략' },
     ];
 
-    const renderPromptCodeSelect = (fieldKey, options, { ariaLabel, warnNone = false } = {}) => {
+    const renderPromptCodeSelect = (fieldKey, options, { ariaLabel, warnNone = false, id: selectId } = {}) => {
         const value = formData[fieldKey] ?? '';
         const warnClass = warnNone && value === 'NONE' ? 'modal-input--chunk-none' : '';
         return (
             <select
+                id={selectId}
                 value={value}
                 onChange={handleSelectFieldChange(fieldKey)}
                 className={warnClass || undefined}
@@ -440,7 +450,7 @@ function DomainManagement() {
                 );
             case 'actions':
                 return (
-                    <div className="domain-mgmt-actions">
+                    <div className="kl-table-actions">
                         <button
                             type="button"
                             className="kl-table-icon-btn kl-table-icon-btn--neutral"
@@ -451,7 +461,7 @@ function DomainManagement() {
                             title="도메인 수정"
                             aria-label={`${domain.name} 도메인 수정`}
                         >
-                            <FilePen strokeWidth={1.75} aria-hidden />
+                            <Pencil strokeWidth={1.75} aria-hidden />
                         </button>
                         <button
                             type="button"
@@ -479,7 +489,7 @@ function DomainManagement() {
                 title="도메인 관리"
                 count={domains.length}
                 actions={(
-                    <button type="button" className="admin-btn admin-btn-primary" onClick={handleOpenCreateModal}>
+                    <button type="button" className="kl-btn kl-btn--primary" onClick={handleOpenCreateModal}>
                         <Plus size={14} aria-hidden />
                         새 도메인
                     </button>
@@ -531,8 +541,13 @@ function DomainManagement() {
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 title={isEditMode ? '도메인 정보 수정' : '새 도메인 추가'}
-                contentClassName="kl-modal-form domain-modal-content"
-                paperSx={{ width: '680px', maxWidth: '95vw', maxHeight: '90vh' }}
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={domainFormModalPaperSx}
+                paperClassName={domainFormModalPaperClassName}
+                contentClassName="domain-mgmt-modal-content kl-modal-form"
+                actionsClassName="domain-mgmt-modal-actions"
+                actionsAlign="right"
                 actions={(
                     <>
                         <Button variant="outlined" onClick={() => setIsModalOpen(false)}>
@@ -543,100 +558,157 @@ function DomainManagement() {
                             onClick={handleSubmit}
                             disabled={!isEditMode && !isArangoDbChecked}
                         >
-                            {isEditMode ? '수정 완료' : '생성하기'}
+                            {getModalSubmitLabel(isEditMode, false, '생성하기')}
                         </Button>
                     </>
                 )}
             >
-                <ModalFormField label="도메인명" required>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        placeholder="도메인 이름을 입력하세요"
-                        autoFocus
-                    />
-                </ModalFormField>
-
-                <ModalFormField label="설명">
-                    <input
-                        type="text"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleInputChange}
-                        placeholder="도메인에 대한 한 줄 설명"
-                    />
-                </ModalFormField>
-
-                <ModalFormField
-                    label="ArangoDB 데이터베이스명"
-                    required={!isEditMode}
-                    helperText={!isEditMode ? '* 생성 후에는 변경할 수 없습니다. (영문 소문자만 가능)' : undefined}
-                >
-                    {isEditMode ? (
-                        <input type="text" value={formData.arangoDbName} disabled />
-                    ) : (
-                        <div className="domain-input-group">
+                <form className="domain-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
+                    <div className="domain-form-row">
+                        <label className="domain-form-row__label" htmlFor="domain-mgmt-name">
+                            도메인명 <span className="domain-required" aria-hidden="true">*</span>
+                        </label>
+                        <div className="domain-form-row__control">
                             <input
+                                id="domain-mgmt-name"
                                 type="text"
-                                name="arangoDbName"
-                                value={formData.arangoDbName}
+                                name="name"
+                                value={formData.name}
                                 onChange={handleInputChange}
-                                placeholder="예: mydomaindb (소문자)"
+                                placeholder="도메인 이름을 입력하세요"
+                                autoFocus
                             />
-                            <button type="button" className="domain-mgmt-btn" onClick={handleDuplicateCheck}>
-                                중복확인
-                            </button>
                         </div>
-                    )}
-                </ModalFormField>
-
-                {checkMessage && (
-                    <div className={`domain-validation-msg ${isArangoDbChecked ? 'success' : 'error'}`}>
-                        {isArangoDbChecked ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
-                        {checkMessage}
                     </div>
-                )}
 
-                <div className="domain-prompt-grid">
-                    <ModalFormField
-                        label="청킹 프롬프트"
-                        helperText={formData.chunkPrompt === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
-                        helperClassName={formData.chunkPrompt === 'NONE' ? 'domain-helper-error' : ''}
-                    >
-                        <div className="domain-input-group">
-                            {renderPromptCodeSelect('chunkPrompt', chunkPromptCodes, {
-                                ariaLabel: '청킹 프롬프트',
-                                warnNone: true,
-                            })}
-                            <button
-                                type="button"
-                                className={`domain-mgmt-btn ${formData.chunkPrompt === 'NONE' ? 'domain-mgmt-btn--danger' : ''}`}
-                                onClick={() => setFormData((prev) => ({ ...prev, chunkPrompt: prev.chunkPrompt === 'NONE' ? '' : 'NONE' }))}
-                            >
-                                NONE
-                            </button>
+                    <div className="domain-form-row">
+                        <label className="domain-form-row__label" htmlFor="domain-mgmt-desc">
+                            설명
+                        </label>
+                        <div className="domain-form-row__control">
+                            <input
+                                id="domain-mgmt-desc"
+                                type="text"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleInputChange}
+                                placeholder="도메인에 대한 한 줄 설명"
+                            />
                         </div>
-                    </ModalFormField>
+                    </div>
+
+                    <div className="domain-form-row domain-form-row--start">
+                        <label
+                            className="domain-form-row__label domain-form-row__label--stacked"
+                            htmlFor={isEditMode ? 'domain-mgmt-arango-readonly' : 'domain-mgmt-arango'}
+                        >
+                            <span className="domain-form-row__label-line">ArangoDB</span>
+                            <span className="domain-form-row__label-line">
+                                데이터베이스명
+                                {!isEditMode ? (
+                                    <span className="domain-required" aria-hidden="true"> *</span>
+                                ) : null}
+                            </span>
+                        </label>
+                        <div className="domain-form-row__control">
+                            {isEditMode ? (
+                                <input
+                                    id="domain-mgmt-arango-readonly"
+                                    type="text"
+                                    value={formData.arangoDbName}
+                                    disabled
+                                />
+                            ) : (
+                                <>
+                                    <div className="domain-input-group">
+                                        <input
+                                            id="domain-mgmt-arango"
+                                            type="text"
+                                            name="arangoDbName"
+                                            value={formData.arangoDbName}
+                                            onChange={handleInputChange}
+                                            placeholder="예: mydomaindb (소문자)"
+                                        />
+                                        <button type="button" className="domain-mgmt-btn" onClick={handleDuplicateCheck}>
+                                            중복확인
+                                        </button>
+                                    </div>
+                                    <p className="domain-mgmt-field-help">
+                                        * 생성 후에는 변경할 수 없습니다. (영문 소문자만 가능)
+                                    </p>
+                                    {checkMessage ? (
+                                        <div className={`domain-validation-msg ${isArangoDbChecked ? 'success' : 'error'}`}>
+                                            {isArangoDbChecked ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
+                                            {checkMessage}
+                                        </div>
+                                    ) : null}
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="domain-form-row">
+                        <label className="domain-form-row__label" htmlFor="domain-mgmt-chunk-prompt">
+                            청킹 프롬프트
+                        </label>
+                        <div className="domain-form-row__control">
+                            <div className="domain-input-group">
+                                {renderPromptCodeSelect('chunkPrompt', chunkPromptCodes, {
+                                    id: 'domain-mgmt-chunk-prompt',
+                                    ariaLabel: '청킹 프롬프트',
+                                    warnNone: true,
+                                })}
+                                <button
+                                    type="button"
+                                    className={`domain-mgmt-btn ${formData.chunkPrompt === 'NONE' ? 'domain-mgmt-btn--danger' : ''}`}
+                                    onClick={() => setFormData((prev) => ({ ...prev, chunkPrompt: prev.chunkPrompt === 'NONE' ? '' : 'NONE' }))}
+                                >
+                                    NONE
+                                </button>
+                            </div>
+                            <p className={`domain-mgmt-field-help ${formData.chunkPrompt === 'NONE' ? 'domain-helper-error' : ''}`}>
+                                {formData.chunkPrompt === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
+                            </p>
+                        </div>
+                    </div>
 
                     {promptSelectConfigs.map((item) => (
-                        <ModalFormField key={item.key} label={item.label} helperText={item.helper}>
-                            {renderPromptCodeSelect(item.key, item.options, { ariaLabel: item.label })}
-                        </ModalFormField>
+                        <div key={item.key} className="domain-form-row">
+                            <label
+                                className={`domain-form-row__label${item.labelLines ? ' domain-form-row__label--stacked' : ''}`}
+                                htmlFor={`domain-mgmt-${item.key}`}
+                            >
+                                {item.labelLines ? (
+                                    item.labelLines.map((line) => (
+                                        <span key={line} className="domain-form-row__label-line">
+                                            {line}
+                                        </span>
+                                    ))
+                                ) : (
+                                    item.label
+                                )}
+                            </label>
+                            <div className="domain-form-row__control">
+                                {renderPromptCodeSelect(item.key, item.options, {
+                                    id: `domain-mgmt-${item.key}`,
+                                    ariaLabel: item.label,
+                                })}
+                                <p className="domain-mgmt-field-help">{item.helper}</p>
+                            </div>
+                        </div>
                     ))}
-                </div>
 
-                {isEditMode && (
-                    <div className="domain-info-note">
-                        <Info size={16} />
-                        <span>
-                            <strong>시맨틱 카테고리/관계</strong>는 KnowlearnEXP의 카테고리 관리 메뉴에서 편집할 수 있습니다.
-                        </span>
-                    </div>
-                )}
+                    {isEditMode ? (
+                        <div className="domain-info-note">
+                            <Info size={16} aria-hidden />
+                            <span>
+                                <strong>시맨틱 카테고리/관계</strong>는 KnowlearnEXP의 카테고리 관리 메뉴에서 편집할 수 있습니다.
+                            </span>
+                        </div>
+                    ) : null}
 
-                {error && <div className="domain-error-note">{error}</div>}
+                    {error ? <div className="domain-error-note">{error}</div> : null}
+                </form>
             </BaseModal>
         </div>
     );

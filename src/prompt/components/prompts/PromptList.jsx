@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAlert } from '../../../context/AlertContext';
 import { FileText, Plus, Pencil, Trash2, Search } from 'lucide-react';
@@ -154,7 +154,7 @@ const PromptListContent = () => {
         count={prompts.length}
         subtitle="시스템 프롬프트의 카테고리·용도·버전·보안 등급을 관리합니다."
         actions={
-          <button className="admin-btn admin-btn-primary" onClick={() => setOpenDialog(true)}>
+          <button className="kl-btn kl-btn--primary" onClick={() => setOpenDialog(true)}>
             <Plus size={14} />
             생성
           </button>
@@ -345,14 +345,14 @@ const PromptListContent = () => {
                       <TableCell align="center">
                         <Box sx={{ display: 'inline-flex', gap: 0.5 }}>
                           <button
-                            className="admin-btn admin-btn-icon"
+                            className="kl-btn kl-btn--icon"
                             onClick={(e) => handleEditClick(e, prompt)}
                             title="수정"
                           >
                             <Pencil size={14} />
                           </button>
                           <button
-                            className="admin-btn admin-btn-icon admin-btn-danger-soft"
+                            className="kl-btn kl-btn--icon kl-btn--danger-soft"
                             onClick={(e) => handleDelete(e, prompt)}
                             title="삭제"
                           >
