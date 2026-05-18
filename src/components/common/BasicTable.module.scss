@@ -53,6 +53,7 @@
   height: 34px;
   padding-block: 0;
   padding-inline: var(--bt-space-sm);
+  font-family: var(--font-family);
   text-align: left;
   vertical-align: middle;
   font-size: var(--bt-font-sm);
@@ -107,6 +108,7 @@
   height: 40px;
   padding-block: 0;
   padding-inline: var(--bt-space-sm);
+  font-family: var(--font-family);
   text-align: left;
   vertical-align: middle;
   font-size: var(--bt-font-base);
@@ -147,8 +149,19 @@
   background: var(--bt-bg-subtle);
   border-bottom: 1px solid var(--bt-border);
   vertical-align: top;
+  font-family: var(--font-family);
   font-size: var(--bt-font-base);
   line-height: 1.25;
+}
+
+/* 본문·헤더 셀 내부 — admin-code-mono 등 페이지 mono 유틸보다 우선해 Pretendard 통일 */
+.headCell :where(span, a, p),
+.bodyCell :where(span, a, p),
+.detailCell :where(span, a, p),
+.headCell :global(.admin-code-mono),
+.bodyCell :global(.admin-code-mono),
+.detailCell :global(.admin-code-mono) {
+  font-family: inherit;
 }
 
 .detailRow:last-child .detailCell {

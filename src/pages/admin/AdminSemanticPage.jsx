@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Network } from 'lucide-react';
+import { Network, Box, Link2, Zap } from 'lucide-react';
 import AdminSemanticObjectPage from './AdminSemanticObjectPage';
 import AdminSemanticRelationPage from './AdminSemanticRelationPage';
 import AdminSemanticActionPage from './AdminSemanticActionPage';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import './admin-common.css';
+import './AdminSemanticPage.css';
 
 /**
  * 온톨로지 옵션 통합 페이지 (V20260424 통합 이후).
@@ -14,7 +15,7 @@ function AdminSemanticPage() {
   const [subTab, setSubTab] = useState('objects');
 
   return (
-    <div className="kl-page">
+    <div className="kl-page admin-semantic-page">
       <div className="kl-main-sticky-head">
         <AdminPageHeader
           icon={Network}
@@ -23,29 +24,34 @@ function AdminSemanticPage() {
         />
       </div>
 
-      <div className="admin-semantic-subtabs">
+      <div className="kl-subtabs">
         <button
-          className={`admin-semantic-subtab ${subTab === 'objects' ? 'active' : ''}`}
+          type="button"
+          className={`kl-subtab ${subTab === 'objects' ? 'active' : ''}`}
           onClick={() => setSubTab('objects')}
         >
-          🎯 객체 & 카테고리
+          <Box size={14} aria-hidden />
+          객체 & 카테고리
         </button>
         <button
-          className={`admin-semantic-subtab ${subTab === 'relations' ? 'active' : ''}`}
+          type="button"
+          className={`kl-subtab ${subTab === 'relations' ? 'active' : ''}`}
           onClick={() => setSubTab('relations')}
         >
-          🔗 관계 & 카테고리
+          <Link2 size={14} aria-hidden />
+          관계 & 카테고리
         </button>
         <button
-          className={`admin-semantic-subtab ${subTab === 'actions' ? 'active' : ''}`}
+          type="button"
+          className={`kl-subtab ${subTab === 'actions' ? 'active' : ''}`}
           onClick={() => setSubTab('actions')}
         >
-          ⚡ 액션 & 카테고리
+          <Zap size={14} aria-hidden />
+          액션 & 카테고리
         </button>
       </div>
 
-      {/* overflow:hidden → 각 패널(좌 카테고리 / 우 항목)이 독립적으로 내부 스크롤 */}
-      <div style={{ flex: 1, overflow: 'hidden' }}>
+      <div className="admin-semantic-page-body">
         {subTab === 'objects'   && <AdminSemanticObjectPage   compact />}
         {subTab === 'relations' && <AdminSemanticRelationPage compact />}
         {subTab === 'actions'   && <AdminSemanticActionPage   compact />}

@@ -8,6 +8,7 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import { Users, Search, RotateCcw, Pencil, Trash2, Lock, Mail } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
+import TableEmptyState from '../../components/common/TableEmptyState';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
     memberFormModalPaperClassName,
@@ -467,11 +468,10 @@ function AdminMemberManagement() {
                     </div>
                     <div className="basic-table-shell">
                         {filteredMembers.length === 0 ? (
-                            <div className="member-mgmt-empty member-mgmt-empty--solo" role="status">
-                                {members.length === 0
-                                    ? '등록된 사용자가 없습니다.'
-                                    : '검색 결과가 없습니다.'}
-                            </div>
+                            <TableEmptyState
+                                solo
+                                variant={members.length === 0 ? 'default' : 'search'}
+                            />
                         ) : (
                             <BasicTable
                                 className="member-mgmt-basic-table"

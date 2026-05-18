@@ -79,7 +79,7 @@
   min-height: 0;
 }
 
-.admin-action-page > .admin-semantic-subtabs {
+.admin-action-page > .kl-subtabs {
   flex-shrink: 0;
 }
 
@@ -101,17 +101,22 @@
 
 /*
  * TableArea.css — basic-table-shell + div 는 사용자 관리 푸터용.
- * 안내 문구(.admin-action-footnote-row)는 푸터가 아니므로 표 카드 하단 보더를 유지한다.
+ * 안내 문구(.kl-infotxt-note-row)는 푸터가 아니므로 표 카드 하단 보더를 유지한다.
  */
-.kl-page.admin-action-page .table-area:has(> .table-toolbar) > .basic-table-shell:has(+ .admin-action-footnote-row) {
+.kl-page.admin-action-page .table-area:has(> .table-toolbar) > .basic-table-shell:has(+ .kl-infotxt-note-row) {
   border-bottom: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
 }
 
-.kl-page.admin-action-page .table-area:has(> .table-toolbar) > .basic-table-shell + .admin-action-footnote-row {
+.kl-page.admin-action-page .table-area:has(> .table-toolbar) > .basic-table-shell + .kl-infotxt-note-row {
   border: none;
   border-radius: 0;
   overflow: visible;
+}
+
+.kl-page.admin-action-page .kl-infotxt-note-row .kl-infotxt-note {
+  width: fit-content;
+  max-width: 100%;
 }
 
 .admin-action-basic-table {
@@ -167,27 +172,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.table-area .admin-action-footnote-row {
-  display: flex;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  padding-top: var(--spacing-sm);
-}
-
-.admin-action-footnote {
-  margin: 0;
-  display: inline-block;
-  width: fit-content;
-  max-width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-size-xs);
-  line-height: 1.5;
-  text-align: right;
-  color: var(--color-accent);
-  background: var(--color-accent-light);
-  border-radius: var(--radius-md);
 }
 
 @media (max-width: 768px) {

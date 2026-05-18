@@ -85,17 +85,7 @@
 
 /* 행 호버: BasicTable.global.css `.basic-table-shell` 공통 규칙 */
 
-.domain-selected td {
-    background: #ebf2ff;
-}
-
-.domain-list-row.domain-selected td:first-of-type {
-    box-shadow: inset 3px 0 0 var(--color-accent);
-}
-
-.domain-list-row.domain-selected:hover td {
-    background: #ebf2ff;
-}
+/* 선택 행 스타일 — BasicTable.global.css `.kl-table-row-selected` */
 
 .domain-list-name {
     font-weight: var(--font-weight-semibold);

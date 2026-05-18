@@ -14,6 +14,7 @@ import {
     domainFormModalPaperSx,
 } from './common/modal/supportFormModalPaperSx';
 import BasicTable from './common/BasicTable';
+import TableEmptyState from './common/TableEmptyState';
 import { mockDomains, mockDomainPromptDefaults, mockPromptCodesByPurpose } from '../data/domainMockData';
 import './DomainManagement.css';
 
@@ -518,13 +519,9 @@ function DomainManagement() {
 
                 <div className="basic-table-shell">
                     {domains.length === 0 ? (
-                        <div className="domain-mgmt-empty domain-mgmt-empty--solo" role="status">
-                            등록된 도메인이 없습니다.
-                        </div>
+                        <TableEmptyState solo />
                     ) : filteredDomains.length === 0 ? (
-                        <div className="domain-mgmt-empty domain-mgmt-empty--solo" role="status">
-                            검색 결과가 없습니다.
-                        </div>
+                        <TableEmptyState solo variant="search" />
                     ) : (
                         <BasicTable
                             className="domain-mgmt-basic-table"
@@ -699,7 +696,7 @@ function DomainManagement() {
                     ))}
 
                     {isEditMode ? (
-                        <div className="domain-info-note">
+                        <div className="kl-infotxt-note">
                             <Info size={16} aria-hidden />
                             <span>
                                 <strong>시맨틱 카테고리/관계</strong>는 KnowlearnEXP의 카테고리 관리 메뉴에서 편집할 수 있습니다.

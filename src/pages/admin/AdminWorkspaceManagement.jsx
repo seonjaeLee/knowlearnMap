@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { workspaceApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
@@ -6,6 +6,7 @@ import { Search, RotateCcw, Share2, Trash2 } from 'lucide-react';
 import ShareSettingsModal from '../../components/ShareSettingsModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import TableEmptyState from '../../components/common/TableEmptyState';
 import KlPopover from '../../components/common/KlPopover';
 import { mockAdminWorkspaces } from '../../data/workspaceMockData';
 import './admin-common.css';
@@ -274,9 +275,7 @@ function AdminWorkspaceManagement() {
                 </div>
                     <div className="basic-table-shell">
                         {filteredWorkspaces.length === 0 ? (
-                            <div className="workspace-mgmt-empty workspace-mgmt-empty--solo" role="status">
-                                {searchTerm ? '검색 결과가 없습니다.' : '워크스페이스가 없습니다.'}
-                            </div>
+                            <TableEmptyState solo variant={searchTerm ? 'search' : 'default'} />
                         ) : (
                             <BasicTable
                                 className="workspace-mgmt-basic-table"

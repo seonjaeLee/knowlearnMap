@@ -274,7 +274,7 @@ function DomainSelection() {
                             getRowClassName={(domain) =>
                                 [
                                     'domain-list-row',
-                                    String(domain.id) === currentDomainId ? 'domain-selected' : '',
+                                    String(domain.id) === currentDomainId ? 'kl-table-row-selected' : '',
                                 ]
                                     .filter(Boolean)
                                     .join(' ')

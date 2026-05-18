@@ -6,15 +6,33 @@
 
  */
 
-.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected) > td,
-
-.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected) > th {
-
+.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected):not(.kl-table-row-selected) > td,
+.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected):not(.kl-table-row-selected) > th {
   background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary)) !important;
-
 }
 
+/* 선택 행 — 도메인 선택·시멘틱 카테고리 등 (라디오 없음, 행 클릭 선택) */
+.basic-table-shell tbody tr.kl-table-row-selected > td {
+  background: var(--color-accent-light) !important;
+}
 
+.basic-table-shell tbody tr.kl-table-row-selected > td:first-of-type {
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+.basic-table-shell tbody tr.kl-table-row-selected:hover > td {
+  background: var(--color-accent-light) !important;
+}
+
+/* BasicTable — thead/tbody 셀·내부 span 동일 글꼴 (모듈 밖 MUI td 포함) */
+.basic-table-shell :is(thead th, tbody td) {
+  font-family: var(--font-family);
+}
+
+.basic-table-shell :is(thead th, tbody td) :where(span, a, p),
+.basic-table-shell :is(thead th, tbody td) :where(.admin-code-mono) {
+  font-family: inherit;
+}
 
 /**
 

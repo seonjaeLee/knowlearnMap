@@ -7,6 +7,7 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import BaseModal from '../../components/common/modal/BaseModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import TableEmptyState from '../../components/common/TableEmptyState';
 import KlPopover from '../../components/common/KlPopover';
 import { mockUpgradeRequests } from '../../data/upgradeRequestMockData';
 import './admin-common.css';
@@ -262,9 +263,7 @@ function AdminUpgradeRequests() {
             <div className="table-area">
                 <div className="basic-table-shell">
                     {requests.length === 0 ? (
-                        <div className="admin-upgrade-empty admin-upgrade-empty--solo" role="status">
-                            대기 중인 요청이 없습니다.
-                        </div>
+                        <TableEmptyState solo message="대기 중인 요청이 없습니다." />
                     ) : (
                         <BasicTable
                             className="admin-upgrade-basic-table"

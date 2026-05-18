@@ -1,5 +1,5 @@
-/** 고객센터(공지·FAQ·1:1) 팝업 공통 가로 — BaseModal `maxWidth={false}` `fullWidth={false}` */
-export const SUPPORT_CS_MODAL_WIDTH = 800;
+/** 고객센터(공지·FAQ·1:1) 상세 팝업 공통 가로 — BaseModal `maxWidth={false}` `fullWidth={false}` */
+export const SUPPORT_CS_MODAL_WIDTH = 620;
 
 const csModalPaperWidth = {
   width: SUPPORT_CS_MODAL_WIDTH,

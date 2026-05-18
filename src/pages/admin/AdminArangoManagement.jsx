@@ -5,6 +5,7 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import { RotateCcw, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import TableEmptyState from '../../components/common/TableEmptyState';
 import { mockArangoDatabases, mockArangoWorkspacesByDomainId } from '../../data/arangoAdminMockData';
 import './admin-common.css';
 import './AdminArangoManagement.css';
@@ -314,9 +315,7 @@ function AdminArangoManagement() {
                 <div className="table-area">
                     <div className="basic-table-shell">
                         {databases.length === 0 ? (
-                            <div className="arango-mgmt-empty--solo" role="status">
-                                등록된 도메인이 없습니다.
-                            </div>
+                            <TableEmptyState solo />
                         ) : (
                             <BasicTable
                                 className="arango-mgmt-basic-table"

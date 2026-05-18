@@ -1,0 +1,61 @@
+/* 온톨로지(시멘틱) 통합 페이지 — split 레이아웃 + BasicTable */
+
+.admin-semantic-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.admin-semantic-page .kl-subtabs {
+  flex-shrink: 0;
+}
+
+.admin-semantic-page-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-semantic-mock-tag {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+}
+
+.admin-semantic-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-2xl) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.admin-semantic-left-panel,
+.admin-semantic-right-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.admin-semantic-left-panel .kl-split-table-area,
+.admin-semantic-right-panel .kl-split-table-area {
+  flex: 1;
+  min-height: 0;
+}
+
+.kl-split-table-area > .table-toolbar .toolbar-right {
+  gap: var(--spacing-xs);
+}
+
+/* 카테고리 split 표 — 헤더(th)·본문 셀 좌우 간격 */
+.admin-semantic-left-panel .admin-semantic-split-basic-table .MuiTableCell-head,
+.admin-semantic-left-panel .admin-semantic-split-basic-table .MuiTableCell-body {
+  padding-left: var(--spacing-sm);
+  padding-right: var(--spacing-sm);
+}

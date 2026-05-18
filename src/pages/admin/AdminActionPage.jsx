@@ -3,9 +3,10 @@ import { Button } from '@mui/material';
 import { actionApi } from '../../services/api';
 import { useAlert } from '../../context/AlertContext';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
-import { Zap, RotateCcw, Clock, Pencil, List } from 'lucide-react';
+import { Zap, RotateCcw, Clock, Pencil, List, Info } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import TableEmptyState from '../../components/common/TableEmptyState';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
   actionWsModalPaperClassName,
@@ -170,10 +171,10 @@ function AdminActionPage() {
         />
       </div>
 
-      <div className="admin-semantic-subtabs">
+      <div className="kl-subtabs">
         <button
           type="button"
-          className={`admin-semantic-subtab ${subTab === 'list' ? 'active' : ''}`}
+          className={`kl-subtab ${subTab === 'list' ? 'active' : ''}`}
           onClick={() => setSubTab('list')}
         >
           <List size={14} aria-hidden />
@@ -181,7 +182,7 @@ function AdminActionPage() {
         </button>
         <button
           type="button"
-          className={`admin-semantic-subtab ${subTab === 'logs' ? 'active' : ''}`}
+          className={`kl-subtab ${subTab === 'logs' ? 'active' : ''}`}
           onClick={() => setSubTab('logs')}
         >
           <Clock size={14} aria-hidden />
@@ -279,9 +280,14 @@ function ActionListTab({ workspaceId }) {
           </span>
         </div>
         <div className="toolbar-right">
-          <button type="button" className="kl-icon-label-btn" onClick={fetchData} title="새로고침">
+          <button
+            type="button"
+            className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            onClick={fetchData}
+            title="새로고침"
+            aria-label="새로고침"
+          >
             <RotateCcw size={16} aria-hidden />
-            새로고침
           </button>
         </div>
       </div>
@@ -295,9 +301,7 @@ function ActionListTab({ workspaceId }) {
         <>
           <div className="basic-table-shell">
           {items.length === 0 ? (
-            <div className="admin-action-empty" role="status">
-              등록된 Action 없음
-            </div>
+            <TableEmptyState solo />
           ) : (
             <BasicTable
               className="admin-action-basic-table"
@@ -308,10 +312,13 @@ function ActionListTab({ workspaceId }) {
             />
           )}
         </div>
-          <div className="admin-action-footnote-row">
-            <p className="admin-action-footnote">
-              Action 추가/수정/바인딩은 <strong>EXP 액션사전</strong>에서 관리합니다. MAP 은 실행 + 이력 조회만.
-            </p>
+          <div className="kl-infotxt-note-row kl-infotxt-note-row--end">
+            <div className="kl-infotxt-note">
+              <Info size={16} aria-hidden />
+              <span>
+                MAP에서는 실행+이력 조회하고 있습니다. Action 추가/수정/바인딩은 <strong>EXP 액션사전</strong>에서 관리해주세요.
+              </span>
+            </div>
           </div>
         </>
       )}
@@ -428,10 +435,14 @@ function ActionLogTab() {
 
       <div className="basic-table-shell">
         {logs.length === 0 ? (
-          <div className="admin-action-empty" role="status">
-            실행 이력이 없습니다.
-            {isActionLogDemoEnabled ? ' (더미: Action ID 1~6 입력 후 불러오기)' : null}
-          </div>
+          <TableEmptyState
+            solo
+            message={
+              isActionLogDemoEnabled
+                ? '실행 이력이 없습니다. (더미: Action ID 1~6 입력 후 불러오기)'
+                : '실행 이력이 없습니다.'
+            }
+          />
         ) : (
           <BasicTable
             className="admin-action-log-basic-table"

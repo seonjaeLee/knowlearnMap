@@ -7,6 +7,7 @@ import { attachRowSpanMeta, getRowSpanCellProps } from '../../hooks/useTableRowS
 import { RotateCcw, RefreshCw, HelpCircle, Pencil } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import TableEmptyState from '../../components/common/TableEmptyState';
 import KlPopover from '../../components/common/KlPopover';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
@@ -504,9 +505,7 @@ function AdminConfigManagement() {
                             </div>
                     </div>
                     {tableData.length === 0 ? (
-                        <div className="config-mgmt-empty" role="status">
-                            표시할 설정이 없습니다.
-                        </div>
+                        <TableEmptyState solo />
                     ) : (
                         <div className="basic-table-shell">
                             <BasicTable

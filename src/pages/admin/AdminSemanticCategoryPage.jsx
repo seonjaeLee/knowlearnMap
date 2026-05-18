@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Button } from '@mui/material';
 import { adminSemanticApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
@@ -21,14 +21,31 @@ import {
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BaseModal from '../../components/common/modal/BaseModal';
 import KlModalSelect from '../../components/common/modal/KlModalSelect';
+import TableEmptyState from '../../components/common/TableEmptyState';
+import ToolbarMoreMenu from '../../components/common/ToolbarMoreMenu';
+import BasicTable from '../../components/common/BasicTable';
+import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
+import { semanticCategoryColumnDefinitions } from './semantic/semanticCategoryTableColumns';
 import './admin-common.css';
+
+const SEMANTIC_SPLIT_TABLE_CLASS = 'admin-semantic-split-basic-table';
 
 /**
  * 온톨로지 카테고리 관리 (V20260424 통합 이후).
  * type: OBJECT | RELATION | ACTION — 같은 테이블 다른 네임스페이스.
  * parent_id + path 로 계층 구조 표현 (path 는 DB 트리거로 자동 유지).
  */
-function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 'OBJECT', onSelectCategory }) {
+function AdminSemanticCategoryPage({
+  compact = false,
+  collapsed = false,
+  type = 'OBJECT',
+  onSelectCategory,
+  sharedCategories,
+  sharedLoading,
+  sharedListSource,
+  onSharedRefresh,
+  selectedCategoryId = null,
+}) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // { id?, nameEn, nameKo, code, parentId, description }
@@ -53,7 +70,17 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
     }
   };
 
-  useEffect(() => { fetchItems(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [type]);
+  const usesSharedData = onSharedRefresh != null;
+  const displayItems = usesSharedData ? (sharedCategories ?? []) : items;
+  const showLoading = usesSharedData ? Boolean(sharedLoading) : loading;
+  const activeListSource = usesSharedData ? (sharedListSource ?? 'live') : 'live';
+  const refreshList = onSharedRefresh ?? fetchItems;
+
+  useEffect(() => {
+    if (usesSharedData) return;
+    fetchItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, usesSharedData]);
 
   const openCreate = () => setEditing({
     id: null, nameEn: '', nameKo: '', code: '', parentId: null, description: '',
@@ -89,7 +116,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
         await alert('생성되었습니다.');
       }
       setEditing(null);
-      fetchItems();
+      refreshList();
     } catch (err) {
       await alert('저장 실패: ' + (err?.message || '알 수 없는 오류'));
     }
@@ -101,7 +128,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
     try {
       await adminSemanticApi.deleteCategory(item.id);
       await alert('삭제되었습니다.');
-      fetchItems();
+      refreshList();
     } catch (err) {
       await alert('삭제 실패: ' + (err?.message || '알 수 없는 오류'));
     }
@@ -130,7 +157,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
       setImporting(true);
       const result = await adminSemanticApi.importCategories(file, replace, type);
       await alert(`가져오기 완료: ${result?.count ?? 0}건 처리`);
-      fetchItems();
+      refreshList();
     } catch (err) {
       await alert('가져오기 실패: ' + (err?.message || '알 수 없는 오류'));
     } finally {
@@ -143,13 +170,13 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
   // ─── 트리 구조 계산 ───
   const itemsById = React.useMemo(() => {
     const m = new Map();
-    items.forEach((i) => m.set(i.id, i));
+    displayItems.forEach((i) => m.set(i.id, i));
     return m;
-  }, [items]);
+  }, [displayItems]);
 
   const childrenByParent = React.useMemo(() => {
     const m = new Map();
-    items.forEach((i) => {
+    displayItems.forEach((i) => {
       const pid = i.parentId ?? null;
       if (!m.has(pid)) m.set(pid, []);
       m.get(pid).push(i);
@@ -157,7 +184,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
     // 각 그룹 내 path/name 기준 정렬
     m.forEach((arr) => arr.sort((a, b) => (a.path || a.nameEn).localeCompare(b.path || b.nameEn)));
     return m;
-  }, [items]);
+  }, [displayItems]);
 
   const hasChildren = (id) => (childrenByParent.get(id) || []).length > 0;
 
@@ -187,14 +214,14 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
   const autoExpandIds = React.useMemo(() => {
     if (!searchLower) return null;
     const out = new Set();
-    items.forEach((it) => {
+    displayItems.forEach((it) => {
       if (matchesSearch(it)) {
         getAncestorIds(it.id).forEach((x) => out.add(x));
       }
     });
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchLower, items]);
+  }, [searchLower, displayItems]);
 
   const isExpanded = (id) => {
     if (autoExpandIds) return autoExpandIds.has(id) || expandedIds.has(id);
@@ -230,7 +257,7 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
     walk(null, 0);
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, childrenByParent, expandedIds, searchLower, autoExpandIds]);
+  }, [displayItems, childrenByParent, expandedIds, searchLower, autoExpandIds]);
 
   const toggleExpand = (id) => {
     setExpandedIds((prev) => {
@@ -240,217 +267,359 @@ function AdminSemanticCategoryPage({ compact = false, collapsed = false, type = 
     });
   };
 
-  const expandAll = () => {
+  const expandAll = useCallback(() => {
     const all = new Set();
-    items.forEach((i) => { if (hasChildren(i.id)) all.add(i.id); });
+    displayItems.forEach((i) => {
+      if ((childrenByParent.get(i.id) || []).length > 0) all.add(i.id);
+    });
     setExpandedIds(all);
-  };
-  const collapseAll = () => setExpandedIds(new Set());
+  }, [displayItems, childrenByParent]);
 
-  const actionsBar = (
-    <div className="admin-semantic-actions-bar">
-      <span className="admin-semantic-count">
-        {searchLower ? `검색 ${visibleItems.length} / 전체 ${items.length}` : `총 ${items.length}개`} {typeLabel} 카테고리
-      </span>
-      <div className="admin-inline-actions">
-        <button className="kl-btn kl-btn--sm" onClick={fetchItems} title="새로고침"><RotateCcw size={13} /></button>
-        <button className="kl-btn kl-btn--sm" onClick={expandAll} title="모두 펼침"><Maximize2 size={13} /></button>
-        <button className="kl-btn kl-btn--sm" onClick={collapseAll} title="모두 접음"><Minimize2 size={13} /></button>
-        {!collapsed && (
-          <>
-            <button className="kl-btn kl-btn--sm" onClick={handleTemplate} title="양식"><FileDown size={13} /> 양식</button>
-            <button className="kl-btn kl-btn--sm" onClick={handleExport} title="Excel 다운로드"><Download size={13} /> 다운로드</button>
-            <button className="kl-btn kl-btn--sm" onClick={handleImportClick} disabled={importing} title="Excel 업로드">
-              <Upload size={13} /> {importing ? '...' : '업로드'}
+  const collapseAll = useCallback(() => setExpandedIds(new Set()), []);
+
+  const expandableParentIds = useMemo(() => {
+    const ids = [];
+    displayItems.forEach((i) => {
+      if ((childrenByParent.get(i.id) || []).length > 0) ids.push(i.id);
+    });
+    return ids;
+  }, [displayItems, childrenByParent]);
+
+  const isTreeFullyExpanded = useMemo(() => {
+    if (expandableParentIds.length === 0) return false;
+    return expandableParentIds.every((id) => expandedIds.has(id));
+  }, [expandableParentIds, expandedIds]);
+
+  const isTreeFullyCollapsed = expandedIds.size === 0;
+
+  const toggleTreeExpandAll = useCallback(() => {
+    if (isTreeFullyExpanded) collapseAll();
+    else expandAll();
+  }, [isTreeFullyExpanded, expandAll, collapseAll]);
+
+  const categoryStorageKey = useMemo(
+    () => `kl-admin-semantic-category-${type}-cols-v2`,
+    [type],
+  );
+
+  const { columns: categoryColumns, startResize: categoryColumnStartResize } = useBasicTableColumnResize({
+    definitions: semanticCategoryColumnDefinitions,
+    storageKey: categoryStorageKey,
+    enabled: true,
+  });
+
+  const renderCategoryCell = useCallback(({ column, row }) => {
+    switch (column.id) {
+      case 'nameEn': {
+        const depth = row.__depth || 0;
+        const expandable = hasChildren(row.id);
+        const expanded = isExpanded(row.id);
+        return (
+          <span className="admin-semantic-name-cell-inner">
+            <span
+              onClick={(e) => { e.stopPropagation(); if (expandable) toggleExpand(row.id); }}
+              className={`admin-semantic-tree-toggle ${expandable ? 'admin-semantic-tree-toggle--active' : 'admin-semantic-tree-toggle--inactive'}`}
+            >
+              {expandable && (expanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />)}
+            </span>
+            {row.nameEn}
+          </span>
+        );
+      }
+      case 'code':
+        return <span className="admin-code-mono">{row.code || '-'}</span>;
+      case 'description':
+        return <span className="admin-text-secondary">{row.description || '-'}</span>;
+      case 'actions':
+        return (
+          <div className="kl-table-actions" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="kl-table-icon-btn kl-table-icon-btn--neutral"
+              onClick={() => openEdit(row)}
+              title="수정"
+              aria-label={`${row.nameEn} 수정`}
+            >
+              <Pencil size={16} aria-hidden />
             </button>
-          </>
-        )}
-        <button className="kl-btn kl-btn--primary kl-btn--sm" onClick={openCreate}><Plus size={13} /> 추가</button>
-        <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="admin-hidden-file-input" onChange={handleImportFile} />
-      </div>
-    </div>
-  );
+            {!collapsed && (
+              <button
+                type="button"
+                className="kl-table-icon-btn kl-table-icon-btn--danger"
+                onClick={() => handleDelete(row)}
+                title="삭제"
+                aria-label={`${row.nameEn} 삭제`}
+              >
+                <Trash2 size={16} aria-hidden />
+              </button>
+            )}
+          </div>
+        );
+      default:
+        return undefined;
+    }
+  }, [collapsed, handleDelete, hasChildren, isExpanded, openEdit, toggleExpand]);
 
-  const searchBar = (
-    <div className="admin-semantic-search-row">
-      <Search size={13} className="admin-semantic-search-icon" />
-      <input
-        className="admin-input admin-semantic-search-input"
-        placeholder="카테고리 검색 (경로/영문/한글/코드)"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-      />
-      {searchText && (
-        <button className="kl-btn kl-btn--icon kl-btn--sm" onClick={() => setSearchText('')} title="검색 초기화">
-          <X size={12} />
-        </button>
-      )}
-    </div>
-  );
+  const getCategoryBodyCellProps = useCallback(({ column, row }) => {
+    if (column.id === 'nameEn') {
+      const depth = row.__depth || 0;
+      return {
+        style: {
+          paddingLeft: 4 + depth * 14,
+          maxWidth: collapsed ? 180 : undefined,
+        },
+        className: 'admin-semantic-name-cell',
+      };
+    }
+    if (column.id === 'nameKo') {
+      return {
+        style: {
+          maxWidth: collapsed ? 120 : undefined,
+        },
+        className: 'admin-semantic-name-ko-cell',
+      };
+    }
+    return undefined;
+  }, [collapsed]);
 
-  return (
-    <div className={compact ? '' : 'kl-page'}>
-      {!compact && (
-        <div className="kl-main-sticky-head">
-          <AdminPageHeader
-            icon={Layers}
-            title={`${typeLabel} 카테고리 관리`}
-            count={items.length}
-            subtitle={`${typeLabel} 카테고리를 계층 구조로 관리합니다 (ontology_category.type = ${type}).`}
+  const handleCategoryRowClick = useCallback((_e, { row }) => {
+    onSelectCategory?.(row);
+  }, [onSelectCategory]);
+
+  const getCategoryRowClassName = useCallback((row) => {
+    const base = onSelectCategory ? 'admin-row-clickable' : '';
+    if (selectedCategoryId != null && row.id === selectedCategoryId) {
+      return base ? `${base} kl-table-row-selected` : 'kl-table-row-selected';
+    }
+    return base;
+  }, [onSelectCategory, selectedCategoryId]);
+
+  const toolbarMoreItems = useMemo(() => [
+    {
+      id: 'template',
+      label: '양식',
+      icon: <FileDown size={14} aria-hidden />,
+      onClick: handleTemplate,
+    },
+    {
+      id: 'export',
+      label: '다운로드',
+      icon: <Download size={14} aria-hidden />,
+      onClick: handleExport,
+    },
+    {
+      id: 'import',
+      label: importing ? '업로드 중...' : '업로드',
+      icon: <Upload size={14} aria-hidden />,
+      onClick: handleImportClick,
+      disabled: importing,
+    },
+  ], [importing, handleTemplate, handleExport, handleImportClick]);
+
+  const tableAreaClass = compact ? 'table-area kl-split-table-area' : 'table-area';
+
+  const tableArea = (
+    <div className={tableAreaClass}>
+      <div className="table-toolbar">
+        <div className="toolbar-left">
+          <span className="kl-table-toolbar-summary">
+            {searchLower ? (
+              <>
+                검색 <strong>{visibleItems.length}</strong> / 전체 <strong>{displayItems.length}</strong>건
+              </>
+            ) : (
+              <>
+                총 <strong>{displayItems.length}</strong>건
+              </>
+            )}
+            {activeListSource === 'mock' ? <span className="admin-semantic-mock-tag"> · 더미</span> : null}
+          </span>
+        </div>
+        <div className="toolbar-right">
+          <button type="button" className="kl-btn-outline-primary-sm" onClick={openCreate}>
+            <Plus size={16} aria-hidden />
+            추가
+          </button>
+          {!collapsed && expandableParentIds.length > 0 ? (
+            <button
+              type="button"
+              className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+              onClick={toggleTreeExpandAll}
+              title={isTreeFullyCollapsed ? '모두 펼침' : '모두 접음'}
+              aria-label={isTreeFullyCollapsed ? '모두 펼침' : '모두 접음'}
+              aria-pressed={!isTreeFullyCollapsed}
+            >
+              {isTreeFullyCollapsed ? (
+                <Maximize2 size={16} aria-hidden />
+              ) : (
+                <Minimize2 size={16} aria-hidden />
+              )}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            onClick={refreshList}
+            title="새로고침"
+            aria-label="새로고침"
+          >
+            <RotateCcw size={16} aria-hidden />
+          </button>
+          <ToolbarMoreMenu
+            items={toolbarMoreItems}
+            ariaLabel="Excel 메뉴"
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            className="admin-hidden-file-input"
+            onChange={handleImportFile}
           />
         </div>
-      )}
-      {actionsBar}
-      {searchBar}
-      {loading ? (
-        <div className="admin-loading-state">
-          <div className="admin-spinner" />
+      </div>
+      <div className="table-toolbar table-toolbar--search">
+        <div className="toolbar-left">
+          <div className="search-area">
+            <Search size={16} className="search-area-icon" aria-hidden />
+            <input
+              type="search"
+              className="search-area-input"
+              placeholder="카테고리 검색 (경로/영문/한글/코드)"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </div>
+          {searchText ? (
+            <button
+              type="button"
+              className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+              onClick={() => setSearchText('')}
+              title="검색 초기화"
+              aria-label="검색 초기화"
+            >
+              <X size={16} aria-hidden />
+            </button>
+          ) : null}
+        </div>
+      </div>
+      {showLoading ? (
+        <div className="admin-semantic-loading" role="status">
+          <div className="admin-spinner" aria-hidden />
           <span>불러오는 중...</span>
         </div>
       ) : (
-        <div className="admin-table-wrap admin-semantic-table-wrap">
-          <table className="admin-table">
-            <thead className="admin-sticky-head">
-              <tr>
-                {!collapsed && <th className="admin-col-id-narrow">ID</th>}
-                <th>이름</th>
-                <th>한글명</th>
-                {!collapsed && <th>코드</th>}
-                {!collapsed && <th>설명</th>}
-                <th className="admin-col-actions">관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleItems.length === 0 ? (
-                <tr>
-                  <td colSpan={collapsed ? 3 : 6}>
-                    <div className="admin-empty-state admin-empty-state-compact">
-                      <p className="admin-empty-state-title">
-                        {searchLower ? '검색 결과 없음' : '등록된 카테고리가 없습니다'}
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                visibleItems.map((item) => {
-                  const depth = item.__depth || 0;
-                  const expandable = hasChildren(item.id);
-                  const expanded = isExpanded(item.id);
-                  return (
-                    <tr
-                      key={item.id}
-                      onClick={() => onSelectCategory?.(item)}
-                      className={onSelectCategory ? 'admin-row-clickable' : ''}
-                    >
-                      {!collapsed && <td className="admin-col-id">{item.id}</td>}
-                      <td
-                        className="admin-semantic-name-cell"
-                        style={{
-                          paddingLeft: 4 + depth * 14,
-                          maxWidth: collapsed ? 180 : undefined,
-                          whiteSpace: collapsed ? 'nowrap' : undefined,
-                        }}
-                        title={collapsed ? (item.path || item.nameEn) : undefined}
-                      >
-                        <span
-                          onClick={(e) => { e.stopPropagation(); if (expandable) toggleExpand(item.id); }}
-                          className={`admin-semantic-tree-toggle ${expandable ? 'admin-semantic-tree-toggle--active' : 'admin-semantic-tree-toggle--inactive'}`}
-                        >
-                          {expandable && (expanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />)}
-                        </span>
-                        {item.nameEn}
-                      </td>
-                      <td
-                        className="admin-semantic-name-ko-cell"
-                        style={{
-                          maxWidth: collapsed ? 120 : undefined,
-                          whiteSpace: collapsed ? 'nowrap' : undefined,
-                        }}
-                      >
-                        {item.nameKo}
-                      </td>
-                      {!collapsed && <td className="admin-code-mono">{item.code || '-'}</td>}
-                      {!collapsed && <td className="admin-text-secondary">{item.description || '-'}</td>}
-                      <td className="admin-col-actions" onClick={(e) => e.stopPropagation()}>
-                        <button className="kl-btn kl-btn--icon" onClick={() => openEdit(item)} title="수정"><Pencil size={14} /></button>
-                        {!collapsed && (
-                          <button className="kl-btn kl-btn--icon kl-btn--danger-soft admin-action-gap-left" onClick={() => handleDelete(item)} title="삭제">
-                            <Trash2 size={14} />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+        <div className="basic-table-shell">
+          {visibleItems.length === 0 ? (
+            <TableEmptyState
+              solo
+              variant={searchLower ? 'search' : 'default'}
+            />
+          ) : (
+            <BasicTable
+              className={SEMANTIC_SPLIT_TABLE_CLASS}
+              columns={categoryColumns}
+              data={visibleItems}
+              renderCell={renderCategoryCell}
+              getBodyCellProps={getCategoryBodyCellProps}
+              onRowClick={onSelectCategory ? handleCategoryRowClick : undefined}
+              getRowClassName={onSelectCategory ? getCategoryRowClassName : undefined}
+              rowAriaLabel={(row) => row.path || row.nameEn}
+              onColumnResizeMouseDown={categoryColumnStartResize}
+            />
+          )}
         </div>
       )}
+    </div>
+  );
 
-      <BaseModal
-        open={Boolean(editing)}
-        title={editing?.id ? `${typeLabel} 카테고리 수정` : `${typeLabel} 카테고리 추가`}
-        onClose={() => setEditing(null)}
-        maxWidth="sm"
-        contentClassName="admin-semantic-edit-content kl-modal-form"
-        actions={(
-          <>
-            <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
-            <Button variant="contained" onClick={handleSave}>
-              저장
-            </Button>
-          </>
-        )}
-      >
-        {editing ? (
-          <>
-            <div className="admin-field">
-              <label className="admin-field-label">영문명 (name_en) <span className="required-asterisk" aria-hidden="true">*</span></label>
-              <input className="admin-input" value={editing.nameEn || ''}
-                onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
-                placeholder="e.g. SkinType" />
-            </div>
-            <div className="admin-field">
-              <label className="admin-field-label">한글명 (name_ko) <span className="required-asterisk" aria-hidden="true">*</span></label>
-              <input className="admin-input" value={editing.nameKo || ''}
-                onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
-                placeholder="예: 피부타입" />
-            </div>
-            <div className="admin-field">
-              <label className="admin-field-label">코드 (code) — 비우면 name_en 에서 자동 생성</label>
-              <input className="admin-input" value={editing.code || ''}
-                onChange={(e) => setEditing({ ...editing, code: e.target.value })}
-                placeholder="e.g. skin-type" />
-            </div>
-            <div className="admin-field">
-              <label className="admin-field-label">상위 카테고리 (parent)</label>
-              <KlModalSelect
-                placeholder="(루트 — 최상위)"
-                value={editing.parentId != null ? String(editing.parentId) : ''}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    parentId: e.target.value ? Number(e.target.value) : null,
-                  })
-                }
-                optionItems={items
-                  .filter((it) => it.id !== editing.id)
-                  .map((it) => ({
-                    value: it.id,
-                    label: `${it.path || it.nameEn} — ${it.nameKo}`,
-                  }))}
-              />
-            </div>
-            <div className="admin-field">
-              <label className="admin-field-label">설명</label>
-              <textarea className="admin-textarea" rows={3} value={editing.description || ''}
-                onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                placeholder="선택 사항" />
-            </div>
-          </>
-        ) : null}
-      </BaseModal>
+  const editModal = (
+    <BaseModal
+      open={Boolean(editing)}
+      title={editing?.id ? `${typeLabel} 카테고리 수정` : `${typeLabel} 카테고리 추가`}
+      onClose={() => setEditing(null)}
+      maxWidth="sm"
+      contentClassName="admin-semantic-edit-content kl-modal-form"
+      actions={(
+        <>
+          <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
+          <Button variant="contained" onClick={handleSave}>
+            저장
+          </Button>
+        </>
+      )}
+    >
+      {editing ? (
+        <>
+          <div className="admin-field">
+            <label className="admin-field-label">영문명 (name_en) <span className="required-asterisk" aria-hidden="true">*</span></label>
+            <input className="admin-input" value={editing.nameEn || ''}
+              onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
+              placeholder="e.g. SkinType" />
+          </div>
+          <div className="admin-field">
+            <label className="admin-field-label">한글명 (name_ko) <span className="required-asterisk" aria-hidden="true">*</span></label>
+            <input className="admin-input" value={editing.nameKo || ''}
+              onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
+              placeholder="예: 피부타입" />
+          </div>
+          <div className="admin-field">
+            <label className="admin-field-label">코드 (code) — 비우면 name_en 에서 자동 생성</label>
+            <input className="admin-input" value={editing.code || ''}
+              onChange={(e) => setEditing({ ...editing, code: e.target.value })}
+              placeholder="e.g. skin-type" />
+          </div>
+          <div className="admin-field">
+            <label className="admin-field-label">상위 카테고리 (parent)</label>
+            <KlModalSelect
+              placeholder="(루트 — 최상위)"
+              value={editing.parentId != null ? String(editing.parentId) : ''}
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  parentId: e.target.value ? Number(e.target.value) : null,
+                })
+              }
+              optionItems={displayItems
+                .filter((it) => it.id !== editing.id)
+                .map((it) => ({
+                  value: it.id,
+                  label: `${it.path || it.nameEn} — ${it.nameKo}`,
+                }))}
+            />
+          </div>
+          <div className="admin-field">
+            <label className="admin-field-label">설명</label>
+            <textarea className="admin-textarea" rows={3} value={editing.description || ''}
+              onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+              placeholder="선택 사항" />
+          </div>
+        </>
+      ) : null}
+    </BaseModal>
+  );
+
+  if (compact) {
+    return (
+      <>
+        {tableArea}
+        {editModal}
+      </>
+    );
+  }
+
+  return (
+    <div className="kl-page">
+      <div className="kl-main-sticky-head">
+        <AdminPageHeader
+          icon={Layers}
+          title={`${typeLabel} 카테고리 관리`}
+          count={displayItems.length}
+          subtitle={`${typeLabel} 카테고리를 계층 구조로 관리합니다 (ontology_category.type = ${type}).`}
+        />
+      </div>
+      {tableArea}
+      {editModal}
     </div>
   );
 }

@@ -189,3 +189,49 @@
 
 #### 환경·문서
 - `.env.local.example` — `VITE_ENABLE_ACTION_MOCK` · dev 이력 샘플 안내
+
+---
+
+## 2026-05-18
+
+### 11) 좌·우 패널 드래그 리사이즈 공통화 (`SplitPane` · `useSplitPaneResize`)
+
+- **목적:** 2패널 화면에서 세로 구분선 드래그로 좌측 너비(%) 조절을 재사용 가능하게 하고, 드래그 %·구분선·패널 간격을 한곳에서 유지
+- **영향:** 신규·기존 좌·우 분할 레이아웃 전반(첫 적용: 온톨로지 옵션 시멘틱 탭)
+
+#### 공통 모듈
+- `src/hooks/useSplitPaneResize.js` — **신규** · 드래그·% clamp · `loadSplitPanePercent` / `saveSplitPanePercent`
+- `src/components/common/SplitPane/SplitPane.jsx` — **신규** · `left` / `right` 슬롯 + `role="separator"` 리사이저
+- `src/components/common/SplitPane/SplitPane.module.scss` — flex·`gap` 12px(`sm+xs`)·구분선 hover
+- `src/components/common/SplitPane/SplitPane.global.css` — 드래그 중 `body.kl-split-pane-resizing`
+- `src/components/common/SplitPane/index.js` — re-export
+
+#### 문서
+- `docs/dev-guide-split-pane.md` — **신규** · 적용 가이드·props·flex 높이 체인·접기 연동·체크항목(§10)
+
+---
+
+### 12) 온톨로지 옵션 — 시멘틱 split에 `SplitPane` 적용
+
+- **목적:** 객체·관계·액션 탭의 카테고리(좌)·목록(우) 분할에 드래그 리사이즈 적용; `>` 펼침 기본 45%·접힘 300px·탭별 % 저장 유지
+- **영향:** `/admin/semantic` 객체 & 카테고리 / 관계 & 카테고리 / 액션 & 카테고리
+
+#### JSX/JS
+- `src/pages/admin/semantic/SemanticEntitySplitPage.jsx` — `SplitPane` 사용 · 인라인 flex % 제거
+- `src/pages/admin/semantic/useSemanticEntityAdmin.js` — `splitPanePercentKey` (object/relation/action 각각)
+- `src/pages/admin/semantic/semanticEntityPageLabels.js` — 페이지 라벨 UTF-16 이스케이프(인코딩 안정)
+- `AdminSemanticObjectPage.jsx` 등 래퍼 — `entityKey` + `headerIcon`만 전달
+
+#### CSS
+- `src/pages/admin/admin-common.css` — `.admin-semantic-split-layout` flex 높이만 · 좌측 `border-right` 제거(구분선은 `SplitPane`)
+- `src/pages/admin/AdminSemanticPage.css` — `.admin-semantic-tab-panel` flex 체인
+
+---
+
+### 13) 시멘틱 split — 좌·우 패널·구분선 여백 보정
+
+- **목적:** 리사이저 도입 후 패널이 구분선에 붙어 보이던 현상 완화 — 기존 split과 동일하게 구분선 좌우 12px 간격
+- **영향:** `SplitPane` 사용 모든 화면(공통 `gap`)
+
+#### CSS
+- `SplitPane.module.scss` — 루트 `gap: calc(var(--spacing-sm) + var(--spacing-xs))` · 리사이저 음수 마진 제거

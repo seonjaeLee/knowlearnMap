@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, Save, RotateCcw, Layers } from 'lucide-react';
 import { useDialog } from '../../hooks/useDialog';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import TableEmptyState from '../../components/common/TableEmptyState';
 import './admin-common.css';
 
 /**
@@ -126,12 +127,10 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
                             {items.length === 0 ? (
                                 <tr>
                                     <td colSpan={4}>
-                                        <div className="admin-empty-state" style={{ border: 'none', padding: '24px 0' }}>
-                                            <p className="admin-empty-state-title">등록된 {itemLabel}가 없습니다</p>
-                                            <p style={{ fontSize: 12, color: 'var(--admin-text-muted)', margin: 0 }}>
-                                                아래 "+ 행 추가" 버튼을 눌러 시작하세요.
-                                            </p>
-                                        </div>
+                                        <TableEmptyState
+                                            compact
+                                            hint={'아래 "+ 행 추가" 버튼을 눌러 시작하세요.'}
+                                        />
                                     </td>
                                 </tr>
                             ) : (

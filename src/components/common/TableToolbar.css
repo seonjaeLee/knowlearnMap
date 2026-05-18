@@ -10,7 +10,7 @@
   --kl-toolbar-control-height: var(--kl-control-height);
 
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: var(--spacing-md);
   flex-wrap: wrap;
@@ -22,10 +22,22 @@
   justify-content: flex-end;
 }
 
+/* 툴바 요약(건수·필터 상태) — split·목록 공통 */
+.kl-table-toolbar-summary {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.kl-table-toolbar-summary strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
 /* 툴바 좌·우 영역 — 검색·필터·보기 전환 등 묶음 */
 .toolbar-left {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--spacing-md);
   flex: 1 1 auto;
   min-width: 0;
@@ -33,10 +45,20 @@
 
 .toolbar-right {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--spacing-md);
   flex-shrink: 0;
   flex-wrap: wrap;
+}
+
+/* 툴바 우측 — kl-toolbar-btn(보조) · kl-btn-outline-primary-sm(추가 CTA) */
+.table-toolbar .toolbar-right > .kl-btn-outline-primary-sm,
+.table-toolbar .toolbar-right > .kl-btn-primary-sm {
+  box-sizing: border-box;
+  height: var(--kl-control-height);
+  flex-shrink: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* 툴바 검색 — 아이콘 + 입력 (searchArea, toolbar-select와 동일 32px·radius-sm) */

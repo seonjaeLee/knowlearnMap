@@ -8,8 +8,13 @@
     background: var(--color-bg-primary);
 }
 
-/* 상세 팝업 — 가로 800px, 내용 높이에 맞춤, 긴 본문만 뷰포트 내 스크롤 */
-:global(.kl-base-modal-paper.cs-detail-modal-paper),
+/* 상세 팝업 — 가로 620px, 내용 높이에 맞춤, 긴 본문만 뷰포트 내 스크롤 */
+:global(.kl-base-modal-paper.cs-detail-modal-paper) {
+    width: 620px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
+}
+
 :global(.kl-base-modal-paper.cs-form-modal-paper) {
     width: 800px !important;
     max-width: calc(100vw - 48px) !important;

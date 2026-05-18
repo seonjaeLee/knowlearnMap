@@ -688,48 +688,6 @@
     margin-bottom: var(--admin-space-md);
 }
 
-/* ─── Semantic page sub-tabs ─── */
-.admin-semantic-subtabs {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid var(--admin-border);
-    flex-shrink: 0;
-    padding: 0 var(--admin-space-lg);
-    background: var(--admin-bg-subtle);
-}
-
-.admin-semantic-subtab {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    padding: 8px 16px;
-    border: none;
-    background: transparent;
-    color: var(--admin-text-secondary);
-    font-size: var(--admin-font-md);
-    font-weight: 500;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: color 0.15s, border-color 0.15s;
-    white-space: nowrap;
-}
-
-.admin-semantic-subtab > svg {
-    flex-shrink: 0;
-}
-
-.admin-semantic-subtab:hover {
-    color: var(--admin-text-primary);
-}
-
-.admin-semantic-subtab.active {
-    color: var(--admin-color-primary);
-    border-bottom-color: var(--admin-color-primary);
-    /* font-weight 변경 시 라벨 너비가 달라져 탭이 좌우로 밀림 — 색·하단선만으로 구분 */
-}
-
 .admin-semantic-actions-bar {
     display: flex;
     align-items: center;
@@ -910,38 +868,14 @@
     overflow-x: hidden;
 }
 
+/* SplitPane 루트 — 시멘틱 탭 본문 높이 */
 .admin-semantic-split-layout {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
+    flex: 1;
+    min-height: 0;
 }
 
 .admin-semantic-left-panel {
-    border-right: 1px solid #e2e8f0;
-    padding-right: 12px;
-    transition: flex-basis 0.2s ease, max-width 0.2s ease;
-}
-
-.admin-semantic-panel-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.admin-semantic-panel-title {
-    margin: 0;
-    font-size: var(--admin-font-md);
-}
-
-.admin-semantic-panel-head-actions {
-    display: flex;
-    gap: 4px;
-}
-
-.admin-semantic-right-panel {
-    flex: 1;
-    min-width: 0;
+    transition: flex-basis var(--transition-normal), max-width var(--transition-normal);
 }
 
 .admin-row-clickable {
@@ -952,6 +886,13 @@
     font-weight: var(--admin-font-weight-medium);
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.admin-semantic-name-cell-inner {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .admin-semantic-tree-toggle {
