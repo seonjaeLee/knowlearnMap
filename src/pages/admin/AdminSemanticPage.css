@@ -49,13 +49,91 @@
   min-height: 0;
 }
 
-.kl-split-table-area > .table-toolbar .toolbar-right {
-  gap: var(--spacing-xs);
+/* 펼침 시에만 최소 너비 — 접힘(~300px) 3열과 충돌 방지 · 가로 스크롤은 basic-table-shell 단일 래퍼 */
+.admin-semantic-left-panel
+  .admin-semantic-category-table-area--expanded
+  .basic-table-shell
+  .admin-semantic-split-basic-table {
+  min-width: 480px;
 }
 
-/* 카테고리 split 표 — 헤더(th)·본문 셀 좌우 간격 */
+.admin-semantic-right-panel .basic-table-shell .admin-semantic-split-basic-table {
+  min-width: 680px;
+}
+
+/* 툴바 gap·정렬: TableToolbar.css — :has(.kl-table-toolbar-summary) 공통 */
+
+/* 카테고리 split 표 — 헤더(th)·본문 셀 좌우 간격(BasicTable 기본 padding과 동일) */
 .admin-semantic-left-panel .admin-semantic-split-basic-table .MuiTableCell-head,
 .admin-semantic-left-panel .admin-semantic-split-basic-table .MuiTableCell-body {
-  padding-left: var(--spacing-sm);
-  padding-right: var(--spacing-sm);
+  box-sizing: border-box;
+}
+
+/* 시멘틱 추가/수정 — 고객센터·사용자 수정 팝업과 동일 520px · 라벨(좌) + 입력(우) */
+:global(.kl-base-modal-paper.semantic-form-modal-paper) {
+  width: 520px !important;
+  max-width: calc(100vw - 48px) !important;
+  min-width: unset !important;
+  min-height: unset !important;
+}
+
+:global(.kl-base-modal-content.admin-semantic-edit-content) {
+  padding: var(--spacing-lg) !important;
+  padding-bottom: var(--spacing-2xl) !important;
+  min-height: auto !important;
+}
+
+.admin-semantic-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 0;
+  margin: 0;
+}
+
+.admin-semantic-form-row {
+  display: grid;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--spacing-md);
+}
+
+.admin-semantic-form-row--start {
+  align-items: start;
+}
+
+.admin-semantic-form-row__label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.admin-semantic-form-row__control {
+  min-width: 0;
+}
+
+.admin-semantic-form-row__control textarea {
+  width: 100%;
+}
+
+.admin-semantic-form-helper {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.admin-semantic-modal-actions {
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
+}
+
+@media (max-width: 768px) {
+  .admin-semantic-form-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    row-gap: var(--spacing-xs);
+  }
 }

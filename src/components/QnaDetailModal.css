@@ -2,6 +2,39 @@
  * 1:1 문의 상세 — 답변 영역 전용 (문의 head·본문은 CsDetailModal.css)
  */
 
+/* 1:1 문의 상세 팝업 — 가로 670px (공지·FAQ 상세 cs-detail-modal-paper 620px과 분리) */
+:global(.kl-base-modal-paper.qna-detail-modal-paper) {
+    width: 670px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
+    height: auto !important;
+    max-height: calc(100vh - 48px) !important;
+    min-height: unset !important;
+}
+
+:global(.kl-base-modal-paper.qna-detail-modal-paper .kl-base-modal-content-shell) {
+    flex: 0 1 auto !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+:global(.kl-base-modal-paper.qna-detail-modal-paper .cs-detail-modal-content) {
+    flex: none;
+    max-height: calc(100vh - 180px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    :global(.kl-base-modal-paper.qna-detail-modal-paper) {
+        width: calc(100vw - 48px) !important;
+    }
+
+    :global(.kl-base-modal-paper.qna-detail-modal-paper .cs-detail-modal-content) {
+        max-height: calc(100vh - 160px);
+    }
+}
+
 .qna-detail-hidden-file-input {
     display: none;
 }
@@ -16,7 +49,7 @@
 
 /* 답변 — 문의 본문 대비 간격(본문 하단 48px 여백과 맞춤), 좌측 들여쓰기는 section 한 곳만 */
 .qna-detail-answers-section {
-    margin-top: var(--spacing-2xl);
+    margin-top: var(--spacing-lg);
     padding-left: var(--spacing-xl);
 }
 

@@ -22,4 +22,4 @@ alwaysApply: false
 
 ## 데이터 테이블 규격
 
-- `docs/data-table-spec.md` §6 과 함께 유지한다.
+- `docs/table/data-table-spec.md` §6 과 함께 유지한다.

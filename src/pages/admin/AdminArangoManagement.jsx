@@ -5,7 +5,7 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import { RotateCcw, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
-import TableEmptyState from '../../components/common/TableEmptyState';
+import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import { mockArangoDatabases, mockArangoWorkspacesByDomainId } from '../../data/arangoAdminMockData';
 import './admin-common.css';
 import './AdminArangoManagement.css';
@@ -177,10 +177,32 @@ function AdminArangoManagement() {
                             )}
                         </span>
                     );
-                case 'domainName':
-                    return <span className="arango-mgmt-domain-name">{row.domainName || '-'}</span>;
-                case 'arangoDbName':
-                    return <span className="arango-mgmt-mono">{row.arangoDbName || '-'}</span>;
+                case 'domainName': {
+                    const domainName = row.domainName;
+                    return (
+                        <span
+                            className={
+                                isTableCellBlank(domainName) ? 'kl-table-cell-blank' : 'arango-mgmt-domain-name'
+                            }
+                            title={!isTableCellBlank(domainName) ? String(domainName) : undefined}
+                        >
+                            {formatTableCellText(domainName)}
+                        </span>
+                    );
+                }
+                case 'arangoDbName': {
+                    const arangoDbName = row.arangoDbName;
+                    return (
+                        <span
+                            className={
+                                isTableCellBlank(arangoDbName) ? 'kl-table-cell-blank' : 'arango-mgmt-mono'
+                            }
+                            title={!isTableCellBlank(arangoDbName) ? String(arangoDbName) : undefined}
+                        >
+                            {formatTableCellText(arangoDbName)}
+                        </span>
+                    );
+                }
                 case 'objectNodeCount':
                 case 'relationNodeCount':
                 case 'edgeCount':
@@ -209,16 +231,43 @@ function AdminArangoManagement() {
 
     const renderWorkspaceCell = useCallback(({ column, row }) => {
         switch (column.id) {
-            case 'workspaceId':
-                return <span className="arango-mgmt-mono">{row.workspaceId ?? '-'}</span>;
-            case 'workspaceName':
+            case 'workspaceId': {
+                const workspaceId = row.workspaceId;
                 return (
-                    <span className={row.isOrphan ? 'arango-mgmt-ws-name arango-mgmt-ws-name--orphan' : 'arango-mgmt-ws-name'}>
-                        {row.workspaceName || '-'}
+                    <span
+                        className={isTableCellBlank(workspaceId) ? 'kl-table-cell-blank' : 'arango-mgmt-mono'}
+                    >
+                        {isTableCellBlank(workspaceId) ? formatTableCellText(workspaceId) : String(workspaceId)}
                     </span>
                 );
-            case 'createdBy':
-                return <span className="arango-mgmt-muted">{row.createdBy || '-'}</span>;
+            }
+            case 'workspaceName': {
+                const workspaceName = row.workspaceName;
+                return (
+                    <span
+                        className={[
+                            row.isOrphan ? 'arango-mgmt-ws-name arango-mgmt-ws-name--orphan' : 'arango-mgmt-ws-name',
+                            isTableCellBlank(workspaceName) ? 'kl-table-cell-blank' : '',
+                        ]
+                            .filter(Boolean)
+                            .join(' ')}
+                        title={!isTableCellBlank(workspaceName) ? String(workspaceName) : undefined}
+                    >
+                        {formatTableCellText(workspaceName)}
+                    </span>
+                );
+            }
+            case 'createdBy': {
+                const createdBy = row.createdBy;
+                return (
+                    <span
+                        className={isTableCellBlank(createdBy) ? 'kl-table-cell-blank' : 'arango-mgmt-muted'}
+                        title={!isTableCellBlank(createdBy) ? String(createdBy) : undefined}
+                    >
+                        {formatTableCellText(createdBy)}
+                    </span>
+                );
+            }
             case 'objectNodeCount':
             case 'relationNodeCount':
             case 'edgeCount':
@@ -260,13 +309,6 @@ function AdminArangoManagement() {
             }
             const list = workspaceDetails[domainId] ?? [];
             const rows = list.map((ws) => ({ ...ws, id: ws.workspaceId }));
-            if (rows.length === 0) {
-                return (
-                    <div className="arango-mgmt-row-detail-empty" role="status">
-                        워크스페이스 데이터가 없습니다.
-                    </div>
-                );
-            }
             return (
                 <div className="arango-mgmt-row-detail-inner basic-table-shell">
                     <BasicTable
@@ -275,6 +317,10 @@ function AdminArangoManagement() {
                         data={rows}
                         renderCell={renderWorkspaceCell}
                         onColumnResizeMouseDown={workspaceColumnStartResize}
+                        emptyState={{
+                            variant: 'default',
+                            message: '워크스페이스 데이터가 없습니다.',
+                        }}
                     />
                 </div>
             );
@@ -294,7 +340,6 @@ function AdminArangoManagement() {
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="ArangoDB 관리"
-                    count={databases.length}
                     actions={(
                         <button
                             type="button"
@@ -313,22 +358,27 @@ function AdminArangoManagement() {
                 <div className="arango-mgmt-loading">데이터를 불러오는 중...</div>
             ) : (
                 <div className="table-area">
+                    <div className="table-toolbar">
+                    <div className="toolbar-left">
+                        <span className="kl-table-toolbar-summary">
+                            총 <strong>{databases.length}</strong>건
+                        </span>
+                    </div>
+                    </div>
+
                     <div className="basic-table-shell">
-                        {databases.length === 0 ? (
-                            <TableEmptyState solo />
-                        ) : (
-                            <BasicTable
-                                className="arango-mgmt-basic-table"
-                                columns={domainTableColumns}
-                                data={domainTableRows}
-                                renderCell={renderDomainCell}
-                                renderRowDetail={renderRowDetail}
-                                onRowClick={handleDomainRowClick}
-                                getRowClassName={domainRowClassName}
-                                rowAriaLabel={domainRowAriaLabel}
-                                onColumnResizeMouseDown={domainColumnStartResize}
-                            />
-                        )}
+                        <BasicTable
+                            className="arango-mgmt-basic-table"
+                            columns={domainTableColumns}
+                            data={domainTableRows}
+                            renderCell={renderDomainCell}
+                            renderRowDetail={renderRowDetail}
+                            onRowClick={handleDomainRowClick}
+                            getRowClassName={domainRowClassName}
+                            rowAriaLabel={domainRowAriaLabel}
+                            onColumnResizeMouseDown={domainColumnStartResize}
+                            emptyState={{ variant: 'default' }}
+                        />
                     </div>
                 </div>
             )}

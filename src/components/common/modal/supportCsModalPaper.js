@@ -15,6 +15,18 @@ export const supportDetailModalPaperSx = {
 
 export const supportDetailModalPaperClassName = 'cs-detail-modal-paper';
 
+/** 1:1 문의 상세 팝업 — 가로 670px (공지·FAQ 상세 620px과 분리) */
+export const QNA_DETAIL_MODAL_WIDTH = 670;
+
+export const qnaDetailModalPaperSx = {
+  width: QNA_DETAIL_MODAL_WIDTH,
+  maxWidth: 'calc(100vw - 48px)',
+  height: 'auto',
+  maxHeight: 'calc(100vh - 48px)',
+};
+
+export const qnaDetailModalPaperClassName = 'qna-detail-modal-paper';
+
 /** 작성·수정 팝업 */
 export const supportFormModalPaperSx = {
   ...csModalPaperWidth,
@@ -83,3 +95,17 @@ export const actionWsModalPaperSx = {
 };
 
 export const actionWsModalPaperClassName = 'action-ws-modal-paper';
+
+/** 어드민 시멘틱 카테고리·엔티티 추가/수정 — 고객센터 등록 팝업과 동일 520px */
+export const semanticFormModalPaperSx = {
+  ...qnaFormModalPaperSx,
+};
+
+export const semanticFormModalPaperClassName = 'semantic-form-modal-paper';
+
+/** 프롬프트 메타 수정 — 고객센터 등록 팝업과 동일 520px */
+export const promptFormModalPaperSx = {
+  ...qnaFormModalPaperSx,
+};
+
+export const promptFormModalPaperClassName = 'prompt-form-modal-paper';

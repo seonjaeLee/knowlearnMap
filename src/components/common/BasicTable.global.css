@@ -170,6 +170,22 @@
 
 
 
+/* 빈 셀 · 보조 텍스트 — `tableCellDisplay.jsx` · 시스템 설정 표와 동일 */
+.kl-table-cell-blank {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+}
+
+.kl-table-cell-text--secondary {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
 /* 테이블 행 아이콘 버튼 — `styles/kl-buttons.css` (`.kl-table-icon-btn` 등) */
 
 

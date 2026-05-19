@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus } from 'lucide-react';
+import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus, Info } from 'lucide-react';
 import { Button } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -8,8 +8,14 @@ import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
 import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
+import BasicTable from '../components/common/BasicTable';
+import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import BaseModal from '../components/common/modal/BaseModal';
 import KlModalSelect from '../components/common/modal/KlModalSelect';
+import {
+    domainFormModalPaperClassName,
+    domainFormModalPaperSx,
+} from '../components/common/modal/supportFormModalPaperSx';
 import './Home.css';
 
 /**
@@ -24,14 +30,21 @@ function mergePromptCodesForSelectUi(apiCodes) {
     return Array.from(new Set([...base, ...PROMPT_SELECT_UI_SAMPLES]));
 }
 
-/** 프롬프트 변경 모달 Paper 크기 — 조정 시 여기만 수정 */
-const PROMPT_MODAL_PAPER_SX = {
-    width: 900,
-    maxWidth: 'min(900px, calc(100vw - 64px))',
-    maxHeight: 'min(850px, 90vh)',
-    display: 'flex',
-    flexDirection: 'column',
-};
+const WORKSPACE_LIST_COLUMNS = [
+    { id: 'title', label: '제목', width: '36%', align: 'left' },
+    { id: 'source', label: '소스(개수)', width: 96, align: 'left', ellipsis: false },
+    { id: 'createdAt', label: '소스생성일', width: 120, align: 'left' },
+    { id: 'role', label: '역할', width: 88, align: 'left' },
+    { id: '_actions', label: '관리', width: 156, align: 'right', ellipsis: false },
+];
+
+function formatWorkspaceCreatedAt(notebook) {
+    const raw = notebook.createdAt || notebook.updatedAt || notebook.date;
+    if (isTableCellBlank(raw)) return formatTableCellText(raw);
+    const t = new Date(raw).getTime();
+    if (!Number.isFinite(t)) return formatTableCellText(raw);
+    return new Date(raw).toLocaleDateString('ko-KR');
+}
 
 function Home() {
     const [searchParams] = useSearchParams();
@@ -258,31 +271,44 @@ function Home() {
         }
     };
 
-    const handleOpenPromptModal = (e, notebookId) => {
-        e.stopPropagation();
-        const notebook = notebooks.find(nb => nb.id === notebookId);
-        if (notebook) {
-            setPromptNotebook(notebook);
-            setChunkPromptValue(notebook.chunkPrompt || '');
-            setOntologyPromptValue(notebook.ontologyPrompt || '');
-            setChatResultPromptValue(notebook.chatResultPrompt || '');
-            setContentOntologyPromptValue(notebook.contentOntologyPrompt || '');
-            setSchemaAnalysisPromptValue(notebook.schemaAnalysisPrompt || '');
-            setInterTableAnalysisPromptValue(notebook.interTableAnalysisPrompt || '');
-            setAqlGenerationPromptValue(notebook.aqlGenerationPrompt || '');
-            setAqlInterpretationPromptValue(notebook.aqlInterpretationPrompt || '');
-            setAggregationStrategyPromptValue(notebook.aggregationStrategyPrompt || '');
-            setPromptModalOpen(true);
+    const openWorkspaceEditModal = useCallback((notebook) => {
+        if (!notebook) return;
+        setPromptNotebook(notebook);
+        setNewName(notebook.name || notebook.title || '');
+        setChunkPromptValue(notebook.chunkPrompt || '');
+        setOntologyPromptValue(notebook.ontologyPrompt || '');
+        setChatResultPromptValue(notebook.chatResultPrompt || '');
+        setContentOntologyPromptValue(notebook.contentOntologyPrompt || '');
+        setSchemaAnalysisPromptValue(notebook.schemaAnalysisPrompt || '');
+        setInterTableAnalysisPromptValue(notebook.interTableAnalysisPrompt || '');
+        setAqlGenerationPromptValue(notebook.aqlGenerationPrompt || '');
+        setAqlInterpretationPromptValue(notebook.aqlInterpretationPrompt || '');
+        setAggregationStrategyPromptValue(notebook.aggregationStrategyPrompt || '');
+        setPromptModalOpen(true);
+        if (isAdmin) {
             fetchPromptCodesByPurpose();
         }
+    }, [isAdmin]);
+
+    const handleOpenPromptModal = (e, notebookId) => {
+        e.stopPropagation();
+        const notebook = notebooks.find((nb) => nb.id === notebookId);
+        openWorkspaceEditModal(notebook);
         setOpenMenuId(null);
     };
 
     const handleSavePrompt = async () => {
         if (!promptNotebook) return;
+        if (!newName.trim()) {
+            await alert({
+                title: '프롬프트 변경',
+                message: '워크스페이스 이름을 입력해주세요.',
+            });
+            return;
+        }
         try {
             const updateData = {
-                name: promptNotebook.name,
+                name: newName.trim(),
                 chunkPrompt: chunkPromptValue.trim() || null,
                 ontologyPrompt: ontologyPromptValue.trim() || null,
                 chatResultPrompt: chatResultPromptValue.trim() || null,
@@ -297,6 +323,8 @@ function Home() {
             setNotebooks(prev => prev.map(nb =>
                 nb.id === promptNotebook.id ? {
                     ...nb,
+                    name: updated.name,
+                    title: updated.name,
                     chunkPrompt: updated.chunkPrompt,
                     ontologyPrompt: updated.ontologyPrompt,
                     chatResultPrompt: updated.chatResultPrompt,
@@ -460,6 +488,134 @@ function Home() {
         return list.sort((a, b) => getTime(b) - getTime(a));
     }, [notebooks, sortBy]);
 
+    const renderWorkspaceListCell = useCallback(({ column, row: notebook }) => {
+        switch (column.id) {
+            case 'title':
+                return (
+                    <div className="home-workspace-list-title">
+                        <span className="home-workspace-list-icon" aria-hidden>
+                            {notebook.icon || '📄'}
+                        </span>
+                        <span className="home-workspace-list-name">
+                            {notebook.name || notebook.title || 'Untitled'}
+                        </span>
+                        {notebook.shareType === 'ALL' ? (
+                            <span className="notebook-share-badge notebook-share-badge--all home-workspace-list-badge">
+                                <Globe size={12} aria-hidden />
+                                <span>전체 공유</span>
+                            </span>
+                        ) : null}
+                        {notebook.shareType === 'INDIVIDUAL' ? (
+                            <span className="notebook-share-badge notebook-share-badge--individual home-workspace-list-badge">
+                                <Users size={12} aria-hidden />
+                                <span>조직 공유</span>
+                            </span>
+                        ) : null}
+                    </div>
+                );
+            case 'source':
+                return (
+                    <span className="home-workspace-list-muted">
+                        {notebook.documentCount ?? 0}
+                    </span>
+                );
+            case 'createdAt':
+                return (
+                    <span
+                        className={
+                            isTableCellBlank(notebook.createdAt || notebook.updatedAt || notebook.date)
+                                ? 'kl-table-cell-blank'
+                                : 'home-workspace-list-muted'
+                        }
+                    >
+                        {formatWorkspaceCreatedAt(notebook)}
+                    </span>
+                );
+            case 'role': {
+                const role = notebook.role;
+                return (
+                    <span className={isTableCellBlank(role) ? 'kl-table-cell-blank' : 'home-workspace-list-muted'}>
+                        {formatTableCellText(role || 'Owner')}
+                    </span>
+                );
+            }
+            case '_actions': {
+                if (notebook.role !== 'Owner') {
+                    return <span className="kl-table-cell-blank">—</span>;
+                }
+                const workspaceLabel = notebook.name || notebook.title || '워크스페이스';
+                if (deletingId === notebook.id) {
+                    return (
+                        <div className="kl-table-actions" onClick={(e) => e.stopPropagation()}>
+                            <Loader2 className="kl-table-icon-btn__spin" size={16} aria-hidden />
+                        </div>
+                    );
+                }
+                const hasCustomPrompts = Boolean(
+                    notebook.ontologyPrompt || notebook.chatResultPrompt || notebook.chunkPrompt,
+                );
+                return (
+                    <div className="kl-table-actions" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            type="button"
+                            className="kl-table-icon-btn kl-table-icon-btn--neutral"
+                            onClick={(e) => handleRename(e, notebook.id)}
+                            title="제목 수정"
+                            aria-label={`${workspaceLabel} 제목 수정`}
+                        >
+                            <Edit2 strokeWidth={1.75} aria-hidden />
+                        </button>
+                        {isAdmin ? (
+                            <>
+                                <button
+                                    type="button"
+                                    className={
+                                        hasCustomPrompts
+                                            ? 'kl-table-icon-btn kl-table-icon-btn--success'
+                                            : 'kl-table-icon-btn kl-table-icon-btn--neutral'
+                                    }
+                                    onClick={(e) => handleOpenPromptModal(e, notebook.id)}
+                                    title="프롬프트 변경"
+                                    aria-label={`${workspaceLabel} 프롬프트 변경`}
+                                >
+                                    {hasCustomPrompts ? (
+                                        <Check strokeWidth={1.75} aria-hidden />
+                                    ) : (
+                                        <FileText strokeWidth={1.75} aria-hidden />
+                                    )}
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`kl-table-icon-btn kl-table-icon-btn--neutral${
+                                        notebook.shareType && notebook.shareType !== 'NONE'
+                                            ? ' kl-table-icon-btn--accent'
+                                            : ''
+                                    }`}
+                                    onClick={(e) => handleOpenShareModal(e, notebook.id)}
+                                    title="공유 설정"
+                                    aria-label={`${workspaceLabel} 공유 설정`}
+                                >
+                                    <Share2 strokeWidth={1.75} aria-hidden />
+                                </button>
+                            </>
+                        ) : null}
+                        <button
+                            type="button"
+                            className="kl-table-icon-btn kl-table-icon-btn--danger"
+                            onClick={(e) => handleDelete(e, notebook.id)}
+                            title="삭제"
+                            aria-label={`${workspaceLabel} 삭제`}
+                        >
+                            <Trash2 strokeWidth={1.75} aria-hidden />
+                        </button>
+                    </div>
+                );
+            }
+            default:
+                return undefined;
+        }
+    }, [deletingId, isAdmin, notebooks]);
+
     return (
         <div className="kl-page">
             <div className="kl-main-sticky-head">
@@ -476,7 +632,12 @@ function Home() {
             </div>
 
             <div className="table-area">
-                <div className="table-toolbar table-toolbar--end">
+                <div className="table-toolbar">
+                    <div className="toolbar-left">
+                        <span className="kl-table-toolbar-summary">
+                            총 <strong>{sortedNotebooks.length}</strong>건
+                        </span>
+                    </div>
                     <div className="toolbar-right">
                         <div className="toolbar-view-toggle">
                             <button
@@ -541,22 +702,35 @@ function Home() {
                 </div>
             )}
 
-            {/* Notebooks Grid */}
-            {!loading && !error && (
-                <div className={`notebooks-container ${viewMode}`}>
-                    {/* Table Header (List View Only) */}
-                    {viewMode === 'list' && (
-                        <div className="table-header">
-                            <div className="header-icon"></div>
-                            <div className="header-title">제목</div>
-                            <div className="header-source">소스</div>
-                            <div className="header-date">생성일</div>
-                            <div className="header-role">역할</div>
-                            <div className="header-actions"></div>
-                        </div>
-                    )}
 
-                    {/* Create New Card */}
+            {!loading && !error && viewMode === 'list' && (
+                <div className="basic-table-shell home-workspace-list-shell">
+                    <BasicTable
+                        className="home-workspace-basic-table"
+                        columns={WORKSPACE_LIST_COLUMNS}
+                        data={sortedNotebooks}
+                        renderCell={renderWorkspaceListCell}
+                        onRowClick={(_e, { row }) => handleNotebookClick(row.id)}
+                        onRowKeyDown={(_e, { row }) => {
+                            if (_e.key === 'Enter' || _e.key === ' ') {
+                                _e.preventDefault();
+                                handleNotebookClick(row.id);
+                            }
+                        }}
+                        rowAriaLabel={(row) => `${row.name || row.title || '워크스페이스'} 열기`}
+                        getRowClassName={(row) => (
+                            deletingId === row.id ? 'home-workspace-list-row--deleting' : ''
+                        )}
+                        emptyState={{
+                            variant: 'default',
+                            message: '워크스페이스가 없습니다.',
+                        }}
+                    />
+                </div>
+            )}
+
+            {!loading && !error && viewMode === 'grid' && (
+                <div className="notebooks-container grid">
                     <div className="notebook-card create-card" onClick={handleCreateNew}>
                         <div className="create-card-content">
                             <div className="create-icon">
@@ -569,7 +743,6 @@ function Home() {
                         </div>
                     </div>
 
-                    {/* Notebook Cards */}
                     {sortedNotebooks.map((notebook) => (
                         <div
                             key={notebook.id}
@@ -578,7 +751,6 @@ function Home() {
                             }`}
                             onClick={() => handleNotebookClick(notebook.id)}
                         >
-                            {/* 삭제 중 오버레이 */}
                             {deletingId === notebook.id && (
                                 <div
                                     className="notebook-card-overlay--deleting"
@@ -607,9 +779,7 @@ function Home() {
                                     </div>
                                 )}
 
-                                {viewMode === 'grid' && (
-                                    // Only show menu if Owner
-                                    (notebook.role === 'Owner') && (
+                                {notebook.role === 'Owner' && (
                                         <div className="more-btn-container" ref={openMenuId === notebook.id ? menuRef : null}>
                                             <button
                                                 className="more-btn"
@@ -662,71 +832,12 @@ function Home() {
                                                 </div>
                                             )}
                                         </div>
-                                    )
                                 )}
                                 </div>
                             </div>
                             <div className="card-body">
-                                {viewMode === 'list' && <div className="notebook-icon">{notebook.icon || '📄'}</div>}
                                 <h3 className="notebook-title">{notebook.name || notebook.title || 'Untitled'}</h3>
                                 <p className="notebook-source">소스 {notebook.documentCount || 0}개</p>
-                                <p className="notebook-date">{notebook.date || '2025. 12. 28.'}</p>
-                                <p className="notebook-role">{notebook.role || 'Owner'}</p>
-
-                                {viewMode === 'list' && (
-                                    <div className="more-btn-container" ref={openMenuId === notebook.id ? menuRef : null}>
-                                        <button
-                                            className="more-btn"
-                                            onClick={(e) => handleMenuToggle(e, notebook.id)}
-                                        >
-                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                                <circle cx="10" cy="4" r="1.5" />
-                                                <circle cx="10" cy="10" r="1.5" />
-                                                <circle cx="10" cy="16" r="1.5" />
-                                            </svg>
-                                        </button>
-                                        {openMenuId === notebook.id && (
-                                            <div
-                                                className={`popup-menu${workspaceMenuOpenUp ? ' popup-menu--open-up' : ''}`}
-                                            >
-                                                <button
-                                                    className="menu-item"
-                                                    onClick={(e) => handleRename(e, notebook.id)}
-                                                >
-                                                    <Edit2 size={14} />
-                                                    <span>제목 수정</span>
-                                                </button>
-                                                {isAdmin && (
-                                                    <>
-                                                        <button
-                                                            className="menu-item"
-                                                            onClick={(e) => handleOpenPromptModal(e, notebook.id)}
-                                                        >
-                                                            {(notebook.ontologyPrompt || notebook.chatResultPrompt || notebook.chunkPrompt)
-                                                                ? <Check size={14} className="menu-item-icon--success" />
-                                                                : <FileText size={14} />}
-                                                            <span>프롬프트 변경</span>
-                                                        </button>
-                                                        <button
-                                                            className="menu-item"
-                                                            onClick={(e) => handleOpenShareModal(e, notebook.id)}
-                                                        >
-                                                            <Share2 size={14} />
-                                                            <span>공유 설정</span>
-                                                        </button>
-                                                    </>
-                                                )}
-                                                <button
-                                                    className="menu-item delete"
-                                                    onClick={(e) => handleDelete(e, notebook.id)}
-                                                >
-                                                    <Trash2 size={14} />
-                                                    <span>삭제</span>
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
                             </div>
                         </div>
                     ))}
@@ -742,7 +853,9 @@ function Home() {
                 title="워크스페이스 이름 변경"
                 maxWidth="xs"
                 disableBackdropClose
-                contentClassName="kl-modal-form"
+                contentClassName="home-rename-modal-content kl-modal-form"
+                actionsClassName="home-rename-modal-actions"
+                actionsAlign="right"
                 actions={(
                     <>
                         <Button
@@ -760,25 +873,30 @@ function Home() {
                     </>
                 )}
             >
-                <div className="home-rename-modal-body">
-                    <div className="modal-native-field">
-                        <label htmlFor="workspace-rename-input">워크스페이스 이름</label>
-                        <input
-                            id="workspace-rename-input"
-                            type="text"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleRenameSubmit();
-                                }
-                            }}
-                            placeholder="이름 입력"
-                            autoComplete="off"
-                            autoFocus
-                        />
+                <form
+                    className="home-workspace-modal-form"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleRenameSubmit();
+                    }}
+                >
+                    <div className="home-workspace-form-row">
+                        <label className="home-workspace-form-row__label" htmlFor="workspace-rename-input">
+                            워크스페이스 이름
+                        </label>
+                        <div className="home-workspace-form-row__control">
+                            <input
+                                id="workspace-rename-input"
+                                type="text"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                placeholder="이름 입력"
+                                autoComplete="off"
+                                autoFocus
+                            />
+                        </div>
                     </div>
-                </div>
+                </form>
             </BaseModal>
 
             {/* Prompt Modal */}
@@ -786,10 +904,10 @@ function Home() {
                 open={promptModalOpen}
                 onClose={() => setPromptModalOpen(false)}
                 title="프롬프트 변경"
-                subtitle={`워크스페이스 - ${promptNotebook?.name || '-'}`}
                 maxWidth={false}
                 fullWidth={false}
-                paperSx={PROMPT_MODAL_PAPER_SX}
+                paperSx={domainFormModalPaperSx}
+                paperClassName={domainFormModalPaperClassName}
                 contentClassName="home-prompt-modal-content kl-modal-form"
                 actionsClassName="home-prompt-modal-actions"
                 actionsAlign="left"
@@ -798,7 +916,8 @@ function Home() {
                         <div className="home-prompt-modal-action-left">
                             <Button
                                 variant="outlined"
-                                color="error"
+                                color="primary"
+                                className="outlinedPrimary-sm"
                                 onClick={handleResetPromptToDefault}
                             >
                                 기본값 초기화
@@ -821,14 +940,38 @@ function Home() {
                     </div>
                 )}
             >
-                <div className="home-prompt-modal-shell">
+                <form
+                    className="home-prompt-modal-form"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSavePrompt();
+                    }}
+                >
                     <div className="home-prompt-modal-grid">
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    청킹 프롬프트
-                                </label>
-                                <div className="home-prompt-row">
+                        <div className="home-workspace-form-row">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-name">
+                                워크스페이스 이름
+                            </label>
+                            <div className="home-workspace-form-row__control">
+                                <input
+                                    id="workspace-prompt-name"
+                                    type="text"
+                                    value={newName}
+                                    onChange={(e) => setNewName(e.target.value)}
+                                    placeholder="이름 입력"
+                                    autoComplete="off"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-chunk">
+                                청킹 프롬프트
+                            </label>
+                            <div className="home-workspace-form-row__control">
+                                <div className="home-prompt-inline-row">
                                     <KlModalSelect
+                                        id="workspace-prompt-chunk"
                                         className="home-prompt-select-flex"
                                         value={chunkPromptValue}
                                         onChange={(e) => setChunkPromptValue(e.target.value)}
@@ -844,128 +987,146 @@ function Home() {
                                         NONE
                                     </button>
                                 </div>
-                                <div className={`home-prompt-hint ${chunkPromptValue === 'NONE' ? 'home-prompt-hint--danger' : ''}`}>
+                                <p className={`kl-modal-form-helper${chunkPromptValue === 'NONE' ? ' kl-modal-form-helper--error' : ''}`}>
                                     {chunkPromptValue === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
-                                </div>
+                                </p>
                             </div>
+                        </div>
 
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    온톨로지 프롬프트
-                                </label>
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-ontology">
+                                온톨로지 프롬프트
+                            </label>
+                            <div className="home-workspace-form-row__control">
                                 <KlModalSelect
+                                    id="workspace-prompt-ontology"
                                     value={ontologyPromptValue}
                                     onChange={(e) => setOntologyPromptValue(e.target.value)}
                                     options={ontologyPromptCodes}
                                 />
-                                <div className="home-prompt-hint">
-                                    Chunk → LLM 온톨로지 추출
-                                </div>
+                                <p className="kl-modal-form-helper">Chunk → LLM 온톨로지 추출</p>
                             </div>
+                        </div>
 
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    채팅 프롬프트
-                                </label>
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-chat">
+                                채팅 프롬프트
+                            </label>
+                            <div className="home-workspace-form-row__control">
                                 <KlModalSelect
+                                    id="workspace-prompt-chat"
                                     value={chatResultPromptValue}
                                     onChange={(e) => setChatResultPromptValue(e.target.value)}
                                     options={chatPromptCodes}
                                 />
-                                <div className="home-prompt-hint">
-                                    Chat 응답 생성
-                                </div>
+                                <p className="kl-modal-form-helper">Chat 응답 생성</p>
                             </div>
+                        </div>
 
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    CONTENT 온톨로지
-                                </label>
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label
+                                className="home-workspace-form-row__label home-workspace-form-row__label--stacked"
+                                htmlFor="workspace-prompt-content-ontology"
+                            >
+                                <span className="home-workspace-form-row__label-line">CONTENT</span>
+                                <span className="home-workspace-form-row__label-line">온톨로지</span>
+                            </label>
+                            <div className="home-workspace-form-row__control">
                                 <KlModalSelect
+                                    id="workspace-prompt-content-ontology"
                                     value={contentOntologyPromptValue}
                                     onChange={(e) => setContentOntologyPromptValue(e.target.value)}
                                     options={contentOntologyPromptCodes}
                                 />
-                                <div className="home-prompt-hint">
-                                    정형 Chunk → LLM 온톨로지
-                                </div>
+                                <p className="kl-modal-form-helper">정형 Chunk → LLM 온톨로지</p>
                             </div>
+                        </div>
 
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    스키마 분석
-                                </label>
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-schema">
+                                스키마 분석
+                            </label>
+                            <div className="home-workspace-form-row__control">
                                 <KlModalSelect
+                                    id="workspace-prompt-schema"
                                     value={schemaAnalysisPromptValue}
                                     onChange={(e) => setSchemaAnalysisPromptValue(e.target.value)}
                                     options={schemaAnalysisPromptCodes}
                                 />
-                                <div className="home-prompt-hint">
-                                    CSV/DB 스키마 자동 분석
-                                </div>
+                                <p className="kl-modal-form-helper">CSV/DB 스키마 자동 분석</p>
                             </div>
+                        </div>
 
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    테이블 간 관계 분석
-                                </label>
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-inter-table">
+                                테이블 간 관계
+                            </label>
+                            <div className="home-workspace-form-row__control">
                                 <KlModalSelect
+                                    id="workspace-prompt-inter-table"
                                     value={interTableAnalysisPromptValue}
                                     onChange={(e) => setInterTableAnalysisPromptValue(e.target.value)}
                                     options={interTableAnalysisPromptCodes}
                                 />
-                                <div className="home-prompt-hint">
-                                    다건 테이블 간 FK/관계 분석
-                                </div>
+                                <p className="kl-modal-form-helper">다건 테이블 간 FK/관계 분석</p>
                             </div>
+                        </div>
 
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    AQL 생성
-                                </label>
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-aql-gen">
+                                AQL 생성
+                            </label>
+                            <div className="home-workspace-form-row__control">
                                 <KlModalSelect
+                                    id="workspace-prompt-aql-gen"
                                     value={aqlGenerationPromptValue}
                                     onChange={(e) => setAqlGenerationPromptValue(e.target.value)}
                                     options={aqlGenerationPromptCodes}
                                 />
-                                <div className="home-prompt-hint">
-                                    자연어 → AQL 쿼리 생성
-                                </div>
+                                <p className="kl-modal-form-helper">자연어 → AQL 쿼리 생성</p>
                             </div>
+                        </div>
 
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    AQL 결과 해석
-                                </label>
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-aql-interpret">
+                                AQL 결과 해석
+                            </label>
+                            <div className="home-workspace-form-row__control">
                                 <KlModalSelect
+                                    id="workspace-prompt-aql-interpret"
                                     value={aqlInterpretationPromptValue}
                                     onChange={(e) => setAqlInterpretationPromptValue(e.target.value)}
                                     options={aqlInterpretationPromptCodes}
                                 />
-                                <div className="home-prompt-hint">
-                                    AQL 쿼리 결과 자연어 해석
-                                </div>
+                                <p className="kl-modal-form-helper">AQL 쿼리 결과 자연어 해석</p>
                             </div>
+                        </div>
 
-                            <div className="home-prompt-field">
-                                <label className="home-prompt-label">
-                                    집계 전략
-                                </label>
+                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-aggregation">
+                                집계 전략
+                            </label>
+                            <div className="home-workspace-form-row__control">
                                 <KlModalSelect
+                                    id="workspace-prompt-aggregation"
                                     value={aggregationStrategyPromptValue}
                                     onChange={(e) => setAggregationStrategyPromptValue(e.target.value)}
                                     options={aggregationStrategyPromptCodes}
                                 />
-                                <div className="home-prompt-hint">
-                                    대규모 정형 데이터 집계 전략
-                                </div>
+                                <p className="kl-modal-form-helper">대규모 정형 데이터 집계 전략</p>
                             </div>
+                        </div>
                     </div>
 
-                    <div className="home-prompt-footer-note">
-                        * 기본값: 상위 레벨(도메인 → 시스템) 설정을 따름 &nbsp;|&nbsp; NONE: 명시적 비활성화
+                    <div className="kl-infotxt-note">
+                        <Info size={16} aria-hidden />
+                        <span>
+                            <strong>기본값</strong>은 상위 레벨(도메인 → 시스템) 설정을 따릅니다.
+                            {' '}
+                            <strong>NONE</strong>은 명시적 비활성화입니다.
+                        </span>
                     </div>
-                </div>
+                </form>
             </BaseModal>
 
             {/* Share Settings Modal */}

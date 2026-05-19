@@ -176,6 +176,21 @@
   cursor: pointer;
 }
 
+/* 빈 목록 — thead 유지 + 본문 중앙 메시지 (`BasicTable` `emptyState`) */
+.emptyRow:hover .emptyCell {
+  background: var(--bt-bg-panel);
+}
+
+.emptyCell {
+  height: auto;
+  min-height: calc(var(--spacing-2xl) * 4);
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: none;
+  background: var(--bt-bg-panel);
+}
+
 /* ---------- 푸터(BasicTableFooter) — `.wrap` 밖에서도 쓰이므로 `:root` 토큰만 사용 ---------- */
 
 .footer {

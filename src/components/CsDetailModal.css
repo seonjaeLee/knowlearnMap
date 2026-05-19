@@ -42,7 +42,7 @@
 
 .cs-detail-modal-body {
     min-height: 0;
-    padding-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-lg);
 }
 
 /* 고객센터 작성·수정 팝업 본문 하단 여백 (48px) */

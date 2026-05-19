@@ -13,6 +13,8 @@ import {
     domainFormModalPaperSx,
 } from '../components/common/modal/supportFormModalPaperSx';
 import BasicTable from '../components/common/BasicTable';
+import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
+import './admin/admin-common.css';
 import './DomainSelection.css';
 
 const isLocalAuthEnabled = import.meta.env.VITE_ENABLE_LOCAL_AUTH === 'true';
@@ -192,8 +194,19 @@ function DomainSelection() {
                             </span>
                         </div>
                     );
-                case 'description':
-                    return <span className="domain-list-desc">{domain.description || '-'}</span>;
+                case 'description': {
+                    const description = domain.description;
+                    return (
+                        <span
+                            className={
+                                isTableCellBlank(description) ? 'kl-table-cell-blank' : 'domain-list-desc'
+                            }
+                            title={!isTableCellBlank(description) ? String(description) : undefined}
+                        >
+                            {formatTableCellText(description)}
+                        </span>
+                    );
+                }
                 case '_actions':
                     return (
                         <div className="domain-list-action">
@@ -229,9 +242,8 @@ function DomainSelection() {
     }
 
     return (
-        <div className="kl-page">
-            <div className="domain-selection-content">
-                <div className="kl-main-sticky-head">
+        <div className="kl-page domain-selection-page">
+            <div className="kl-main-sticky-head">
                 <PageHeader
                     title="도메인 선택"
                     breadcrumbs={['어드민센터']}
@@ -246,25 +258,31 @@ function DomainSelection() {
                         </button>
                     )}
                 />
+            </div>
 
+            <div className="table-area">
+                <div className="table-toolbar">
+                    <div className="toolbar-left">
+                        <span className="kl-table-toolbar-summary">
+                            총 <strong>{domains.length}</strong>건
+                        </span>
+                    </div>
+                    <div className="toolbar-right">
+                        <span className="domain-toolbar-user">관리자 로그인 ({user.email})</span>
+                    </div>
                 </div>
 
-                {loading && <p>Loading domains...</p>}
-                {error && <p className="error-message">{error}</p>}
+                {error ? (
+                    <p className="domain-selection-error" role="alert">{error}</p>
+                ) : null}
 
-                <div className="table-area">
-                    <div className="table-toolbar">
-                        <div className="user-info-bar">
-                            <span>관리자 로그인 ({user.email})</span>
-                            <span className="domain-content-help">작업할 도메인을 선택해주세요.</span>
-                        </div>
+                {loading ? (
+                    <div className="admin-loading-state">
+                        <div className="admin-spinner" />
+                        <span>도메인 목록을 불러오는 중...</span>
                     </div>
+                ) : (
                     <div className="basic-table-shell kl-data-table-dense">
-                    {!loading && domains.length === 0 ? (
-                        <div className="domain-list-empty" role="status">
-                            등록된 도메인이 없습니다.
-                        </div>
-                    ) : (
                         <BasicTable
                             className="domain-basic-table"
                             columns={domainColumns}
@@ -279,10 +297,10 @@ function DomainSelection() {
                                     .filter(Boolean)
                                     .join(' ')
                             }
+                            emptyState={{ variant: 'default', message: '등록된 도메인이 없습니다.' }}
                         />
-                    )}
                     </div>
-                </div>
+                )}
             </div>
 
             <BaseModal

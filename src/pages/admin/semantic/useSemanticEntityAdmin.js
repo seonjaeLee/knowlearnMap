@@ -9,7 +9,6 @@ const ENTITY_CONFIG = {
     categoryType: 'OBJECT',
     entityLabel: 'Object',
     storageKey: 'kl-admin-semantic-object-v1',
-    leftExpandedKey: 'admin_semantic_object_left_expanded',
     splitPanePercentKey: 'admin_semantic_object_split_percent',
     listMock: () => semanticAdminMockStore.listObjects(),
     listLive: () => adminSemanticApi.listObjects(),
@@ -25,7 +24,6 @@ const ENTITY_CONFIG = {
     categoryType: 'RELATION',
     entityLabel: '관계',
     storageKey: 'kl-admin-semantic-relation-v1',
-    leftExpandedKey: 'admin_semantic_relation_left_expanded',
     splitPanePercentKey: 'admin_semantic_relation_split_percent',
     listMock: () => semanticAdminMockStore.listRelations(),
     listLive: () => adminSemanticApi.listRelations(),
@@ -41,7 +39,6 @@ const ENTITY_CONFIG = {
     categoryType: 'ACTION',
     entityLabel: 'Action',
     storageKey: 'kl-admin-semantic-action-v1',
-    leftExpandedKey: 'admin_semantic_action_left_expanded',
     splitPanePercentKey: 'admin_semantic_action_split_percent',
     listMock: () => semanticAdminMockStore.listActions(),
     listLive: () => adminSemanticApi.listActions(),
@@ -64,18 +61,31 @@ export function useSemanticEntityAdmin(entityKey) {
   const [listSource, setListSource] = useState('live');
   const [editing, setEditing] = useState(null);
   const [importing, setImporting] = useState(false);
-  const [leftExpanded, setLeftExpanded] = useState(() => {
-    const stored = localStorage.getItem(config.leftExpandedKey);
-    return stored === null ? true : stored !== 'false';
-  });
+  /** 매 로딩·탭 진입 시 접힘(이름·한글명·관리). localStorage에 저장하지 않음 */
+  const [leftExpanded, setLeftExpanded] = useState(false);
   const { alert, confirm } = useDialog();
   const fileInputRef = useRef(null);
   const usesMock = isSemanticMockEnabled || listSource === 'mock';
 
-  const setLeftExpandedPersist = useCallback((val) => {
+  const setLeftExpandedOnly = useCallback((val) => {
     setLeftExpanded(val);
-    localStorage.setItem(config.leftExpandedKey, String(val));
-  }, [config.leftExpandedKey]);
+  }, []);
+
+  useEffect(() => {
+    const legacyLeftExpandedKeys = [
+      'admin_semantic_object_left_expanded',
+      'admin_semantic_object_left_expanded_v2',
+      'admin_semantic_relation_left_expanded',
+      'admin_semantic_relation_left_expanded_v2',
+      'admin_semantic_action_left_expanded',
+      'admin_semantic_action_left_expanded_v2',
+    ];
+    try {
+      legacyLeftExpandedKeys.forEach((key) => window.localStorage.removeItem(key));
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -229,7 +239,7 @@ export function useSemanticEntityAdmin(entityKey) {
     setEditing,
     importing,
     leftExpanded,
-    setLeftExpandedPersist,
+    setLeftExpandedOnly,
     fileInputRef,
     fetchItems,
     openCreate,

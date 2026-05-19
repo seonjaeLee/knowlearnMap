@@ -7,13 +7,13 @@ import { attachRowSpanMeta, getRowSpanCellProps } from '../../hooks/useTableRowS
 import { RotateCcw, RefreshCw, HelpCircle, Pencil } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
-import TableEmptyState from '../../components/common/TableEmptyState';
 import KlPopover from '../../components/common/KlPopover';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
     configFormModalPaperClassName,
     configFormModalPaperSx,
 } from '../../components/common/modal/supportFormModalPaperSx';
+import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import { mockAdminConfigCategories, mockAdminConfigItems } from '../../data/adminConfigMockData';
 import './admin-common.css';
 import './AdminConfigManagement.css';
@@ -180,9 +180,7 @@ function usesTextareaValuePresentation(row) {
 }
 
 function formatConfigValuePreview(raw) {
-    if (raw == null || String(raw).trim() === '') {
-        return '—';
-    }
+    if (isTableCellBlank(raw)) return formatTableCellText(raw);
     return String(raw).replace(/\s+/g, ' ').trim();
 }
 
@@ -336,6 +334,11 @@ function AdminConfigManagement() {
         return attachRowSpanMeta(sorted, 'category', 'category');
     }, [configs]);
 
+    const configTableEmptyVariant = useMemo(
+        () => (selectedCategory ? 'search' : 'default'),
+        [selectedCategory]
+    );
+
     const configColumnDefinitions = useMemo(
         () => [
             {
@@ -417,13 +420,15 @@ function AdminConfigManagement() {
                 case 'dataType':
                     return <span className={typeBadgeClassName(row.dataType)}>{row.dataType}</span>;
                 case 'description': {
-                    const descText = row.description || '-';
+                    const desc = row.description;
                     return (
                         <span
-                            className="config-mgmt-desc"
-                            title={row.description ? String(row.description) : undefined}
+                            className={
+                                isTableCellBlank(desc) ? 'kl-table-cell-blank' : 'config-mgmt-desc'
+                            }
+                            title={!isTableCellBlank(desc) ? String(desc) : undefined}
                         >
-                            {descText}
+                            {formatTableCellText(desc)}
                         </span>
                     );
                 }
@@ -453,7 +458,6 @@ function AdminConfigManagement() {
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="시스템 설정"
-                    count={configs.length}
                     actions={(
                         <div className="kl-header-actions">
                             <button
@@ -483,7 +487,13 @@ function AdminConfigManagement() {
                 <div className="config-mgmt-loading">데이터를 불러오는 중...</div>
             ) : (
                 <div className="table-area">
-                    <div className="table-toolbar table-toolbar--end">
+                    <div className="table-toolbar">
+                    <div className="toolbar-left">
+                        <span className="kl-table-toolbar-summary">
+                            총 <strong>{tableData.length}</strong>건
+                        </span>
+                    </div>
+                    <div className="toolbar-right">
                             <div className="config-mgmt-toolbar-filter">
                                 <label htmlFor="config-mgmt-category-filter" className="config-mgmt-visually-hidden">
                                     카테고리
@@ -504,20 +514,18 @@ function AdminConfigManagement() {
                                 </select>
                             </div>
                     </div>
-                    {tableData.length === 0 ? (
-                        <TableEmptyState solo />
-                    ) : (
-                        <div className="basic-table-shell">
-                            <BasicTable
-                                className="config-mgmt-basic-table"
-                                columns={configTableColumns}
-                                data={tableData}
-                                renderCell={renderConfigCell}
-                                getBodyCellProps={getBodyCellProps}
-                                onColumnResizeMouseDown={configColumnStartResize}
-                            />
-                        </div>
-                    )}
+                    </div>
+                    <div className="basic-table-shell">
+                        <BasicTable
+                            className="config-mgmt-basic-table"
+                            columns={configTableColumns}
+                            data={tableData}
+                            renderCell={renderConfigCell}
+                            getBodyCellProps={getBodyCellProps}
+                            onColumnResizeMouseDown={configColumnStartResize}
+                            emptyState={{ variant: configTableEmptyVariant }}
+                        />
+                    </div>
                 </div>
             )}
 

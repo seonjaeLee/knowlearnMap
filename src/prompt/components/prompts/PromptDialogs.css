@@ -1,3 +1,64 @@
 .prompt-form-modal-content {
   min-height: auto !important;
 }
+
+/* 프롬프트 메타 수정 — 520px · 라벨(좌) + 입력(우) */
+:global(.kl-base-modal-paper.prompt-form-modal-paper) {
+  width: 520px !important;
+  max-width: calc(100vw - 48px) !important;
+  min-width: unset !important;
+  min-height: unset !important;
+}
+
+:global(.kl-base-modal-content.prompt-edit-modal-content) {
+  padding: var(--spacing-lg) !important;
+  padding-bottom: var(--spacing-2xl) !important;
+  min-height: auto !important;
+}
+
+.prompt-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 0;
+  margin: 0;
+}
+
+.prompt-form-row {
+  display: grid;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--spacing-md);
+}
+
+.prompt-form-row--start {
+  align-items: start;
+}
+
+.prompt-form-row__label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.prompt-form-row__control {
+  min-width: 0;
+}
+
+.prompt-form-row__control textarea {
+  width: 100%;
+}
+
+.prompt-modal-actions {
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
+}
+
+@media (max-width: 768px) {
+  .prompt-form-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    row-gap: var(--spacing-xs);
+  }
+}

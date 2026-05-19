@@ -127,17 +127,6 @@
   min-width: 720px;
 }
 
-.admin-action-table-summary {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  line-height: 1.4;
-}
-
-.admin-action-table-summary strong {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
-}
-
 .admin-action-loading {
   display: flex;
   align-items: center;

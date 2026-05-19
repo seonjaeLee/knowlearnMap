@@ -2,13 +2,13 @@
  * 목록·테이블 상단 툴바 (searchArea)
  * - DOM: `.table-area` > `.table-toolbar` (+ PageHeader는 `kl-main-sticky-head`)
  * - 로드: main.jsx 전역 import
- * - 규격·수정 FAQ: docs/list-page-spec.md
+ * - 규격·수정 FAQ: docs/surface/list-page-spec.md
  * - 대표 예시: src/pages/admin/AdminMemberManagement.jsx
  */
 
 .table-toolbar {
   --kl-toolbar-control-height: var(--kl-control-height);
-
+  padding: 0 var(--spacing-sm) !important;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -22,16 +22,42 @@
   justify-content: flex-end;
 }
 
-/* 툴바 요약(건수·필터 상태) — split·목록 공통 */
+/* 툴바 요약(건수·필터 상태) — split·목록 공통 · 툴바 flex-end로 우측 컨트롤과 하단 정렬 */
 .kl-table-toolbar-summary {
+  display: inline-flex;
+  align-items: flex-end;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  line-height: 1.4;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .kl-table-toolbar-summary strong {
   color: var(--color-text-primary);
   font-weight: var(--font-weight-semibold);
+}
+
+/* 좌: 총 N건 · 우: 검색·필터·버튼 — 시멘틱 split·프롬프트 목록 등 */
+.table-toolbar:has(.toolbar-left .kl-table-toolbar-summary):has(.toolbar-right) {
+  flex-wrap: nowrap;
+  gap: var(--spacing-sm);
+}
+
+.table-toolbar:has(.toolbar-left .kl-table-toolbar-summary):has(.toolbar-right) .toolbar-left {
+  flex: 0 0 auto;
+  align-items: flex-end;
+}
+
+.table-toolbar:has(.toolbar-left .kl-table-toolbar-summary):has(.toolbar-right) .toolbar-right {
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: var(--spacing-sm);
+  min-width: 0;
 }
 
 /* 툴바 좌·우 영역 — 검색·필터·보기 전환 등 묶음 */
@@ -285,7 +311,30 @@
 }
 
 @media (max-width: 768px) {
-  .table-toolbar {
+  /* 좌측 건수 요약 + 우측 컨트롤: 한 줄 유지, 총 N건은 항상 왼쪽 */
+  .table-toolbar:has(.toolbar-left .kl-table-toolbar-summary):has(.toolbar-right) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .table-toolbar:has(.toolbar-left .kl-table-toolbar-summary):has(.toolbar-right) .toolbar-left {
+    flex: 0 0 auto;
+    order: 0;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .table-toolbar:has(.toolbar-left .kl-table-toolbar-summary):has(.toolbar-right) .toolbar-right {
+    flex: 1 1 auto;
+    order: 1;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+
+  /* 검색만 좌·필터 우 등 기존 세로 스택 패턴 */
+  .table-toolbar:not(:has(.toolbar-left .kl-table-toolbar-summary)) {
     align-items: stretch;
     flex-direction: column;
   }

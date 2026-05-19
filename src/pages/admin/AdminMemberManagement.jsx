@@ -8,7 +8,7 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import { Users, Search, RotateCcw, Pencil, Trash2, Lock, Mail } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
-import TableEmptyState from '../../components/common/TableEmptyState';
+import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
     memberFormModalPaperClassName,
@@ -183,7 +183,7 @@ function AdminMemberManagement() {
     const rangeEnd = filteredMembers.length === 0 ? 0 : Math.min((page + 1) * PAGE_SIZE, filteredMembers.length);
 
     const formatDate = useCallback((dateString) => {
-        if (!dateString) return '-';
+        if (isTableCellBlank(dateString)) return formatTableCellText(dateString);
         return new Date(dateString).toLocaleDateString('ko-KR', {
             year: 'numeric', month: '2-digit', day: '2-digit',
             hour: '2-digit', minute: '2-digit',
@@ -321,32 +321,54 @@ function AdminMemberManagement() {
                         </span>
                     </div>
                 );
-            case 'domain':
+            case 'domain': {
+                const domain = member.domain;
                 return (
-                    <span className="admin-member-domain" title={member.domain || ''}>
-                        {member.domain || '-'}
+                    <span
+                        className={isTableCellBlank(domain) ? 'kl-table-cell-blank' : 'admin-member-domain'}
+                        title={!isTableCellBlank(domain) ? String(domain) : undefined}
+                    >
+                        {formatTableCellText(domain)}
                     </span>
                 );
+            }
             case 'failed':
                 return (
                     <span className={isLocked ? 'admin-member-locked-count' : undefined}>
                         {member.failedLoginAttempts || 0}
                     </span>
                 );
-            case 'locked':
+            case 'locked': {
+                const lockedAt = member.accountLockedAt;
                 return (
-                    <span className={`member-mgmt-col-date ${isLocked ? 'admin-member-locked-date' : ''}`}>
-                        {member.accountLockedAt ? formatDate(member.accountLockedAt) : '-'}
+                    <span
+                        className={[
+                            isTableCellBlank(lockedAt) ? 'kl-table-cell-blank' : 'member-mgmt-col-date',
+                            isLocked && !isTableCellBlank(lockedAt) ? 'admin-member-locked-date' : '',
+                        ].filter(Boolean).join(' ')}
+                    >
+                        {formatDate(lockedAt)}
                     </span>
                 );
-            case 'lastLogin':
+            }
+            case 'lastLogin': {
+                const lastLoginAt = member.lastLoginAt;
                 return (
-                    <span className="member-mgmt-col-date">
-                        {member.lastLoginAt ? formatDate(member.lastLoginAt) : '-'}
+                    <span
+                        className={isTableCellBlank(lastLoginAt) ? 'kl-table-cell-blank' : 'member-mgmt-col-date'}
+                    >
+                        {formatDate(lastLoginAt)}
                     </span>
                 );
+            }
             case 'created':
-                return <span className="member-mgmt-col-date">{formatDate(member.createdAt)}</span>;
+                return (
+                    <span
+                        className={isTableCellBlank(member.createdAt) ? 'kl-table-cell-blank' : 'member-mgmt-col-date'}
+                    >
+                        {formatDate(member.createdAt)}
+                    </span>
+                );
             case 'actions':
                 return (
                     <div className="kl-table-actions">
@@ -404,6 +426,8 @@ function AdminMemberManagement() {
         toggleMemberRowSelected,
     ]);
 
+    const memberTableEmptyVariant = members.length === 0 ? 'default' : 'search';
+
     const headerColumns = useMemo(() => {
         if (!SHOW_ROW_CHECKBOX_COLUMN) return memberTableColumns;
         return memberTableColumns.map((col) => {
@@ -428,7 +452,6 @@ function AdminMemberManagement() {
                 <AdminPageHeader
                     icon={Users}
                     title="사용자 관리"
-                    count={filteredMembers.length}
                     actions={(
                         <button
                             type="button"
@@ -453,6 +476,11 @@ function AdminMemberManagement() {
                 <div className="table-area">
                     <div className="table-toolbar">
                     <div className="toolbar-left">
+                        <span className="kl-table-toolbar-summary">
+                            총 <strong>{filteredMembers.length}</strong>건
+                        </span>
+                    </div>
+                    <div className="toolbar-right">
                     <div className="search-area">
                     <Search size={16} className="search-area-icon" aria-hidden />
                     <input
@@ -467,20 +495,14 @@ function AdminMemberManagement() {
                     </div>
                     </div>
                     <div className="basic-table-shell">
-                        {filteredMembers.length === 0 ? (
-                            <TableEmptyState
-                                solo
-                                variant={members.length === 0 ? 'default' : 'search'}
-                            />
-                        ) : (
-                            <BasicTable
-                                className="member-mgmt-basic-table"
-                                columns={headerColumns}
-                                data={tableMemberRows}
-                                renderCell={renderMemberCell}
-                                onColumnResizeMouseDown={memberColumnStartResize}
-                            />
-                        )}
+                        <BasicTable
+                            className="member-mgmt-basic-table"
+                            columns={headerColumns}
+                            data={tableMemberRows}
+                            renderCell={renderMemberCell}
+                            onColumnResizeMouseDown={memberColumnStartResize}
+                            emptyState={{ variant: memberTableEmptyVariant }}
+                        />
                     </div>
                     {SHOW_MEMBER_TABLE_FOOTER ? (
                         <BasicTableFooter

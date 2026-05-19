@@ -64,4 +64,13 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kl-split-table-area > .admin-semantic-loading {
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-secondary);
 }

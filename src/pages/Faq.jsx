@@ -6,6 +6,7 @@ import FaqCreateModal from '../components/FaqCreateModal';
 import FaqDetailModal from '../components/FaqDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
+import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
 import { isSupportMockEnabled } from '../config/supportMock';
 import { mockFaqs } from '../data/supportMockData';
@@ -25,7 +26,7 @@ const FAQ_BASE_COLUMNS = [
 ];
 
 function formatDate(value) {
-  if (!value) return '-';
+  if (isTableCellBlank(value)) return formatTableCellText(value);
   return new Date(value).toLocaleDateString('ko-KR');
 }
 
@@ -104,6 +105,11 @@ function Faq() {
     });
     return sortFaqsForList(matched);
   }, [faqs, faqSearch, selectedCategory]);
+
+  const faqTableEmptyVariant = useMemo(
+    () => (faqs.length === 0 ? 'default' : 'search'),
+    [faqs.length],
+  );
 
   const selectedFaq = useMemo(
     () => faqs.find((faq) => faq.id === selectedFaqId) || null,
@@ -192,12 +198,35 @@ function Faq() {
             <span className="support-title-text">{row.title}</span>
           </div>
         );
-      case 'category':
-        return <span className="support-badge support-badge--soft">{row.category || '-'}</span>;
-      case 'author':
-        return row.authorEmail?.split('@')[0] || row.createdBy || '-';
+      case 'category': {
+        const category = row.category;
+        return (
+          <span
+            className={[
+              'support-badge support-badge--soft',
+              isTableCellBlank(category) ? 'kl-table-cell-blank' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {formatTableCellText(category)}
+          </span>
+        );
+      }
+      case 'author': {
+        const author = row.authorEmail?.split('@')[0] || row.createdBy;
+        return (
+          <span className={isTableCellBlank(author) ? 'kl-table-cell-blank' : undefined}>
+            {formatTableCellText(author)}
+          </span>
+        );
+      }
       case 'createdAt':
-        return formatDate(row.createdAt);
+        return (
+          <span className={isTableCellBlank(row.createdAt) ? 'kl-table-cell-blank' : undefined}>
+            {formatDate(row.createdAt)}
+          </span>
+        );
       case 'viewCount':
         return row.viewCount ?? 0;
       case '_actions':
@@ -232,6 +261,11 @@ function Faq() {
       <div className="table-area">
         <div className="table-toolbar">
           <div className="toolbar-left">
+            <span className="kl-table-toolbar-summary">
+              총 <strong>{filteredFaqs.length}</strong>건
+            </span>
+          </div>
+          <div className="toolbar-right">
             <div className="search-area">
               <Search size={16} className="search-area-icon" aria-hidden />
               <input
@@ -245,10 +279,7 @@ function Faq() {
                 aria-label="FAQ 검색"
               />
             </div>
-          </div>
-          <div className="toolbar-right">
             <div className="support-filter">
-              <span className="filter-label">카테고리</span>
               <select
                 id="faq-category-filter"
                 className="toolbar-select"
@@ -258,7 +289,7 @@ function Faq() {
                 }}
                 aria-label="카테고리"
               >
-                <option value="">전체</option>
+                <option value="">전체 카테고리</option>
                 {categories.map((category) => (
                   <option key={category} value={category}>
                     {category}
@@ -273,8 +304,6 @@ function Faq() {
             <div className="support-empty" role="status">FAQ를 불러오는 중입니다.</div>
           ) : loadError ? (
             <div className="support-empty" role="alert">{loadError}</div>
-          ) : filteredFaqs.length === 0 ? (
-            <div className="support-empty" role="status">등록된 FAQ가 없습니다.</div>
           ) : (
             <BasicTable
               className="support-basic-table"
@@ -289,6 +318,10 @@ function Faq() {
                 }
               }}
               rowAriaLabel={(row) => `${row.title} FAQ 상세 보기`}
+              emptyState={{
+                variant: faqTableEmptyVariant,
+                message: faqs.length === 0 ? '등록된 FAQ가 없습니다.' : undefined,
+              }}
             />
           )}
         </div>

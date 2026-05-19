@@ -1,7 +1,7 @@
 /**
  * 팝업(BaseModal 콘텐츠) 전용 폼 컨트롤 규격.
  * 적용: BaseModal contentClassName에 `kl-modal-form` 포함.
- * 문서: docs/modal-form-spec.md
+ * 문서: docs/overlay/modal-form-spec.md
  *
  * 한 줄 input·select 규격: `kl-form-control.css` (`--kl-control-*`) — 툴바와 동일
  * 네이티브 필드는 `index.css` `.modal-native-field` 와 같은 토큰

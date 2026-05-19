@@ -21,12 +21,20 @@ import {
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BaseModal from '../../components/common/modal/BaseModal';
 import KlModalSelect from '../../components/common/modal/KlModalSelect';
-import TableEmptyState from '../../components/common/TableEmptyState';
+import {
+  semanticFormModalPaperClassName,
+  semanticFormModalPaperSx,
+} from '../../components/common/modal/supportFormModalPaperSx';
+import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import ToolbarMoreMenu from '../../components/common/ToolbarMoreMenu';
 import BasicTable from '../../components/common/BasicTable';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
-import { semanticCategoryColumnDefinitions } from './semantic/semanticCategoryTableColumns';
+import {
+  semanticCategoryColumnDefinitionsCollapsed,
+  semanticCategoryColumnDefinitionsFull,
+} from './semantic/semanticCategoryTableColumns';
 import './admin-common.css';
+import './AdminSemanticPage.css';
 
 const SEMANTIC_SPLIT_TABLE_CLASS = 'admin-semantic-split-basic-table';
 
@@ -297,13 +305,22 @@ function AdminSemanticCategoryPage({
     else expandAll();
   }, [isTreeFullyExpanded, expandAll, collapseAll]);
 
+  const categoryColumnDefinitions = useMemo(
+    () => (collapsed
+      ? semanticCategoryColumnDefinitionsCollapsed
+      : semanticCategoryColumnDefinitionsFull),
+    [collapsed],
+  );
+
   const categoryStorageKey = useMemo(
-    () => `kl-admin-semantic-category-${type}-cols-v2`,
-    [type],
+    () => (collapsed
+      ? `kl-admin-semantic-category-${type}-cols-collapsed-v1`
+      : `kl-admin-semantic-category-${type}-cols-full-v3`),
+    [type, collapsed],
   );
 
   const { columns: categoryColumns, startResize: categoryColumnStartResize } = useBasicTableColumnResize({
-    definitions: semanticCategoryColumnDefinitions,
+    definitions: categoryColumnDefinitions,
     storageKey: categoryStorageKey,
     enabled: true,
   });
@@ -327,9 +344,18 @@ function AdminSemanticCategoryPage({
         );
       }
       case 'code':
-        return <span className="admin-code-mono">{row.code || '-'}</span>;
-      case 'description':
-        return <span className="admin-text-secondary">{row.description || '-'}</span>;
+        return <span className="admin-code-mono">{formatTableCellText(row.code)}</span>;
+      case 'description': {
+        const desc = row.description;
+        return (
+          <span
+            className="kl-table-cell-text--secondary"
+            title={!isTableCellBlank(desc) ? String(desc) : undefined}
+          >
+            {formatTableCellText(desc)}
+          </span>
+        );
+      }
       case 'actions':
         return (
           <div className="kl-table-actions" onClick={(e) => e.stopPropagation()}>
@@ -365,7 +391,7 @@ function AdminSemanticCategoryPage({
       const depth = row.__depth || 0;
       return {
         style: {
-          paddingLeft: 4 + depth * 14,
+          paddingLeft: `calc(var(--spacing-sm) + ${depth * 14}px)`,
           maxWidth: collapsed ? 180 : undefined,
         },
         className: 'admin-semantic-name-cell',
@@ -416,7 +442,12 @@ function AdminSemanticCategoryPage({
     },
   ], [importing, handleTemplate, handleExport, handleImportClick]);
 
-  const tableAreaClass = compact ? 'table-area kl-split-table-area' : 'table-area';
+  const tableAreaClass = [
+    compact ? 'table-area kl-split-table-area' : 'table-area',
+    collapsed
+      ? 'admin-semantic-category-table-area--collapsed'
+      : 'admin-semantic-category-table-area--expanded',
+  ].filter(Boolean).join(' ');
 
   const tableArea = (
     <div className={tableAreaClass}>
@@ -510,24 +541,18 @@ function AdminSemanticCategoryPage({
         </div>
       ) : (
         <div className="basic-table-shell">
-          {visibleItems.length === 0 ? (
-            <TableEmptyState
-              solo
-              variant={searchLower ? 'search' : 'default'}
-            />
-          ) : (
-            <BasicTable
-              className={SEMANTIC_SPLIT_TABLE_CLASS}
-              columns={categoryColumns}
-              data={visibleItems}
-              renderCell={renderCategoryCell}
-              getBodyCellProps={getCategoryBodyCellProps}
-              onRowClick={onSelectCategory ? handleCategoryRowClick : undefined}
-              getRowClassName={onSelectCategory ? getCategoryRowClassName : undefined}
-              rowAriaLabel={(row) => row.path || row.nameEn}
-              onColumnResizeMouseDown={categoryColumnStartResize}
-            />
-          )}
+          <BasicTable
+            className={SEMANTIC_SPLIT_TABLE_CLASS}
+            columns={categoryColumns}
+            data={visibleItems}
+            renderCell={renderCategoryCell}
+            getBodyCellProps={getCategoryBodyCellProps}
+            onRowClick={onSelectCategory ? handleCategoryRowClick : undefined}
+            getRowClassName={onSelectCategory ? getCategoryRowClassName : undefined}
+            rowAriaLabel={(row) => row.path || row.nameEn}
+            onColumnResizeMouseDown={categoryColumnStartResize}
+            emptyState={{ variant: searchLower ? 'search' : 'default' }}
+          />
         </div>
       )}
     </div>
@@ -538,8 +563,13 @@ function AdminSemanticCategoryPage({
       open={Boolean(editing)}
       title={editing?.id ? `${typeLabel} 카테고리 수정` : `${typeLabel} 카테고리 추가`}
       onClose={() => setEditing(null)}
-      maxWidth="sm"
+      maxWidth={false}
+      fullWidth={false}
+      paperSx={semanticFormModalPaperSx}
+      paperClassName={semanticFormModalPaperClassName}
       contentClassName="admin-semantic-edit-content kl-modal-form"
+      actionsClassName="admin-semantic-modal-actions"
+      actionsAlign="right"
       actions={(
         <>
           <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
@@ -550,51 +580,92 @@ function AdminSemanticCategoryPage({
       )}
     >
       {editing ? (
-        <>
-          <div className="admin-field">
-            <label className="admin-field-label">영문명 (name_en) <span className="required-asterisk" aria-hidden="true">*</span></label>
-            <input className="admin-input" value={editing.nameEn || ''}
-              onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
-              placeholder="e.g. SkinType" />
+        <form className="admin-semantic-modal-form" onSubmit={(e) => e.preventDefault()}>
+          <div className="admin-semantic-form-row">
+            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-name-en">
+              영문명 <span className="required-asterisk" aria-hidden="true">*</span>
+            </label>
+            <div className="admin-semantic-form-row__control">
+              <input
+                id="semantic-cat-name-en"
+                type="text"
+                value={editing.nameEn || ''}
+                onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
+                placeholder="e.g. SkinType"
+                autoComplete="off"
+              />
+            </div>
           </div>
-          <div className="admin-field">
-            <label className="admin-field-label">한글명 (name_ko) <span className="required-asterisk" aria-hidden="true">*</span></label>
-            <input className="admin-input" value={editing.nameKo || ''}
-              onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
-              placeholder="예: 피부타입" />
+          <div className="admin-semantic-form-row">
+            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-name-ko">
+              한글명 <span className="required-asterisk" aria-hidden="true">*</span>
+            </label>
+            <div className="admin-semantic-form-row__control">
+              <input
+                id="semantic-cat-name-ko"
+                type="text"
+                value={editing.nameKo || ''}
+                onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
+                placeholder="예: 피부타입"
+                autoComplete="off"
+              />
+            </div>
           </div>
-          <div className="admin-field">
-            <label className="admin-field-label">코드 (code) — 비우면 name_en 에서 자동 생성</label>
-            <input className="admin-input" value={editing.code || ''}
-              onChange={(e) => setEditing({ ...editing, code: e.target.value })}
-              placeholder="e.g. skin-type" />
+          <div className="admin-semantic-form-row">
+            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-code">
+              코드
+            </label>
+            <div className="admin-semantic-form-row__control">
+              <input
+                id="semantic-cat-code"
+                type="text"
+                value={editing.code || ''}
+                onChange={(e) => setEditing({ ...editing, code: e.target.value })}
+                placeholder="e.g. skin-type"
+                autoComplete="off"
+              />
+              <p className="admin-semantic-form-helper">비우면 영문명에서 자동 생성됩니다.</p>
+            </div>
           </div>
-          <div className="admin-field">
-            <label className="admin-field-label">상위 카테고리 (parent)</label>
-            <KlModalSelect
-              placeholder="(루트 — 최상위)"
-              value={editing.parentId != null ? String(editing.parentId) : ''}
-              onChange={(e) =>
-                setEditing({
-                  ...editing,
-                  parentId: e.target.value ? Number(e.target.value) : null,
-                })
-              }
-              optionItems={displayItems
-                .filter((it) => it.id !== editing.id)
-                .map((it) => ({
-                  value: it.id,
-                  label: `${it.path || it.nameEn} — ${it.nameKo}`,
-                }))}
-            />
+          <div className="admin-semantic-form-row">
+            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-parent">
+              상위 카테고리
+            </label>
+            <div className="admin-semantic-form-row__control">
+              <KlModalSelect
+                id="semantic-cat-parent"
+                placeholder="(루트 — 최상위)"
+                value={editing.parentId != null ? String(editing.parentId) : ''}
+                onChange={(e) =>
+                  setEditing({
+                    ...editing,
+                    parentId: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+                optionItems={displayItems
+                  .filter((it) => it.id !== editing.id)
+                  .map((it) => ({
+                    value: it.id,
+                    label: `${it.path || it.nameEn} — ${it.nameKo}`,
+                  }))}
+              />
+            </div>
           </div>
-          <div className="admin-field">
-            <label className="admin-field-label">설명</label>
-            <textarea className="admin-textarea" rows={3} value={editing.description || ''}
-              onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-              placeholder="선택 사항" />
+          <div className="admin-semantic-form-row admin-semantic-form-row--start">
+            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-description">
+              설명
+            </label>
+            <div className="admin-semantic-form-row__control">
+              <textarea
+                id="semantic-cat-description"
+                rows={3}
+                value={editing.description || ''}
+                onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                placeholder="선택 사항"
+              />
+            </div>
           </div>
-        </>
+        </form>
       ) : null}
     </BaseModal>
   );

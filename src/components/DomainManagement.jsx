@@ -14,7 +14,7 @@ import {
     domainFormModalPaperSx,
 } from './common/modal/supportFormModalPaperSx';
 import BasicTable from './common/BasicTable';
-import TableEmptyState from './common/TableEmptyState';
+import { formatTableCellText, isTableCellBlank } from './common/tableCellDisplay';
 import { mockDomains, mockDomainPromptDefaults, mockPromptCodesByPurpose } from '../data/domainMockData';
 import './DomainManagement.css';
 
@@ -409,12 +409,17 @@ function DomainManagement() {
                         <span className="domain-mgmt-name-text">{domain.name}</span>
                     </div>
                 );
-            case 'description':
+            case 'description': {
+                const desc = domain.description;
                 return (
-                    <span className="domain-mgmt-desc-text" title={domain.description || ''}>
-                        {domain.description || '-'}
+                    <span
+                        className={isTableCellBlank(desc) ? 'kl-table-cell-blank' : 'domain-mgmt-desc-text'}
+                        title={!isTableCellBlank(desc) ? String(desc) : undefined}
+                    >
+                        {formatTableCellText(desc)}
                     </span>
                 );
+            }
             case '_workspaces':
                 return (
                     <div
@@ -483,12 +488,13 @@ function DomainManagement() {
         }
     }, [handleOpenEditModal, handleDelete]);
 
+    const domainTableEmptyVariant = domains.length === 0 ? 'default' : 'search';
+
     return (
         <div className="kl-page">
             <div className="kl-main-sticky-head">
             <AdminPageHeader
                 title="도메인 관리"
-                count={domains.length}
                 actions={(
                     <button type="button" className="kl-btn kl-btn--primary" onClick={handleOpenCreateModal}>
                         <Plus size={14} aria-hidden />
@@ -502,9 +508,14 @@ function DomainManagement() {
 
             <div className="table-area">
                     <div className="table-toolbar">
-                    <div className="toolbar-left">
-                    <div className="search-area">
-                    <Search size={16} className="search-area-icon" />
+                        <div className="toolbar-left">
+                            <span className="kl-table-toolbar-summary">
+                                총 <strong>{filteredDomains.length}</strong>건
+                            </span>
+                        </div>
+                        <div className="toolbar-right">
+                            <div className="search-area">
+                    <Search size={16} className="search-area-icon" aria-hidden />
                     <input
                     type="text"
                     className="search-area-input"
@@ -512,25 +523,20 @@ function DomainManagement() {
                     value={domainSearch}
                     onChange={(e) => setDomainSearch(e.target.value)}
                     aria-label="도메인 검색"
-                    />
-                    </div>
-                    </div>
+                                />
+                            </div>
+                        </div>
                     </div>
 
                 <div className="basic-table-shell">
-                    {domains.length === 0 ? (
-                        <TableEmptyState solo />
-                    ) : filteredDomains.length === 0 ? (
-                        <TableEmptyState solo variant="search" />
-                    ) : (
-                        <BasicTable
-                            className="domain-mgmt-basic-table"
-                            columns={domainTableColumns}
-                            data={filteredDomains}
-                            renderCell={renderDomainCell}
-                            onColumnResizeMouseDown={domainColumnStartResize}
-                        />
-                    )}
+                    <BasicTable
+                        className="domain-mgmt-basic-table"
+                        columns={domainTableColumns}
+                        data={filteredDomains}
+                        renderCell={renderDomainCell}
+                        onColumnResizeMouseDown={domainColumnStartResize}
+                        emptyState={{ variant: domainTableEmptyVariant }}
+                    />
                 </div>
             </div>
 

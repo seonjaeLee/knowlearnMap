@@ -7,13 +7,18 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import BaseModal from '../../components/common/modal/BaseModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
-import TableEmptyState from '../../components/common/TableEmptyState';
+import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import KlPopover from '../../components/common/KlPopover';
 import { mockUpgradeRequests } from '../../data/upgradeRequestMockData';
 import './admin-common.css';
 import './AdminUpgradeRequests.css';
 
 const isUpgradeMockEnabled = import.meta.env.VITE_ENABLE_UPGRADE_MOCK === 'true';
+
+function formatUpgradeDate(dateString) {
+    if (isTableCellBlank(dateString)) return formatTableCellText(dateString);
+    return new Date(dateString).toLocaleDateString('ko-KR');
+}
 
 function AdminUpgradeRequests() {
     const [requests, setRequests] = useState([]);
@@ -144,20 +149,64 @@ function AdminUpgradeRequests() {
     const renderUpgradeCell = useCallback(
         ({ column, row: req }) => {
             switch (column.id) {
-                case 'createdAt':
+                case 'createdAt': {
+                    const createdAt = req.createdAt;
                     return (
-                        <span className="admin-upgrade-date-text">
-                            {req.createdAt ? new Date(req.createdAt).toLocaleDateString('ko-KR') : '-'}
+                        <span
+                            className={
+                                isTableCellBlank(createdAt)
+                                    ? 'kl-table-cell-blank'
+                                    : 'admin-upgrade-date-text'
+                            }
+                        >
+                            {formatUpgradeDate(createdAt)}
                         </span>
                     );
-                case 'email':
-                    return <span className="admin-upgrade-muted">{req.email || '-'}</span>;
-                case 'company':
-                    return <span className="admin-upgrade-muted">{req.company || '-'}</span>;
-                case 'applicant':
-                    return <span className="admin-upgrade-muted">{req.name || '-'}</span>;
-                case 'phone':
-                    return <span className="admin-upgrade-muted">{req.phone || '-'}</span>;
+                }
+                case 'email': {
+                    const email = req.email;
+                    return (
+                        <span
+                            className={isTableCellBlank(email) ? 'kl-table-cell-blank' : 'admin-upgrade-muted'}
+                            title={!isTableCellBlank(email) ? String(email) : undefined}
+                        >
+                            {formatTableCellText(email)}
+                        </span>
+                    );
+                }
+                case 'company': {
+                    const company = req.company;
+                    return (
+                        <span
+                            className={isTableCellBlank(company) ? 'kl-table-cell-blank' : 'admin-upgrade-muted'}
+                            title={!isTableCellBlank(company) ? String(company) : undefined}
+                        >
+                            {formatTableCellText(company)}
+                        </span>
+                    );
+                }
+                case 'applicant': {
+                    const applicant = req.name;
+                    return (
+                        <span
+                            className={isTableCellBlank(applicant) ? 'kl-table-cell-blank' : 'admin-upgrade-muted'}
+                            title={!isTableCellBlank(applicant) ? String(applicant) : undefined}
+                        >
+                            {formatTableCellText(applicant)}
+                        </span>
+                    );
+                }
+                case 'phone': {
+                    const phone = req.phone;
+                    return (
+                        <span
+                            className={isTableCellBlank(phone) ? 'kl-table-cell-blank' : 'admin-upgrade-muted'}
+                            title={!isTableCellBlank(phone) ? String(phone) : undefined}
+                        >
+                            {formatTableCellText(phone)}
+                        </span>
+                    );
+                }
                 case 'type':
                     return (
                         <span
@@ -169,17 +218,24 @@ function AdminUpgradeRequests() {
                         </span>
                     );
                 case 'status': {
-                    const statusKey = String(req.status || '').toLowerCase();
+                    const status = req.status;
+                    const statusKey = String(status || '').toLowerCase();
                     const reasonOpen =
                         rejectReasonPopover &&
                         rejectReasonPopover.requestId === req.id;
                     return (
                         <div className="admin-upgrade-status-cell">
                             <div className="admin-upgrade-status-row">
-                                <span className={`admin-upgrade-status status-${statusKey}`}>
-                                    {req.status}
+                                <span
+                                    className={
+                                        isTableCellBlank(status)
+                                            ? 'kl-table-cell-blank'
+                                            : `admin-upgrade-status status-${statusKey}`
+                                    }
+                                >
+                                    {formatTableCellText(status)}
                                 </span>
-                                {req.status === 'REJECTED' && (
+                                {status === 'REJECTED' && (
                                     <button
                                         type="button"
                                         className="kl-popover-icon-btn"
@@ -257,22 +313,30 @@ function AdminUpgradeRequests() {
     return (
         <div className="kl-page">
             <div className="kl-main-sticky-head">
-                <AdminPageHeader title="승인 관리" count={requests.length} />
+                <AdminPageHeader title="승인 관리" />
             </div>
 
             <div className="table-area">
+                <div className="table-toolbar">
+                <div className="toolbar-left">
+                    <span className="kl-table-toolbar-summary">
+                        총 <strong>{requests.length}</strong>건
+                    </span>
+                </div>
+                </div>
+
                 <div className="basic-table-shell">
-                    {requests.length === 0 ? (
-                        <TableEmptyState solo message="대기 중인 요청이 없습니다." />
-                    ) : (
-                        <BasicTable
-                            className="admin-upgrade-basic-table"
-                            columns={upgradeTableColumns}
-                            data={requests}
-                            renderCell={renderUpgradeCell}
-                            onColumnResizeMouseDown={upgradeColumnStartResize}
-                        />
-                    )}
+                    <BasicTable
+                        className="admin-upgrade-basic-table"
+                        columns={upgradeTableColumns}
+                        data={requests}
+                        renderCell={renderUpgradeCell}
+                        onColumnResizeMouseDown={upgradeColumnStartResize}
+                        emptyState={{
+                            variant: 'default',
+                            message: '대기 중인 요청이 없습니다.',
+                        }}
+                    />
                 </div>
             </div>
 

@@ -17,6 +17,10 @@ export {
   configFormModalPaperClassName,
   actionWsModalPaperSx,
   actionWsModalPaperClassName,
+  semanticFormModalPaperSx,
+  semanticFormModalPaperClassName,
+  promptFormModalPaperSx,
+  promptFormModalPaperClassName,
   QNA_FORM_MODAL_WIDTH,
   SUPPORT_CS_MODAL_WIDTH,
 } from './supportCsModalPaper';

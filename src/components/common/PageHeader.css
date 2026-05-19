@@ -1,7 +1,7 @@
 /*
  * 콘텐츠 타이틀(PageHeader) — 목록·설정 화면 공통
  * - 컴포넌트: PageHeader.jsx · AdminPageHeader.jsx
- * - DOM·마크업: docs/list-page-spec.md
+ * - DOM·마크업: docs/surface/list-page-spec.md
  * - 헤더·sticky·우측 버튼 규격은 이 파일만 수정 (MainLayout.css 에 두지 않음)
  */
 
@@ -19,7 +19,7 @@
   background: var(--color-bg-primary);
   isolation: isolate;
   padding-top: var(--spacing-sm);
-  padding-bottom: var(--spacing-sm);
+  /* padding-bottom: var(--spacing-sm); */
 }
 
 /* ============================================================

@@ -1,30 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  Select,
-  MenuItem,
-} from '@mui/material';
+import { Button } from '@mui/material';
 import BaseModal from '../../../components/common/modal/BaseModal';
+import KlModalSelect from '../../../components/common/modal/KlModalSelect';
+import {
+  promptFormModalPaperClassName,
+  promptFormModalPaperSx,
+} from '../../../components/common/modal/supportFormModalPaperSx';
+import { PROMPT_SECURITY_SELECT_ITEMS } from '../../constants/securityLevels';
 import './PromptDialogs.css';
 
-const securityLevels = [
-  { value: 'TEMP', label: '임시', color: '#9e9e9e' },
-  { value: 'PUBLIC', label: '공개', color: '#4caf50' },
-  { value: 'INTERNAL', label: '내부용', color: '#2196f3' },
-  { value: 'CONFIDENTIAL', label: '기밀', color: '#ff9800' },
-  { value: 'TOP_SECRET', label: '극비', color: '#f44336' }
-];
-
-const EditPromptDialog = ({ open, prompt, categories, purposes, onClose, onSave, isUpdating }) => {
+const EditPromptDialog = ({
+  open,
+  prompt,
+  categories,
+  purposes,
+  onClose,
+  onSave,
+  isUpdating,
+}) => {
   const [formData, setFormData] = useState({
     category: '',
     purpose: '',
     name: '',
     description: '',
-    securityLevel: 'PUBLIC'
+    securityLevel: 'PUBLIC',
   });
 
   useEffect(() => {
@@ -34,7 +33,7 @@ const EditPromptDialog = ({ open, prompt, categories, purposes, onClose, onSave,
         purpose: prompt.purpose || '',
         name: prompt.name || '',
         description: prompt.description || '',
-        securityLevel: prompt.securityLevel || 'PUBLIC'
+        securityLevel: prompt.securityLevel || 'PUBLIC',
       });
     }
   }, [prompt]);
@@ -43,133 +42,134 @@ const EditPromptDialog = ({ open, prompt, categories, purposes, onClose, onSave,
     onSave(formData);
   };
 
+  const categoryOptions = (categories || []).map((cat) => ({ value: cat, label: cat }));
+  const purposeOptions = (purposes || []).map((p) => ({ value: p, label: p }));
+
   return (
     <BaseModal
       open={open}
       title="프롬프트 정보 수정"
       onClose={onClose}
-      maxWidth="sm"
-      contentClassName="prompt-form-modal-content kl-modal-form"
+      maxWidth={false}
+      fullWidth={false}
+      paperSx={promptFormModalPaperSx}
+      paperClassName={promptFormModalPaperClassName}
+      contentClassName="prompt-edit-modal-content kl-modal-form"
+      actionsClassName="prompt-modal-actions"
+      actionsAlign="right"
       actions={(
         <>
-          <Button variant="outlined" onClick={onClose} sx={{ color: 'text.secondary' }}>
+          <Button variant="outlined" onClick={onClose}>
             취소
           </Button>
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={!formData.name || isUpdating}
+            disabled={!formData.name?.trim() || isUpdating}
           >
             {isUpdating ? '저장 중...' : '저장'}
           </Button>
         </>
       )}
     >
-      <Box sx={{ pt: 1 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-          {/* 코드 (읽기 전용) */}
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.75, fontWeight: 500 }}>
-              코드
-            </Typography>
-            <TextField
+      <form className="prompt-modal-form" onSubmit={(e) => e.preventDefault()}>
+        <div className="prompt-form-row">
+          <label className="prompt-form-row__label" htmlFor="prompt-edit-code">
+            코드
+          </label>
+          <div className="prompt-form-row__control">
+            <input
+              id="prompt-edit-code"
+              type="text"
+              className="kl-form-readonly kl-form-readonly--control"
               value={prompt?.code || ''}
-              fullWidth
-              size="small"
-              disabled
-              sx={{ '& .MuiOutlinedInput-root': { bgcolor: 'action.hover' } }}
+              readOnly
+              aria-readonly="true"
             />
-          </Box>
+          </div>
+        </div>
 
-          {/* 카테고리 & 용도 & 등급 */}
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" sx={{ mb: 0.75, fontWeight: 500 }}>
-                카테고리
-              </Typography>
-              <Select
-                value={formData.category}
-                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                fullWidth
-                size="small"
-                displayEmpty
-              >
-                <MenuItem value=""><em>선택</em></MenuItem>
-                {(categories || []).map((cat) => (
-                  <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                ))}
-              </Select>
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" sx={{ mb: 0.75, fontWeight: 500 }}>
-                용도
-              </Typography>
-              <Select
-                value={formData.purpose}
-                onChange={(e) => setFormData(prev => ({ ...prev, purpose: e.target.value }))}
-                fullWidth
-                size="small"
-                displayEmpty
-              >
-                <MenuItem value=""><em>선택</em></MenuItem>
-                {(purposes || []).map((p) => (
-                  <MenuItem key={p} value={p}>{p}</MenuItem>
-                ))}
-              </Select>
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" sx={{ mb: 0.75, fontWeight: 500 }}>
-                보안 등급
-              </Typography>
-              <Select
-                value={formData.securityLevel}
-                onChange={(e) => setFormData(prev => ({ ...prev, securityLevel: e.target.value }))}
-                fullWidth
-                size="small"
-              >
-                {securityLevels.map((level) => (
-                  <MenuItem key={level.value} value={level.value}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: level.color }} />
-                      {level.label}
-                    </Box>
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
-          </Box>
+        <div className="prompt-form-row">
+          <label className="prompt-form-row__label" htmlFor="prompt-edit-category">
+            카테고리
+          </label>
+          <div className="prompt-form-row__control">
+            <KlModalSelect
+              id="prompt-edit-category"
+              value={formData.category}
+              onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+              optionItems={categoryOptions}
+              placeholder="선택"
+              includeNoneOption={false}
+            />
+          </div>
+        </div>
 
-          {/* 이름 */}
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.75, fontWeight: 500 }}>
-              이름 <Typography component="span" className="required-asterisk">*</Typography>
-            </Typography>
-            <TextField
+        <div className="prompt-form-row">
+          <label className="prompt-form-row__label" htmlFor="prompt-edit-purpose">
+            용도
+          </label>
+          <div className="prompt-form-row__control">
+            <KlModalSelect
+              id="prompt-edit-purpose"
+              value={formData.purpose}
+              onChange={(e) => setFormData((prev) => ({ ...prev, purpose: e.target.value }))}
+              optionItems={purposeOptions}
+              placeholder="선택"
+              includeNoneOption={false}
+            />
+          </div>
+        </div>
+
+        <div className="prompt-form-row">
+          <label className="prompt-form-row__label" htmlFor="prompt-edit-security">
+            보안 등급
+          </label>
+          <div className="prompt-form-row__control">
+            <KlModalSelect
+              id="prompt-edit-security"
+              value={formData.securityLevel}
+              onChange={(e) => setFormData((prev) => ({ ...prev, securityLevel: e.target.value }))}
+              optionItems={PROMPT_SECURITY_SELECT_ITEMS}
+              includeEmptyOption={false}
+              includeNoneOption={false}
+            />
+          </div>
+        </div>
+
+        <div className="prompt-form-row">
+          <label className="prompt-form-row__label" htmlFor="prompt-edit-name">
+            이름 <span className="required-asterisk" aria-hidden>*</span>
+          </label>
+          <div className="prompt-form-row__control">
+            <input
+              id="prompt-edit-name"
+              type="text"
+              className="kl-form-control"
               value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              fullWidth
+              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               placeholder="이름 입력"
-              size="small"
+              required
             />
-          </Box>
+          </div>
+        </div>
 
-          {/* 설명 */}
-          <Box>
-            <Typography variant="body2" sx={{ mb: 0.75, fontWeight: 500 }}>
-              설명
-            </Typography>
-            <TextField
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              fullWidth
-              multiline
+        <div className="prompt-form-row prompt-form-row--start">
+          <label className="prompt-form-row__label" htmlFor="prompt-edit-description">
+            설명
+          </label>
+          <div className="prompt-form-row__control">
+            <textarea
+              id="prompt-edit-description"
+              className="kl-form-control"
               rows={3}
+              value={formData.description}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="설명 입력"
-              size="small"
             />
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </form>
     </BaseModal>
   );
 };

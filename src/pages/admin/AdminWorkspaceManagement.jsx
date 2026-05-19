@@ -6,7 +6,7 @@ import { Search, RotateCcw, Share2, Trash2 } from 'lucide-react';
 import ShareSettingsModal from '../../components/ShareSettingsModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
-import TableEmptyState from '../../components/common/TableEmptyState';
+import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import KlPopover from '../../components/common/KlPopover';
 import { mockAdminWorkspaces } from '../../data/workspaceMockData';
 import './admin-common.css';
@@ -15,7 +15,7 @@ import './AdminWorkspaceManagement.css';
 const isWorkspaceMockEnabled = import.meta.env.VITE_ENABLE_WORKSPACE_MOCK === 'true';
 
 function formatWorkspaceDate(dateString) {
-    if (!dateString) return '-';
+    if (isTableCellBlank(dateString)) return formatTableCellText(dateString);
     return new Date(dateString).toLocaleDateString('ko-KR');
 }
 
@@ -157,10 +157,28 @@ function AdminWorkspaceManagement() {
                             <span className="workspace-mgmt-name-text">{ws.name}</span>
                         </div>
                     );
-                case 'domainName':
-                    return <span className="workspace-mgmt-muted">{ws.domainName || '-'}</span>;
-                case 'createdBy':
-                    return <span className="workspace-mgmt-muted">{ws.createdBy || '-'}</span>;
+                case 'domainName': {
+                    const domainName = ws.domainName;
+                    return (
+                        <span
+                            className={isTableCellBlank(domainName) ? 'kl-table-cell-blank' : 'workspace-mgmt-muted'}
+                            title={!isTableCellBlank(domainName) ? String(domainName) : undefined}
+                        >
+                            {formatTableCellText(domainName)}
+                        </span>
+                    );
+                }
+                case 'createdBy': {
+                    const createdBy = ws.createdBy;
+                    return (
+                        <span
+                            className={isTableCellBlank(createdBy) ? 'kl-table-cell-blank' : 'workspace-mgmt-muted'}
+                            title={!isTableCellBlank(createdBy) ? String(createdBy) : undefined}
+                        >
+                            {formatTableCellText(createdBy)}
+                        </span>
+                    );
+                }
                 case 'documentCount':
                     return <span className="workspace-mgmt-muted">{ws.documentCount ?? 0}</span>;
                 case '_share':
@@ -197,8 +215,16 @@ function AdminWorkspaceManagement() {
                         </div>
                     );
                 }
-                case '_created':
-                    return <span className="workspace-mgmt-date-text">{formatWorkspaceDate(ws.createdAt)}</span>;
+                case '_created': {
+                    const createdAt = ws.createdAt;
+                    return (
+                        <span
+                            className={isTableCellBlank(createdAt) ? 'kl-table-cell-blank' : 'workspace-mgmt-date-text'}
+                        >
+                            {formatWorkspaceDate(createdAt)}
+                        </span>
+                    );
+                }
                 case '_actions':
                     return (
                         <div className="kl-table-actions">
@@ -229,12 +255,13 @@ function AdminWorkspaceManagement() {
         [handleDelete, handleOpenShareModal, promptPopover]
     );
 
+    const workspaceTableEmptyVariant = workspaces.length === 0 ? 'default' : 'search';
+
     return (
         <div className="kl-page">
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="워크스페이스 관리"
-                    count={filteredWorkspaces.length}
                     actions={(
                         <div className="kl-header-actions">
                             <button
@@ -260,6 +287,11 @@ function AdminWorkspaceManagement() {
 
                 <div className="table-toolbar">
                     <div className="toolbar-left">
+                        <span className="kl-table-toolbar-summary">
+                            총 <strong>{filteredWorkspaces.length}</strong>건
+                        </span>
+                    </div>
+                    <div className="toolbar-right">
                         <div className="search-area">
                             <Search size={16} className="search-area-icon" aria-hidden />
                             <input
@@ -274,17 +306,14 @@ function AdminWorkspaceManagement() {
                     </div>
                 </div>
                     <div className="basic-table-shell">
-                        {filteredWorkspaces.length === 0 ? (
-                            <TableEmptyState solo variant={searchTerm ? 'search' : 'default'} />
-                        ) : (
-                            <BasicTable
-                                className="workspace-mgmt-basic-table"
-                                columns={workspaceTableColumns}
-                                data={filteredWorkspaces}
-                                renderCell={renderWorkspaceCell}
-                                onColumnResizeMouseDown={workspaceColumnStartResize}
-                            />
-                        )}
+                        <BasicTable
+                            className="workspace-mgmt-basic-table"
+                            columns={workspaceTableColumns}
+                            data={filteredWorkspaces}
+                            renderCell={renderWorkspaceCell}
+                            onColumnResizeMouseDown={workspaceColumnStartResize}
+                            emptyState={{ variant: workspaceTableEmptyVariant }}
+                        />
                     </div>
                 </div>
             )}

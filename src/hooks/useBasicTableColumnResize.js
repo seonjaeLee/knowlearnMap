@@ -46,6 +46,10 @@ export function useBasicTableColumnResize({ definitions, storageKey, enabled = t
         loadStoredWidths(storageKey, defaultWidthsPx, minWidthsPx)
     );
 
+    useEffect(() => {
+        setWidths(loadStoredWidths(storageKey, defaultWidthsPx, minWidthsPx));
+    }, [storageKey, defaultWidthsPx, minWidthsPx]);
+
     const widthsRef = useRef(widths);
     useEffect(() => {
         widthsRef.current = widths;

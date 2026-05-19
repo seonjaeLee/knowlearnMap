@@ -6,7 +6,7 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import { Zap, RotateCcw, Clock, Pencil, List, Info } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
-import TableEmptyState from '../../components/common/TableEmptyState';
+import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
   actionWsModalPaperClassName,
@@ -236,8 +236,14 @@ function ActionListTab({ workspaceId }) {
         return <span className="admin-badge admin-badge-info">{row.actionType}</span>;
       case 'approvalMode':
         return <span className="admin-badge admin-badge-neutral">{row.approvalMode}</span>;
-      case 'category':
-        return row.category || '-';
+      case 'category': {
+        const category = row.category;
+        return (
+          <span className={isTableCellBlank(category) ? 'kl-table-cell-blank' : undefined}>
+            {formatTableCellText(category)}
+          </span>
+        );
+      }
       case 'status':
         return (
           <span className={`admin-badge ${row.status === 'active' ? 'admin-badge-success' : 'admin-badge-neutral'}`}>
@@ -274,8 +280,8 @@ function ActionListTab({ workspaceId }) {
     <div className="table-area">
       <div className="table-toolbar">
         <div className="toolbar-left">
-          <span className="admin-action-table-summary">
-            총 <strong>{items.length}</strong>개 Action — 읽기 전용
+          <span className="kl-table-toolbar-summary">
+            총 <strong>{items.length}</strong>건
             {listSource === 'mock' ? <span className="admin-action-mock-tag"> · 더미</span> : null}
           </span>
         </div>
@@ -300,17 +306,14 @@ function ActionListTab({ workspaceId }) {
       ) : (
         <>
           <div className="basic-table-shell">
-          {items.length === 0 ? (
-            <TableEmptyState solo />
-          ) : (
             <BasicTable
               className="admin-action-basic-table"
               columns={actionListColumns}
               data={items}
               renderCell={renderActionListCell}
               onColumnResizeMouseDown={actionListColumnStartResize}
+              emptyState={{ variant: 'default' }}
             />
-          )}
         </div>
           <div className="kl-infotxt-note-row kl-infotxt-note-row--end">
             <div className="kl-infotxt-note">
@@ -344,22 +347,45 @@ function ActionLogTab() {
 
   const renderActionLogCell = useCallback(({ column, row }) => {
     switch (column.id) {
-      case 'executedAt':
-        return row.executedAt ? new Date(row.executedAt).toLocaleString('ko-KR') : '-';
+      case 'executedAt': {
+        const executedAt = row.executedAt;
+        return (
+          <span className={isTableCellBlank(executedAt) ? 'kl-table-cell-blank' : undefined}>
+            {isTableCellBlank(executedAt)
+              ? formatTableCellText(executedAt)
+              : new Date(executedAt).toLocaleString('ko-KR')}
+          </span>
+        );
+      }
       case 'status':
         return (
           <span className={`admin-badge ${row.status === 'SUCCESS' ? 'admin-badge-success' : 'admin-badge-danger'}`}>
             {row.status}
           </span>
         );
-      case 'durationMs':
-        return row.durationMs ?? '-';
-      case 'errorMessage':
+      case 'durationMs': {
+        const durationMs = row.durationMs;
         return (
-          <span className="admin-action-log-error" title={row.errorMessage || undefined}>
-            {row.errorMessage || '-'}
+          <span className={isTableCellBlank(durationMs) ? 'kl-table-cell-blank' : undefined}>
+            {isTableCellBlank(durationMs) ? formatTableCellText(durationMs) : String(durationMs)}
           </span>
         );
+      }
+      case 'errorMessage': {
+        const errorMessage = row.errorMessage;
+        return (
+          <span
+            className={
+              isTableCellBlank(errorMessage)
+                ? 'kl-table-cell-blank admin-action-log-error'
+                : 'admin-action-log-error'
+            }
+            title={!isTableCellBlank(errorMessage) ? String(errorMessage) : undefined}
+          >
+            {formatTableCellText(errorMessage)}
+          </span>
+        );
+      }
       default:
         return undefined;
     }
@@ -394,7 +420,13 @@ function ActionLogTab() {
 
   return (
     <div className="table-area">
-      <div className="table-toolbar table-toolbar--end">
+      <div className="table-toolbar">
+        <div className="toolbar-left">
+          <span className="kl-table-toolbar-summary">
+            총 <strong>{logs.length}</strong>건
+            {logSource === 'mock' ? <span className="admin-action-mock-tag"> · 더미</span> : null}
+          </span>
+        </div>
         <div className="toolbar-right admin-action-log-toolbar">
           <div className="toolbar-field-group">
             <label htmlFor="admin-action-log-id" className="toolbar-field-group__label">
@@ -427,31 +459,23 @@ function ActionLogTab() {
               </button>
             </div>
           </div>
-          {logSource === 'mock' ? (
-            <span className="admin-action-mock-tag">더미</span>
-          ) : null}
         </div>
       </div>
 
       <div className="basic-table-shell">
-        {logs.length === 0 ? (
-          <TableEmptyState
-            solo
-            message={
-              isActionLogDemoEnabled
-                ? '실행 이력이 없습니다. (더미: Action ID 1~6 입력 후 불러오기)'
-                : '실행 이력이 없습니다.'
-            }
-          />
-        ) : (
-          <BasicTable
-            className="admin-action-log-basic-table"
-            columns={actionLogColumns}
-            data={logs}
-            renderCell={renderActionLogCell}
-            onColumnResizeMouseDown={actionLogColumnStartResize}
-          />
-        )}
+        <BasicTable
+          className="admin-action-log-basic-table"
+          columns={actionLogColumns}
+          data={logs}
+          renderCell={renderActionLogCell}
+          onColumnResizeMouseDown={actionLogColumnStartResize}
+          emptyState={{
+            variant: 'default',
+            message: isActionLogDemoEnabled
+              ? '실행 이력이 없습니다. (더미: Action ID 1~6 입력 후 불러오기)'
+              : '실행 이력이 없습니다.',
+          }}
+        />
       </div>
     </div>
   );

@@ -4,26 +4,8 @@
     margin-top: 50px;
 }
 
-/* 도메인 선택 — table-toolbar 안내 (기존 user-info-bar 톤, 여백은 table-area gap만) */
-.table-area > .table-toolbar {
-    width: 100%;
-}
-
-.table-area > .table-toolbar .user-info-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md);
-    flex: 1 1 auto;
-    min-width: 0;
-    width: 100%;
-    margin: 0;
-    font-family: var(--font-family);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-}
-
-.table-area > .table-toolbar .domain-content-help {
+/* 도메인 선택 — list-page 공통 툴바(총 N건 · 관리자 로그인) */
+.domain-selection-page .table-area > .table-toolbar .domain-toolbar-user {
     margin: 0;
     white-space: nowrap;
     font-size: var(--font-size-sm);
@@ -33,7 +15,7 @@
 
 /* Grid/Card styles removed */
 
-/* docs/data-table-spec.md — 밀집(kl-data-table-dense); 열 폭은 DomainSelection.jsx columns에서만 지정 */
+/* docs/table/data-table-spec.md — 밀집(kl-data-table-dense); 열 폭은 DomainSelection.jsx columns에서만 지정 */
 .table-area .domain-basic-table thead .MuiTableCell-root {
     padding-inline: var(--spacing-md);
     white-space: nowrap;
@@ -128,22 +110,14 @@
     vertical-align: middle;
 }
 
-.domain-list-empty {
-    text-align: center;
-    padding: var(--spacing-lg) var(--spacing-md);
+.domain-selection-error {
+    margin: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    background: var(--color-bg-secondary);
-}
-
-.error-message {
-    color: #e53e3e;
+    color: #dc2626;
     background: #fff5f5;
     border: 1px solid #fed7d7;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 16px;
-    font-size: 0.95rem;
+    border-radius: var(--radius-sm);
 }
 
 /* 삭제 아이콘 버튼: BasicTable.global.css `.kl-table-icon-btn--danger` */

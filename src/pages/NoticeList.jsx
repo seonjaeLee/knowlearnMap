@@ -6,6 +6,7 @@ import NoticeCreateModal from '../components/NoticeCreateModal';
 import NoticeDetailModal from '../components/NoticeDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
+import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
 import { isSupportMockEnabled } from '../config/supportMock';
 import { mockNotices } from '../data/supportMockData';
@@ -25,7 +26,7 @@ const NOTICE_BASE_COLUMNS = [
 ];
 
 function formatDate(value) {
-  if (!value) return '-';
+  if (isTableCellBlank(value)) return formatTableCellText(value);
   return new Date(value).toLocaleDateString('ko-KR');
 }
 
@@ -89,6 +90,11 @@ function NoticeList() {
       : notices;
     return sortNoticesForList(matched);
   }, [notices, noticeSearch]);
+
+  const noticeTableEmptyVariant = useMemo(
+    () => (notices.length === 0 ? 'default' : 'search'),
+    [notices.length],
+  );
 
   const selectedNotice = useMemo(
     () => notices.find((notice) => notice.id === selectedNoticeId) || null,
@@ -228,12 +234,29 @@ function NoticeList() {
             )}
           </div>
         );
-      case 'category':
-        return <span className="support-badge support-badge--soft">{row.category || '-'}</span>;
+      case 'category': {
+        const category = row.category;
+        return (
+          <span
+            className={[
+              'support-badge support-badge--soft',
+              isTableCellBlank(category) ? 'kl-table-cell-blank' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {formatTableCellText(category)}
+          </span>
+        );
+      }
       case 'author':
         return row.authorEmail?.split('@')[0] || '관리자';
       case 'createdAt':
-        return formatDate(row.createdAt);
+        return (
+          <span className={isTableCellBlank(row.createdAt) ? 'kl-table-cell-blank' : undefined}>
+            {formatDate(row.createdAt)}
+          </span>
+        );
       case 'viewCount':
         return row.viewCount ?? 0;
       case '_actions':
@@ -267,31 +290,32 @@ function NoticeList() {
       </div>
 
       <div className="table-area">
-                    <div className="table-toolbar">
-                    <div className="toolbar-left">
-                    <div className="search-area">
-                    <Search size={16} className="search-area-icon" aria-hidden />
-                    <input
-                    type="text"
-                    className="search-area-input"
-                    placeholder="공지사항 검색"
-                    value={noticeSearch}
-                    onChange={(e) => {
-                    setNoticeSearch(e.target.value);
-                    }}
-                    aria-label="공지사항 검색"
-                    />
-                    </div>
-                    </div>
-                    </div>
+        <div className="table-toolbar">
+          <div className="toolbar-left">
+            <span className="kl-table-toolbar-summary">
+              총 <strong>{filteredNotices.length}</strong>건
+            </span>
+          </div>
+          <div className="toolbar-right">
+            <div className="search-area">
+              <Search size={16} className="search-area-icon" aria-hidden />
+              <input
+                type="text"
+                className="search-area-input"
+                placeholder="공지사항 검색"
+                value={noticeSearch}
+                onChange={(e) => setNoticeSearch(e.target.value)}
+                aria-label="공지사항 검색"
+              />
+            </div>
+          </div>
+        </div>
 
         <div className="basic-table-shell">
           {loading ? (
             <div className="support-empty" role="status">공지사항을 불러오는 중입니다.</div>
           ) : loadError ? (
             <div className="support-empty" role="alert">{loadError}</div>
-          ) : filteredNotices.length === 0 ? (
-            <div className="support-empty" role="status">등록된 공지가 없습니다.</div>
           ) : (
             <BasicTable
               className="support-basic-table"
@@ -310,6 +334,10 @@ function NoticeList() {
                 row.isPinned ? 'support-row-pinned' : '',
                 !row.isRead ? 'support-row-unread' : '',
               ].filter(Boolean).join(' ')}
+              emptyState={{
+                variant: noticeTableEmptyVariant,
+                message: notices.length === 0 ? '등록된 공지가 없습니다.' : undefined,
+              }}
             />
           )}
         </div>

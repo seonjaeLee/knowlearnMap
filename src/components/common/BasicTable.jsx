@@ -11,6 +11,7 @@ import './BasicTable.global.css';
 import styles from './BasicTable.module.scss';
 import BasicTableFooter from './BasicTableFooter';
 import BasicTablePaginationNav from './BasicTablePaginationNav';
+import TableEmptyState from './TableEmptyState';
 
 function getRowKey(row, rowIndex) {
   if (row && Object.prototype.hasOwnProperty.call(row, 'id') && row.id != null) {
@@ -55,6 +56,8 @@ function columnCellStyle(col) {
  * @param {(ctx: { row: object, rowIndex: number }) => React.ReactNode} [renderRowDetail] — 반환값이 있으면 해당 데이터 행 바로 아래에 `colSpan` 서브행(아코디언 패널)을 렌더합니다. `null`/`false`면 생략합니다.
  * @param {(ctx: { column: object, row: object, rowIndex: number }) => { skip?: boolean, rowSpan?: number, style?: object, className?: string }} [getBodyCellProps]
  *        `skip: true`이면 해당 열 `td`를 렌더하지 않음. `rowSpan`은 병합 셀용.
+ * @param {false|object} [emptyState] — `false`(기본) | `{ variant?: 'default'|'search', message?: string, hint?: string }`
+ *        `data.length === 0`일 때 **thead는 유지**하고 본문에 빈 메시지 행(`TableEmptyState` 문구)을 렌더합니다.
  */
 function BasicTable({
   columns,
@@ -69,8 +72,10 @@ function BasicTable({
   renderRowDetail,
   className = '',
   tableFooter = false,
+  emptyState = false,
 }) {
   const rootClass = [styles.wrap, className].filter(Boolean).join(' ');
+  const showEmptyBody = data.length === 0 && emptyState && typeof emptyState === 'object';
 
   const tableBlock = (
     <TableContainer component={Paper} className={rootClass} elevation={0}>
@@ -117,7 +122,23 @@ function BasicTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((row, rowIndex) => {
+          {showEmptyBody ? (
+            <TableRow className={styles.emptyRow} hover={false}>
+              <TableCell
+                component="td"
+                colSpan={columns.length}
+                className={styles.emptyCell}
+              >
+                <TableEmptyState
+                  variant={emptyState.variant}
+                  message={emptyState.message}
+                  hint={emptyState.hint}
+                  compact
+                />
+              </TableCell>
+            </TableRow>
+          ) : null}
+          {!showEmptyBody && data.map((row, rowIndex) => {
             const rowInteractive = Boolean(onRowClick || onRowKeyDown);
             const extraRowClass = getRowClassName?.(row, rowIndex) ?? '';
             const rowClass = [styles.row, rowInteractive ? styles.rowInteractive : '', extraRowClass]
@@ -258,6 +279,14 @@ BasicTable.propTypes = {
       }),
     }),
   ]),
+  emptyState: PropTypes.oneOfType([
+    PropTypes.oneOf([false]),
+    PropTypes.shape({
+      variant: PropTypes.oneOf(['default', 'search']),
+      message: PropTypes.string,
+      hint: PropTypes.string,
+    }),
+  ]),
 };
 
 BasicTable.defaultProps = {
@@ -271,6 +300,7 @@ BasicTable.defaultProps = {
   renderRowDetail: undefined,
   className: '',
   tableFooter: false,
+  emptyState: false,
 };
 
 export default BasicTable;

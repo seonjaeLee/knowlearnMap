@@ -8,8 +8,8 @@ import { qnaApi, imageApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
 import BaseModal from './common/modal/BaseModal';
 import {
-    supportDetailModalPaperClassName,
-    supportDetailModalPaperSx,
+    qnaDetailModalPaperClassName,
+    qnaDetailModalPaperSx,
 } from './common/modal/supportDetailModalPaperSx';
 import './CsDetailModal.css';
 import './QnaDetailModal.css';
@@ -232,8 +232,8 @@ function QnaDetailModal({
             title="1:1문의"
             maxWidth={false}
             fullWidth={false}
-            paperSx={supportDetailModalPaperSx}
-            paperClassName={supportDetailModalPaperClassName}
+            paperSx={qnaDetailModalPaperSx}
+            paperClassName={qnaDetailModalPaperClassName}
             contentClassName="cs-detail-modal-content kl-modal-form"
             actionsClassName="qna-detail-modal-actions"
             actions={renderFooterActions()}

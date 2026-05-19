@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { useBasicTableColumnResize } from '../../../hooks/useBasicTableColumnResize';
 import BasicTable from '../../../components/common/BasicTable';
-import TableEmptyState from '../../../components/common/TableEmptyState';
+import { formatTableCellText, isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
 import ToolbarMoreMenu from '../../../components/common/ToolbarMoreMenu';
 import { semanticEntityColumnDefinitions } from './semanticEntityTableColumns';
 
@@ -64,9 +64,18 @@ function SemanticEntityListPanel({
       case 'categoryNameEn':
         return row.categoryNameEn
           ? <span className="admin-badge admin-badge-info">{row.categoryNameEn}</span>
-          : <span className="admin-text-tertiary">-</span>;
-      case 'description':
-        return <span className="admin-text-secondary">{row.description || '-'}</span>;
+          : <TableCellBlank />;
+      case 'description': {
+        const desc = row.description;
+        return (
+          <span
+            className="kl-table-cell-text--secondary"
+            title={!isTableCellBlank(desc) ? String(desc) : undefined}
+          >
+            {formatTableCellText(desc)}
+          </span>
+        );
+      }
       case 'actions':
         return (
           <div className="kl-table-actions">
@@ -153,17 +162,14 @@ function SemanticEntityListPanel({
         </div>
       ) : (
         <div className="basic-table-shell">
-          {items.length === 0 ? (
-            <TableEmptyState solo />
-          ) : (
-            <BasicTable
-              className="admin-semantic-split-basic-table"
-              columns={columns}
-              data={items}
-              renderCell={renderCell}
-              onColumnResizeMouseDown={startResize}
-            />
-          )}
+          <BasicTable
+            className="admin-semantic-split-basic-table"
+            columns={columns}
+            data={items}
+            renderCell={renderCell}
+            onColumnResizeMouseDown={startResize}
+            emptyState={{ variant: 'default' }}
+          />
         </div>
       )}
     </div>

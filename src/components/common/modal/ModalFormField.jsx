@@ -5,7 +5,7 @@ import styles from './ModalFormField.module.scss';
 /**
  * 팝업(BaseModal) 본문 필드 블록 — 라벨·컨트롤·보조문.
  * 시각 규격은 부모에 `kl-modal-form`(contentClassName)이 있어야 적용된다.
- * @see docs/modal-form-spec.md
+ * @see docs/overlay/modal-form-spec.md
  */
 function ModalFormField({
   label,

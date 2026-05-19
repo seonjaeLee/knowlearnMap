@@ -5,6 +5,10 @@ import AdminPageHeader from '../../../components/admin/AdminPageHeader';
 import AdminSemanticCategoryPage from '../AdminSemanticCategoryPage';
 import BaseModal from '../../../components/common/modal/BaseModal';
 import KlModalSelect from '../../../components/common/modal/KlModalSelect';
+import {
+  semanticFormModalPaperClassName,
+  semanticFormModalPaperSx,
+} from '../../../components/common/modal/supportFormModalPaperSx';
 import SplitPane from '../../../components/common/SplitPane';
 import SemanticEntityListPanel from './SemanticEntityListPanel';
 import { useSemanticEntityAdmin } from './useSemanticEntityAdmin';
@@ -38,7 +42,7 @@ function SemanticEntitySplitPage({
     setEditing,
     importing,
     leftExpanded,
-    setLeftExpandedPersist,
+    setLeftExpandedOnly,
     fileInputRef,
     fetchItems,
     openCreate,
@@ -62,7 +66,7 @@ function SemanticEntitySplitPage({
           <button
             type="button"
             className={`kl-toolbar-icon-toggle${leftExpanded ? '' : ' is-collapsed'}`}
-            onClick={() => setLeftExpandedPersist(!leftExpanded)}
+            onClick={() => setLeftExpandedOnly(!leftExpanded)}
             title={leftExpanded ? '접기' : '펼치기'}
             aria-label={leftExpanded ? '접기' : '펼치기'}
           >
@@ -81,7 +85,7 @@ function SemanticEntitySplitPage({
         selectedCategoryId={selectedCategoryId}
         onSelectCategory={(c) => {
           setSelectedCategoryId(c.id);
-          setLeftExpandedPersist(false);
+          setLeftExpandedOnly(false);
         }}
       />
     </>
@@ -112,7 +116,7 @@ function SemanticEntitySplitPage({
         storageKey={config.storageKey}
         onClearCategoryFilter={() => {
           setSelectedCategoryId(null);
-          setLeftExpandedPersist(true);
+          setLeftExpandedOnly(true);
         }}
       />
     </>
@@ -142,7 +146,7 @@ function SemanticEntitySplitPage({
         minCollapsedLeftWidthPx={250}
         percentStorageKey={config.splitPanePercentKey}
         onResizeStart={() => {
-          if (!leftExpanded) setLeftExpandedPersist(true);
+          if (!leftExpanded) setLeftExpandedOnly(true);
         }}
         leftPaneClassName="admin-semantic-left-panel"
         rightPaneClassName="admin-semantic-right-panel"
@@ -153,8 +157,13 @@ function SemanticEntitySplitPage({
         open={Boolean(editing)}
         title={editing?.id ? `${config.entityLabel} 수정` : `${config.entityLabel} 추가`}
         onClose={() => setEditing(null)}
-        maxWidth="sm"
+        maxWidth={false}
+        fullWidth={false}
+        paperSx={semanticFormModalPaperSx}
+        paperClassName={semanticFormModalPaperClassName}
         contentClassName="admin-semantic-edit-content kl-modal-form"
+        actionsClassName="admin-semantic-modal-actions"
+        actionsAlign="right"
         actions={(
           <>
             <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
@@ -163,53 +172,70 @@ function SemanticEntitySplitPage({
         )}
       >
         {editing ? (
-          <>
-            <div className="admin-field">
-              <label className="admin-field-label">
+          <form className="admin-semantic-modal-form" onSubmit={(e) => e.preventDefault()}>
+            <div className="admin-semantic-form-row">
+              <label className="admin-semantic-form-row__label" htmlFor={`semantic-${entityKey}-name-en`}>
                 영문명 <span className="required-asterisk" aria-hidden="true">*</span>
               </label>
-              <input
-                className="admin-input"
-                value={editing.nameEn || ''}
-                onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
-              />
+              <div className="admin-semantic-form-row__control">
+                <input
+                  id={`semantic-${entityKey}-name-en`}
+                  type="text"
+                  value={editing.nameEn || ''}
+                  onChange={(e) => setEditing({ ...editing, nameEn: e.target.value })}
+                  autoComplete="off"
+                />
+              </div>
             </div>
-            <div className="admin-field">
-              <label className="admin-field-label">
+            <div className="admin-semantic-form-row">
+              <label className="admin-semantic-form-row__label" htmlFor={`semantic-${entityKey}-name-ko`}>
                 한글명 <span className="required-asterisk" aria-hidden="true">*</span>
               </label>
-              <input
-                className="admin-input"
-                value={editing.nameKo || ''}
-                onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
-              />
+              <div className="admin-semantic-form-row__control">
+                <input
+                  id={`semantic-${entityKey}-name-ko`}
+                  type="text"
+                  value={editing.nameKo || ''}
+                  onChange={(e) => setEditing({ ...editing, nameKo: e.target.value })}
+                  autoComplete="off"
+                />
+              </div>
             </div>
-            <div className="admin-field">
-              <label className="admin-field-label">{categoryFieldLabel}</label>
-              <KlModalSelect
-                placeholder="(선택 안 함)"
-                value={editing.categoryId != null ? String(editing.categoryId) : ''}
-                onChange={(e) => setEditing({
-                  ...editing,
-                  categoryId: e.target.value ? Number(e.target.value) : null,
-                })}
-                optionItems={categories.map((c) => ({
-                  value: c.id,
-                  label: `${c.path || c.nameEn} — ${c.nameKo}`,
-                }))}
-              />
+            <div className="admin-semantic-form-row">
+              <label className="admin-semantic-form-row__label" htmlFor={`semantic-${entityKey}-category`}>
+                {categoryFieldLabel}
+              </label>
+              <div className="admin-semantic-form-row__control">
+                <KlModalSelect
+                  id={`semantic-${entityKey}-category`}
+                  placeholder="(선택 안 함)"
+                  value={editing.categoryId != null ? String(editing.categoryId) : ''}
+                  onChange={(e) => setEditing({
+                    ...editing,
+                    categoryId: e.target.value ? Number(e.target.value) : null,
+                  })}
+                  optionItems={categories.map((c) => ({
+                    value: c.id,
+                    label: `${c.path || c.nameEn} — ${c.nameKo}`,
+                  }))}
+                />
+              </div>
             </div>
-            <div className="admin-field">
-              <label className="admin-field-label">설명</label>
-              <textarea
-                className="admin-textarea"
-                rows={3}
-                value={editing.description || ''}
-                onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                placeholder="선택 사항"
-              />
+            <div className="admin-semantic-form-row admin-semantic-form-row--start">
+              <label className="admin-semantic-form-row__label" htmlFor={`semantic-${entityKey}-description`}>
+                설명
+              </label>
+              <div className="admin-semantic-form-row__control">
+                <textarea
+                  id={`semantic-${entityKey}-description`}
+                  rows={3}
+                  value={editing.description || ''}
+                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                  placeholder="선택 사항"
+                />
+              </div>
             </div>
-          </>
+          </form>
         ) : null}
       </BaseModal>
     </div>

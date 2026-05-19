@@ -1,0 +1,99 @@
+/* 프롬프트 상세 — 상단 chrome만 공통 패턴 (탭 본문은 전용 UX) */
+
+.prompt-detail-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.prompt-detail-page .kl-main-sticky-head {
+  flex-shrink: 0;
+}
+
+.prompt-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+}
+
+.prompt-detail-meta__grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-md) var(--spacing-lg);
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.prompt-detail-meta__item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.prompt-detail-meta__label {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.prompt-detail-meta__value {
+  min-width: 0;
+}
+
+.prompt-detail-meta__value--muted {
+  color: var(--color-text-muted);
+}
+
+.prompt-detail-meta__desc {
+  flex: 1 1 100%;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.prompt-detail-panel {
+  flex: 1;
+  min-height: 0;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.prompt-detail-loading,
+.prompt-detail-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+}
+
+.prompt-detail-error__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.prompt-detail-error__message {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  max-width: 32rem;
+}
+
+.prompt-detail-error__icon {
+  color: var(--color-warning);
+}
+
+.prompt-detail-loading .admin-spinner {
+  margin-bottom: var(--spacing-sm);
+}

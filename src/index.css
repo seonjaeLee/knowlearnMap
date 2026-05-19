@@ -35,7 +35,7 @@
   --color-border-subtle: #e5e7eb;
   --color-border-hover: #bdc1c6;
 
-  /* 폼·버튼 비활성 — 네이밍·사용법: docs/css-design-tokens.md */
+  /* 폼·버튼 비활성 — 네이밍·사용법: docs/foundation/design-tokens.md */
   --form-control-disabled-bg: #eceff1;
   --form-control-disabled-border: #dadce0;
   --form-control-disabled-text: #80868b;

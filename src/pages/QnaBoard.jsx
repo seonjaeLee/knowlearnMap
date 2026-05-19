@@ -6,6 +6,7 @@ import QnaCreateModal from '../components/QnaCreateModal';
 import QnaDetailModal from '../components/QnaDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
+import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
 import { isSupportMockEnabled } from '../config/supportMock';
 import { mockQuestions } from '../data/supportMockData';
@@ -26,7 +27,7 @@ const QNA_BASE_COLUMNS = [
 ];
 
 function formatDate(value) {
-  if (!value) return '-';
+  if (isTableCellBlank(value)) return formatTableCellText(value);
   return new Date(value).toLocaleDateString('ko-KR');
 }
 
@@ -86,6 +87,11 @@ function QnaBoard() {
       return matchesStatus && matchesSearch;
     });
   }, [questions, qnaSearch, statusFilter]);
+
+  const qnaTableEmptyVariant = useMemo(
+    () => (questions.length === 0 ? 'default' : 'search'),
+    [questions.length],
+  );
 
   const handleSaveQuestion = async (questionData) => {
     if (isSupportMockEnabled) {
@@ -178,14 +184,33 @@ function QnaBoard() {
             {row.answerCount > 0 && <span className="support-badge support-badge--soft">답변 {row.answerCount}</span>}
           </div>
         );
-      case 'domainName':
-        return row.domainName || '-';
+      case 'domainName': {
+        const domainName = row.domainName;
+        return (
+          <span
+            className={isTableCellBlank(domainName) ? 'kl-table-cell-blank' : undefined}
+            title={!isTableCellBlank(domainName) ? String(domainName) : undefined}
+          >
+            {formatTableCellText(domainName)}
+          </span>
+        );
+      }
       case 'id':
         return `#${row.id}`;
       case 'createdAt':
-        return formatDate(row.createdAt);
-      case 'updatedAt':
-        return formatDate(row.updatedAt || row.createdAt);
+        return (
+          <span className={isTableCellBlank(row.createdAt) ? 'kl-table-cell-blank' : undefined}>
+            {formatDate(row.createdAt)}
+          </span>
+        );
+      case 'updatedAt': {
+        const updatedAt = row.updatedAt || row.createdAt;
+        return (
+          <span className={isTableCellBlank(updatedAt) ? 'kl-table-cell-blank' : undefined}>
+            {formatDate(updatedAt)}
+          </span>
+        );
+      }
       case 'status':
         return (
           <span className={`support-status ${row.status === 'ANSWERED' ? 'is-answered' : 'is-waiting'}`}>
@@ -225,6 +250,11 @@ function QnaBoard() {
       <div className="table-area">
                     <div className="table-toolbar">
                     <div className="toolbar-left">
+                        <span className="kl-table-toolbar-summary">
+                            총 <strong>{filteredQuestions.length}</strong>건
+                        </span>
+                    </div>
+                    <div className="toolbar-right">
                     <div className="search-area">
                     <Search size={16} className="search-area-icon" aria-hidden />
                     <input
@@ -238,10 +268,7 @@ function QnaBoard() {
                     aria-label="문의 검색"
                     />
                     </div>
-                    </div>
-                    <div className="toolbar-right">
                     <div className="support-filter">
-                    <span className="filter-label">상태</span>
                     <select
                     id="qna-status-filter"
                     className="toolbar-select"
@@ -251,7 +278,7 @@ function QnaBoard() {
                     }}
                     aria-label="상태"
                     >
-                    <option value="">모든 상태</option>
+                    <option value="">전체 상태</option>
                     <option value="UNANSWERED">답변대기</option>
                     <option value="ANSWERED">답변완료</option>
                     </select>
@@ -264,8 +291,6 @@ function QnaBoard() {
             <div className="support-empty" role="status">문의 내역을 불러오는 중입니다.</div>
           ) : loadError ? (
             <div className="support-empty" role="alert">{loadError}</div>
-          ) : filteredQuestions.length === 0 ? (
-            <div className="support-empty" role="status">문의 내역이 없습니다.</div>
           ) : (
             <BasicTable
               className="support-basic-table support-qna-table"
@@ -280,6 +305,10 @@ function QnaBoard() {
                 }
               }}
               rowAriaLabel={(row) => `${row.title} 문의 상세 보기`}
+              emptyState={{
+                variant: qnaTableEmptyVariant,
+                message: questions.length === 0 ? '문의 내역이 없습니다.' : undefined,
+              }}
             />
           )}
         </div>
