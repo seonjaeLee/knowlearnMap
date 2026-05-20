@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { noticeApi } from '../../services/api';
+import KlTooltip from './KlTooltip';
 import './NotificationBell.css';
 
 function NotificationBell() {
     const [unreadCount, setUnreadCount] = useState(0);
     const [unreadNotices, setUnreadNotices] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [hovered, setHovered] = useState(false);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
 
@@ -39,6 +41,7 @@ function NotificationBell() {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsDropdownOpen(false);
+                setHovered(false);
             }
         };
 
@@ -48,7 +51,14 @@ function NotificationBell() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isDropdownOpen]);
 
+    useEffect(() => {
+        if (isDropdownOpen) {
+            setHovered(false);
+        }
+    }, [isDropdownOpen]);
+
     const handleBellClick = () => {
+        setHovered(false);
         if (!isDropdownOpen) {
             fetchUnreadNotices();
         }
@@ -81,23 +91,45 @@ function NotificationBell() {
         navigate('/notices');
     };
 
+    const showTooltip = hovered && !isDropdownOpen;
+
     return (
         <div className="notification-bell-container" ref={dropdownRef}>
-            <button className="notification-bell-btn" onClick={handleBellClick} title="알림">
-                <Bell size={20} />
-                {unreadCount > 0 && (
-                    <span className="notification-badge">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                    </span>
-                )}
-            </button>
+            <KlTooltip
+                title="공지 알림"
+                placement="bottom"
+                enterDelay={0}
+                leaveDelay={0}
+                open={showTooltip}
+                triggerClassName="kl-icon-btn-tooltip-trigger"
+            >
+                <button
+                    type="button"
+                    className="notification-bell-btn"
+                    onMouseEnter={() => {
+                        if (!isDropdownOpen) setHovered(true);
+                    }}
+                    onMouseLeave={() => setHovered(false)}
+                    onClick={handleBellClick}
+                    aria-label="공지 알림"
+                    aria-haspopup="true"
+                    aria-expanded={isDropdownOpen}
+                >
+                    <Bell size={20} aria-hidden />
+                    {unreadCount > 0 && (
+                        <span className="notification-badge">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                    )}
+                </button>
+            </KlTooltip>
 
             {isDropdownOpen && (
                 <div className="notification-dropdown">
                     <div className="notification-dropdown-header">
                         <span>공지사항</span>
                         {unreadCount > 0 && (
-                            <button className="btn-mark-all-read" onClick={handleMarkAllRead}>
+                            <button type="button" className="btn-mark-all-read" onClick={handleMarkAllRead}>
                                 모두 읽음
                             </button>
                         )}
@@ -121,7 +153,7 @@ function NotificationBell() {
                         )}
                     </div>
                     <div className="notification-dropdown-footer">
-                        <button className="btn-view-all" onClick={handleViewAll}>
+                        <button type="button" className="btn-view-all" onClick={handleViewAll}>
                             전체 보기
                         </button>
                     </div>

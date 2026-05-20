@@ -91,8 +91,35 @@
     color: var(--color-text-secondary);
 }
 
+.workspace-mgmt-prompt-popover-panel {
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: min(420px, calc(100vw - var(--spacing-xl))) !important;
+}
+
 .workspace-mgmt-prompt-popover-inner {
     min-width: 0;
+    width: max-content;
+    max-width: 100%;
+}
+
+.workspace-mgmt-prompt-popover-inner .prompt-tag-grid {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    width: max-content;
+    max-width: 100%;
+}
+
+.workspace-mgmt-prompt-popover-inner .prompt-tag {
+    width: auto;
+    max-width: 100%;
+}
+
+.workspace-mgmt-prompt-popover-inner .prompt-tag__value {
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
 }
 
 .workspace-mgmt-empty--solo {

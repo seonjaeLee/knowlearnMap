@@ -9,6 +9,8 @@ import { useDialog } from '../hooks/useDialog';
 import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
 import BasicTable from '../components/common/BasicTable';
+import KlTableRowActions from '../components/common/table/KlTableRowActions';
+import KlTooltip from '../components/common/KlTooltip';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import BaseModal from '../components/common/modal/BaseModal';
 import KlModalSelect from '../components/common/modal/KlModalSelect';
@@ -53,6 +55,8 @@ function Home() {
     const [viewMode, setViewMode] = useState('grid');
     const [sortBy, setSortBy] = useState('최신순');
     const [openMenuId, setOpenMenuId] = useState(null);
+    /** 그리드 more-btn — KlTooltip 호버 직접 제어 (클릭·메뉴 열림 후 stuck 방지) */
+    const [moreBtnHoverId, setMoreBtnHoverId] = useState(null);
     const [notebooks, setNotebooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -137,6 +141,7 @@ function Home() {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
                 setOpenMenuId(null);
+                setMoreBtnHoverId(null);
             }
         };
 
@@ -192,8 +197,15 @@ function Home() {
         };
     }, [openMenuId]);
 
+    useEffect(() => {
+        if (openMenuId !== null) {
+            setMoreBtnHoverId(null);
+        }
+    }, [openMenuId]);
+
     const handleMenuToggle = (e, notebookId) => {
         e.stopPropagation();
+        setMoreBtnHoverId(null);
         setOpenMenuId(openMenuId === notebookId ? null : notebookId);
     };
 
@@ -546,69 +558,54 @@ function Home() {
                 const workspaceLabel = notebook.name || notebook.title || '워크스페이스';
                 if (deletingId === notebook.id) {
                     return (
-                        <div className="kl-table-actions" onClick={(e) => e.stopPropagation()}>
-                            <Loader2 className="kl-table-icon-btn__spin" size={16} aria-hidden />
-                        </div>
+                        <KlTableRowActions
+                            prefix={<Loader2 className="kl-table-icon-btn__spin" size={16} aria-hidden />}
+                            actions={[]}
+                        />
                     );
                 }
                 const hasCustomPrompts = Boolean(
                     notebook.ontologyPrompt || notebook.chatResultPrompt || notebook.chunkPrompt,
                 );
+                const shareActive = notebook.shareType && notebook.shareType !== 'NONE';
+                const adminActions = isAdmin
+                    ? [
+                          {
+                              kind: 'custom',
+                              tooltip: '프롬프트 변경',
+                              tone: hasCustomPrompts ? 'success' : 'neutral',
+                              ariaLabel: `${workspaceLabel} 프롬프트 변경`,
+                              onClick: (e) => handleOpenPromptModal(e, notebook.id),
+                              icon: hasCustomPrompts ? (
+                                  <Check strokeWidth={1.75} aria-hidden />
+                              ) : (
+                                  <FileText strokeWidth={1.75} aria-hidden />
+                              ),
+                          },
+                          {
+                              kind: 'share',
+                              accent: shareActive,
+                              ariaLabel: `${workspaceLabel} 공유 설정`,
+                              onClick: (e) => handleOpenShareModal(e, notebook.id),
+                          },
+                      ]
+                    : [];
                 return (
-                    <div className="kl-table-actions" onClick={(e) => e.stopPropagation()}>
-                        <button
-                            type="button"
-                            className="kl-table-icon-btn kl-table-icon-btn--neutral"
-                            onClick={(e) => handleRename(e, notebook.id)}
-                            title="제목 수정"
-                            aria-label={`${workspaceLabel} 제목 수정`}
-                        >
-                            <Edit2 strokeWidth={1.75} aria-hidden />
-                        </button>
-                        {isAdmin ? (
-                            <>
-                                <button
-                                    type="button"
-                                    className={
-                                        hasCustomPrompts
-                                            ? 'kl-table-icon-btn kl-table-icon-btn--success'
-                                            : 'kl-table-icon-btn kl-table-icon-btn--neutral'
-                                    }
-                                    onClick={(e) => handleOpenPromptModal(e, notebook.id)}
-                                    title="프롬프트 변경"
-                                    aria-label={`${workspaceLabel} 프롬프트 변경`}
-                                >
-                                    {hasCustomPrompts ? (
-                                        <Check strokeWidth={1.75} aria-hidden />
-                                    ) : (
-                                        <FileText strokeWidth={1.75} aria-hidden />
-                                    )}
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`kl-table-icon-btn kl-table-icon-btn--neutral${
-                                        notebook.shareType && notebook.shareType !== 'NONE'
-                                            ? ' kl-table-icon-btn--accent'
-                                            : ''
-                                    }`}
-                                    onClick={(e) => handleOpenShareModal(e, notebook.id)}
-                                    title="공유 설정"
-                                    aria-label={`${workspaceLabel} 공유 설정`}
-                                >
-                                    <Share2 strokeWidth={1.75} aria-hidden />
-                                </button>
-                            </>
-                        ) : null}
-                        <button
-                            type="button"
-                            className="kl-table-icon-btn kl-table-icon-btn--danger"
-                            onClick={(e) => handleDelete(e, notebook.id)}
-                            title="삭제"
-                            aria-label={`${workspaceLabel} 삭제`}
-                        >
-                            <Trash2 strokeWidth={1.75} aria-hidden />
-                        </button>
-                    </div>
+                    <KlTableRowActions
+                        actions={[
+                            {
+                                kind: 'rename',
+                                ariaLabel: `${workspaceLabel} 제목 수정`,
+                                onClick: (e) => handleRename(e, notebook.id),
+                            },
+                            ...adminActions,
+                            {
+                                kind: 'delete',
+                                ariaLabel: `${workspaceLabel} 삭제`,
+                                onClick: (e) => handleDelete(e, notebook.id),
+                            },
+                        ]}
+                    />
                 );
             }
             default:
@@ -640,31 +637,45 @@ function Home() {
                     </div>
                     <div className="toolbar-right">
                         <div className="toolbar-view-toggle">
-                            <button
-                                type="button"
-                                className={`toolbar-view-btn ${viewMode === 'grid' ? 'is-active' : ''}`}
-                                onClick={() => setViewMode('grid')}
+                            <KlTooltip
                                 title="그리드 보기"
+                                placement="bottom"
+                                enterDelay={0}
+                                triggerClassName="kl-icon-btn-tooltip-trigger"
                             >
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-                                    <rect x="2" y="2" width="7" height="7" />
-                                    <rect x="11" y="2" width="7" height="7" />
-                                    <rect x="2" y="11" width="7" height="7" />
-                                    <rect x="11" y="11" width="7" height="7" />
-                                </svg>
-                            </button>
-                            <button
-                                type="button"
-                                className={`toolbar-view-btn ${viewMode === 'list' ? 'is-active' : ''}`}
-                                onClick={() => setViewMode('list')}
+                                <button
+                                    type="button"
+                                    className={`toolbar-view-btn ${viewMode === 'grid' ? 'is-active' : ''}`}
+                                    onClick={() => setViewMode('grid')}
+                                    aria-label="그리드 보기"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                        <rect x="2" y="2" width="7" height="7" />
+                                        <rect x="11" y="2" width="7" height="7" />
+                                        <rect x="2" y="11" width="7" height="7" />
+                                        <rect x="11" y="11" width="7" height="7" />
+                                    </svg>
+                                </button>
+                            </KlTooltip>
+                            <KlTooltip
                                 title="리스트 보기"
+                                placement="bottom"
+                                enterDelay={0}
+                                triggerClassName="kl-icon-btn-tooltip-trigger"
                             >
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
-                                    <rect x="2" y="3" width="16" height="2" />
-                                    <rect x="2" y="8" width="16" height="2" />
-                                    <rect x="2" y="13" width="16" height="2" />
-                                </svg>
-                            </button>
+                                <button
+                                    type="button"
+                                    className={`toolbar-view-btn ${viewMode === 'list' ? 'is-active' : ''}`}
+                                    onClick={() => setViewMode('list')}
+                                    aria-label="리스트 보기"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                        <rect x="2" y="3" width="16" height="2" />
+                                        <rect x="2" y="8" width="16" height="2" />
+                                        <rect x="2" y="13" width="16" height="2" />
+                                    </svg>
+                                </button>
+                            </KlTooltip>
                         </div>
 
                         <select
@@ -781,16 +792,42 @@ function Home() {
 
                                 {notebook.role === 'Owner' && (
                                         <div className="more-btn-container" ref={openMenuId === notebook.id ? menuRef : null}>
-                                            <button
-                                                className="more-btn"
-                                                onClick={(e) => handleMenuToggle(e, notebook.id)}
+                                            <KlTooltip
+                                                title="메뉴"
+                                                placement="bottom"
+                                                enterDelay={0}
+                                                leaveDelay={0}
+                                                open={
+                                                    moreBtnHoverId === notebook.id
+                                                    && openMenuId !== notebook.id
+                                                }
+                                                triggerClassName="kl-icon-btn-tooltip-trigger"
                                             >
-                                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                                    <circle cx="10" cy="4" r="1.5" />
-                                                    <circle cx="10" cy="10" r="1.5" />
-                                                    <circle cx="10" cy="16" r="1.5" />
-                                                </svg>
-                                            </button>
+                                                <button
+                                                    type="button"
+                                                    className="more-btn"
+                                                    onMouseEnter={() => {
+                                                        if (openMenuId !== notebook.id) {
+                                                            setMoreBtnHoverId(notebook.id);
+                                                        }
+                                                    }}
+                                                    onMouseLeave={() => {
+                                                        setMoreBtnHoverId((prev) => (
+                                                            prev === notebook.id ? null : prev
+                                                        ));
+                                                    }}
+                                                    onClick={(e) => handleMenuToggle(e, notebook.id)}
+                                                    aria-label="워크스페이스 메뉴"
+                                                    aria-haspopup="menu"
+                                                    aria-expanded={openMenuId === notebook.id}
+                                                >
+                                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                                        <circle cx="10" cy="4" r="1.5" />
+                                                        <circle cx="10" cy="10" r="1.5" />
+                                                        <circle cx="10" cy="16" r="1.5" />
+                                                    </svg>
+                                                </button>
+                                            </KlTooltip>
                                             {openMenuId === notebook.id && (
                                                 <div
                                                     className={`popup-menu${workspaceMenuOpenUp ? ' popup-menu--open-up' : ''}`}

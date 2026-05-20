@@ -26,7 +26,28 @@ import UpgradeModal from '../UpgradeModal';
 import NotificationBell from './NotificationBell';
 import NoticePopupModal from '../NoticePopupModal';
 import { noticeApi } from '../../services/api';
+import KlTooltip from './KlTooltip';
+import KlIconButton from './KlIconButton';
 import './MainLayout.css';
+
+/** LNB 접힘 시 아이콘만 보일 때 — 브라우저 title(~1s) 대신 즉시 표시 */
+const LNB_TOOLTIP_ENTER_MS = 0;
+const LNB_TOOLTIP_LEAVE_MS = 60;
+
+function wrapLnbTooltip(collapsed, label, node) {
+  if (!collapsed || !label) return node;
+  return (
+    <KlTooltip
+      title={label}
+      placement="right"
+      enterDelay={LNB_TOOLTIP_ENTER_MS}
+      leaveDelay={LNB_TOOLTIP_LEAVE_MS}
+      triggerClassName="lnb-tooltip-trigger"
+    >
+      {node}
+    </KlTooltip>
+  );
+}
 
 function MainLayout() {
   const { user, isAdmin, logout } = useAuth();
@@ -100,24 +121,39 @@ function MainLayout() {
           <NotificationBell />
 
           {/* Service Info Button with Grade Badge */}
-          <button
-            className="service-info-btn"
-            onClick={() => setUpgradeModalOpen(true)}
+          <KlTooltip
             title="서비스 정보 및 업그레이드"
+            placement="bottom"
+            enterDelay={0}
+            leaveDelay={LNB_TOOLTIP_LEAVE_MS}
+            triggerClassName="kl-icon-btn-tooltip-trigger"
           >
-            <span className="service-label">이용 서비스</span>
-            <span className={`grade-tag ${user?.grade?.toLowerCase() || 'free'}`}>
-              {user?.grade || 'FREE'}
-            </span>
-          </button>
+            <button
+              type="button"
+              className="service-info-btn"
+              onClick={() => setUpgradeModalOpen(true)}
+              aria-label="서비스 정보 및 업그레이드"
+            >
+              <span className="service-label">이용 서비스</span>
+              <span className={`grade-tag ${user?.grade?.toLowerCase() || 'free'}`}>
+                {user?.grade || 'FREE'}
+              </span>
+            </button>
+          </KlTooltip>
 
           <div className="user-info">
             {user?.email || user?.username || 'User'}
           </div>
 
-          <button className="logout-btn" onClick={handleLogout} title="로그아웃">
-            <LogOut size={20} />
-          </button>
+          <KlIconButton
+            tooltip="로그아웃"
+            ariaLabel="로그아웃"
+            onClick={handleLogout}
+            buttonClassName="logout-btn"
+            stopPropagation={false}
+          >
+            <LogOut size={20} aria-hidden />
+          </KlIconButton>
         </div>
       </header>
 
@@ -132,22 +168,26 @@ function MainLayout() {
                 </button>
               )}
               <div className={`lnb-group-highlight ${isLnbCollapsed || lnbOpenGroups.workspace ? 'is-open' : ''}`}>
-                  <NavLink
-                    to="/workspaces?filter=ALL"
-                    className={() => `lnb-item ${isAllWorkspace() ? 'active' : ''}`}
-                    title="전체"
-                  >
-                    <LayoutGrid size={14} className="lnb-item-icon" />
-                    {!isLnbCollapsed && <span>전체</span>}
-                  </NavLink>
-                  <NavLink
-                    to="/workspaces?filter=MY"
-                    className={() => `lnb-item ${isMyWorkspace() ? 'active' : ''}`}
-                    title="내 워크스페이스"
-                  >
-                    <Layers size={14} className="lnb-item-icon" />
-                    {!isLnbCollapsed && <span>내 워크스페이스</span>}
-                  </NavLink>
+                  {wrapLnbTooltip(isLnbCollapsed, '전체', (
+                    <NavLink
+                      to="/workspaces?filter=ALL"
+                      className={() => `lnb-item ${isAllWorkspace() ? 'active' : ''}`}
+                      aria-label="전체"
+                    >
+                      <LayoutGrid size={14} className="lnb-item-icon" />
+                      {!isLnbCollapsed && <span>전체</span>}
+                    </NavLink>
+                  ))}
+                  {wrapLnbTooltip(isLnbCollapsed, '내 워크스페이스', (
+                    <NavLink
+                      to="/workspaces?filter=MY"
+                      className={() => `lnb-item ${isMyWorkspace() ? 'active' : ''}`}
+                      aria-label="내 워크스페이스"
+                    >
+                      <Layers size={14} className="lnb-item-icon" />
+                      {!isLnbCollapsed && <span>내 워크스페이스</span>}
+                    </NavLink>
+                  ))}
               </div>
             </div>
 
@@ -160,46 +200,66 @@ function MainLayout() {
                   </button>
                 )}
                 <div className={`lnb-group-highlight ${isAdminCenterActive() ? 'active' : ''} ${isLnbCollapsed || lnbOpenGroups.admin ? 'is-open' : ''}`}>
-                    <NavLink to="/" end className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="도메인 선택">
-                      <ShieldCheck size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>도메인 선택</span>}
-                    </NavLink>
-                    <NavLink to="/admin/domains" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="도메인 관리">
-                      <FolderKanban size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>도메인 관리</span>}
-                    </NavLink>
-                    <NavLink to="/admin/workspaces" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="워크스페이스 관리">
-                      <Layers size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>워크스페이스 관리</span>}
-                    </NavLink>
-                    <NavLink to="/admin/prompts" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="프롬프트 관리">
-                      <Sparkles size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>프롬프트 관리</span>}
-                    </NavLink>
-                    <NavLink to="/admin/upgrades" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="승인 관리">
-                      <SlidersHorizontal size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>승인 관리</span>}
-                    </NavLink>
-                    <NavLink to="/admin/users" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="사용자 관리">
-                      <Users size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>사용자 관리</span>}
-                    </NavLink>
-                    <NavLink to="/admin/arango" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="아랑고 관리">
-                      <Database size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>아랑고 관리</span>}
-                    </NavLink>
-                    <NavLink to="/admin/config" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="시스템 설정">
-                      <Wrench size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>시스템 설정</span>}
-                    </NavLink>
-                    <NavLink to="/admin/semantic" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="시멘틱">
-                      <Workflow size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>시멘틱</span>}
-                    </NavLink>
-                    <NavLink to="/admin/action" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="Action">
-                      <Bot size={14} className="lnb-item-icon" />
-                      {!isLnbCollapsed && <span>Action</span>}
-                    </NavLink>
+                    {wrapLnbTooltip(isLnbCollapsed, '도메인 선택', (
+                      <NavLink to="/" end className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="도메인 선택">
+                        <ShieldCheck size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>도메인 선택</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, '도메인 관리', (
+                      <NavLink to="/admin/domains" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="도메인 관리">
+                        <FolderKanban size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>도메인 관리</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, '워크스페이스 관리', (
+                      <NavLink to="/admin/workspaces" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="워크스페이스 관리">
+                        <Layers size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>워크스페이스 관리</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, '프롬프트 관리', (
+                      <NavLink to="/admin/prompts" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="프롬프트 관리">
+                        <Sparkles size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>프롬프트 관리</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, '승인 관리', (
+                      <NavLink to="/admin/upgrades" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="승인 관리">
+                        <SlidersHorizontal size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>승인 관리</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, '사용자 관리', (
+                      <NavLink to="/admin/users" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="사용자 관리">
+                        <Users size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>사용자 관리</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, '아랑고 관리', (
+                      <NavLink to="/admin/arango" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="아랑고 관리">
+                        <Database size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>아랑고 관리</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, '시스템 설정', (
+                      <NavLink to="/admin/config" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="시스템 설정">
+                        <Wrench size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>시스템 설정</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, '시멘틱', (
+                      <NavLink to="/admin/semantic" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="시멘틱">
+                        <Workflow size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>시멘틱</span>}
+                      </NavLink>
+                    ))}
+                    {wrapLnbTooltip(isLnbCollapsed, 'Action', (
+                      <NavLink to="/admin/action" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="Action">
+                        <Bot size={14} className="lnb-item-icon" />
+                        {!isLnbCollapsed && <span>Action</span>}
+                      </NavLink>
+                    ))}
                 </div>
               </div>
             )}
@@ -212,30 +272,43 @@ function MainLayout() {
                 </button>
               )}
               <div className={`lnb-group-highlight ${isCustomerCenterActive() ? 'active' : ''} ${isLnbCollapsed || lnbOpenGroups.support ? 'is-open' : ''}`}>
-                  <NavLink to="/notices" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="공지사항">
-                    <Bell size={14} className="lnb-item-icon" />
-                    {!isLnbCollapsed && <span>공지사항</span>}
-                  </NavLink>
-                  <NavLink to="/faq" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="자주 묻는 질문">
-                    <HelpCircle size={14} className="lnb-item-icon" />
-                    {!isLnbCollapsed && <span>자주 묻는 질문</span>}
-                  </NavLink>
-                  <NavLink to="/qna" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} title="1:1 문의">
-                    <MessageSquareText size={14} className="lnb-item-icon" />
-                    {!isLnbCollapsed && <span>1:1 문의</span>}
-                  </NavLink>
+                  {wrapLnbTooltip(isLnbCollapsed, '공지사항', (
+                    <NavLink to="/notices" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="공지사항">
+                      <Bell size={14} className="lnb-item-icon" />
+                      {!isLnbCollapsed && <span>공지사항</span>}
+                    </NavLink>
+                  ))}
+                  {wrapLnbTooltip(isLnbCollapsed, '자주 묻는 질문', (
+                    <NavLink to="/faq" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="자주 묻는 질문">
+                      <HelpCircle size={14} className="lnb-item-icon" />
+                      {!isLnbCollapsed && <span>자주 묻는 질문</span>}
+                    </NavLink>
+                  ))}
+                  {wrapLnbTooltip(isLnbCollapsed, '1:1 문의', (
+                    <NavLink to="/qna" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="1:1 문의">
+                      <MessageSquareText size={14} className="lnb-item-icon" />
+                      {!isLnbCollapsed && <span>1:1 문의</span>}
+                    </NavLink>
+                  ))}
               </div>
             </div>
           </nav>
-          <button
-            type="button"
-            className={`lnb-collapse-toggle ${isLnbCollapsed ? 'is-collapsed' : ''}`}
-            onClick={() => setIsLnbCollapsed((prev) => !prev)}
-            title={isLnbCollapsed ? 'LNB 펼치기' : 'LNB 접기'}
-            aria-label={isLnbCollapsed ? 'LNB 펼치기' : 'LNB 접기'}
+          <KlTooltip
+            title={isLnbCollapsed ? '메뉴 펼치기' : '메뉴 접기'}
+            placement="right"
+            enterDelay={LNB_TOOLTIP_ENTER_MS}
+            leaveDelay={LNB_TOOLTIP_LEAVE_MS}
+            triggerClassName="lnb-tooltip-trigger lnb-tooltip-trigger--collapse"
           >
-            <ChevronsLeft size={16} className="lnb-collapse-icon" />
-          </button>
+            <button
+              type="button"
+              className={`lnb-collapse-toggle ${isLnbCollapsed ? 'is-collapsed' : ''}`}
+              onClick={() => setIsLnbCollapsed((prev) => !prev)}
+              aria-label={isLnbCollapsed ? '메뉴 펼치기' : '메뉴 접기'}
+            >
+              <ChevronsLeft size={16} className="lnb-collapse-icon" />
+            </button>
+          </KlTooltip>
         </aside>
 
         <div className="content-panel">

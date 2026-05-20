@@ -293,3 +293,32 @@
 - `BasicTable.jsx` / `BasicTable.global.css` / `BasicTable.module.scss` — 셀·빈 목록 표시 보강
 - `supportCsModalPaper.js` — CS·도메인·멤버 등 paper 폭·클래스 단일 모듈 확장
 - `QnaDetailModal.jsx` · `QnaDetailModal.css` — 상세 레이아웃·스타일 미세 조정
+
+---
+
+## 2026-05-20
+
+### 18) Tooltip·Popover 스펙·레지스트리
+
+- **목적:** 호버 안내(Tooltip)와 클릭 설명(Popover) 역할·props·배치·스타일 수정 지점을 한 문서로 통일
+- **문서:** [overlay/tooltip-popover-spec.md](../overlay/tooltip-popover-spec.md) **신규** · [README.md](../README.md) 「툴팁 · 팝오버」 빠른 찾기 · [component-registry.md](../governance/component-registry.md) — `KlTooltip`, `KlIconButton`, `KlTableRowActions`, `KlPopover`, `SupportTableAdminActions` 등록
+- **규칙 요약:** HTML `title=` + `KlTooltip` 이중 사용 금지 · Popover는 `?`/`i` **클릭**(`kl-popover-icon-btn`) — Tooltip으로 대체하지 않음 · 스타일은 `KlTooltip.module.scss` / `KlPopover.module.scss` 한곳 수정으로 전파
+
+---
+
+### 19) `KlTooltip`·`KlIconButton`·표 관리 열 이관
+
+- **공통:** `KlIconButton` — 28px 표 버튼·GNB·툴바용(`buttonClassName`) + `KlTooltip` · `KlTableRowActions` + `tableActionKinds.js`(mailResend, unlock/unlocked, lock, approve, reject, share, edit, delete 등) · `SupportTableAdminActions` → 내부 `KlTableRowActions`
+- **`KlTooltip` 보강:** `open` 제어 · 메뉴·드롭다운 열림 시 호버 툴팁 숨김(Home `more-btn`, `ToolbarMoreMenu`, `NotificationBell` 등)
+- **이관(대표):** LNB·GNB(`MainLayout`, 로그아웃·접기) · Home 보기 전환·메뉴 · 어드민 헤더·툴바 새로고침 · 회원·워크스페이스·업그레이드·설정·승인·도메인·프롬프트 목록·시멘틱 필터 등 — 브라우저 `title=` 제거
+- **미이관:** 표 **셀** 긴 텍스트 `title=`(열 너비로 해결) · NotebookDetail·일부 Popover 직접 사용 화면은 기존 패턴 유지·추후 검토
+- **Popover:** 기존 `KlPopover` 적용 화면(시스템 설정·승인·워크스페이스 프롬프트 등) 유지 — 스펙만 정리, 대량 치환 없음
+
+---
+
+### 20) NotebookDetail 패널 토글 툴팁
+
+- **목적:** 좌·우 패널 접기 버튼을 `KlIconButton` + `kl-toolbar-icon-toggle` + `ChevronsLeft`로 통일(시멘틱 split과 동일 아이콘)
+- **문구:** 툴팁·`aria-label` — **「접기」** / **「펼치기」** (패널 열림 여부)
+- **CSS:** 접힘(40px) 시 `.panel-header` `justify-content: center`, `padding: 0` — 토글 아이콘 가운데 정렬
+- **파일:** `NotebookDetail.jsx`, `NotebookDetail.css`

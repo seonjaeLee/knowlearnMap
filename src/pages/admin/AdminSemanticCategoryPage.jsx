@@ -5,8 +5,6 @@ import { useDialog } from '../../hooks/useDialog';
 import {
   Layers,
   Plus,
-  Pencil,
-  Trash2,
   X,
   Download,
   Upload,
@@ -28,6 +26,8 @@ import {
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import ToolbarMoreMenu from '../../components/common/ToolbarMoreMenu';
 import BasicTable from '../../components/common/BasicTable';
+import KlTableRowActions from '../../components/common/table/KlTableRowActions';
+import KlIconButton from '../../components/common/KlIconButton';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
 import {
   semanticCategoryColumnDefinitionsCollapsed,
@@ -358,28 +358,20 @@ function AdminSemanticCategoryPage({
       }
       case 'actions':
         return (
-          <div className="kl-table-actions" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className="kl-table-icon-btn kl-table-icon-btn--neutral"
-              onClick={() => openEdit(row)}
-              title="수정"
-              aria-label={`${row.nameEn} 수정`}
-            >
-              <Pencil size={16} aria-hidden />
-            </button>
-            {!collapsed && (
-              <button
-                type="button"
-                className="kl-table-icon-btn kl-table-icon-btn--danger"
-                onClick={() => handleDelete(row)}
-                title="삭제"
-                aria-label={`${row.nameEn} 삭제`}
-              >
-                <Trash2 size={16} aria-hidden />
-              </button>
-            )}
-          </div>
+          <KlTableRowActions
+            actions={[
+              {
+                kind: 'edit',
+                onClick: () => openEdit(row),
+                ariaLabel: `${row.nameEn} 수정`,
+              },
+              !collapsed && {
+                kind: 'delete',
+                onClick: () => handleDelete(row),
+                ariaLabel: `${row.nameEn} 삭제`,
+              },
+            ].filter(Boolean)}
+          />
         );
       default:
         return undefined;
@@ -472,30 +464,30 @@ function AdminSemanticCategoryPage({
             추가
           </button>
           {!collapsed && expandableParentIds.length > 0 ? (
-            <button
-              type="button"
-              className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            <KlIconButton
+              tooltip={isTreeFullyCollapsed ? '모두 펼침' : '모두 접음'}
+              ariaLabel={isTreeFullyCollapsed ? '모두 펼침' : '모두 접음'}
               onClick={toggleTreeExpandAll}
-              title={isTreeFullyCollapsed ? '모두 펼침' : '모두 접음'}
-              aria-label={isTreeFullyCollapsed ? '모두 펼침' : '모두 접음'}
-              aria-pressed={!isTreeFullyCollapsed}
+              buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+              stopPropagation={false}
+              buttonProps={{ 'aria-pressed': !isTreeFullyCollapsed }}
             >
               {isTreeFullyCollapsed ? (
                 <Maximize2 size={16} aria-hidden />
               ) : (
                 <Minimize2 size={16} aria-hidden />
               )}
-            </button>
+            </KlIconButton>
           ) : null}
-          <button
-            type="button"
-            className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+          <KlIconButton
+            tooltip="새로고침"
+            ariaLabel="새로고침"
             onClick={refreshList}
-            title="새로고침"
-            aria-label="새로고침"
+            buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            stopPropagation={false}
           >
             <RotateCcw size={16} aria-hidden />
-          </button>
+          </KlIconButton>
           <ToolbarMoreMenu
             items={toolbarMoreItems}
             ariaLabel="Excel 메뉴"
@@ -522,15 +514,15 @@ function AdminSemanticCategoryPage({
             />
           </div>
           {searchText ? (
-            <button
-              type="button"
-              className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            <KlIconButton
+              tooltip="검색 초기화"
+              ariaLabel="검색 초기화"
               onClick={() => setSearchText('')}
-              title="검색 초기화"
-              aria-label="검색 초기화"
+              buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+              stopPropagation={false}
             >
               <X size={16} aria-hidden />
-            </button>
+            </KlIconButton>
           ) : null}
         </div>
       </div>

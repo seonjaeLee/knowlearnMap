@@ -789,6 +789,8 @@ export const memberApi = {
             method: 'POST'
         });
     },
+    /** TODO: 백엔드 재잠금 API 확정 후 연동 — AdminMemberManagement.handleLock */
+    lock: async (id) => apiCall(`/members/${id}/lock`, { method: 'POST' }),
     changeGrade: async (username, grade) => {
         // Using query params as per MemberController
         return await apiCall(`/members/change-grade?username=${username}&grade=${grade}`, {

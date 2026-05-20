@@ -5,9 +5,11 @@ import { Button } from '@mui/material';
 import { memberApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
-import { Users, Search, RotateCcw, Pencil, Trash2, Lock, Mail } from 'lucide-react';
+import { Users, Search, RotateCcw } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
+import KlTableRowActions from '../../components/common/table/KlTableRowActions';
+import KlIconButton from '../../components/common/KlIconButton';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
@@ -24,6 +26,9 @@ const isMemberMockEnabled = import.meta.env.VITE_ENABLE_MEMBER_MOCK === 'true';
 const SHOW_ROW_CHECKBOX_COLUMN = false;
 
 const PAGE_SIZE = 15;
+
+/** 로그인 실패 횟수가 이 값 이상이면 계정 잠금(더미·표시 기준) */
+const LOCK_FAILURE_THRESHOLD = 5;
 
 /** `false`: `BasicTableFooter` 전체를 렌더하지 않음(요약·페이지네이션 DOM 모두 없음). `true`일 때는 기존처럼 좌측 요약 + 가운데 페이지네이션. 요약은 추후 상단으로 옮길 예정이어도 소스는 여기 유지. */
 const SHOW_MEMBER_TABLE_FOOTER = false;
@@ -56,6 +61,8 @@ function AdminMemberManagement() {
     const [editMember, setEditMember] = useState(null);
     const [page, setPage] = useState(0);
     const [selectedIds, setSelectedIds] = useState(() => new Set());
+    /** 잠금 해제 직후 — 열린 자물쇠로 표시·더미에서 재잠금 가능 */
+    const [unlockedMemberIds, setUnlockedMemberIds] = useState(() => new Set());
     /** API 실패 시 더미로 채우거나 `VITE_ENABLE_MEMBER_MOCK` 인 경우 — 삭제·잠금해제 등은 로컬 state만 반영 */
     const [adminListSource, setAdminListSource] = useState('live');
     const { alert, confirm } = useDialog();
@@ -209,6 +216,42 @@ function AdminMemberManagement() {
         }
     }, [alert, confirm, deleteUsesLocalState, fetchMembers]);
 
+    const markMemberUnlocked = useCallback((memberId) => {
+        setUnlockedMemberIds((prev) => {
+            const next = new Set(prev);
+            next.add(memberId);
+            return next;
+        });
+    }, []);
+
+    const clearMemberUnlocked = useCallback((memberId) => {
+        setUnlockedMemberIds((prev) => {
+            const next = new Set(prev);
+            next.delete(memberId);
+            return next;
+        });
+    }, []);
+
+    const handleLock = useCallback(async (member) => {
+        const ok = await confirm(`"${member.email}" 계정을 다시 잠그시겠습니까?`);
+        if (!ok) return;
+        if (deleteUsesLocalState) {
+            const lockedAt = new Date().toISOString();
+            setMembers((prev) => prev.map((m) => (
+                m.id === member.id
+                    ? { ...m, failedLoginAttempts: LOCK_FAILURE_THRESHOLD, accountLockedAt: lockedAt }
+                    : m
+            )));
+            clearMemberUnlocked(member.id);
+            await alert('계정이 잠금 처리되었습니다. (더미 목록)');
+            return;
+        }
+        await alert(
+            '재잠금 API는 백엔드 연동 후 사용할 수 있습니다.\n'
+            + '로컬 테스트: VITE_ENABLE_MEMBER_MOCK=true 이거나 목록이 더미로 표시될 때만 재잠금이 동작합니다.',
+        );
+    }, [alert, confirm, deleteUsesLocalState, clearMemberUnlocked]);
+
     const handleUnlock = useCallback(async (member) => {
         const ok = await confirm(`"${member.email}" 계정 잠금을 해제하시겠습니까?`);
         if (!ok) return;
@@ -218,17 +261,19 @@ function AdminMemberManagement() {
                     ? { ...m, failedLoginAttempts: 0, accountLockedAt: null }
                     : m
             )));
+            markMemberUnlocked(member.id);
             await alert('잠금이 해제되었습니다.');
             return;
         }
         try {
             await memberApi.update(member.id, { failedLoginAttempts: '0' });
+            markMemberUnlocked(member.id);
             await alert('잠금이 해제되었습니다.');
             fetchMembers();
         } catch (error) {
             await alert('잠금 해제에 실패했습니다.');
         }
-    }, [alert, confirm, deleteUsesLocalState, fetchMembers]);
+    }, [alert, confirm, deleteUsesLocalState, fetchMembers, markMemberUnlocked]);
 
     const handleResendVerification = useCallback(async (member) => {
         const ok = await confirm(`"${member.email}"에게 인증 메일을 재발송하시겠습니까?`);
@@ -283,7 +328,8 @@ function AdminMemberManagement() {
     };
 
     const renderMemberCell = useCallback(({ column, row: member }) => {
-        const isLocked = member.failedLoginAttempts >= 5;
+        const isLocked = member.failedLoginAttempts >= LOCK_FAILURE_THRESHOLD;
+        const showUnlockedIcon = !isLocked && unlockedMemberIds.has(member.id);
         switch (column.id) {
             case '_select':
                 return (
@@ -371,48 +417,36 @@ function AdminMemberManagement() {
                 );
             case 'actions':
                 return (
-                    <div className="kl-table-actions">
-                        {member.status === 'VERIFYING_EMAIL' && (
-                            <button
-                                type="button"
-                                className="kl-table-icon-btn kl-table-icon-btn--neutral"
-                                onClick={() => handleResendVerification(member)}
-                                title="인증 메일 재발송"
-                                aria-label={`${member.email} 인증 메일 재발송`}
-                            >
-                                <Mail strokeWidth={1.75} aria-hidden />
-                            </button>
-                        )}
-                        {isLocked && (
-                            <button
-                                type="button"
-                                className="kl-table-icon-btn kl-table-icon-btn--neutral"
-                                onClick={() => handleUnlock(member)}
-                                title="잠금 해제"
-                                aria-label={`${member.email} 잠금 해제`}
-                            >
-                                <Lock strokeWidth={1.75} aria-hidden />
-                            </button>
-                        )}
-                        <button
-                            type="button"
-                            className="kl-table-icon-btn kl-table-icon-btn--neutral"
-                            onClick={() => setEditMember({ ...member })}
-                            title="수정"
-                            aria-label={`${member.email} 수정`}
-                        >
-                            <Pencil strokeWidth={1.75} aria-hidden />
-                        </button>
-                        <button
-                            type="button"
-                            className="kl-table-icon-btn kl-table-icon-btn--danger"
-                            onClick={() => handleDelete(member)}
-                            title="삭제"
-                            aria-label={`${member.email} 삭제`}
-                        >
-                            <Trash2 strokeWidth={1.75} aria-hidden />
-                        </button>
-                    </div>
+                    <KlTableRowActions
+                        actions={[
+                            member.status === 'VERIFYING_EMAIL' && {
+                                kind: 'mailResend',
+                                onClick: () => handleResendVerification(member),
+                                ariaLabel: `${member.email} 인증 메일 재발송`,
+                            },
+                            isLocked && {
+                                kind: 'unlock',
+                                onClick: () => handleUnlock(member),
+                                ariaLabel: `${member.email} 잠금 해제`,
+                            },
+                            showUnlockedIcon && {
+                                kind: 'unlocked',
+                                tooltip: '잠금',
+                                onClick: () => handleLock(member),
+                                ariaLabel: `${member.email} 잠금`,
+                            },
+                            {
+                                kind: 'edit',
+                                onClick: () => setEditMember({ ...member }),
+                                ariaLabel: `${member.email} 수정`,
+                            },
+                            {
+                                kind: 'delete',
+                                onClick: () => handleDelete(member),
+                                ariaLabel: `${member.email} 삭제`,
+                            },
+                        ].filter(Boolean)}
+                    />
                 );
             default:
                 return undefined;
@@ -422,8 +456,10 @@ function AdminMemberManagement() {
         formatDate,
         handleDelete,
         handleUnlock,
+        handleLock,
         handleResendVerification,
         toggleMemberRowSelected,
+        unlockedMemberIds,
     ]);
 
     const memberTableEmptyVariant = members.length === 0 ? 'default' : 'search';
@@ -453,15 +489,15 @@ function AdminMemberManagement() {
                     icon={Users}
                     title="사용자 관리"
                     actions={(
-                        <button
-                            type="button"
-                            className="kl-btn kl-btn--icon"
+                        <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="사용자 목록 새로고침"
                             onClick={fetchMembers}
-                            title="새로고침"
-                            aria-label="사용자 목록 새로고침"
+                            buttonClassName="kl-btn kl-btn--icon"
+                            stopPropagation={false}
                         >
                             <RotateCcw size={16} aria-hidden />
-                        </button>
+                        </KlIconButton>
                     )}
                 />
 

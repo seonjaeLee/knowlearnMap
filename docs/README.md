@@ -12,7 +12,7 @@
 | **[governance/](./governance/)** | 무엇을 쓸지·언제 이관할지 | [migration-policy.md](./governance/migration-policy.md), [component-registry.md](./governance/component-registry.md) |
 | **[surface/](./surface/)** | **본문(Page)** — 툴바·폼·버튼·목록 chrome | [list-page-spec.md](./surface/list-page-spec.md), [form-spec.md](./surface/form-spec.md), [button-spec.md](./surface/button-spec.md) |
 | **[table/](./table/)** | 데이터 표 (`BasicTable`) | [data-table-spec.md](./table/data-table-spec.md), [dev-guide-table-ui.md](./table/dev-guide-table-ui.md) |
-| **[overlay/](./overlay/)** | **모달(Overlay)** — `BaseModal`, Decision, 폼 | [modal-spec.md](./overlay/modal-spec.md), [modal-form-spec.md](./overlay/modal-form-spec.md) |
+| **[overlay/](./overlay/)** | **부유 레이어** — 모달, Tooltip, Popover | [modal-spec.md](./overlay/modal-spec.md), [tooltip-popover-spec.md](./overlay/tooltip-popover-spec.md) |
 | **[components/](./components/)** | 복합 UI 패턴(분할 패널 등) | [split-pane.md](./components/split-pane.md) |
 | **[mockup/](./mockup/)** | 목업·체크리스트 | [guide.md](./mockup/guide.md) |
 | **[history/](./history/)** | 작업 이력 | [ui-history2.md](./history/ui-history2.md) (**현행 기록**), [ui-history.md](./history/ui-history.md) (아카이브) |
@@ -29,6 +29,7 @@
 | 본문 버튼·툴바 버튼 | [surface/button-spec.md](./surface/button-spec.md) |
 | 모달 껍데기·alert/confirm | [overlay/modal-spec.md](./overlay/modal-spec.md) |
 | 모달 안 폼 필드 | [overlay/modal-form-spec.md](./overlay/modal-form-spec.md) |
+| **툴팁·팝오버** (호버 안내 / `?` 클릭 설명) | [overlay/tooltip-popover-spec.md](./overlay/tooltip-popover-spec.md) |
 | 지금 뭐 써도 되나 / 레거시 | [governance/component-registry.md](./governance/component-registry.md) |
 | 이관 규칙 (전면 교체 금지) | [governance/migration-policy.md](./governance/migration-policy.md) |
 | 작업 기록 남기기 | [history/ui-history2.md](./history/ui-history2.md) (**요청 시만**, [history/README.md](./history/README.md) 참고) |
@@ -50,7 +51,24 @@ foundation/design-tokens (:root)
 ```
 
 - **Surface**: `kl-page`, `table-toolbar`, `search-area`, `basic-table-shell`, `kl-btn` …
-- **Overlay**: `BaseModal`, `kl-modal-form`, `KlModalSelect`, MUI `Button` in `actions` …
+- **Overlay**: `BaseModal`, `kl-modal-form`, `KlModalSelect`, `KlTooltip`, `KlPopover` …
+
+---
+
+## 툴팁 · 팝오버 (간략)
+
+| | Tooltip | Popover |
+|--|---------|---------|
+| **언제** | 아이콘·버튼에 **마우스 올림** | **`?` / `i` 클릭** |
+| **문구** | 「수정」「삭제」「알림」 등 **한 줄** | 설명문·불릿·여러 줄 |
+| **컴포넌트** | `KlTooltip` | `KlPopover` |
+| **스타일 수정** | `KlTooltip.module.scss` 한 곳 | `KlPopover.module.scss` 한 곳 |
+
+- 브라우저 **`title=`** → `KlTooltip`으로 바꿀 대상 (느리고 화면 밖으로 잘림).
+- **`title` + `KlTooltip` 동시 사용 금지.**
+- 표 **우측** 관리 버튼: `placement="left"` · LNB **접힘**: `placement="right"`.
+
+상세·props·이관 순서 → **[overlay/tooltip-popover-spec.md](./overlay/tooltip-popover-spec.md)**
 
 ---
 

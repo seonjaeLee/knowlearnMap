@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, TextField, Typography } from '@mui/material';
-import { Check, Ban, HelpCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { upgradeApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
@@ -9,6 +9,8 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import KlPopover from '../../components/common/KlPopover';
+import KlTableRowActions from '../../components/common/table/KlTableRowActions';
+import KlIconButton from '../../components/common/KlIconButton';
 import { mockUpgradeRequests } from '../../data/upgradeRequestMockData';
 import './admin-common.css';
 import './AdminUpgradeRequests.css';
@@ -236,11 +238,12 @@ function AdminUpgradeRequests() {
                                     {formatTableCellText(status)}
                                 </span>
                                 {status === 'REJECTED' && (
-                                    <button
-                                        type="button"
-                                        className="kl-popover-icon-btn"
+                                    <KlIconButton
+                                        tooltip="사유 보기"
+                                        ariaLabel={`${req.email} 사유 보기`}
+                                        buttonClassName="kl-popover-icon-btn"
+                                        placement="top"
                                         onClick={(e) => {
-                                            e.stopPropagation();
                                             const el = e.currentTarget;
                                             const r = el.getBoundingClientRect();
                                             const text = (req.rejectReason || '').trim();
@@ -258,14 +261,14 @@ function AdminUpgradeRequests() {
                                                 };
                                             });
                                         }}
-                                        title="사유 보기"
-                                        aria-label={`${req.email} 사유 보기`}
-                                        aria-expanded={Boolean(reasonOpen)}
-                                        aria-haspopup="true"
-                                        aria-controls="admin-upgrade-reject-reason-popover"
+                                        buttonProps={{
+                                            'aria-expanded': Boolean(reasonOpen),
+                                            'aria-haspopup': 'true',
+                                            'aria-controls': 'admin-upgrade-reject-reason-popover',
+                                        }}
                                     >
                                         <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
-                                    </button>
+                                    </KlIconButton>
                                 )}
                             </div>
                         </div>
@@ -274,26 +277,20 @@ function AdminUpgradeRequests() {
                 case 'actions':
                     if (req.status !== 'PENDING') return null;
                     return (
-                        <div className="kl-table-actions">
-                            <button
-                                type="button"
-                                className="kl-table-icon-btn kl-table-icon-btn--danger"
-                                onClick={() => openRejectModal(req.id)}
-                                title="거절"
-                                aria-label={`${req.email} 신청 거절`}
-                            >
-                                <Ban strokeWidth={1.75} size={16} aria-hidden />
-                            </button>
-                            <button
-                                type="button"
-                                className="kl-table-icon-btn kl-table-icon-btn--success"
-                                onClick={() => handleApprove(req.id)}
-                                title="승인"
-                                aria-label={`${req.email} 신청 승인`}
-                            >
-                                <Check strokeWidth={1.75} size={16} aria-hidden />
-                            </button>
-                        </div>
+                        <KlTableRowActions
+                            actions={[
+                                {
+                                    kind: 'reject',
+                                    onClick: () => openRejectModal(req.id),
+                                    ariaLabel: `${req.email} 신청 거절`,
+                                },
+                                {
+                                    kind: 'approve',
+                                    onClick: () => handleApprove(req.id),
+                                    ariaLabel: `${req.email} 신청 승인`,
+                                },
+                            ]}
+                        />
                     );
                 default:
                     return undefined;

@@ -5,6 +5,7 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import { RotateCcw, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import KlIconButton from '../../components/common/KlIconButton';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import { mockArangoDatabases, mockArangoWorkspacesByDomainId } from '../../data/arangoAdminMockData';
 import './admin-common.css';
@@ -341,15 +342,15 @@ function AdminArangoManagement() {
                 <AdminPageHeader
                     title="ArangoDB 관리"
                     actions={(
-                        <button
-                            type="button"
+                        <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="ArangoDB 목록 새로고침"
                             onClick={handleRefresh}
-                            className="kl-btn kl-btn--icon"
-                            title="새로고침"
-                            aria-label="ArangoDB 목록 새로고침"
+                            buttonClassName="kl-btn kl-btn--icon"
+                            stopPropagation={false}
                         >
                             <RotateCcw size={16} aria-hidden />
-                        </button>
+                        </KlIconButton>
                     )}
                 />
             </div>

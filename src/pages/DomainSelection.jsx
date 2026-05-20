@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import axios from 'axios';
 import { API_URL } from '../config/api';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import BaseModal from '../components/common/modal/BaseModal';
 import {
@@ -13,6 +13,7 @@ import {
     domainFormModalPaperSx,
 } from '../components/common/modal/supportFormModalPaperSx';
 import BasicTable from '../components/common/BasicTable';
+import KlTableRowActions from '../components/common/table/KlTableRowActions';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import './admin/admin-common.css';
 import './DomainSelection.css';
@@ -210,22 +211,17 @@ function DomainSelection() {
                 case '_actions':
                     return (
                         <div className="domain-list-action">
-                            <div className="kl-table-actions">
-                                <button
-                                    type="button"
-                                    className="kl-table-icon-btn kl-table-icon-btn--danger"
-                                    title="삭제"
-                                    aria-label={deleting === domain.id ? '삭제 중' : '삭제'}
-                                    onClick={(e) => handleDeleteDomain(e, domain)}
-                                    disabled={deleting === domain.id}
-                                >
-                                    {deleting === domain.id ? (
-                                        <Loader2 className="kl-table-icon-btn__spin" aria-hidden />
-                                    ) : (
-                                        <Trash2 strokeWidth={1.75} aria-hidden />
-                                    )}
-                                </button>
-                            </div>
+                            <KlTableRowActions
+                                actions={[
+                                    {
+                                        kind: 'delete',
+                                        onClick: (e) => handleDeleteDomain(e, domain),
+                                        ariaLabel: deleting === domain.id ? '삭제 중' : '삭제',
+                                        loading: deleting === domain.id,
+                                        disabled: deleting === domain.id,
+                                    },
+                                ]}
+                            />
                         </div>
                     );
                 default:

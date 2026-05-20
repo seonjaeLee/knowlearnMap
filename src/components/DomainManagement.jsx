@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@mui/material';
 import {
-    Search, Plus, Globe, CheckCircle, AlertCircle, Database, Layout, Info, Pencil, Trash2,
+    Search, Plus, Globe, CheckCircle, AlertCircle, Database, Layout, Info,
 } from 'lucide-react';
 import { useDialog } from '../hooks/useDialog';
 import { useBasicTableColumnResize } from '../hooks/useBasicTableColumnResize';
@@ -14,6 +14,7 @@ import {
     domainFormModalPaperSx,
 } from './common/modal/supportFormModalPaperSx';
 import BasicTable from './common/BasicTable';
+import KlTableRowActions from './common/table/KlTableRowActions';
 import { formatTableCellText, isTableCellBlank } from './common/tableCellDisplay';
 import { mockDomains, mockDomainPromptDefaults, mockPromptCodesByPurpose } from '../data/domainMockData';
 import './DomainManagement.css';
@@ -456,32 +457,22 @@ function DomainManagement() {
                 );
             case 'actions':
                 return (
-                    <div className="kl-table-actions">
-                        <button
-                            type="button"
-                            className="kl-table-icon-btn kl-table-icon-btn--neutral"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleOpenEditModal(domain);
-                            }}
-                            title="도메인 수정"
-                            aria-label={`${domain.name} 도메인 수정`}
-                        >
-                            <Pencil strokeWidth={1.75} aria-hidden />
-                        </button>
-                        <button
-                            type="button"
-                            className="kl-table-icon-btn kl-table-icon-btn--danger"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(domain.id, domain.name);
-                            }}
-                            title="도메인 삭제"
-                            aria-label={`${domain.name} 도메인 삭제`}
-                        >
-                            <Trash2 strokeWidth={1.75} aria-hidden />
-                        </button>
-                    </div>
+                    <KlTableRowActions
+                        actions={[
+                            {
+                                kind: 'edit',
+                                tooltip: '도메인 수정',
+                                onClick: () => handleOpenEditModal(domain),
+                                ariaLabel: `${domain.name} 도메인 수정`,
+                            },
+                            {
+                                kind: 'delete',
+                                tooltip: '도메인 삭제',
+                                onClick: () => handleDelete(domain.id, domain.name),
+                                ariaLabel: `${domain.name} 도메인 삭제`,
+                            },
+                        ]}
+                    />
                 );
             default:
                 return undefined;

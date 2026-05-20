@@ -10,7 +10,8 @@ import { documentApi } from '../services/documentApi';
 import { chatApi } from '../services/chatApi';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
-import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, MessageSquare, Network, Book, Plus, Trash2, Search, RefreshCw, Users, Pen, X, Save, Copy, ChevronDown, ChevronRight, FileText, Upload, BookOpen, Database, ExternalLink } from 'lucide-react';
+import { ChevronsLeft, MessageSquare, Network, Book, Plus, Trash2, Search, RefreshCw, Users, Pen, X, Save, Copy, ChevronDown, ChevronRight, FileText, Upload, BookOpen, Database, ExternalLink } from 'lucide-react';
+import KlIconButton from './common/KlIconButton';
 
 import DocumentSourceItem from './DocumentSourceItem';
 import AddSourceModal from './AddSourceModal';
@@ -1311,9 +1312,15 @@ function NotebookDetail() {
                                 )}
                             </div>
                         )}
-                        <button className="panel-toggle-btn" onClick={handleToggleLeftSidebar}>
-                            {leftSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
-                        </button>
+                        <KlIconButton
+                            tooltip={leftSidebarOpen ? '접기' : '펼치기'}
+                            ariaLabel={leftSidebarOpen ? '접기' : '펼치기'}
+                            onClick={handleToggleLeftSidebar}
+                            buttonClassName={`kl-toolbar-icon-toggle notebook-panel-toggle${leftSidebarOpen ? '' : ' is-collapsed'}`}
+                            stopPropagation={false}
+                        >
+                            <ChevronsLeft size={16} className="kl-toolbar-icon-toggle__icon" aria-hidden />
+                        </KlIconButton>
                     </div>
                     <div className="panel-body">
                         {leftSidebarOpen ? (
@@ -1955,9 +1962,15 @@ function NotebookDetail() {
                 {/* Right Panel: Studio / Mini Graph */}
                 <div className={`panel panel-right ${rightSidebarOpen ? '' : 'collapsed'}`}>
                     <div className="panel-header">
-                        <button className="panel-toggle-btn panel-toggle-btn-right" onClick={handleToggleRightSidebar}>
-                            {rightSidebarOpen ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
-                        </button>
+                        <KlIconButton
+                            tooltip={rightSidebarOpen ? '접기' : '펼치기'}
+                            ariaLabel={rightSidebarOpen ? '접기' : '펼치기'}
+                            onClick={handleToggleRightSidebar}
+                            buttonClassName={`kl-toolbar-icon-toggle notebook-panel-toggle notebook-panel-toggle--right${rightSidebarOpen ? ' is-collapsed' : ''}`}
+                            stopPropagation={false}
+                        >
+                            <ChevronsLeft size={16} className="kl-toolbar-icon-toggle__icon" aria-hidden />
+                        </KlIconButton>
                         {rightSidebarOpen && <div className="panel-title panel-title-right">스튜디오</div>}
                     </div>
                     {rightSidebarOpen && (

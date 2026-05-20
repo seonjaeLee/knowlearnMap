@@ -10,6 +10,7 @@ import {
   semanticFormModalPaperSx,
 } from '../../../components/common/modal/supportFormModalPaperSx';
 import SplitPane from '../../../components/common/SplitPane';
+import KlIconButton from '../../../components/common/KlIconButton';
 import SemanticEntityListPanel from './SemanticEntityListPanel';
 import { useSemanticEntityAdmin } from './useSemanticEntityAdmin';
 import { SEMANTIC_ENTITY_PAGE_LABELS } from './semanticEntityPageLabels';
@@ -63,15 +64,15 @@ function SemanticEntitySplitPage({
       <div className="kl-split-panel-head">
         <h4 className="kl-split-panel-title">{splitLeftHeading}</h4>
         <div className="kl-split-panel-head-actions">
-          <button
-            type="button"
-            className={`kl-toolbar-icon-toggle${leftExpanded ? '' : ' is-collapsed'}`}
+          <KlIconButton
+            tooltip={leftExpanded ? '접기' : '펼치기'}
+            ariaLabel={leftExpanded ? '접기' : '펼치기'}
             onClick={() => setLeftExpandedOnly(!leftExpanded)}
-            title={leftExpanded ? '접기' : '펼치기'}
-            aria-label={leftExpanded ? '접기' : '펼치기'}
+            buttonClassName={`kl-toolbar-icon-toggle${leftExpanded ? '' : ' is-collapsed'}`}
+            stopPropagation={false}
           >
             <ChevronsLeft size={16} className="kl-toolbar-icon-toggle__icon" aria-hidden />
-          </button>
+          </KlIconButton>
         </div>
       </div>
       <AdminSemanticCategoryPage

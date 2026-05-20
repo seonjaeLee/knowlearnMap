@@ -4,10 +4,13 @@ import { Button } from '@mui/material';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
 import { attachRowSpanMeta, getRowSpanCellProps } from '../../hooks/useTableRowSpanGroups';
-import { RotateCcw, RefreshCw, HelpCircle, Pencil } from 'lucide-react';
+import { RotateCcw, RefreshCw, HelpCircle } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlPopover from '../../components/common/KlPopover';
+import KlIconButton from '../../components/common/KlIconButton';
+import KlTooltip from '../../components/common/KlTooltip';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
     configFormModalPaperClassName,
@@ -388,18 +391,20 @@ function AdminConfigManagement() {
                     return (
                         <div className="config-mgmt-category-cell">
                             <span className="config-mgmt-category-cell-label">{catLabel}</span>
-                            <button
-                                type="button"
-                                className="kl-popover-icon-btn"
+                            <KlIconButton
+                                tooltip="카테고리 설명 보기"
+                                ariaLabel={`${catLabel} 설명 보기`}
                                 onClick={(e) => toggleCategoryHelpPopover(cat, e)}
-                                title="카테고리 설명 보기"
-                                aria-label={`${catLabel} 설명 보기`}
-                                aria-expanded={helpOpen}
-                                aria-haspopup="true"
-                                aria-controls="config-mgmt-category-help-popover"
+                                buttonClassName="kl-popover-icon-btn"
+                                placement="top"
+                                buttonProps={{
+                                    'aria-expanded': helpOpen,
+                                    'aria-haspopup': 'true',
+                                    'aria-controls': 'config-mgmt-category-help-popover',
+                                }}
                             >
                                 <HelpCircle size={16} strokeWidth={1.75} aria-hidden />
-                            </button>
+                            </KlIconButton>
                         </div>
                     );
                 }
@@ -434,17 +439,16 @@ function AdminConfigManagement() {
                 }
                 case '_actions':
                     return (
-                        <div className="kl-table-actions">
-                            <button
-                                type="button"
-                                className="kl-table-icon-btn kl-table-icon-btn--neutral"
-                                onClick={() => openEditModal(row)}
-                                title="수정"
-                                aria-label={`${row.configKey} 수정`}
-                            >
-                                <Pencil strokeWidth={1.75} aria-hidden />
-                            </button>
-                        </div>
+                        <KlTableRowActions
+                            stopPropagationOnWrapper={false}
+                            actions={[
+                                {
+                                    kind: 'edit',
+                                    onClick: () => openEditModal(row),
+                                    ariaLabel: `${row.configKey} 수정`,
+                                },
+                            ]}
+                        />
                     );
                 default:
                     return undefined;
@@ -460,24 +464,31 @@ function AdminConfigManagement() {
                     title="시스템 설정"
                     actions={(
                         <div className="kl-header-actions">
-                            <button
-                                type="button"
-                                onClick={handleRefreshCache}
-                                className="kl-btn kl-btn--outline-success"
+                            <KlTooltip
                                 title="캐시 새로고침"
+                                placement="bottom"
+                                enterDelay={0}
+                                triggerClassName="kl-icon-btn-tooltip-trigger"
                             >
-                                <RefreshCw size={14} aria-hidden />
-                                캐시 갱신
-                            </button>
-                            <button
-                                type="button"
+                                <button
+                                    type="button"
+                                    onClick={handleRefreshCache}
+                                    className="kl-btn kl-btn--outline-success"
+                                    aria-label="캐시 새로고침"
+                                >
+                                    <RefreshCw size={14} aria-hidden />
+                                    캐시 갱신
+                                </button>
+                            </KlTooltip>
+                            <KlIconButton
+                                tooltip="목록 새로고침"
+                                ariaLabel="설정 목록 새로고침"
                                 onClick={handleRefreshList}
-                                className="kl-btn kl-btn--icon"
-                                title="목록 새로고침"
-                                aria-label="설정 목록 새로고침"
+                                buttonClassName="kl-btn kl-btn--icon"
+                                stopPropagation={false}
                             >
                                 <RotateCcw size={16} aria-hidden />
-                            </button>
+                            </KlIconButton>
                         </div>
                     )}
                 />

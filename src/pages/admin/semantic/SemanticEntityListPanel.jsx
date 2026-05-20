@@ -1,10 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Plus, Pencil, Trash2, Download, Upload, RotateCcw, FileDown, FilterX,
+  Plus, Download, Upload, RotateCcw, FileDown, FilterX,
 } from 'lucide-react';
 import { useBasicTableColumnResize } from '../../../hooks/useBasicTableColumnResize';
 import BasicTable from '../../../components/common/BasicTable';
+import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
+import KlIconButton from '../../../components/common/KlIconButton';
 import { formatTableCellText, isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
 import ToolbarMoreMenu from '../../../components/common/ToolbarMoreMenu';
 import { semanticEntityColumnDefinitions } from './semanticEntityTableColumns';
@@ -78,26 +80,21 @@ function SemanticEntityListPanel({
       }
       case 'actions':
         return (
-          <div className="kl-table-actions">
-            <button
-              type="button"
-              className="kl-table-icon-btn kl-table-icon-btn--neutral"
-              onClick={() => onEdit(row)}
-              title="\uc218\uc815"
-              aria-label={`${row.nameEn} \uc218\uc815`}
-            >
-              <Pencil size={16} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className="kl-table-icon-btn kl-table-icon-btn--danger"
-              onClick={() => onDelete(row)}
-              title="\uc0ad\uc81c"
-              aria-label={`${row.nameEn} \uc0ad\uc81c`}
-            >
-              <Trash2 size={16} aria-hidden />
-            </button>
-          </div>
+          <KlTableRowActions
+            stopPropagationOnWrapper={false}
+            actions={[
+              {
+                kind: 'edit',
+                onClick: () => onEdit(row),
+                ariaLabel: `${row.nameEn} 수정`,
+              },
+              {
+                kind: 'delete',
+                onClick: () => onDelete(row),
+                ariaLabel: `${row.nameEn} 삭제`,
+              },
+            ]}
+          />
         );
       default:
         return undefined;
@@ -121,29 +118,29 @@ function SemanticEntityListPanel({
             {'\ucd94\uac00'}
           </button>
           {onClearCategoryFilter ? (
-            <button
-              type="button"
-              className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            <KlIconButton
+              tooltip="카테고리 전체보기"
+              ariaLabel="카테고리 전체보기"
               onClick={onClearCategoryFilter}
               disabled={selectedCategoryId == null}
-              title="???? ?? ??"
-              aria-label="???? ?? ??"
+              buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+              stopPropagation={false}
             >
               <FilterX size={16} aria-hidden />
-            </button>
+            </KlIconButton>
           ) : null}
-          <button
-            type="button"
-            className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+          <KlIconButton
+            tooltip="새로고침"
+            ariaLabel="새로고침"
             onClick={onRefresh}
-            title="\uc0c8\ub85c\uace0\uce68"
-            aria-label="\uc0c8\ub85c\uace0\uce68"
+            buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            stopPropagation={false}
           >
             <RotateCcw size={16} aria-hidden />
-          </button>
+          </KlIconButton>
           <ToolbarMoreMenu
             items={toolbarMoreItems}
-            ariaLabel="Excel \uba54\ub274"
+            ariaLabel="Excel 메뉴"
           />
           <input
             ref={fileInputRef}

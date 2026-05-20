@@ -2,12 +2,15 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { workspaceApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
-import { Search, RotateCcw, Share2, Trash2 } from 'lucide-react';
+import { Search, RotateCcw } from 'lucide-react';
 import ShareSettingsModal from '../../components/ShareSettingsModal';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import KlPopover from '../../components/common/KlPopover';
+import KlTableRowActions from '../../components/common/table/KlTableRowActions';
+import KlIconButton from '../../components/common/KlIconButton';
+import KlTooltip from '../../components/common/KlTooltip';
 import { mockAdminWorkspaces } from '../../data/workspaceMockData';
 import './admin-common.css';
 import './AdminWorkspaceManagement.css';
@@ -193,6 +196,12 @@ function AdminWorkspaceManagement() {
                     );
                     return (
                         <div className="workspace-mgmt-prompt-cell">
+                            <KlTooltip
+                                title="프롬프트 전체 보기"
+                                placement="left"
+                                enterDelay={0}
+                                triggerClassName="kl-icon-btn-tooltip-trigger"
+                            >
                             <button
                                 type="button"
                                 className="workspace-mgmt-prompt-trigger"
@@ -203,7 +212,7 @@ function AdminWorkspaceManagement() {
                                 aria-expanded={popoverOpen}
                                 aria-haspopup="true"
                                 aria-controls="workspace-mgmt-prompt-popover"
-                                title="프롬프트 전체 보기"
+                                aria-label="프롬프트 전체 보기"
                             >
                                 <span className="workspace-mgmt-prompt-trigger-text">
                                     {workspacePromptSummaryLine(ws)}
@@ -212,6 +221,7 @@ function AdminWorkspaceManagement() {
                                     보기
                                 </span>
                             </button>
+                            </KlTooltip>
                         </div>
                     );
                 }
@@ -227,26 +237,22 @@ function AdminWorkspaceManagement() {
                 }
                 case '_actions':
                     return (
-                        <div className="kl-table-actions">
-                            <button
-                                type="button"
-                                onClick={() => handleOpenShareModal(ws)}
-                                title="공유 설정"
-                                aria-label={`${ws.name} 공유 설정`}
-                                className={`kl-table-icon-btn kl-table-icon-btn--neutral${ws.shareType !== 'NONE' ? ' kl-table-icon-btn--accent' : ''}`}
-                            >
-                                <Share2 strokeWidth={1.75} aria-hidden />
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleDelete(ws.id, ws.name)}
-                                title="삭제"
-                                aria-label={`${ws.name} 삭제`}
-                                className="kl-table-icon-btn kl-table-icon-btn--danger"
-                            >
-                                <Trash2 strokeWidth={1.75} aria-hidden />
-                            </button>
-                        </div>
+                        <KlTableRowActions
+                            stopPropagationOnWrapper={false}
+                            actions={[
+                                {
+                                    kind: 'share',
+                                    accent: ws.shareType !== 'NONE',
+                                    onClick: () => handleOpenShareModal(ws),
+                                    ariaLabel: `${ws.name} 공유 설정`,
+                                },
+                                {
+                                    kind: 'delete',
+                                    onClick: () => handleDelete(ws.id, ws.name),
+                                    ariaLabel: `${ws.name} 삭제`,
+                                },
+                            ]}
+                        />
                     );
                 default:
                     return undefined;
@@ -264,15 +270,15 @@ function AdminWorkspaceManagement() {
                     title="워크스페이스 관리"
                     actions={(
                         <div className="kl-header-actions">
-                            <button
-                            type="button"
+                            <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="워크스페이스 목록 새로고침"
                             onClick={fetchWorkspaces}
-                            className="kl-btn kl-btn--icon"
-                            title="새로고침"
-                            aria-label="워크스페이스 목록 새로고침"
+                            buttonClassName="kl-btn kl-btn--icon"
+                            stopPropagation={false}
                         >
                             <RotateCcw size={16} aria-hidden />
-                        </button>
+                        </KlIconButton>
                         </div>
                     )}
                 />
@@ -333,6 +339,8 @@ function AdminWorkspaceManagement() {
                 open={Boolean(promptPopover)}
                 anchorEl={promptPopover?.anchorEl ?? null}
                 onClose={() => setPromptPopover(null)}
+                panelClassName="workspace-mgmt-prompt-popover-panel"
+                showCloseButton
             >
                 {promptPopover ? (
                     <div className="workspace-mgmt-prompt-popover-inner">

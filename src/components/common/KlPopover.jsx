@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import Popover from '@mui/material/Popover';
+import Fade from '@mui/material/Fade';
+import { X } from 'lucide-react';
 import styles from './KlPopover.module.scss';
+
+const TRANSITION_ENTER_MS = 150;
+const TRANSITION_EXIT_MS = 150;
 
 const defaultAnchorOrigin = { vertical: 'bottom', horizontal: 'left' };
 const defaultTransformOrigin = { vertical: 'top', horizontal: 'left' };
@@ -23,8 +28,45 @@ function KlPopover({
   panelClassName = '',
   id,
   disableScrollLock = false,
+  showCloseButton = false,
 }) {
-  const paperClass = [styles.panel, panelClassName].filter(Boolean).join(' ');
+  const persistedAnchorRef = useRef(null);
+  const persistedAnchorPositionRef = useRef(null);
+  const persistedAnchorReferenceRef = useRef(anchorReference);
+  const persistedChildrenRef = useRef(null);
+
+  if (open && anchorEl) {
+    persistedAnchorRef.current = anchorEl;
+  }
+  if (open && anchorPosition) {
+    persistedAnchorPositionRef.current = anchorPosition;
+  }
+  if (open) {
+    persistedAnchorReferenceRef.current = anchorReference;
+    persistedChildrenRef.current = children;
+  }
+
+  const resolvedAnchorEl = open ? anchorEl : persistedAnchorRef.current;
+  const resolvedAnchorPosition = open ? anchorPosition : persistedAnchorPositionRef.current;
+  const resolvedAnchorReference = open ? anchorReference : persistedAnchorReferenceRef.current;
+  const resolvedChildren = open ? children : persistedChildrenRef.current;
+
+  const clearPersistedOnExited = () => {
+    persistedAnchorRef.current = null;
+    persistedAnchorPositionRef.current = null;
+    persistedChildrenRef.current = null;
+  };
+
+  const paperClass = [
+    styles.panel,
+    showCloseButton ? styles.panelWithClose : '',
+    panelClassName,
+  ].filter(Boolean).join(' ');
+
+  const handleCloseClick = (event) => {
+    event.stopPropagation();
+    onClose(event, 'escapeKeyDown');
+  };
   const paperProps = {
     className: paperClass,
     elevation: 0,
@@ -34,16 +76,33 @@ function KlPopover({
   return (
     <Popover
       open={open}
-      anchorEl={anchorEl}
-      anchorReference={anchorReference}
-      anchorPosition={anchorPosition}
+      anchorEl={resolvedAnchorEl}
+      anchorReference={resolvedAnchorReference}
+      anchorPosition={resolvedAnchorPosition}
       onClose={onClose}
       anchorOrigin={anchorOrigin}
       transformOrigin={transformOrigin}
       disableScrollLock={disableScrollLock}
+      TransitionComponent={Fade}
+      transitionDuration={{ enter: TRANSITION_ENTER_MS, exit: TRANSITION_EXIT_MS }}
+      slotProps={{
+        transition: {
+          onExited: clearPersistedOnExited,
+        },
+      }}
       PaperProps={paperProps}
     >
-      {children}
+      {showCloseButton ? (
+        <button
+          type="button"
+          className={styles.closeBtn}
+          onClick={handleCloseClick}
+          aria-label="닫기"
+        >
+          <X size={16} strokeWidth={2} aria-hidden />
+        </button>
+      ) : null}
+      <div className={styles.panelInner}>{resolvedChildren}</div>
     </Popover>
   );
 }
@@ -69,6 +128,7 @@ KlPopover.propTypes = {
   panelClassName: PropTypes.string,
   id: PropTypes.string,
   disableScrollLock: PropTypes.bool,
+  showCloseButton: PropTypes.bool,
 };
 
 KlPopover.defaultProps = {
@@ -80,6 +140,7 @@ KlPopover.defaultProps = {
   panelClassName: '',
   id: undefined,
   disableScrollLock: false,
+  showCloseButton: false,
 };
 
 export default KlPopover;

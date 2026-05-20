@@ -6,6 +6,8 @@ import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize
 import { Zap, RotateCcw, Clock, Pencil, List, Info } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import KlIconButton from '../../components/common/KlIconButton';
+import KlTooltip from '../../components/common/KlTooltip';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
@@ -157,15 +159,22 @@ function AdminActionPage() {
           subtitle="온톨로지 기반 실행 Action 을 정의하고, 개념·트리플에 바인딩합니다. Excel 일괄 업다운 지원."
           actions={(
             <div className="kl-header-actions">
-              <button
-                type="button"
-                className="kl-btn kl-btn--outline-success"
-                onClick={openWsModal}
+              <KlTooltip
                 title="워크스페이스 ID 변경"
+                placement="bottom"
+                enterDelay={0}
+                triggerClassName="kl-icon-btn-tooltip-trigger"
               >
-                <Pencil size={14} aria-hidden />
-                워크스페이스 ID 변경
-              </button>
+                <button
+                  type="button"
+                  className="kl-btn kl-btn--outline-success"
+                  onClick={openWsModal}
+                  aria-label="워크스페이스 ID 변경"
+                >
+                  <Pencil size={14} aria-hidden />
+                  워크스페이스 ID 변경
+                </button>
+              </KlTooltip>
             </div>
           )}
         />
@@ -286,15 +295,15 @@ function ActionListTab({ workspaceId }) {
           </span>
         </div>
         <div className="toolbar-right">
-          <button
-            type="button"
-            className="kl-toolbar-btn kl-toolbar-btn--icon-only"
+          <KlIconButton
+            tooltip="새로고침"
+            ariaLabel="새로고침"
             onClick={fetchData}
-            title="새로고침"
-            aria-label="새로고침"
+            buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            stopPropagation={false}
           >
             <RotateCcw size={16} aria-hidden />
-          </button>
+          </KlIconButton>
         </div>
       </div>
 
@@ -448,15 +457,22 @@ function ActionLogTab() {
                   }
                 }}
               />
-              <button
-                type="button"
-                className="toolbar-input-composer__btn"
-                onClick={() => void load()}
-                disabled={!String(actionId ?? '').trim()}
+              <KlTooltip
                 title="입력한 Action ID의 실행 이력 조회"
+                placement="bottom"
+                enterDelay={0}
+                triggerClassName="kl-icon-btn-tooltip-trigger"
               >
-                조회
-              </button>
+                <button
+                  type="button"
+                  className="toolbar-input-composer__btn"
+                  onClick={() => void load()}
+                  disabled={!String(actionId ?? '').trim()}
+                  aria-label="입력한 Action ID의 실행 이력 조회"
+                >
+                  조회
+                </button>
+              </KlTooltip>
             </div>
           </div>
         </div>

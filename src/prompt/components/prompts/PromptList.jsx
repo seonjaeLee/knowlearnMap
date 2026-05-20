@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAlert } from '../../../context/AlertContext';
-import { FileText, Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { FileText, Plus, Search } from 'lucide-react';
 import { Popover } from '@mui/material';
 import { usePrompts, useDeletePrompt, useUpdatePrompt } from '../../hooks/usePrompts';
 import { promptService } from '../../api/promptService';
@@ -10,6 +10,7 @@ import PromptFormDialog from './PromptFormDialog';
 import EditPromptDialog from './EditPromptDialog';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
 import BasicTable from '../../../components/common/BasicTable';
+import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
 import { formatTableCellText, isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
 import '../../../pages/admin/admin-common.css';
 import './PromptList.css';
@@ -215,26 +216,20 @@ const PromptListContent = () => {
         );
       case 'actions':
         return (
-          <div className="kl-table-actions" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className="kl-table-icon-btn kl-table-icon-btn--neutral"
-              onClick={(e) => handleEditClick(e, prompt)}
-              title="수정"
-              aria-label={`${prompt.code} 수정`}
-            >
-              <Pencil strokeWidth={1.75} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className="kl-table-icon-btn kl-table-icon-btn--danger"
-              onClick={(e) => handleDelete(e, prompt)}
-              title="삭제"
-              aria-label={`${prompt.code} 삭제`}
-            >
-              <Trash2 strokeWidth={1.75} aria-hidden />
-            </button>
-          </div>
+          <KlTableRowActions
+            actions={[
+              {
+                kind: 'edit',
+                onClick: (e) => handleEditClick(e, prompt),
+                ariaLabel: `${prompt.code} 수정`,
+              },
+              {
+                kind: 'delete',
+                onClick: (e) => handleDelete(e, prompt),
+                ariaLabel: `${prompt.code} 삭제`,
+              },
+            ]}
+          />
         );
       default:
         return undefined;

@@ -41,6 +41,10 @@
 | 모달 select | `KlModalSelect` | 네이티브 `<select>` in modal | [../overlay/modal-form-spec.md](../overlay/modal-form-spec.md) |
 | 모달 버튼 | MUI `Button` in `actions` | — | [../overlay/modal-spec.md](../overlay/modal-spec.md) |
 | 모달 paper 520px | `supportFormModalPaperSx` 등 | — | `src/components/common/modal/supportCsModalPaper.js` |
+| 호버 툴팁 (짧은 안내) | **`KlTooltip`** | HTML `title=`, MUI `Tooltip` 직접 | [../overlay/tooltip-popover-spec.md](../overlay/tooltip-popover-spec.md) |
+| 클릭 설명 (`?` / `i`) | **`KlPopover`** + `kl-popover-icon-btn` | MUI `Popover` 직접, 페이지별 panel 색 하드코딩 | [../overlay/tooltip-popover-spec.md](../overlay/tooltip-popover-spec.md) |
+| 표 관리 열 (아이콘 액션) | **`KlTableRowActions`** + **`KlIconButton`** | 페이지별 `kl-table-actions` 복붙, HTML `title=` | [../overlay/tooltip-popover-spec.md](../overlay/tooltip-popover-spec.md) |
+| 고객센터 표 (수정·삭제) | **`SupportTableAdminActions`** (`KlTableRowActions` 래퍼) | — | 동일 |
 
 ---
 
@@ -64,6 +68,12 @@
 | `BaseModal` | `src/components/common/modal/BaseModal.jsx` |
 | `KlModalSelect` | `src/components/common/modal/KlModalSelect.jsx` |
 | `useDialog` | `src/hooks/useDialog.js` (또는 프로젝트 내 동일 역할) |
+| `KlTooltip` | `src/components/common/KlTooltip.jsx` |
+| `KlIconButton` | `src/components/common/KlIconButton.jsx` |
+| `KlTableRowActions` | `src/components/common/table/KlTableRowActions.jsx` |
+| `tableActionKinds` | `src/components/common/table/tableActionKinds.js` |
+| `KlPopover` | `src/components/common/KlPopover.jsx` |
+| `SupportTableAdminActions` | `src/components/support/SupportTableAdminActions.jsx` |
 
 ---
 
