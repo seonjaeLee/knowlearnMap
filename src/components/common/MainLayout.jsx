@@ -312,7 +312,13 @@ function MainLayout() {
         </aside>
 
         <div className="content-panel">
-          <main className="main-content">
+          <main
+            className={
+              isNotebookShellRoute
+                ? 'main-content main-content--notebook'
+                : 'main-content'
+            }
+          >
             <div className="main-content-scroll-inner">
               <div
                 className={

@@ -336,6 +336,30 @@
 .main-layout .main-content-outlet-wrap--notebook {
   flex: 1 1 auto;
   min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 노트북: main-content·scroll-inner는 스크롤하지 않음 — 패널·채팅 내부만 세로 스크롤 */
+.main-layout .main-content--notebook {
+  overflow-y: hidden;
+}
+
+.main-layout .main-content--notebook .main-content-scroll-inner {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.main-layout .main-content--notebook .site-footer {
+  display: none;
+}
+
+.main-layout .main-content-outlet-wrap--notebook > .kl-page--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* 콘텐츠 루트: 목록 등은 본문 높이에 맞춤(푸터를 스크롤 끝으로 밀기 위해 flex 성장 제거) */

@@ -54,6 +54,15 @@
   box-shadow: none;
 }
 
+/* 노트북: main-content가 스크롤하지 않으므로 sticky 대신 레이아웃 상단 고정 */
+.main-layout .main-content-outlet-wrap--notebook > .kl-page--fill > .page-header {
+  position: static;
+  flex-shrink: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  z-index: auto;
+}
+
 .page-header-left {
   min-width: 0;
 }
