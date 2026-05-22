@@ -109,3 +109,15 @@ export const promptFormModalPaperSx = {
 };
 
 export const promptFormModalPaperClassName = 'prompt-form-modal-paper';
+
+/** 내 워크스페이스 프롬프트 변경 — 가로 680px */
+export const HOME_PROMPT_MODAL_WIDTH = 680;
+
+export const homePromptModalPaperSx = {
+  width: HOME_PROMPT_MODAL_WIDTH,
+  maxWidth: 'calc(100vw - 48px)',
+  minHeight: 'unset',
+  maxHeight: 'calc(100vh - 48px)',
+};
+
+export const homePromptModalPaperClassName = 'home-prompt-modal-paper';

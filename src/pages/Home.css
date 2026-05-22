@@ -151,7 +151,7 @@
   padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
 }
 
-/* 프롬프트 변경 모달 — 도메인 수정과 동일 520px · 1단(라벨 좌 + 컨트롤 우) */
+/* 프롬프트 변경 모달 — 가로 680px · 1단(라벨 좌 + 컨트롤 우) */
 
 .home-prompt-modal-content {
   flex: 1 1 auto !important;

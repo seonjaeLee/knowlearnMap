@@ -15,8 +15,8 @@ import { formatTableCellText, isTableCellBlank } from '../components/common/tabl
 import BaseModal from '../components/common/modal/BaseModal';
 import KlModalSelect from '../components/common/modal/KlModalSelect';
 import {
-    domainFormModalPaperClassName,
-    domainFormModalPaperSx,
+    homePromptModalPaperClassName,
+    homePromptModalPaperSx,
 } from '../components/common/modal/supportFormModalPaperSx';
 import './Home.css';
 
@@ -943,8 +943,8 @@ function Home() {
                 title="프롬프트 변경"
                 maxWidth={false}
                 fullWidth={false}
-                paperSx={domainFormModalPaperSx}
-                paperClassName={domainFormModalPaperClassName}
+                paperSx={homePromptModalPaperSx}
+                paperClassName={homePromptModalPaperClassName}
                 contentClassName="home-prompt-modal-content kl-modal-form"
                 actionsClassName="home-prompt-modal-actions"
                 actionsAlign="left"

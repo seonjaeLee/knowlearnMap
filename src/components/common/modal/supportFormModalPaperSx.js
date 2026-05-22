@@ -21,6 +21,9 @@ export {
   semanticFormModalPaperClassName,
   promptFormModalPaperSx,
   promptFormModalPaperClassName,
+  homePromptModalPaperSx,
+  homePromptModalPaperClassName,
+  HOME_PROMPT_MODAL_WIDTH,
   QNA_FORM_MODAL_WIDTH,
   SUPPORT_CS_MODAL_WIDTH,
 } from './supportCsModalPaper';
