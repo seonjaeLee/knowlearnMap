@@ -1,0 +1,2 @@
+/** @deprecated — global.css → kl-forms.css. 직접 import 금지. */
+@import './kit/kl-forms.css';

@@ -1,0 +1,18 @@
+/**
+ * 폼 컨트롤 semantic (--kl-control-*)
+ * 구조 치수: kl-tokens-core.css · 색: kl-tokens-theme-map.css
+ */
+
+:root {
+  --kl-control-border: 1px solid var(--color-border);
+  --kl-control-bg: var(--color-bg-secondary);
+  --kl-control-bg-hover: var(--color-bg-secondary);
+  --kl-control-bg-focus: var(--color-bg-secondary);
+  --kl-control-border-hover: var(--color-border-hover);
+  --kl-control-transition: border-color var(--transition-fast), background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  --kl-control-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235f6368' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  --kl-control-readonly-bg: transparent;
+  --kl-control-readonly-text: var(--color-text-primary);
+  --kl-control-readonly-cursor: default;
+}

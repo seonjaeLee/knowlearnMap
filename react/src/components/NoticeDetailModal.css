@@ -1,0 +1,282 @@
+.notice-detail-modal-content {
+    --base-modal-content-min-height: 0;
+    max-height: calc(100vh - 168px);
+    overflow: auto;
+    background: var(--color-bg-primary);
+}
+
+.notice-detail-modal-body {
+    min-height: 420px;
+}
+
+.notice-detail-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* 분류·제목·메타 — 상·하 패딩 없음, 좌우만 */
+.notice-detail-head {
+    padding-block: 0;
+    padding-inline: var(--spacing-lg);
+    background: transparent;
+}
+
+.notice-detail-head-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.notice-title-block {
+    min-width: 0;
+    flex: 1;
+}
+
+.notice-detail-category {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 2px var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--color-accent) 10%, white);
+    color: var(--color-accent);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.notice-detail-title {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: 20px;
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.notice-detail-title-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-size: 20px;
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.35;
+}
+
+.notice-detail-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+.notice-detail-inline-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+}
+
+.notice-detail-inline-meta span:not(:last-child)::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 10px;
+    margin-left: var(--spacing-xs);
+    background: var(--color-border-subtle);
+    vertical-align: middle;
+}
+
+.notice-detail-updated {
+    flex-shrink: 0;
+    color: var(--color-icon-danger, #dc2626);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+.notice-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+}
+
+.btn-edit-notice,
+.btn-delete-notice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--km-table-action-hit-size);
+    height: var(--km-table-action-hit-size);
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-edit-notice:hover {
+    background: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
+    color: var(--color-text-primary);
+}
+
+.btn-delete-notice {
+    color: var(--color-icon-danger);
+}
+
+.btn-delete-notice:hover {
+    background: color-mix(in srgb, var(--color-icon-danger) 10%, transparent);
+    color: var(--color-icon-danger-emphasis);
+}
+
+/* 본문 — 흰색 박스 */
+.notice-detail-body-box {
+    min-height: 280px;
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+}
+
+.notice-body-content {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    line-height: 1.75;
+}
+
+.notice-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.edit-content-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: calc(var(--spacing-sm) + var(--spacing-xs));
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    resize: vertical;
+    min-height: 220px;
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}
+
+.btn-cancel-edit,
+.btn-save-edit {
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    cursor: pointer;
+}
+
+.btn-cancel-edit {
+    border: 1px solid #6b7280;
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.btn-save-edit {
+    border: 1px solid var(--color-accent);
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.notice-detail-loading,
+.notice-detail-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 360px;
+    color: var(--color-text-secondary);
+}
+
+/* 액션: BaseModal 공통(상단 라인 없음·contained min-width 150px) — 별도 border/버튼 크기 오버라이드 없음 */
+.notice-detail-modal-actions {
+    background: var(--color-bg-primary);
+}
+
+.notice-detail-actions-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: var(--spacing-md);
+}
+
+.notice-detail-actions-left {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
+.notice-detail-actions-left .MuiButton-root {
+    min-width: 88px !important;
+}
+
+/* 목록이동 — 파란 outline (이전글/다음글은 회색 outlined 유지) */
+.notice-detail-modal-actions :global(.notice-list-move-btn) {
+    border-color: var(--color-accent) !important;
+    color: var(--color-accent) !important;
+    background-color: var(--color-bg-secondary) !important;
+}
+
+.notice-detail-modal-actions :global(.notice-list-move-btn:hover) {
+    border-color: var(--color-accent-hover) !important;
+    color: var(--color-accent-hover) !important;
+    background-color: #f0f7ff !important;
+}
+
+@media (max-width: 768px) {
+    .notice-detail-modal-content {
+        max-height: calc(100vh - 148px);
+    }
+
+    .notice-detail-meta-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .notice-detail-updated {
+        white-space: normal;
+    }
+
+    .notice-detail-actions-layout {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .notice-detail-actions-left {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .notice-detail-actions-layout > :global(.MuiButton-contained) {
+        width: 100%;
+    }
+}

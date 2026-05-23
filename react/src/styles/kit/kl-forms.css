@@ -1,0 +1,118 @@
+/**
+ * Forms — kl-input · kl-select · 전역 입력 hover/focus
+ * docs/kl-ui-guide.md Part 4
+ * 토큰: kl-variables.css
+ */
+
+/* --- 전역 네이티브 input/textarea (클래스 없는 필드) --- */
+/* 네이티브 input·textarea — hover·focus 배경 흰색 (kl-modal-form·툴바 외 페이지 포함) */
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):hover:not(:disabled):not([readonly]),
+textarea:hover:not(:disabled):not([readonly]) {
+  background-color: var(--kl-control-bg-hover);
+}
+
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):focus:not(:disabled):not([readonly]),
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):focus-visible:not(:disabled):not([readonly]),
+textarea:focus:not(:disabled):not([readonly]),
+textarea:focus-visible:not(:disabled):not([readonly]) {
+  background-color: var(--kl-control-bg-focus);
+}
+
+/* --- kl-input + 레거시 별칭 --- */
+.kl-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-family);
+  outline: none;
+  transition: var(--kl-control-transition);
+}
+
+.kl-input.gray-outline,
+.table-toolbar .toolbar-field-group .toolbar-field-input {
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  background-color: var(--kl-control-bg);
+  color: var(--color-text-primary);
+}
+
+.kl-input.gray-outline::placeholder,
+.table-toolbar .toolbar-field-group .toolbar-field-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.kl-input.gray-outline:hover:not(:disabled):not([readonly]),
+.table-toolbar .toolbar-field-group .toolbar-field-input:hover {
+  border-color: var(--kl-control-border-hover);
+  background-color: var(--kl-control-bg-hover);
+}
+
+.kl-input.gray-outline:focus:not(:disabled):not([readonly]),
+.table-toolbar .toolbar-field-group .toolbar-field-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+  background-color: var(--kl-control-bg-focus);
+}
+
+.kl-input.gray-outline:disabled,
+.table-toolbar .toolbar-field-group .toolbar-field-input:disabled {
+  background-color: var(--form-control-disabled-bg);
+  border-color: var(--form-control-disabled-border);
+  color: var(--form-control-disabled-text);
+  cursor: not-allowed;
+}
+
+.kl-input.md,
+.table-toolbar .toolbar-field-group .toolbar-field-input {
+  height: var(--kl-control-height);
+  padding: 0 var(--kl-control-padding-inline);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  line-height: var(--kl-control-line-height);
+}
+
+.kl-input.sm {
+  height: 28px;
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-xs);
+}
+
+
+/* --- kl-select (목표) · toolbar-select (레거시 별칭) --- */
+.kl-select.gray-outline.md,
+.toolbar-select {
+  box-sizing: border-box;
+  width: auto;
+  min-width: 108px;
+  height: var(--kl-control-height);
+  padding: 0 var(--kl-control-padding-inline-end-select) 0 var(--kl-control-padding-inline);
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  background-color: var(--kl-control-bg);
+  color: var(--color-text-primary);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  font-family: var(--font-family);
+  line-height: var(--kl-control-line-height);
+  cursor: pointer;
+  flex-shrink: 0;
+  appearance: none;
+  background-image: var(--kl-control-select-chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: var(--kl-control-transition);
+}
+
+.kl-select.gray-outline.md:hover:not(:disabled),
+.toolbar-select:hover {
+  border-color: var(--kl-control-border-hover);
+  background-color: var(--kl-control-bg-hover);
+}
+
+.kl-select.gray-outline.md:focus:not(:disabled),
+.toolbar-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+}

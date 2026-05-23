@@ -1,0 +1,59 @@
+/**
+ * 콘텐츠 영역 전용 얇은 스크롤바 (body / html / #root 전역 스크롤에는 적용하지 않음)
+ *
+ * 사용법:
+ * - `textarea` 전역 얇은 스크롤(세로)
+ * - overflow가 생기는 래퍼에 `class="kl-scrollbar-thin"` 또는 `basic-table-shell` 추가
+ * - 아래 연동 선택자는 동일 규칙이 자동 적용됨 (마크업 변경 최소화)
+ *
+ * 토큰: `kl-tokens-core.css` 의 `--kl-scrollbar-*`
+ */
+
+textarea,
+.kl-scrollbar-thin,
+.admin-table-wrap,
+.basic-table-shell,
+.admin-upgrade-table-wrap,
+.kg-body-hscroll,
+.kl-base-modal-content,
+.panel-center.is-dictionary > .tab-content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--kl-scrollbar-thumb) var(--kl-scrollbar-track);
+}
+
+textarea::-webkit-scrollbar,
+.kl-scrollbar-thin::-webkit-scrollbar,
+.admin-table-wrap::-webkit-scrollbar,
+.basic-table-shell::-webkit-scrollbar,
+.admin-upgrade-table-wrap::-webkit-scrollbar,
+.kg-body-hscroll::-webkit-scrollbar,
+.kl-base-modal-content::-webkit-scrollbar,
+.panel-center.is-dictionary > .tab-content::-webkit-scrollbar {
+  width: var(--kl-scrollbar-size);
+  height: var(--kl-scrollbar-size);
+}
+
+textarea::-webkit-scrollbar-track,
+.kl-scrollbar-thin::-webkit-scrollbar-track,
+.admin-table-wrap::-webkit-scrollbar-track,
+.basic-table-shell::-webkit-scrollbar-track,
+.admin-upgrade-table-wrap::-webkit-scrollbar-track,
+.kg-body-hscroll::-webkit-scrollbar-track,
+.kl-base-modal-content::-webkit-scrollbar-track,
+.panel-center.is-dictionary > .tab-content::-webkit-scrollbar-track {
+  background: var(--kl-scrollbar-track);
+}
+
+textarea::-webkit-scrollbar-thumb,
+.kl-scrollbar-thin::-webkit-scrollbar-thumb,
+.admin-table-wrap::-webkit-scrollbar-thumb,
+.basic-table-shell::-webkit-scrollbar-thumb,
+.admin-upgrade-table-wrap::-webkit-scrollbar-thumb,
+.kg-body-hscroll::-webkit-scrollbar-thumb,
+.kl-base-modal-content::-webkit-scrollbar-thumb,
+.panel-center.is-dictionary > .tab-content::-webkit-scrollbar-thumb {
+  background-color: var(--kl-scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}

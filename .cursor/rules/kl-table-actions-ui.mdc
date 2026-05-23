@@ -7,7 +7,7 @@ alwaysApply: false
 
 구현·수정 시 아래를 우선한다.
 
-## 크기 (`BasicTable.global.css`에만 정의)
+## 크기 (`kl-buttons.css` — `.kl-table-icon-btn`에만 정의)
 
 - **버튼** 28×28px · **아이콘** 16×16px · **gap·padding** `--spacing-xs`(4px).
 - 관리 열 `width`는 페이지 컬럼 정의에서 직접 지정(예: 버튼 2개 `92px` = 28×2+4+32).
@@ -17,7 +17,7 @@ alwaysApply: false
 
 ## 스타일 단일 소스
 
-- `src/components/common/BasicTable.global.css` — `.kl-table-actions`, `.kl-table-icon-btn`, `--neutral` / `--danger` / **`--success`**.
+- `src/styles/kl-buttons.css` — `.kl-table-actions`, `.kl-table-icon-btn`, `--neutral` / `--danger` / **`--success`**.
 - 어드민 테이블: `admin-common.css`의 `.admin-table .kl-table-icon-btn-*` 가 팔레트만 덮어쓴다.
 
 ## 데이터 테이블 규격

@@ -1,0 +1,56 @@
+.root {
+  margin: 0 !important;
+
+  :global(.MuiOutlinedInput-root) {
+    border-radius: var(--radius-sm);
+    min-height: 38px !important;
+    height: 38px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 높이 38px 고정 — 패딩은 상하 균형 유지 */
+  :global(.MuiSelect-select) {
+    display: flex !important;
+    align-items: center !important;
+    line-height: 1.4 !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 0 calc(var(--spacing-lg) + var(--spacing-xl)) 0 14px !important;
+    font-size: var(--font-size-base) !important;
+    font-family: var(--font-family) !important;
+    box-sizing: border-box !important;
+  }
+
+  :global(.MuiSelect-icon) {
+    right: var(--spacing-md) !important;
+    color: var(--color-text-secondary) !important;
+  }
+
+  :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: var(--color-border) !important;
+  }
+}
+
+.selectInput {
+  border-radius: var(--radius-sm);
+}
+
+.placeholderEm {
+  font-style: normal;
+  color: var(--color-text-secondary);
+}
+
+.warn {
+  :global(.MuiOutlinedInput-root) {
+    background-color: #fef2f2 !important;
+  }
+
+  :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: #fca5a5 !important;
+  }
+
+  :global(.MuiSelect-select) {
+    color: #dc2626 !important;
+    font-weight: var(--font-weight-semibold) !important;
+  }
+}

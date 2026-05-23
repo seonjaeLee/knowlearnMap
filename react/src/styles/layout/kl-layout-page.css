@@ -1,0 +1,5 @@
+/**
+ * 페이지 셸 — KlPage.css (표 영역은 global.scss → kit/kl-basic-table.css)
+ */
+
+@import '../../components/common/KlPage.css';

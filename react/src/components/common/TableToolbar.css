@@ -1,0 +1,5 @@
+/*
+ * 목록·테이블 상단 툴바 — 스타일 본문은 styles/kl-layout-toolbar.css
+ * main.jsx → styles/global.css 가 로드함. 이 파일은 경로·주석 유지용 스텁.
+ */
+@import '../../styles/kl-layout-toolbar.css';

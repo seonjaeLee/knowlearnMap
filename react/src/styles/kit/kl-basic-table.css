@@ -1,0 +1,243 @@
+/**
+ * BasicTable 목록 공통 — `table-area` · `basic-table-shell` · 행/푸터/페이지네이션 · 스크롤·thead 고정
+ * - DOM: `kl-page` > `kl-main-sticky-head` + `table-area` > `table-toolbar` + `basic-table-shell` > BasicTable
+ * - 로드: `global.css` (구 TableArea.css · BasicTable.global.css · kl-table-list-scroll.css 통합)
+ * - 어드민 높이 체인: MainLayout.css `.main-content-outlet-wrap--admin-center`
+ *
+ * thead `top`: shell이 스크롤 컨테이너일 때는 `0`만. `148px`는 main-content만 스크롤할 때만.
+ */
+
+/* =============================================================================
+ * table-area · basic-table-shell 레이아웃
+ * ============================================================================= */
+
+.table-area {
+  min-width: 0;
+}
+
+/* 표만 있는 영역 — 카드 외곽 */
+.table-area:not(:has(> .table-toolbar)) {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.table-area:not(:has(> .table-toolbar)) > .basic-table-shell {
+  background: var(--color-bg-secondary);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+/* 툴바 + 표 — 툴바는 카드 밖, 표만 카드 */
+.table-area:has(> .table-toolbar) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  flex: 1;
+  min-height: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.table-area:has(> .table-toolbar) > .table-toolbar {
+  padding: 0;
+  border-bottom: none;
+}
+
+.table-area:has(> .table-toolbar) > .basic-table-shell {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+/* 푸터가 shell 직후 — 표 카드와 한 덩어리 */
+.table-area:has(> .table-toolbar) > .basic-table-shell:has(+ div) {
+  border-bottom: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.table-area:has(> .table-toolbar) > .basic-table-shell + div {
+  margin-top: calc(-1 * var(--spacing-sm));
+  border: 1px solid var(--color-border-subtle);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  overflow: hidden;
+}
+
+/* =============================================================================
+ * 목록형 kl-page — 남은 높이 · shell 세로 스크롤
+ * ============================================================================= */
+
+.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar) {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar) > .kl-main-sticky-head {
+  flex-shrink: 0;
+}
+
+.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar) > .table-area {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
+  > .table-area
+  > .table-toolbar {
+  flex-shrink: 0;
+}
+
+.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
+  > .table-area
+  > .basic-table-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
+  > .table-area
+  > .basic-table-shell
+  + * {
+  flex-shrink: 0;
+}
+
+/* thead sticky — shell 스크롤 시 top: 0 */
+.table-area:has(> .table-toolbar) > .basic-table-shell :is(.MuiTableHead-root .MuiTableCell-head, thead th) {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #f8f9fa;
+  box-shadow: 0 1px 0 var(--color-border-subtle);
+}
+
+/* main-content만 스크롤 — page-header 아래 열 제목 */
+.main-layout .main-content
+  .kl-page:not(:has(> .kl-main-sticky-head + .table-area > .table-toolbar))
+  .table-area:has(> .table-toolbar)
+  > .basic-table-shell
+  :is(.MuiTableHead-root .MuiTableCell-head, thead th) {
+  top: var(--kl-list-sticky-thead-top);
+}
+
+.basic-table-shell:has([class*='colResizeHandle']) .MuiTableHead-root .MuiTableCell-head {
+  z-index: 10;
+}
+
+/* =============================================================================
+ * basic-table-shell — 행 · 셀 · 페이지네이션 전역 클래스
+ * ============================================================================= */
+
+.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected):not(.kl-table-row-selected) > td,
+.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected):not(.kl-table-row-selected) > th {
+  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary)) !important;
+}
+
+.basic-table-shell tbody tr.kl-table-row-selected > td {
+  background: var(--color-accent-light) !important;
+}
+
+.basic-table-shell tbody tr.kl-table-row-selected > td:first-of-type {
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+.basic-table-shell tbody tr.kl-table-row-selected:hover > td {
+  background: var(--color-accent-light) !important;
+}
+
+.basic-table-shell :is(thead th, tbody td) {
+  font-family: var(--font-family);
+}
+
+.basic-table-shell :is(thead th, tbody td) :where(span, a, p),
+.basic-table-shell :is(thead th, tbody td) :where(.admin-code-mono) {
+  font-family: inherit;
+}
+
+/* 페이지네이션 — `BasicTablePaginationNav` 또는 문자열 클래스 마크업 */
+.basic-table-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.basic-table-page-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.basic-table-page-btn {
+  min-width: 32px;
+  height: var(--spacing-lg);
+  padding: 0 var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.basic-table-page-btn:hover:not(:disabled) {
+  background: var(--color-bg-hover);
+  border-color: var(--color-text-tertiary);
+}
+
+.basic-table-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.basic-table-page-btn.is-active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.basic-table-page-ellipsis {
+  padding: 0 var(--spacing-xs);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  user-select: none;
+}
+
+.basic-table-footer-summary {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kl-table-cell-blank {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+}
+
+.kl-table-cell-text--secondary {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
