@@ -8,7 +8,7 @@ import * as Sentry from '@sentry/react'
 import { AuthProvider } from './context/AuthContext'
 import { DialogProvider } from './context/DialogContext'
 import axios from 'axios'
-import './styles/global.scss'
+import './assets/styles/global.css'
 import App from './App.jsx'
 
 // Sentry 초기화 (VITE_SENTRY_DSN 환경변수가 있을 때만 활성화)

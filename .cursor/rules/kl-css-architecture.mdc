@@ -13,8 +13,8 @@ alwaysApply: true
 
 ## 진입점 (전역 KL 스타일)
 
-- **`react/src/styles/global.scss`** 한 파일만 `main.jsx`에서 import 한다.
-- import **순서는 global.scss 안에서만** 고정한다. `main.jsx`에 CSS를 여러 줄 나열하지 않는다.
+- **`react/src/assets/styles/global.css`** 한 파일만 `main.jsx`에서 import 한다. (`global.scss`는 호환 스텁만)
+- import **순서는 `global.css` `@import` 안에서만** 고정한다. `main.jsx`에 CSS를 여러 줄 나열하지 않는다.
 - 본문은 `tokens/` · `foundation/` · `layout/` · `kit/` · `patterns/` · `legacy/` — 루트 `kl-*.css`는 **호환 스텁**만.
 
 ## 토큰 — `index.css`에 두지 않음
@@ -29,7 +29,7 @@ alwaysApply: true
 
 ## UI 키트 (Map에서만 정의·수정)
 
-`foundation/kl-reset-common`, `layout/kl-layout-*`, `kit/kl-forms`, `kit/kl-buttons`, `kit/kl-basic-table`, `patterns/*`, `legacy/kl-legacy-modal` — **`global.scss`** 가 순서대로 로드.
+`foundation/kl-reset-common`, `layout/kl-layout-*`, `kit/kl-forms`, `kit/kl-buttons`, `kit/kl-basic-table`, `patterns/*`, `legacy/kl-legacy-modal` — **`global.css`** 가 순서대로 로드.
 
 - 컴포넌트 클래스: **`kl-btn` / `kl-input` + variant + size** (장소별 전용 클래스 신규 금지 목표).
 - **공통 CSS에 페이지별 `width: 160px` 등 고정값 금지** — 너비는 페이지 CSS.
@@ -43,6 +43,7 @@ alwaysApply: true
 
 - `App.css`, `admin-common.css`, 모달/페이지 CSS — **해당 jsx import** 유지.
 - **기능·로직은 임의 변경 금지.** UI 고도화는 스타일·마크업·className 위주.
+- **`kl-page--fill`:** `react/docs/kl-ui-guide.md` Part 7 §2.1 — 필요한 **페이지 루트**에만 opt-in. 라우트 호스트·전 메뉴 일괄 적용 금지.
 
 ## 작업 순서 (Map)
 

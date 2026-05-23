@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAlert } from '../../../context/AlertContext';
-import { FileText, Plus, Search } from 'lucide-react';
+import { FileText, Plus, RotateCcw, Search } from 'lucide-react';
 import { Popover } from '@mui/material';
 import { usePrompts, useDeletePrompt, useUpdatePrompt } from '../../hooks/usePrompts';
 import { promptService } from '../../api/promptService';
@@ -9,6 +9,7 @@ import { PROMPT_SECURITY_LEVELS } from '../../constants/securityLevels';
 import PromptFormDialog from './PromptFormDialog';
 import EditPromptDialog from './EditPromptDialog';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
+import KlIconButton from '../../../components/common/KlIconButton';
 import BasicTable from '../../../components/common/BasicTable';
 import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
 import { formatTableCellText, isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
@@ -125,7 +126,7 @@ const PromptListContent = () => {
       setEditDialogOpen(false);
     } catch (error) {
       console.error('Failed to update prompt:', error);
-      showAlert('프로프트 수정에 실패했습니다. 다시 시도해주세요.');
+      showAlert('프롬프트 수정에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsUpdating(false);
     }
@@ -133,13 +134,13 @@ const PromptListContent = () => {
 
   const handleDelete = useCallback(async (e, prompt) => {
     e.stopPropagation();
-    const ok = await showConfirm('정말로 이 프로프트와 관련된 모든 버전 및 스낵샷을 삭제하시겠습니까?');
+    const ok = await showConfirm('정말로 이 프롬프트와 관련된 모든 버전 및 스낵샷을 삭제하시겠습니까?');
     if (!ok) return;
     try {
       await deletePrompt.mutateAsync(prompt.code);
       showAlert('삭제되었습니다.');
     } catch {
-      showAlert('프로프트 삭제에 실패했습니다. 다시 시도해주세요.');
+      showAlert('프롬프트 삭제에 실패했습니다. 다시 시도해주세요.');
     }
   }, [deletePrompt, showAlert, showConfirm]);
 
@@ -237,18 +238,29 @@ const PromptListContent = () => {
   }, [handleDelete, handleEditClick]);
 
   return (
-    <div className="kl-page prompt-list-page">
+    <div className="kl-page kl-page--fill prompt-list-page">
       <div className="kl-main-sticky-head">
         <AdminPageHeader
           icon={FileText}
-          title="프로프트 관리"
+          title="프롬프트 관리"
           count={prompts.length}
-          subtitle="시스템 프로프트의 카테고리·용도·버전·보안 등급을 관리합니다."
+          subtitle="시스템 프롬프트의 카테고리·용도·버전·보안 등급을 관리합니다."
           actions={(
-            <button type="button" className="kl-btn kl-btn--primary" onClick={() => setOpenDialog(true)}>
-              <Plus size={14} aria-hidden />
-              생성
-            </button>
+            <>
+              <KlIconButton
+                tooltip="새로고침"
+                ariaLabel="프롬프트 목록 새로고침"
+                onClick={() => refetch()}
+                buttonClassName="kl-btn gray-outline md icon-only"
+                stopPropagation={false}
+              >
+                <RotateCcw size={16} aria-hidden />
+              </KlIconButton>
+              <button type="button" className="kl-btn primary-full md" onClick={() => setOpenDialog(true)}>
+                <Plus size={14} aria-hidden />
+                생성
+              </button>
+            </>
           )}
         />
       </div>
@@ -269,7 +281,7 @@ const PromptListContent = () => {
                 placeholder="코드 / 이름으로 검색..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                aria-label="프로프트 검색"
+                aria-label="프롬프트 검색"
               />
             </div>
             <select

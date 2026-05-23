@@ -87,7 +87,7 @@ export const chatApi = {
      * @param {number[]} documentIds - Optional document IDs for filtering
      * @returns {Promise<{ragResults: Array, ontologyResults: Array}>}
      */
-    send: async (workspaceId, message, documentIds = null, personaText = null, options = null) => {
+    send: async (workspaceId, message, documentIds = null, personaText = null) => {
         if (isLocalAuthEnabled) {
             const now = new Date().toISOString();
             const historyMap = getLocalMap(LOCAL_CHAT_HISTORY_KEY, {});
@@ -137,19 +137,14 @@ export const chatApi = {
                 documentIds,
             };
         }
-        const body = {
-            workspaceId,
-            message,
-            documentIds,
-            personaText,
-        };
-        if (options && typeof options === 'object') {
-            if (options.llmMode != null) body.llmMode = options.llmMode;
-            if (options.llmTemperature != null) body.llmTemperature = options.llmTemperature;
-        }
         return await apiCall('/chat/send', {
             method: 'POST',
-            body: JSON.stringify(body),
+            body: JSON.stringify({
+                workspaceId,
+                message,
+                documentIds,
+                personaText
+            })
         });
     },
 

@@ -20,7 +20,7 @@ function normalizeRows(optionItems, options) {
 }
 
 /**
- * 네이티브 `<select>` 대체 — OS별 목록 UI 없이 동일한 디자인(참고: modal-form-spec).
+ * 네이티브 `<select>` 대체 — OS별 목록 UI 없이 동일한 디자인(참고: docs/modal-guide.md).
  * 부모에 `kl-modal-form`이 있어야 공통 토큰 스타일이 맞습니다.
  *
  * - `options`: 문자열 배열 — 값·표시가 동일할 때

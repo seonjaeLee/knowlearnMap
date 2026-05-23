@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, TextField, Typography } from '@mui/material';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, RotateCcw } from 'lucide-react';
 import { upgradeApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
@@ -11,6 +11,7 @@ import { formatTableCellText, isTableCellBlank } from '../../components/common/t
 import KlPopover from '../../components/common/KlPopover';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlIconButton from '../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../config/supportMock';
 import { mockUpgradeRequests } from '../../data/upgradeRequestMockData';
 import './admin-common.css';
 import './AdminUpgradeRequests.css';
@@ -299,18 +300,23 @@ function AdminUpgradeRequests() {
         [handleApprove, openRejectModal, rejectReasonPopover]
     );
 
-    if (loading) {
-        return (
-            <div className="kl-page">
-                <div className="admin-upgrade-loading">데이터를 불러오는 중...</div>
-            </div>
-        );
-    }
-
     return (
-        <div className="kl-page">
+        <div className="kl-page kl-page--fill">
             <div className="kl-main-sticky-head">
-                <AdminPageHeader title="승인 관리" />
+                <AdminPageHeader
+                    title="승인 관리"
+                    actions={(
+                        <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="승인 요청 목록 새로고침"
+                            onClick={fetchRequests}
+                            buttonClassName="kl-btn gray-outline md icon-only"
+                            stopPropagation={false}
+                        >
+                            <RotateCcw size={16} aria-hidden />
+                        </KlIconButton>
+                    )}
+                />
             </div>
 
             <div className="table-area">
@@ -326,13 +332,18 @@ function AdminUpgradeRequests() {
                     <BasicTable
                         className="admin-upgrade-basic-table"
                         columns={upgradeTableColumns}
-                        data={requests}
+                        data={loading ? [] : requests}
                         renderCell={renderUpgradeCell}
                         onColumnResizeMouseDown={upgradeColumnStartResize}
-                        emptyState={{
-                            variant: 'default',
-                            message: '대기 중인 요청이 없습니다.',
-                        }}
+                        emptyState={listTableEmptyState({
+                            loading,
+                            loadError: null,
+                            loadingMessage: '데이터를 불러오는 중...',
+                            emptyVariant: 'default',
+                            emptyMessage: !loading && requests.length === 0
+                                ? '대기 중인 요청이 없습니다.'
+                                : undefined,
+                        })}
                     />
                 </div>
             </div>

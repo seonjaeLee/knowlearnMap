@@ -12,6 +12,7 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlIconButton from '../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../config/supportMock';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
@@ -664,7 +665,7 @@ function AdminMemberManagement() {
     }, [memberTableColumns, allOnPageSelected, toggleSelectAllOnPage]);
 
     return (
-        <div className="kl-page">
+        <div className="kl-page kl-page--fill">
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     icon={Users}
@@ -675,14 +676,14 @@ function AdminMemberManagement() {
                                 tooltip="새로고침"
                                 ariaLabel="사용자 목록 새로고침"
                                 onClick={fetchMembers}
-                                buttonClassName="kl-btn kl-btn--icon"
+                                buttonClassName="kl-btn gray-outline md icon-only"
                                 stopPropagation={false}
                             >
                                 <RotateCcw size={16} aria-hidden />
                             </KlIconButton>
                             <button
                                 type="button"
-                                className="kl-btn kl-btn--primary"
+                                className="kl-btn primary-full md"
                                 onClick={openCreateModal}
                             >
                                 <Plus size={14} aria-hidden />
@@ -695,12 +696,7 @@ function AdminMemberManagement() {
                 
             </div>
 
-            {loading ? (
-                <div className="member-mgmt-loading">
-                    데이터를 불러오는 중...
-                </div>
-            ) : (
-                <div className="table-area">
+            <div className="table-area">
                     <div className="table-toolbar">
                     <div className="toolbar-left">
                         <span className="kl-table-toolbar-summary">
@@ -725,13 +721,18 @@ function AdminMemberManagement() {
                         <BasicTable
                             className="member-mgmt-basic-table"
                             columns={headerColumns}
-                            data={tableMemberRows}
+                            data={loading ? [] : tableMemberRows}
                             renderCell={renderMemberCell}
                             onColumnResizeMouseDown={memberColumnStartResize}
-                            emptyState={{ variant: memberTableEmptyVariant }}
+                            emptyState={listTableEmptyState({
+                                loading,
+                                loadError: null,
+                                loadingMessage: '데이터를 불러오는 중...',
+                                emptyVariant: memberTableEmptyVariant,
+                            })}
                         />
                     </div>
-                    {SHOW_MEMBER_TABLE_FOOTER ? (
+                    {!loading && SHOW_MEMBER_TABLE_FOOTER ? (
                         <BasicTableFooter
                             start={(
                                 <span className="basic-table-footer-summary">
@@ -750,7 +751,6 @@ function AdminMemberManagement() {
                         />
                     ) : null}
                 </div>
-            )}
 
             <BaseModal
                 open={Boolean(editMember)}

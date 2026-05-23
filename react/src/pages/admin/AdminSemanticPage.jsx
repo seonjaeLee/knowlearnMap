@@ -15,7 +15,7 @@ function AdminSemanticPage() {
   const [subTab, setSubTab] = useState('objects');
 
   return (
-    <div className="kl-page admin-semantic-page">
+    <div className="kl-page kl-page--fill admin-semantic-page">
       <div className="kl-main-sticky-head">
         <AdminPageHeader
           icon={Network}

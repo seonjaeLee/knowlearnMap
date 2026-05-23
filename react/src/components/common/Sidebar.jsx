@@ -108,9 +108,6 @@ export default function Sidebar() {
                 <NavLink to="/admin/action" className="lnb-subitem">
                   <FileText size={14} /><span>Action</span>
                 </NavLink>
-                <NavLink to="/admin/audit-log" className="lnb-subitem">
-                  <FileText size={14} /><span>Audit Log</span>
-                </NavLink>
               </div>
             )}
           </div>

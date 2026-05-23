@@ -140,25 +140,25 @@
     text-align: left;
 }
 
-/* 행 높이: `index.css` `--km-data-table-thead-row-height` / `--km-data-table-tbody-row-height` (본문 43px 공통) */
+/* 행 높이: `kl-tokens-core.css` `--kl-data-table-*` (본문 43px 공통) */
 .domain-mgmt-table-card {
-    --km-table-action-hit-size: 32px;
+    --kl-table-action-hit-size: 32px;
 }
 
 .domain-mgmt-table-card .domain-mgmt-table thead tr {
-    height: var(--km-data-table-thead-row-height);
+    height: var(--kl-data-table-thead-row-height);
 }
 
 .domain-mgmt-table-card .domain-mgmt-table thead th {
-    height: var(--km-data-table-thead-row-height);
+    height: var(--kl-data-table-thead-row-height);
 }
 
 .domain-mgmt-table-card .domain-mgmt-table tbody tr:not(.domain-mgmt-tr-empty) {
-    height: var(--km-data-table-tbody-row-height);
+    height: var(--kl-data-table-tbody-row-height);
 }
 
 .domain-mgmt-table-card .domain-mgmt-table tbody td {
-    height: var(--km-data-table-tbody-row-height);
+    height: var(--kl-data-table-tbody-row-height);
 }
 
 .domain-mgmt-table-card .domain-mgmt-table th,

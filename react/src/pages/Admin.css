@@ -32,7 +32,6 @@
     min-height: 0;
     overflow-x: hidden;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .admin-tab {
@@ -128,7 +127,7 @@
     background-color: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary));
 }
 
-/* 버튼 — `styles/kl-buttons.css` `.kl-btn` 사용 */
+/* 버튼 — `assets/styles/kit/kl-buttons.css` `.kl-btn` 사용 */
 
 .admin-actions {
     display: flex;

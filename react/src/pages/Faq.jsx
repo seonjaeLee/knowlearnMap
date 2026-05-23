@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, RotateCcw, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import FaqCreateModal from '../components/FaqCreateModal';
 import FaqDetailModal from '../components/FaqDetailModal';
 import PageHeader from '../components/common/PageHeader';
+import KlIconButton from '../components/common/KlIconButton';
 import BasicTable from '../components/common/BasicTable';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
-import { isSupportMockEnabled } from '../config/supportMock';
+import { isSupportMockEnabled, listTableEmptyState } from '../config/supportMock';
 import { mockFaqs } from '../data/supportMockData';
 import { faqApi } from '../services/api';
 import { normalizeSupportListPayload } from '../utils/supportListResponse';
@@ -66,8 +67,14 @@ function Faq() {
       setFaqs(sortFaqsForList(normalizeSupportListPayload(data)));
     } catch (error) {
       console.error('FAQ 목록 조회 실패:', error);
-      setFaqs([]);
-      setLoadError(error.message || 'FAQ를 불러오지 못했습니다.');
+      if (import.meta.env.DEV) {
+        console.warn('[Faq] API 실패, 더미 목록으로 표시:', error?.message || error);
+        setFaqs(sortFaqsForList(mockFaqs.map((item) => ({ ...item }))));
+        setLoadError(null);
+      } else {
+        setFaqs([]);
+        setLoadError(error.message || 'FAQ를 불러오지 못했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -243,17 +250,33 @@ function Faq() {
   }, [handleDeleteFaq, handleOpenEditModal]);
 
   return (
-    <div className="kl-page faq-page">
+    <div className="kl-page kl-page--fill faq-page">
       <div className="kl-main-sticky-head">
         <PageHeader
           title="자주 묻는 질문"
           breadcrumbs={['고객센터', '자주 묻는 질문']}
-          actions={isAdmin ? (
-            <button type="button" className="kl-btn kl-btn--primary" onClick={handleOpenCreateModal}>
-              <Plus size={14} aria-hidden />
-              자주 묻는 질문 작성
-            </button>
-          ) : null}
+          actions={(
+            <>
+              <KlIconButton
+                tooltip="새로고침"
+                ariaLabel="FAQ 목록 새로고침"
+                onClick={() => {
+                  fetchFaqs();
+                  fetchCategories();
+                }}
+                buttonClassName="kl-btn gray-outline md icon-only"
+                stopPropagation={false}
+              >
+                <RotateCcw size={16} aria-hidden />
+              </KlIconButton>
+              {isAdmin ? (
+                <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                  <Plus size={14} aria-hidden />
+                  자주 묻는 질문 작성
+                </button>
+              ) : null}
+            </>
+          )}
         />
 
       </div>
@@ -300,30 +323,27 @@ function Faq() {
           </div>
         </div>
         <div className="basic-table-shell">
-          {loading ? (
-            <div className="support-empty" role="status">FAQ를 불러오는 중입니다.</div>
-          ) : loadError ? (
-            <div className="support-empty" role="alert">{loadError}</div>
-          ) : (
-            <BasicTable
-              className="support-basic-table"
-              columns={faqColumns}
-              data={filteredFaqs}
-              renderCell={renderFaqCell}
-              onRowClick={(e, { row }) => handleFaqClick(row)}
-              onRowKeyDown={(e, { row }) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleFaqClick(row);
-                }
-              }}
-              rowAriaLabel={(row) => `${row.title} FAQ 상세 보기`}
-              emptyState={{
-                variant: faqTableEmptyVariant,
-                message: faqs.length === 0 ? '등록된 FAQ가 없습니다.' : undefined,
-              }}
-            />
-          )}
+          <BasicTable
+            className="support-basic-table"
+            columns={faqColumns}
+            data={loading ? [] : filteredFaqs}
+            renderCell={renderFaqCell}
+            onRowClick={(e, { row }) => handleFaqClick(row)}
+            onRowKeyDown={(e, { row }) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleFaqClick(row);
+              }
+            }}
+            rowAriaLabel={(row) => `${row.title} FAQ 상세 보기`}
+            emptyState={listTableEmptyState({
+              loading,
+              loadError,
+              loadingMessage: 'FAQ를 불러오는 중입니다.',
+              emptyVariant: faqTableEmptyVariant,
+              emptyMessage: !loading && !loadError && faqs.length === 0 ? '등록된 FAQ가 없습니다.' : undefined,
+            })}
+          />
         </div>
       </div>
 

@@ -142,8 +142,8 @@
 
 #### CSS 변경
 - `src/components/CsDetailModal.css`, `QnaDetailModal.css` — 상세 head(메타)·body(본문)·footer 액션
-- `src/styles/kl-form-control.css`, `kl-form-readonly.css` — 모달·툴바 공용 input/select 규격(`--kl-control-*`)
-- `src/styles/kl-outlined-primary-btn.css` — 팝업·목록 하단 아웃라인 primary 버튼(공지 상세 「목록이동」 등)
+- `src/assets/styles/kl-form-control.css`, `kl-form-readonly.css` — 모달·툴바 공용 input/select 규격(`--kl-control-*`)
+- `src/assets/styles/kl-outlined-primary-btn.css` — 팝업·목록 하단 아웃라인 primary 버튼(공지 상세 「목록이동」 등)
 
 #### 기타
 - `docs/modal-form-spec.md`, `docs/modal-spec.md` — `kl-modal-form` 적용·Decision 제외 안내와 정합
@@ -156,7 +156,7 @@
 - **영향:** `TableToolbar.css` 전역; Action 관리 실행 이력 툴바; `admin-semantic-subtab` 사용 화면(온톨로지 옵션·Action 관리)
 
 #### CSS 변경
-- `src/styles/kl-form-control.css` — `--kl-control-height` 등 토큰·네이티브 input hover/focus 배경 정리
+- `src/assets/styles/kl-form-control.css` — `--kl-control-height` 등 토큰·네이티브 input hover/focus 배경 정리
 - `src/components/common/TableToolbar.css`
   - `.toolbar-field-group`, `.toolbar-field-group__label` — 라벨 + 컨트롤 묶음
   - `.toolbar-input-composer` — 외곽 테두리 1개, 내부 input·버튼 **무간격 밀착**
@@ -276,7 +276,7 @@
 
 #### CSS
 - `src/components/common/TableToolbar.css` — `:has(.kl-table-toolbar-summary)` flex·gap·`toolbar-right` 줄바꿈 억제
-- `src/styles/kl-split-panel.css` — **신규** · `kl-split-panel-head` / `kl-split-panel-title` (split 상단 중제목)
+- `src/assets/styles/kl-split-panel.css` — **신규** · `kl-split-panel-head` / `kl-split-panel-title` (split 상단 중제목)
 
 #### JSX (대표)
 - `DomainSelection.jsx`, `DomainManagement.jsx`, `AdminMemberManagement.jsx` 등 — `table-toolbar` + 요약 문구 정리
@@ -391,14 +391,14 @@
 - `react/docs/README.md` — CSS 구조 규칙 링크
 - `react/docs/kl-ui-guide.md` — Part 0 「Map 마더·멀티 사이트」·Part 1.2 현행 import 표 갱신
 
-#### CSS · 진입점 (`react/src/styles/`)
-- **`global.css`** — 전역 진입(한 파일). `main.jsx`에서만 `import './styles/global.css'`
+#### CSS · 진입점 (`react/src/assets/styles/`)
+- **`global.css`** — 전역 진입(한 파일). `main.jsx`에서만 `import './assets/styles/global.css'`
 - **`kl-tokens-core.css`** — spacing, radius, typography, transition, `--kl-control-height` 등 구조 토큰
 - **`kl-tokens-theme-map.css`** — Map 브랜드 semantic 색·그림자·비활성·accent
 - **`kl-variables.css`** — `--kl-control-*` (theme 참조)
 - **`kl-legacy-modal.css`** — `index.css`에서 이관: `.modal-native-field`, `.modal-overlay`·`.modal-input` 등 레거시 네이티브 모달
 - **`kl-ui.css`** — `@import './global.css'` 스텁(deprecated)
-- **`index.css`** — `@import './styles/global.css'` 위임만 (토큰·번들 본문 없음)
+- **`index.css`** — `@import './assets/styles/global.css'` 위임만 (토큰·번들 본문 없음)
 - 기존 번들 유지: `kl-reset-common`, `kl-forms`, `kl-buttons`, `kl-layout-toolbar`, `kl-layout-modal`, `kl-modal-form`, `kl-scrollbar-thin`, `kl-infotxt-note`, `kl-subtabs`, `kl-split-panel` + `KlPage.css` · `TableArea.css`를 `global.css`에서 순서대로 로드
 - `kl-reset-common.css` — 전역 `@keyframes spin` 추가(일부 컴포넌트 `animation: spin`용)
 - 미사용 **`km-*.css` 4개 삭제** (이전 턴)

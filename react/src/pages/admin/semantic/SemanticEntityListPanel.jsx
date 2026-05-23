@@ -7,6 +7,7 @@ import { useBasicTableColumnResize } from '../../../hooks/useBasicTableColumnRes
 import BasicTable from '../../../components/common/BasicTable';
 import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
 import KlIconButton from '../../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../../config/supportMock';
 import { formatTableCellText, isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
 import ToolbarMoreMenu from '../../../components/common/ToolbarMoreMenu';
 import { semanticEntityColumnDefinitions } from './semanticEntityTableColumns';
@@ -106,14 +107,12 @@ function SemanticEntityListPanel({
       <div className="table-toolbar">
         <div className="toolbar-left">
           <span className="kl-table-toolbar-summary">
-            {'\ucd1d '}
-            <strong>{items.length}</strong>
-            {'\uac74'}
-            {listSource === 'mock' ? <span className="admin-semantic-mock-tag">{' \u00b7 \ub354\ubbf8'}</span> : null}
+            총 <strong>{items.length}</strong>건
+            {listSource === 'mock' ? <span className="admin-semantic-mock-tag"> · 더미</span> : null}
           </span>
         </div>
         <div className="toolbar-right">
-          <button type="button" className="kl-btn-outline-primary-sm" onClick={onCreate}>
+          <button type="button" className="kl-btn primary-full md" onClick={onCreate}>
             <Plus size={16} aria-hidden />
             {'\ucd94\uac00'}
           </button>
@@ -123,7 +122,7 @@ function SemanticEntityListPanel({
               ariaLabel="카테고리 전체보기"
               onClick={onClearCategoryFilter}
               disabled={selectedCategoryId == null}
-              buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+              buttonClassName="kl-btn gray-outline md icon-only"
               stopPropagation={false}
             >
               <FilterX size={16} aria-hidden />
@@ -133,7 +132,7 @@ function SemanticEntityListPanel({
             tooltip="새로고침"
             ariaLabel="새로고침"
             onClick={onRefresh}
-            buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            buttonClassName="kl-btn gray-outline md icon-only"
             stopPropagation={false}
           >
             <RotateCcw size={16} aria-hidden />
@@ -152,23 +151,21 @@ function SemanticEntityListPanel({
         </div>
       </div>
 
-      {loading ? (
-        <div className="admin-semantic-loading" role="status">
-          <div className="admin-spinner" aria-hidden />
-          <span>{'\ubd88\ub7ec\uc624\ub294 \uc911...'}</span>
-        </div>
-      ) : (
-        <div className="basic-table-shell">
-          <BasicTable
-            className="admin-semantic-split-basic-table"
-            columns={columns}
-            data={items}
-            renderCell={renderCell}
-            onColumnResizeMouseDown={startResize}
-            emptyState={{ variant: 'default' }}
-          />
-        </div>
-      )}
+      <div className="basic-table-shell">
+        <BasicTable
+          className="admin-semantic-split-basic-table"
+          columns={columns}
+          data={loading ? [] : items}
+          renderCell={renderCell}
+          onColumnResizeMouseDown={startResize}
+          emptyState={listTableEmptyState({
+            loading,
+            loadError: null,
+            loadingMessage: '불러오는 중...',
+            emptyVariant: 'default',
+          })}
+        />
+      </div>
     </div>
   );
 }

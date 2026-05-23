@@ -1,5 +1,0 @@
-/**
- * @deprecated 진입은 global.scss — main.jsx 가 global.scss 를 import 함.
- * Vite·레거시 경로용 스텁.
- */
-@import './global.scss';

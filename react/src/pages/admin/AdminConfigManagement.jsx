@@ -10,6 +10,7 @@ import BasicTable from '../../components/common/BasicTable';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlPopover from '../../components/common/KlPopover';
 import KlIconButton from '../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../config/supportMock';
 import KlTooltip from '../../components/common/KlTooltip';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
@@ -458,7 +459,7 @@ function AdminConfigManagement() {
     );
 
     return (
-        <div className="kl-page">
+        <div className="kl-page kl-page--fill">
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="시스템 설정"
@@ -484,7 +485,7 @@ function AdminConfigManagement() {
                                 tooltip="목록 새로고침"
                                 ariaLabel="설정 목록 새로고침"
                                 onClick={handleRefreshList}
-                                buttonClassName="kl-btn kl-btn--icon"
+                                buttonClassName="kl-btn gray-outline md icon-only"
                                 stopPropagation={false}
                             >
                                 <RotateCcw size={16} aria-hidden />
@@ -494,10 +495,7 @@ function AdminConfigManagement() {
                 />
             </div>
 
-            {loading ? (
-                <div className="config-mgmt-loading">데이터를 불러오는 중...</div>
-            ) : (
-                <div className="table-area">
+            <div className="table-area">
                     <div className="table-toolbar">
                     <div className="toolbar-left">
                         <span className="kl-table-toolbar-summary">
@@ -530,15 +528,19 @@ function AdminConfigManagement() {
                         <BasicTable
                             className="config-mgmt-basic-table"
                             columns={configTableColumns}
-                            data={tableData}
+                            data={loading ? [] : tableData}
                             renderCell={renderConfigCell}
                             getBodyCellProps={getBodyCellProps}
                             onColumnResizeMouseDown={configColumnStartResize}
-                            emptyState={{ variant: configTableEmptyVariant }}
+                            emptyState={listTableEmptyState({
+                                loading,
+                                loadError: null,
+                                loadingMessage: '데이터를 불러오는 중...',
+                                emptyVariant: configTableEmptyVariant,
+                            })}
                         />
                     </div>
                 </div>
-            )}
 
             <KlPopover
                 id="config-mgmt-category-help-popover"

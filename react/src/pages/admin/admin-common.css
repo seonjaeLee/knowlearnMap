@@ -157,7 +157,7 @@
 /* ============================================================
  * 테이블
  * ============================================================ */
-/* 가로 스크롤 두께·색: 전역 `styles/kl-scrollbar-thin.css`에서 `.admin-table-wrap` 연동 */
+/* 가로 스크롤 두께·색: 전역 `assets/styles/patterns/kl-scrollbar-thin.css`에서 `.admin-table-wrap` 연동 */
 .admin-table-wrap {
     background: var(--admin-bg-panel);
     border: 1px solid var(--admin-border);
@@ -366,7 +366,7 @@
     white-space: nowrap;
 }
 
-/* 테이블 행 내 아이콘 버튼 — `styles/kl-buttons.css` 기본 + 어드민 팔레트 */
+/* 테이블 행 내 아이콘 버튼 — `assets/styles/kit/kl-buttons.css` 기본 + 어드민 팔레트 */
 .admin-table .kl-table-icon-btn:focus-visible {
     outline-color: var(--admin-color-primary);
 }
@@ -473,7 +473,7 @@
     color: var(--admin-color-neutral-on-soft);
 }
 
-/* 텍스트 액션 버튼 — `styles/kl-buttons.css` (`.kl-btn`; `.admin-btn` 별칭은 제거 예정, TODO는 해당 파일 상단) */
+/* 텍스트 액션 버튼 — `assets/styles/kit/kl-buttons.css` (`.kl-btn`; `.admin-btn` 별칭은 제거 예정, TODO는 해당 파일 상단) */
 
 /* Workspace prompt tags (migrated from DomainManagement.css) */
 .prompt-tag-grid {

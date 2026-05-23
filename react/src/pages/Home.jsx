@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus, Info } from 'lucide-react';
+import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus, Info, RotateCcw } from 'lucide-react';
 import { Button } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -8,7 +8,9 @@ import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
 import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
+import KlIconButton from '../components/common/KlIconButton';
 import BasicTable from '../components/common/BasicTable';
+import { listTableEmptyState } from '../config/supportMock';
 import KlTableRowActions from '../components/common/table/KlTableRowActions';
 import KlTooltip from '../components/common/KlTooltip';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
@@ -104,37 +106,35 @@ function Home() {
     const { showAlert } = useAlert();
     const { confirm, alert } = useDialog();
 
-    // 워크스페이스 목록 불러오기
-    useEffect(() => {
-        // Wait for auth check to complete (handled by route protection usually, but useAuth helps)
+    const fetchWorkspaces = useCallback(async () => {
         if (!isAuthenticated) return;
 
-        const fetchWorkspaces = async () => {
-            try {
-                setLoading(true);
-                let params = { filter };
+        try {
+            setLoading(true);
+            const params = { filter };
 
-                if (isAdmin) {
-                    const selectedDomainId = localStorage.getItem('admin_selected_domain_id');
-                    if (selectedDomainId) {
-                        params.domainId = selectedDomainId;
-                    }
+            if (isAdmin) {
+                const selectedDomainId = localStorage.getItem('admin_selected_domain_id');
+                if (selectedDomainId) {
+                    params.domainId = selectedDomainId;
                 }
-
-                const data = await workspaceApi.getAll(params);
-                setNotebooks(data || []);
-                setError(null);
-            } catch (err) {
-                console.error('워크스페이스 로드 실패:', err);
-                setError('워크스페이스를 불러올 수 없습니다.');
-                setNotebooks([]);
-            } finally {
-                setLoading(false);
             }
-        };
 
+            const data = await workspaceApi.getAll(params);
+            setNotebooks(data || []);
+            setError(null);
+        } catch (err) {
+            console.error('워크스페이스 로드 실패:', err);
+            setError('워크스페이스를 불러올 수 없습니다.');
+            setNotebooks([]);
+        } finally {
+            setLoading(false);
+        }
+    }, [isAuthenticated, isAdmin, filter]);
+
+    useEffect(() => {
         fetchWorkspaces();
-    }, [isAuthenticated, isAdmin, filter]); // filter는 URL에서 읽음
+    }, [fetchWorkspaces]);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -614,16 +614,27 @@ function Home() {
     }, [deletingId, isAdmin, notebooks]);
 
     return (
-        <div className="kl-page">
+        <div className="kl-page kl-page--fill">
             <div className="kl-main-sticky-head">
                 <PageHeader
                     title={pageTitle}
                     breadcrumbs={workspaceBreadcrumbs}
                     actions={(
-                        <button type="button" className="kl-btn kl-btn--primary" onClick={handleCreateNew}>
-                            <Plus size={14} aria-hidden />
-                            새 워크스페이스
-                        </button>
+                        <>
+                            <KlIconButton
+                                tooltip="새로고침"
+                                ariaLabel="워크스페이스 목록 새로고침"
+                                onClick={fetchWorkspaces}
+                                buttonClassName="kl-btn gray-outline md icon-only"
+                                stopPropagation={false}
+                            >
+                                <RotateCcw size={16} aria-hidden />
+                            </KlIconButton>
+                            <button type="button" className="kl-btn primary-full md" onClick={handleCreateNew}>
+                                <Plus size={14} aria-hidden />
+                                새 워크스페이스
+                            </button>
+                        </>
                     )}
                 />
             </div>
@@ -691,35 +702,12 @@ function Home() {
                     </div>
                 </div>
 
-            {/* 로딩 상태 */}
-            {loading && (
-                <div className="home-loading-state">
-                    <div className="home-loading-spinner" aria-hidden />
-                    <p className="home-loading-text">워크스페이스를 불러오는 중...</p>
-                </div>
-            )}
-
-            {/* 에러 상태 */}
-            {error && (
-                <div className="home-error-state">
-                    <p>{error}</p>
-                    <button
-                        type="button"
-                        className="home-error-retry"
-                        onClick={() => window.location.reload()}
-                    >
-                        다시 시도
-                    </button>
-                </div>
-            )}
-
-
-            {!loading && !error && viewMode === 'list' && (
+            {viewMode === 'list' && (
                 <div className="basic-table-shell home-workspace-list-shell">
                     <BasicTable
                         className="home-workspace-basic-table"
                         columns={WORKSPACE_LIST_COLUMNS}
-                        data={sortedNotebooks}
+                        data={loading || error ? [] : sortedNotebooks}
                         renderCell={renderWorkspaceListCell}
                         onRowClick={(_e, { row }) => handleNotebookClick(row.id)}
                         onRowKeyDown={(_e, { row }) => {
@@ -732,15 +720,38 @@ function Home() {
                         getRowClassName={(row) => (
                             deletingId === row.id ? 'home-workspace-list-row--deleting' : ''
                         )}
-                        emptyState={{
-                            variant: 'default',
-                            message: '워크스페이스가 없습니다.',
-                        }}
+                        emptyState={listTableEmptyState({
+                            loading,
+                            loadError: error,
+                            loadingMessage: '워크스페이스를 불러오는 중입니다.',
+                            emptyVariant: 'default',
+                            emptyMessage: !loading && !error ? '워크스페이스가 없습니다.' : undefined,
+                        })}
                     />
                 </div>
             )}
 
-            {!loading && !error && viewMode === 'grid' && (
+            {viewMode === 'grid' && loading && (
+                <div className="home-loading-state">
+                    <div className="home-loading-spinner" aria-hidden />
+                    <p className="home-loading-text">워크스페이스를 불러오는 중...</p>
+                </div>
+            )}
+
+            {viewMode === 'grid' && error && (
+                <div className="home-error-state">
+                    <p>{error}</p>
+                    <button
+                        type="button"
+                        className="home-error-retry"
+                        onClick={() => fetchWorkspaces()}
+                    >
+                        다시 시도
+                    </button>
+                </div>
+            )}
+
+            {viewMode === 'grid' && !loading && !error && (
                 <div className="notebooks-container grid">
                     <div className="notebook-card create-card" onClick={handleCreateNew}>
                         <div className="create-card-content">

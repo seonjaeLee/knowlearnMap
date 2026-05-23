@@ -6,19 +6,19 @@ const AuthContext = createContext(null);
 const LOCAL_AUTH_USER_KEY = 'localMockAuthUser';
 const isLocalAuthEnabled = import.meta.env.VITE_ENABLE_LOCAL_AUTH === 'true';
 
-/** 로컬 전용 더미 계정 (VITE_ENABLE_LOCAL_AUTH=true 일 때만) */
+/** 로컬 전용 더미 (VITE_ENABLE_LOCAL_AUTH=true) — ADMIN=어드민센터, SYSOP=SYSOP센터만 */
 const LOCAL_AUTH_ACCOUNTS = {
     admin: {
         password: 'joy',
         user: { email: 'admin', role: 'ADMIN', domain: 'admin' },
     },
-    igloo: {
-        password: '12345678',
-        user: { email: 'igloo', role: 'SYSOP', domain: 'igloo' },
-    },
     joy: {
         password: 'joy',
         user: { email: 'joy', role: 'ADMIN', domain: 'admin' },
+    },
+    igloo: {
+        password: '12345678',
+        user: { email: 'igloo', role: 'SYSOP', domain: 'igloo' },
     },
 };
 

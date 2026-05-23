@@ -28,6 +28,7 @@ import ToolbarMoreMenu from '../../components/common/ToolbarMoreMenu';
 import BasicTable from '../../components/common/BasicTable';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlIconButton from '../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../config/supportMock';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
 import {
   semanticCategoryColumnDefinitionsCollapsed,
@@ -455,7 +456,7 @@ function AdminSemanticCategoryPage({
           </span>
         </div>
         <div className="toolbar-right">
-          <button type="button" className="kl-btn-outline-primary-sm" onClick={openCreate}>
+          <button type="button" className="kl-btn primary-full md" onClick={openCreate}>
             <Plus size={16} aria-hidden />
             추가
           </button>
@@ -464,7 +465,7 @@ function AdminSemanticCategoryPage({
               tooltip={isTreeFullyCollapsed ? '모두 펼침' : '모두 접음'}
               ariaLabel={isTreeFullyCollapsed ? '모두 펼침' : '모두 접음'}
               onClick={toggleTreeExpandAll}
-              buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+              buttonClassName="kl-btn gray-outline md icon-only"
               stopPropagation={false}
               buttonProps={{ 'aria-pressed': !isTreeFullyCollapsed }}
             >
@@ -479,7 +480,7 @@ function AdminSemanticCategoryPage({
             tooltip="새로고침"
             ariaLabel="새로고침"
             onClick={refreshList}
-            buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            buttonClassName="kl-btn gray-outline md icon-only"
             stopPropagation={false}
           >
             <RotateCcw size={16} aria-hidden />
@@ -514,7 +515,7 @@ function AdminSemanticCategoryPage({
               tooltip="검색 초기화"
               ariaLabel="검색 초기화"
               onClick={() => setSearchText('')}
-              buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+              buttonClassName="kl-btn gray-outline md icon-only"
               stopPropagation={false}
             >
               <X size={16} aria-hidden />
@@ -522,27 +523,25 @@ function AdminSemanticCategoryPage({
           ) : null}
         </div>
       </div>
-      {showLoading ? (
-        <div className="admin-semantic-loading" role="status">
-          <div className="admin-spinner" aria-hidden />
-          <span>불러오는 중...</span>
-        </div>
-      ) : (
-        <div className="basic-table-shell">
-          <BasicTable
-            className={SEMANTIC_SPLIT_TABLE_CLASS}
-            columns={categoryColumns}
-            data={visibleItems}
-            renderCell={renderCategoryCell}
-            getBodyCellProps={getCategoryBodyCellProps}
-            onRowClick={onSelectCategory ? handleCategoryRowClick : undefined}
-            getRowClassName={onSelectCategory ? getCategoryRowClassName : undefined}
-            rowAriaLabel={(row) => row.path || row.nameEn}
-            onColumnResizeMouseDown={categoryColumnStartResize}
-            emptyState={{ variant: searchLower ? 'search' : 'default' }}
-          />
-        </div>
-      )}
+      <div className="basic-table-shell">
+        <BasicTable
+          className={SEMANTIC_SPLIT_TABLE_CLASS}
+          columns={categoryColumns}
+          data={showLoading ? [] : visibleItems}
+          renderCell={renderCategoryCell}
+          getBodyCellProps={getCategoryBodyCellProps}
+          onRowClick={onSelectCategory ? handleCategoryRowClick : undefined}
+          getRowClassName={onSelectCategory ? getCategoryRowClassName : undefined}
+          rowAriaLabel={(row) => row.path || row.nameEn}
+          onColumnResizeMouseDown={categoryColumnStartResize}
+          emptyState={listTableEmptyState({
+            loading: showLoading,
+            loadError: null,
+            loadingMessage: '불러오는 중...',
+            emptyVariant: searchLower ? 'search' : 'default',
+          })}
+        />
+      </div>
     </div>
   );
 
@@ -668,7 +667,7 @@ function AdminSemanticCategoryPage({
   }
 
   return (
-    <div className="kl-page">
+    <div className="kl-page kl-page--fill">
       <div className="kl-main-sticky-head">
         <AdminPageHeader
           icon={Layers}

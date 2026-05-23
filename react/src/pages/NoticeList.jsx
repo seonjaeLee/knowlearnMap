@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pin, Plus, Search } from 'lucide-react';
+import { Pin, Plus, RotateCcw, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import NoticeCreateModal from '../components/NoticeCreateModal';
 import NoticeDetailModal from '../components/NoticeDetailModal';
 import PageHeader from '../components/common/PageHeader';
+import KlIconButton from '../components/common/KlIconButton';
 import BasicTable from '../components/common/BasicTable';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
-import { isSupportMockEnabled } from '../config/supportMock';
+import { isSupportMockEnabled, listTableEmptyState } from '../config/supportMock';
 import { mockNotices } from '../data/supportMockData';
 import { noticeApi } from '../services/api';
 import { normalizeSupportListPayload } from '../utils/supportListResponse';
@@ -65,8 +66,14 @@ function NoticeList() {
       setNotices(sortNoticesForList(normalizeSupportListPayload(data)));
     } catch (error) {
       console.error('공지사항 목록 조회 실패:', error);
-      setNotices([]);
-      setLoadError(error.message || '공지사항을 불러오지 못했습니다.');
+      if (import.meta.env.DEV) {
+        console.warn('[NoticeList] API 실패, 더미 목록으로 표시:', error?.message || error);
+        setNotices(sortNoticesForList(mockNotices.map((item) => ({ ...item }))));
+        setLoadError(null);
+      } else {
+        setNotices([]);
+        setLoadError(error.message || '공지사항을 불러오지 못했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -273,17 +280,30 @@ function NoticeList() {
   }, [handleDeleteNotice, handleOpenEditModal]);
 
   return (
-    <div className="kl-page notice-page">
+    <div className="kl-page kl-page--fill notice-page">
       <div className="kl-main-sticky-head">
         <PageHeader
           title="공지사항"
           breadcrumbs={['고객센터', '공지사항']}
-          actions={isAdmin ? (
-            <button type="button" className="kl-btn kl-btn--primary" onClick={handleOpenCreateModal}>
-              <Plus size={14} aria-hidden />
-              공지 작성
-            </button>
-          ) : null}
+          actions={(
+            <>
+              <KlIconButton
+                tooltip="새로고침"
+                ariaLabel="공지사항 목록 새로고침"
+                onClick={fetchNotices}
+                buttonClassName="kl-btn gray-outline md icon-only"
+                stopPropagation={false}
+              >
+                <RotateCcw size={16} aria-hidden />
+              </KlIconButton>
+              {isAdmin ? (
+                <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                  <Plus size={14} aria-hidden />
+                  공지 작성
+                </button>
+              ) : null}
+            </>
+          )}
         />
 
         
@@ -312,34 +332,31 @@ function NoticeList() {
         </div>
 
         <div className="basic-table-shell">
-          {loading ? (
-            <div className="support-empty" role="status">공지사항을 불러오는 중입니다.</div>
-          ) : loadError ? (
-            <div className="support-empty" role="alert">{loadError}</div>
-          ) : (
-            <BasicTable
-              className="support-basic-table"
-              columns={noticeColumns}
-              data={filteredNotices}
-              renderCell={renderNoticeCell}
-              onRowClick={(e, { row }) => handleNoticeClick(row)}
-              onRowKeyDown={(e, { row }) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleNoticeClick(row);
-                }
-              }}
-              rowAriaLabel={(row) => `${row.title} 공지사항 상세 보기`}
-              getRowClassName={(row) => [
-                row.isPinned ? 'support-row-pinned' : '',
-                !row.isRead ? 'support-row-unread' : '',
-              ].filter(Boolean).join(' ')}
-              emptyState={{
-                variant: noticeTableEmptyVariant,
-                message: notices.length === 0 ? '등록된 공지가 없습니다.' : undefined,
-              }}
-            />
-          )}
+          <BasicTable
+            className="support-basic-table"
+            columns={noticeColumns}
+            data={loading ? [] : filteredNotices}
+            renderCell={renderNoticeCell}
+            onRowClick={(e, { row }) => handleNoticeClick(row)}
+            onRowKeyDown={(e, { row }) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleNoticeClick(row);
+              }
+            }}
+            rowAriaLabel={(row) => `${row.title} 공지사항 상세 보기`}
+            getRowClassName={(row) => [
+              row.isPinned ? 'support-row-pinned' : '',
+              !row.isRead ? 'support-row-unread' : '',
+            ].filter(Boolean).join(' ')}
+            emptyState={listTableEmptyState({
+              loading,
+              loadError,
+              loadingMessage: '공지사항을 불러오는 중입니다.',
+              emptyVariant: noticeTableEmptyVariant,
+              emptyMessage: !loading && !loadError && notices.length === 0 ? '등록된 공지가 없습니다.' : undefined,
+            })}
+          />
         </div>
       </div>
 

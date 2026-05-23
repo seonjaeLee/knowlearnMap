@@ -1,8 +1,8 @@
 /*
  * KnowLearn 공통 페이지 셸 — outlet 직계(또는 라우트 호스트) 1단.
- * - 목록·설정: `kl-page`
- * - 세로 꽉 채움(노트북·/admin/* 호스트): `kl-page kl-page--fill`
- * - 메뉴명 클래스(domain-*-container 등)는 사용하지 않음.
+ * - 기본: `kl-page` (본문 높이 = 콘텐츠)
+ * - 세로 꽉 채움(선택): `kl-page kl-page--fill` — 해당 페이지 루트에만. 가이드 Part 7 §2.1
+ * - 라우트 호스트(`kl-route-host`)에는 `--fill` 붙이지 않음
  */
 
 .kl-page {
@@ -28,9 +28,14 @@
 }
 
 .kl-page.kl-route-host > * {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+/* 목록·설정 등 세로 꽉 채움 — 라우트 직계만 성장 */
+.kl-page.kl-route-host > .kl-page--fill {
+  flex: 1 1 auto;
+  min-height: 0;
 }

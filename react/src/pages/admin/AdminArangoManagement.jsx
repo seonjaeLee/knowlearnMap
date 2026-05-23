@@ -6,6 +6,7 @@ import { RotateCcw, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import KlIconButton from '../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../config/supportMock';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import { mockArangoDatabases, mockArangoWorkspacesByDomainId } from '../../data/arangoAdminMockData';
 import './admin-common.css';
@@ -346,7 +347,7 @@ function AdminArangoManagement() {
                             tooltip="새로고침"
                             ariaLabel="ArangoDB 목록 새로고침"
                             onClick={handleRefresh}
-                            buttonClassName="kl-btn kl-btn--icon"
+                            buttonClassName="kl-btn gray-outline md icon-only"
                             stopPropagation={false}
                         >
                             <RotateCcw size={16} aria-hidden />
@@ -355,34 +356,35 @@ function AdminArangoManagement() {
                 />
             </div>
 
-            {loading ? (
-                <div className="arango-mgmt-loading">데이터를 불러오는 중...</div>
-            ) : (
-                <div className="table-area">
-                    <div className="table-toolbar">
+            <div className="table-area">
+                <div className="table-toolbar">
                     <div className="toolbar-left">
                         <span className="kl-table-toolbar-summary">
                             총 <strong>{databases.length}</strong>건
                         </span>
                     </div>
-                    </div>
-
-                    <div className="basic-table-shell">
-                        <BasicTable
-                            className="arango-mgmt-basic-table"
-                            columns={domainTableColumns}
-                            data={domainTableRows}
-                            renderCell={renderDomainCell}
-                            renderRowDetail={renderRowDetail}
-                            onRowClick={handleDomainRowClick}
-                            getRowClassName={domainRowClassName}
-                            rowAriaLabel={domainRowAriaLabel}
-                            onColumnResizeMouseDown={domainColumnStartResize}
-                            emptyState={{ variant: 'default' }}
-                        />
-                    </div>
                 </div>
-            )}
+
+                <div className="basic-table-shell">
+                    <BasicTable
+                        className="arango-mgmt-basic-table"
+                        columns={domainTableColumns}
+                        data={loading ? [] : domainTableRows}
+                        renderCell={renderDomainCell}
+                        renderRowDetail={renderRowDetail}
+                        onRowClick={handleDomainRowClick}
+                        getRowClassName={domainRowClassName}
+                        rowAriaLabel={domainRowAriaLabel}
+                        onColumnResizeMouseDown={domainColumnStartResize}
+                        emptyState={listTableEmptyState({
+                            loading,
+                            loadError: null,
+                            loadingMessage: '데이터를 불러오는 중...',
+                            emptyVariant: 'default',
+                        })}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

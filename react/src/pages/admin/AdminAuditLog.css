@@ -1,5 +1,5 @@
 /* Audit Log — 표 셀·로딩·툴바 필드 너비(페이지 전용). 툴바·표·푸터·버튼은 global.css 공통 */
-/* 목록 스크롤·thead 고정: `styles/kit/kl-basic-table.css` · `audit-log-page` · `kl-page--fill` */
+/* 목록 shell 스크롤: `kl-basic-table.css` · 루트 `kl-page--fill` · `audit-log-page` */
 
 .audit-log-page {
   flex: 1 1 auto;

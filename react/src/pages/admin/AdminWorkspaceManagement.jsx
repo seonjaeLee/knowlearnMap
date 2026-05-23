@@ -10,6 +10,7 @@ import { formatTableCellText, isTableCellBlank } from '../../components/common/t
 import KlPopover from '../../components/common/KlPopover';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlIconButton from '../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../config/supportMock';
 import KlTooltip from '../../components/common/KlTooltip';
 import { mockAdminWorkspaces } from '../../data/workspaceMockData';
 import './admin-common.css';
@@ -264,33 +265,25 @@ function AdminWorkspaceManagement() {
     const workspaceTableEmptyVariant = workspaces.length === 0 ? 'default' : 'search';
 
     return (
-        <div className="kl-page">
+        <div className="kl-page kl-page--fill">
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="워크스페이스 관리"
                     actions={(
-                        <div className="kl-header-actions">
-                            <KlIconButton
+                        <KlIconButton
                             tooltip="새로고침"
                             ariaLabel="워크스페이스 목록 새로고침"
                             onClick={fetchWorkspaces}
-                            buttonClassName="kl-btn kl-btn--icon"
+                            buttonClassName="kl-btn gray-outline md icon-only"
                             stopPropagation={false}
                         >
                             <RotateCcw size={16} aria-hidden />
                         </KlIconButton>
-                        </div>
                     )}
                 />
             </div>
 
-            {loading ? (
-                <div className="workspace-mgmt-loading">
-                    데이터를 불러오는 중...
-                </div>
-            ) : (
-                <div className="table-area">
-
+            <div className="table-area">
                 <div className="table-toolbar">
                     <div className="toolbar-left">
                         <span className="kl-table-toolbar-summary">
@@ -311,18 +304,22 @@ function AdminWorkspaceManagement() {
                         </div>
                     </div>
                 </div>
-                    <div className="basic-table-shell">
-                        <BasicTable
-                            className="workspace-mgmt-basic-table"
-                            columns={workspaceTableColumns}
-                            data={filteredWorkspaces}
-                            renderCell={renderWorkspaceCell}
-                            onColumnResizeMouseDown={workspaceColumnStartResize}
-                            emptyState={{ variant: workspaceTableEmptyVariant }}
-                        />
-                    </div>
+                <div className="basic-table-shell">
+                    <BasicTable
+                        className="workspace-mgmt-basic-table"
+                        columns={workspaceTableColumns}
+                        data={loading ? [] : filteredWorkspaces}
+                        renderCell={renderWorkspaceCell}
+                        onColumnResizeMouseDown={workspaceColumnStartResize}
+                        emptyState={listTableEmptyState({
+                            loading,
+                            loadError: null,
+                            loadingMessage: '데이터를 불러오는 중...',
+                            emptyVariant: workspaceTableEmptyVariant,
+                        })}
+                    />
                 </div>
-            )}
+            </div>
             {shareModalOpen && shareWorkspace && (
                 <ShareSettingsModal
                     workspace={shareWorkspace}

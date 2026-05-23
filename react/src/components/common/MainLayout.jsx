@@ -21,7 +21,6 @@ import {
   Workflow,
   Bot,
   FolderKanban,
-  History,
 } from 'lucide-react';
 import UpgradeModal from '../UpgradeModal';
 import NotificationBell from './NotificationBell';
@@ -102,7 +101,7 @@ function MainLayout() {
 
   /** 노트북만 outlet 래퍼가 남은 세로 공간을 채움(:has 대신 경로로 지정해 어드민 등에서 flex:1 오적용 방지) */
   const isNotebookShellRoute = location.pathname.startsWith('/notebook/');
-  /** 어드민·SYSOP 목록 — outlet이 남은 높이를 채워 표 shell 내부 스크롤 (styles/kit/kl-basic-table.css) */
+  /** 어드민·SYSOP 목록 — outlet이 남은 높이를 채워 표 shell 내부 스크롤 (assets/styles/kit/kl-basic-table.css) */
   const isAdminCenterOutletFill =
     location.pathname.startsWith('/admin') || location.pathname.startsWith('/sysop');
 
@@ -285,14 +284,8 @@ function MainLayout() {
                     ))}
                     {wrapLnbTooltip(isLnbCollapsed, 'Action', (
                       <NavLink to="/admin/action" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="Action">
-                        <Bot size={14} className="lnb-item-icon" />
+                        <Bot size={14} className="lnb-item-icon" /> 
                         {!isLnbCollapsed && <span>Action</span>}
-                      </NavLink>
-                    ))}
-                    {wrapLnbTooltip(isLnbCollapsed, 'Audit Log', (
-                      <NavLink to="/admin/audit-log" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="Audit Log">
-                        <History size={14} className="lnb-item-icon" />
-                        {!isLnbCollapsed && <span>Audit Log</span>}
                       </NavLink>
                     ))}
                 </div>

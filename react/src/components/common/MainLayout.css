@@ -362,7 +362,7 @@
   overflow: hidden;
 }
 
-/* 어드민·SYSOP — 목록 표 shell 세로 스크롤 (styles/kit/kl-basic-table.css) */
+/* 어드민·SYSOP — 목록 표 shell 세로 스크롤 (assets/styles/kit/kl-basic-table.css) */
 .main-layout .main-content-outlet-wrap--admin-center {
   flex: 1 1 auto;
   min-height: 0;

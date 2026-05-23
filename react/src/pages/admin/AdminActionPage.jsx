@@ -7,6 +7,7 @@ import { Zap, RotateCcw, Clock, Pencil, List, Info } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import KlIconButton from '../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../config/supportMock';
 import KlTooltip from '../../components/common/KlTooltip';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
@@ -137,11 +138,11 @@ function AdminActionPage() {
 
   if (!workspaceId) {
     return (
-      <div className="kl-page admin-action-page">
+      <div className="kl-page kl-page--fill admin-action-page">
         {wsModal}
         <div className="admin-action-ws-empty">
           <p>Action 관리 대상 workspaceId 가 필요합니다.</p>
-          <button type="button" className="kl-btn kl-btn--primary" onClick={openWsModal}>
+          <button type="button" className="kl-btn primary-full md" onClick={openWsModal}>
             워크스페이스 ID 입력
           </button>
         </div>
@@ -150,7 +151,7 @@ function AdminActionPage() {
   }
 
   return (
-    <div className="kl-page admin-action-page">
+    <div className="kl-page kl-page--fill admin-action-page">
       {wsModal}
       <div className="kl-main-sticky-head">
         <AdminPageHeader
@@ -299,7 +300,7 @@ function ActionListTab({ workspaceId }) {
             tooltip="새로고침"
             ariaLabel="새로고침"
             onClick={fetchData}
-            buttonClassName="kl-toolbar-btn kl-toolbar-btn--icon-only"
+            buttonClassName="kl-btn gray-outline md icon-only"
             stopPropagation={false}
           >
             <RotateCcw size={16} aria-hidden />
@@ -307,33 +308,31 @@ function ActionListTab({ workspaceId }) {
         </div>
       </div>
 
-      {loading ? (
-        <div className="admin-action-loading" role="status">
-          <div className="admin-spinner" aria-hidden />
-          <span>로딩...</span>
-        </div>
-      ) : (
-        <>
-          <div className="basic-table-shell">
-            <BasicTable
-              className="admin-action-basic-table"
-              columns={actionListColumns}
-              data={items}
-              renderCell={renderActionListCell}
-              onColumnResizeMouseDown={actionListColumnStartResize}
-              emptyState={{ variant: 'default' }}
-            />
-        </div>
-          <div className="kl-infotxt-note-row kl-infotxt-note-row--end">
-            <div className="kl-infotxt-note">
-              <Info size={16} aria-hidden />
-              <span>
-                MAP에서는 실행+이력 조회하고 있습니다. Action 추가/수정/바인딩은 <strong>EXP 액션사전</strong>에서 관리해주세요.
-              </span>
-            </div>
+      <div className="basic-table-shell">
+        <BasicTable
+          className="admin-action-basic-table"
+          columns={actionListColumns}
+          data={loading ? [] : items}
+          renderCell={renderActionListCell}
+          onColumnResizeMouseDown={actionListColumnStartResize}
+          emptyState={listTableEmptyState({
+            loading,
+            loadError: null,
+            loadingMessage: 'Action 목록을 불러오는 중입니다.',
+            emptyVariant: 'default',
+          })}
+        />
+      </div>
+      {!loading ? (
+        <div className="kl-infotxt-note-row kl-infotxt-note-row--end">
+          <div className="kl-infotxt-note">
+            <Info size={16} aria-hidden />
+            <span>
+              MAP에서는 실행+이력 조회하고 있습니다. Action 추가/수정/바인딩은 <strong>EXP 액션사전</strong>에서 관리해주세요.
+            </span>
           </div>
-        </>
-      )}
+        </div>
+      ) : null}
     </div>
   );
 }

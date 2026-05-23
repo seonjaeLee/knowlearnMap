@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, Save, RotateCcw, Layers } from 'lucide-react';
+import KlIconButton from '../../components/common/KlIconButton';
 import { useDialog } from '../../hooks/useDialog';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import TableEmptyState from '../../components/common/TableEmptyState';
@@ -90,20 +91,29 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
                 title={title}
                 count={items.length}
                 subtitle={subtitle}
-                actions={
+                actions={(
                     <>
-                        <button className="kl-btn" onClick={handleReset} disabled={loading || saving}>
-                            <RotateCcw size={14} /> 새로고침
-                        </button>
+                        <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="목록 새로고침"
+                            onClick={handleReset}
+                            disabled={loading || saving}
+                            buttonClassName="kl-btn gray-outline md icon-only"
+                            stopPropagation={false}
+                        >
+                            <RotateCcw size={16} aria-hidden />
+                        </KlIconButton>
                         <button
-                            className="kl-btn kl-btn--primary"
+                            type="button"
+                            className="kl-btn primary-full md"
                             onClick={handleSave}
                             disabled={saving || !dirty}
                         >
-                            <Save size={14} /> {saving ? '저장 중...' : '저장'}
+                            <Save size={14} aria-hidden />
+                            {saving ? '저장 중...' : '저장'}
                         </button>
                     </>
-                }
+                )}
             />
             </div>
 
@@ -154,13 +164,15 @@ export default function SemanticOptionsEditor({ title, subtitle, loadFn, saveFn,
                                             />
                                         </td>
                                         <td className="admin-col-actions">
-                                            <button
-                                                className="kl-btn kl-btn--icon kl-btn--danger-soft"
+                                            <KlIconButton
+                                                tooltip="삭제"
+                                                ariaLabel="행 삭제"
                                                 onClick={() => handleDelete(idx)}
-                                                title="삭제"
+                                                tone="danger"
+                                                stopPropagation={false}
                                             >
-                                                <Trash2 size={14} />
-                                            </button>
+                                                <Trash2 size={14} aria-hidden />
+                                            </KlIconButton>
                                         </td>
                                     </tr>
                                 ))

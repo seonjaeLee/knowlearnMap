@@ -1,11 +1,23 @@
 .domain-redirecting {
     display: flex;
     justify-content: center;
-    margin-top: 50px;
+    margin-top: var(--spacing-2xl);
 }
 
-/* 도메인 선택 — list-page 공통 툴바(총 N건 · 관리자 로그인) */
-.domain-selection-page .table-area > .table-toolbar .domain-toolbar-user {
+/* ── 도메인 선택 (카드형, 선택 전용) ── */
+.domain-select-area {
+    padding: var(--spacing-lg);
+}
+
+.domain-select-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.domain-select-toolbar .domain-toolbar-user {
     margin: 0;
     white-space: nowrap;
     font-size: var(--font-size-sm);
@@ -13,202 +25,111 @@
     flex-shrink: 0;
 }
 
-/* Grid/Card styles removed */
-
-/* docs/table/data-table-spec.md — 밀집(kl-data-table-dense); 열 폭은 DomainSelection.jsx columns에서만 지정 */
-.table-area .domain-basic-table thead .MuiTableCell-root {
-    padding-inline: var(--spacing-md);
-    white-space: nowrap;
-    line-height: 1.25;
-    box-sizing: border-box;
-    vertical-align: middle;
+.domain-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--spacing-md);
 }
 
-.table-area .domain-basic-table thead .MuiTableCell-head:last-of-type .domain-list-actions-head {
-    padding-right: var(--spacing-sm);
-}
-
-.table-area .domain-basic-table tbody .MuiTableCell-root {
-    padding-inline: var(--spacing-md);
-    line-height: 1.25;
-    box-sizing: border-box;
-}
-
-.table-area .domain-basic-table tbody tr:last-child .MuiTableCell-root {
-    border-bottom: none;
-}
-
-.domain-list-actions-head {
+.domain-card {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    text-align: left;
     width: 100%;
-    min-width: 0;
+    padding: var(--spacing-lg);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
 }
 
-.domain-radio-cell {
+.domain-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-small);
+    transform: translateY(-1px);
+}
+
+.domain-card--current {
+    border-color: var(--color-accent);
+    background: var(--color-accent-light);
+}
+
+.domain-card-head {
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xs);
 }
 
-.domain-radio-input {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    accent-color: var(--color-accent);
-}
-
-.domain-list-row {
-    cursor: pointer;
-    transition: background-color var(--transition-fast);
-}
-
-/* 행 호버: BasicTable.global.css `.basic-table-shell` 공통 규칙 */
-
-/* 선택 행 스타일 — BasicTable.global.css `.kl-table-row-selected` */
-
-.domain-list-name {
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-    overflow: hidden;
-}
-
-.domain-list-name-inner {
+.domain-card-icon {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    min-width: 0;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.domain-current-badge {
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
     background: var(--color-accent-light);
     color: var(--color-accent);
+}
+
+.domain-card-current-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--spacing-xs) / 2);
+    background: var(--color-accent);
+    color: var(--control-pill-active-text);
     border-radius: 999px;
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
-    flex-shrink: 0;
 }
 
-.domain-list-desc {
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-xs);
+.domain-card-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-lg);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.domain-list-action {
-    text-align: right;
-    box-sizing: border-box;
-    vertical-align: middle;
+.domain-card-desc {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.domain-card-meta {
+    margin-top: var(--spacing-xs);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+}
+
+.domain-empty {
+    padding: var(--spacing-2xl);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
 }
 
 .domain-selection-error {
-    margin: 0;
+    margin: 0 0 var(--spacing-md);
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: var(--font-size-sm);
-    color: #dc2626;
-    background: #fff5f5;
-    border: 1px solid #fed7d7;
+    color: var(--color-icon-danger);
+    background: color-mix(in srgb, var(--color-icon-danger) 8%, var(--color-bg-secondary));
+    border: 1px solid color-mix(in srgb, var(--color-icon-danger) 28%, var(--color-border));
     border-radius: var(--radius-sm);
-}
-
-/* 삭제 아이콘 버튼: BasicTable.global.css `.kl-table-icon-btn--danger` */
-
-/* 도메인 추가 — 고객센터 등록 팝업과 동일 520px · 라벨(좌) + 입력(우) */
-:global(.kl-base-modal-paper.domain-form-modal-paper) {
-    width: 520px !important;
-    max-width: calc(100vw - 48px) !important;
-    min-width: unset !important;
-    min-height: unset !important;
-}
-
-:global(.kl-base-modal-content.domain-add-modal-content) {
-    padding: var(--spacing-lg) !important;
-    padding-bottom: var(--spacing-2xl) !important;
-}
-
-.domain-add-modal-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    padding: 0;
-}
-
-.domain-form-row {
-    display: grid;
-    grid-template-columns: 6.75rem minmax(0, 1fr);
-    align-items: center;
-    column-gap: var(--spacing-md);
-}
-
-.domain-form-row--start {
-    align-items: start;
-}
-
-.domain-form-row__label {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-    line-height: 1.4;
-}
-
-.domain-form-row__label--stacked {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-    line-height: 1.35;
-}
-
-.domain-form-row__label-line {
-    display: block;
-}
-
-.domain-form-row__control {
-    min-width: 0;
-}
-
-.domain-required {
-    color: #dc2626;
-}
-
-.domain-add-help {
-    margin: var(--spacing-xs) 0 0;
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-    line-height: 1.45;
-}
-
-.domain-add-error {
-    margin-top: var(--spacing-sm);
-    padding: var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs));
-    background: #fee2e2;
-    color: #dc2626;
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-sm);
-}
-
-.domain-add-modal-actions {
-    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
 }
 
 @media (max-width: 768px) {
-    :global(.kl-base-modal-paper.domain-form-modal-paper) {
-        width: calc(100vw - 48px) !important;
-    }
-
-    .domain-form-row {
-        grid-template-columns: 1fr;
-        align-items: stretch;
-        row-gap: var(--spacing-xs);
+    .domain-card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     }
 }

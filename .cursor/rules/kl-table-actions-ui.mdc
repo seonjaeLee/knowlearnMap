@@ -17,7 +17,7 @@ alwaysApply: false
 
 ## 스타일 단일 소스
 
-- `src/styles/kl-buttons.css` — `.kl-table-actions`, `.kl-table-icon-btn`, `--neutral` / `--danger` / **`--success`**.
+- `src/assets/styles/kit/kl-buttons.css` — `.kl-table-actions`, `.kl-table-icon-btn`, `--neutral` / `--danger` / **`--success`**.
 - 어드민 테이블: `admin-common.css`의 `.admin-table .kl-table-icon-btn-*` 가 팔레트만 덮어쓴다.
 
 ## 데이터 테이블 규격

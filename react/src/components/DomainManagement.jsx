@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@mui/material';
 import {
-    Search, Plus, Globe, CheckCircle, AlertCircle, Database, Layout, Info,
+    Search, Plus, RotateCcw, Globe, CheckCircle, AlertCircle, Database, Layout, Info,
 } from 'lucide-react';
 import { useDialog } from '../hooks/useDialog';
 import { useBasicTableColumnResize } from '../hooks/useBasicTableColumnResize';
@@ -13,6 +13,7 @@ import {
     domainFormModalPaperClassName,
     domainFormModalPaperSx,
 } from './common/modal/supportFormModalPaperSx';
+import KlIconButton from './common/KlIconButton';
 import BasicTable from './common/BasicTable';
 import KlTableRowActions from './common/table/KlTableRowActions';
 import { formatTableCellText, isTableCellBlank } from './common/tableCellDisplay';
@@ -482,15 +483,26 @@ function DomainManagement() {
     const domainTableEmptyVariant = domains.length === 0 ? 'default' : 'search';
 
     return (
-        <div className="kl-page">
+        <div className="kl-page kl-page--fill">
             <div className="kl-main-sticky-head">
             <AdminPageHeader
                 title="도메인 관리"
                 actions={(
-                    <button type="button" className="kl-btn kl-btn--primary" onClick={handleOpenCreateModal}>
-                        <Plus size={14} aria-hidden />
-                        새 도메인
-                    </button>
+                    <>
+                        <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="도메인 목록 새로고침"
+                            onClick={fetchDomains}
+                            buttonClassName="kl-btn gray-outline md icon-only"
+                            stopPropagation={false}
+                        >
+                            <RotateCcw size={16} aria-hidden />
+                        </KlIconButton>
+                        <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                            <Plus size={14} aria-hidden />
+                            새 도메인
+                        </button>
+                    </>
                 )}
             />
 

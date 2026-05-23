@@ -5,6 +5,7 @@ import { History, Search, RotateCcw } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
 import KlIconButton from '../../components/common/KlIconButton';
+import { listTableEmptyState } from '../../config/supportMock';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import './admin-common.css';
 import './AdminAuditLog.css';
@@ -195,10 +196,7 @@ function AdminAuditLog() {
                 />
             </div>
 
-            {loading ? (
-                <div className="audit-log-loading">데이터를 불러오는 중...</div>
-            ) : (
-                <div className="table-area">
+            <div className="table-area">
                     <div className="table-toolbar">
                         <div className="toolbar-left">
                             <span className="kl-table-toolbar-summary">
@@ -278,17 +276,24 @@ function AdminAuditLog() {
                         <BasicTable
                             className="audit-log-basic-table"
                             columns={columns}
-                            data={logs}
+                            data={loading ? [] : logs}
                             renderCell={renderCell}
                             onColumnResizeMouseDown={startResize}
-                            emptyState={{
-                                variant: tableEmptyVariant,
-                                message: hasActiveFilters ? '검색 결과가 없습니다.' : '감사 로그가 없습니다.',
-                            }}
+                            emptyState={listTableEmptyState({
+                                loading,
+                                loadError: null,
+                                loadingMessage: '데이터를 불러오는 중...',
+                                emptyVariant: tableEmptyVariant,
+                                emptyMessage: !loading && !hasActiveFilters && logs.length === 0
+                                    ? '감사 로그가 없습니다.'
+                                    : (!loading && hasActiveFilters && logs.length === 0
+                                        ? '검색 결과가 없습니다.'
+                                        : undefined),
+                            })}
                         />
                     </div>
 
-                    {showTableFooter ? (
+                    {!loading && showTableFooter ? (
                         <BasicTableFooter
                             center={(
                                 <BasicTablePaginationNav
@@ -300,7 +305,6 @@ function AdminAuditLog() {
                         />
                     ) : null}
                 </div>
-            )}
         </div>
     );
 }

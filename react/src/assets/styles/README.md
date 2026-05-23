@@ -1,8 +1,8 @@
-# `src/styles` — KnowLearn Map 전역 스타일
+# `src/assets/styles` — KnowLearn Map 전역 스타일
 
 ## 진입점
 
-- **`global.scss`** — `main.jsx`에서 **이 파일만** import 한다.
+- **`global.css`** — `main.jsx`에서 **이 파일만** import 한다.
 
 ## 디렉터리
 
@@ -21,4 +21,4 @@
 
 ## 페이지·컴포넌트 CSS
 
-`pages/`, `components/` co-location CSS는 **2단계**에서 `styles/pages/` 등으로 이관 예정.
+`pages/`, `components/` co-location CSS는 **2단계**에서 `assets/styles/pages/` 등으로 이관 예정.

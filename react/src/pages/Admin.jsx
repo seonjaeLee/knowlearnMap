@@ -5,7 +5,6 @@ import AdminArangoManagement from './admin/AdminArangoManagement';
 import AdminConfigManagement from './admin/AdminConfigManagement';
 import AdminSemanticPage from './admin/AdminSemanticPage';
 import AdminActionPage from './admin/AdminActionPage';
-import AdminAuditLog from './admin/AdminAuditLog';
 import { useState } from 'react';
 import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -25,7 +24,7 @@ function Admin() {
     }
 
     return (
-        <div className="kl-page kl-page--fill kl-route-host">
+        <div className="kl-page kl-route-host">
             <Routes>
                 <Route path="/" element={
                     <div className="admin-content">
@@ -104,7 +103,6 @@ function Admin() {
                 <Route path="/config" element={<AdminConfigManagement />} />
                 <Route path="/semantic" element={<AdminSemanticPage />} />
                 <Route path="/action" element={<AdminActionPage />} />
-                <Route path="/audit-log" element={<AdminAuditLog />} />
             </Routes>
         </div>
     );

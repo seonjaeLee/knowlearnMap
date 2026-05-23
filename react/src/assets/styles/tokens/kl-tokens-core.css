@@ -54,4 +54,11 @@
   --kl-control-font-weight: var(--font-weight-medium);
   --kl-control-line-height: 1;
   --kl-control-radius: var(--radius-sm);
+
+  /* 데이터 표 행 높이 — DomainManagement 등 */
+  --kl-data-table-thead-row-height: 34px;
+  --kl-data-table-tbody-row-height: 43px;
+  --kl-table-action-hit-size: 36px;
+  --kl-table-action-icon-size: 16px;
+  --kl-table-action-icon-gap: 0px;
 }

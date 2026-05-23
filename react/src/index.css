@@ -1,6 +1,6 @@
 /**
- * Vite 기본 경로 유지용 — 전역 KL 스타일은 styles/global.css
+ * Vite 기본 경로 유지용 — 전역 KL 스타일은 assets/styles/global.css
  * @see .cursor/rules/kl-css-architecture.mdc
  */
 
-@import './styles/global.scss';
+@import './assets/styles/global.css';

@@ -1,10 +1,10 @@
 /**
- * BasicTable 목록 공통 — `table-area` · `basic-table-shell` · 행/푸터/페이지네이션 · 스크롤·thead 고정
+ * BasicTable 목록 공통 — `table-area` · `basic-table-shell` · 행/푸터/페이지네이션 · 스크롤
  * - DOM: `kl-page` > `kl-main-sticky-head` + `table-area` > `table-toolbar` + `basic-table-shell` > BasicTable
+ * - 세로 꽉 채움·shell 내부 스크롤: 페이지 루트에 `kl-page--fill` 있을 때만 (Part 7 §2.1)
  * - 로드: `global.css` (구 TableArea.css · BasicTable.global.css · kl-table-list-scroll.css 통합)
  * - 어드민 높이 체인: MainLayout.css `.main-content-outlet-wrap--admin-center`
  *
- * thead `top`: shell이 스크롤 컨테이너일 때는 `0`만. `148px`는 main-content만 스크롤할 때만.
  */
 
 /* =============================================================================
@@ -35,12 +35,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  flex: 1;
-  min-height: 0;
   background: transparent;
   border: none;
   border-radius: 0;
   overflow: visible;
+}
+
+.kl-page--fill .table-area:has(> .table-toolbar),
+.kl-page--fill:has(> .table-area > .table-toolbar) > .table-area:has(> .table-toolbar) {
+  flex: 1;
+  min-height: 0;
 }
 
 .table-area:has(> .table-toolbar) > .table-toolbar {
@@ -52,11 +56,17 @@
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
+  min-width: 0;
+}
+
+.kl-page--fill .table-area:has(> .table-toolbar) > .basic-table-shell,
+.kl-page--fill:has(> .table-area > .table-toolbar)
+  > .table-area:has(> .table-toolbar)
+  > .basic-table-shell {
   flex: 1;
   min-height: 0;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  min-width: 0;
 }
 
 /* 푸터가 shell 직후 — 표 카드와 한 덩어리 */
@@ -77,27 +87,27 @@
  * 목록형 kl-page — 남은 높이 · shell 세로 스크롤
  * ============================================================================= */
 
-.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar) {
+.kl-page--fill:has(> .kl-main-sticky-head + .table-area > .table-toolbar) {
   flex: 1 1 auto;
   min-height: 0;
 }
 
-.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar) > .kl-main-sticky-head {
+.kl-page--fill:has(> .kl-main-sticky-head + .table-area > .table-toolbar) > .kl-main-sticky-head {
   flex-shrink: 0;
 }
 
-.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar) > .table-area {
+.kl-page--fill:has(> .kl-main-sticky-head + .table-area > .table-toolbar) > .table-area {
   flex: 1 1 auto;
   min-height: 0;
 }
 
-.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
+.kl-page--fill:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
   > .table-area
   > .table-toolbar {
   flex-shrink: 0;
 }
 
-.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
+.kl-page--fill:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
   > .table-area
   > .basic-table-shell {
   flex: 1 1 auto;
@@ -105,30 +115,14 @@
   overflow: auto;
 }
 
-.kl-page:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
+.kl-page--fill:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
   > .table-area
   > .basic-table-shell
   + * {
   flex-shrink: 0;
 }
 
-/* thead sticky — shell 스크롤 시 top: 0 */
-.table-area:has(> .table-toolbar) > .basic-table-shell :is(.MuiTableHead-root .MuiTableCell-head, thead th) {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: #f8f9fa;
-  box-shadow: 0 1px 0 var(--color-border-subtle);
-}
-
-/* main-content만 스크롤 — page-header 아래 열 제목 */
-.main-layout .main-content
-  .kl-page:not(:has(> .kl-main-sticky-head + .table-area > .table-toolbar))
-  .table-area:has(> .table-toolbar)
-  > .basic-table-shell
-  :is(.MuiTableHead-root .MuiTableCell-head, thead th) {
-  top: var(--kl-list-sticky-thead-top);
-}
+/* thead 고정(sticky) — 맨 마지막 단계 백로그. 현재는 일반 표 흐름(헤더 상단)만 유지 */
 
 .basic-table-shell:has([class*='colResizeHandle']) .MuiTableHead-root .MuiTableCell-head {
   z-index: 10;

@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, RotateCcw, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import QnaCreateModal from '../components/QnaCreateModal';
 import QnaDetailModal from '../components/QnaDetailModal';
 import PageHeader from '../components/common/PageHeader';
+import KlIconButton from '../components/common/KlIconButton';
 import BasicTable from '../components/common/BasicTable';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
-import { isSupportMockEnabled } from '../config/supportMock';
+import { isSupportMockEnabled, listTableEmptyState } from '../config/supportMock';
 import { mockQuestions } from '../data/supportMockData';
 import { qnaApi } from '../services/api';
 import { normalizeSupportListPayload } from '../utils/supportListResponse';
@@ -60,8 +61,16 @@ function QnaBoard() {
       setQuestions(normalizeSupportListPayload(data));
     } catch (error) {
       console.error('1:1 문의 목록 조회 실패:', error);
-      setQuestions([]);
-      setLoadError(error.message || '문의 내역을 불러오지 못했습니다.');
+      if (import.meta.env.DEV) {
+        console.warn('[QnaBoard] API 실패, 더미 목록으로 표시:', error?.message || error);
+        let list = mockQuestions.map((item) => ({ ...item }));
+        if (statusFilter) list = list.filter((q) => q.status === statusFilter);
+        setQuestions(list);
+        setLoadError(null);
+      } else {
+        setQuestions([]);
+        setLoadError(error.message || '문의 내역을 불러오지 못했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -231,16 +240,27 @@ function QnaBoard() {
   }, [handleDeleteQuestion, handleOpenEditModal]);
 
   return (
-    <div className="kl-page qna-page">
+    <div className="kl-page kl-page--fill qna-page">
       <div className="kl-main-sticky-head">
         <PageHeader
           title="1:1 문의"
           breadcrumbs={['고객센터', '1:1 문의']}
           actions={(
-            <button type="button" className="kl-btn kl-btn--primary" onClick={handleOpenCreateModal}>
-              <Plus size={14} aria-hidden />
-              1:1 문의 등록
-            </button>
+            <>
+              <KlIconButton
+                tooltip="새로고침"
+                ariaLabel="1:1 문의 목록 새로고침"
+                onClick={fetchQuestions}
+                buttonClassName="kl-btn gray-outline md icon-only"
+                stopPropagation={false}
+              >
+                <RotateCcw size={16} aria-hidden />
+              </KlIconButton>
+              <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                <Plus size={14} aria-hidden />
+                1:1 문의 등록
+              </button>
+            </>
           )}
         />
 
@@ -287,30 +307,27 @@ function QnaBoard() {
                     </div>
 
         <div className="basic-table-shell">
-          {loading ? (
-            <div className="support-empty" role="status">문의 내역을 불러오는 중입니다.</div>
-          ) : loadError ? (
-            <div className="support-empty" role="alert">{loadError}</div>
-          ) : (
-            <BasicTable
-              className="support-basic-table support-qna-table"
-              columns={qnaColumns}
-              data={filteredQuestions}
-              renderCell={renderQnaCell}
-              onRowClick={(e, { row }) => handleQuestionClick(row)}
-              onRowKeyDown={(e, { row }) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleQuestionClick(row);
-                }
-              }}
-              rowAriaLabel={(row) => `${row.title} 문의 상세 보기`}
-              emptyState={{
-                variant: qnaTableEmptyVariant,
-                message: questions.length === 0 ? '문의 내역이 없습니다.' : undefined,
-              }}
-            />
-          )}
+          <BasicTable
+            className="support-basic-table support-qna-table"
+            columns={qnaColumns}
+            data={loading ? [] : filteredQuestions}
+            renderCell={renderQnaCell}
+            onRowClick={(e, { row }) => handleQuestionClick(row)}
+            onRowKeyDown={(e, { row }) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleQuestionClick(row);
+              }
+            }}
+            rowAriaLabel={(row) => `${row.title} 문의 상세 보기`}
+            emptyState={listTableEmptyState({
+              loading,
+              loadError,
+              loadingMessage: '문의 내역을 불러오는 중입니다.',
+              emptyVariant: qnaTableEmptyVariant,
+              emptyMessage: !loading && !loadError && questions.length === 0 ? '문의 내역이 없습니다.' : undefined,
+            })}
+          />
         </div>
       </div>
 

@@ -58,7 +58,7 @@ const PromptDetailContent = () => {
               ? '해당 코드의 프롬프트가 DB에 존재하지 않습니다. 프롬프트 목록에서 먼저 생성해주세요.'
               : (promptError?.message || '서버에 연결할 수 없거나 예상치 못한 오류가 발생했습니다.')}
           </p>
-          <button type="button" className="kl-btn kl-btn--primary" onClick={handleGoBack}>
+          <button type="button" className="kl-btn primary-full md" onClick={handleGoBack}>
             <ArrowLeft size={14} aria-hidden />
             프롬프트 목록으로 돌아가기
           </button>

@@ -207,8 +207,9 @@ export const apiCall = async (endpoint, options = {}) => {
             let errorMsg;
             try {
                 const errorBody = await response.json();
-                if (errorBody && errorBody.message) {
-                    errorMsg = errorBody.message;
+                // 백엔드는 컨트롤러에 따라 { message } 또는 { error } 로 응답함 — 둘 다 표면화
+                if (errorBody && (errorBody.message || errorBody.error)) {
+                    errorMsg = errorBody.message || errorBody.error;
                 }
             } catch (_) { /* JSON 파싱 실패 시 기본 메시지 */ }
             if (!errorMsg) {
@@ -777,7 +778,7 @@ export const memberApi = {
         return await apiCall(`/members/check-login-id?loginId=${encodeURIComponent(loginId)}`);
     },
     create: async (data) => {
-        return await apiCall('/members', {
+        return await apiCall('/members/admin-create', {
             method: 'POST',
             body: JSON.stringify(data),
         });
@@ -1574,7 +1575,7 @@ export const lineageApi = {
  * sLLM Studio — 활성 모델 목록 (노트북 스튜디오 패널)
  */
 export const sllmApi = {
-    getActiveModels: async () => apiCall('/sllm/models/active'),
+    getActiveModels: async () => apiCall('/sllm-models/active'),
 };
 
 /**

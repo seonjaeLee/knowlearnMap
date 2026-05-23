@@ -56,7 +56,7 @@
 
 ## Part 1 · CSS 구조 (목표·현행)
 
-### 1.1 목표 (`src/styles/`)
+### 1.1 목표 (`src/assets/styles/`)
 
 | 파일 (목표) | 담는 것 |
 |-------------|---------|
@@ -134,7 +134,7 @@ import 순서 권장: variables → reset-common → layout → forms → button
 ## Part 2 · Variables · 토큰
 
 프로젝트에서 **색·간격·비활성 상태** 등을 맞추기 위한 규칙입니다.  
-실제 값의 **단일 소스**는 `src/styles/kl-tokens-core.css` · `kl-tokens-theme-map.css` · `kl-variables.css` 입니다. 이 문서는 **이름 규칙·언제 쓸지·예시**만 정리합니다.
+실제 값의 **단일 소스**는 `src/assets/styles/kl-tokens-core.css` · `kl-tokens-theme-map.css` · `kl-variables.css` 입니다. 이 문서는 **이름 규칙·언제 쓸지·예시**만 정리합니다.
 
 ---
 
@@ -528,9 +528,9 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 | 구분 | 파일 | 비고 |
 |------|------|------|
 | 토큰 | `kl-tokens-core.css`, `kl-tokens-theme-map.css`, `kl-variables.css` | SSOT · 컨펌 후 추가 |
-| 버튼 variant·size | `src/styles/kl-buttons.css` | **신규 조합 클래스 추가.** 기존 `kl-btn--*`는 **deprecated 별칭** |
-| 인풋 variant·size | `src/styles/kl-forms.css` (`kl-input` 등) | `kl-input.css`·`kl-form-control.css`는 re-export 스텁만 |
-| 툴바 레이아웃 | `src/styles/kl-layout-toolbar.css` (`global.css`) | `TableToolbar.css`는 경로·주석 스텁 |
+| 버튼 variant·size | `src/assets/styles/kl-buttons.css` | **신규 조합 클래스 추가.** 기존 `kl-btn--*`는 **deprecated 별칭** |
+| 인풋 variant·size | `src/assets/styles/kl-forms.css` (`kl-input` 등) | `kl-input.css`·`kl-form-control.css`는 re-export 스텁만 |
+| 툴바 레이아웃 | `src/assets/styles/kl-layout-toolbar.css` (`global.css`) | `TableToolbar.css`는 경로·주석 스텁 |
 | 페이지 너비 | 예: `AdminAuditLog.css` | 파일럿 |
 
 **모달(Overlay)** 은 본 체계 **1차 범위 밖.** MUI `Button` / `kl-modal-form` 유지.
@@ -591,7 +591,8 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 
 ## Part 6 · Modal · 모달 레이아웃
 
-> **모달 안 input/button/select 스타일**은 Part 4·5와 동일. 아래는 **껍데기·행 배치·Decision**만.
+> **모달 상세 SSOT:** [`modal-guide.md`](./modal-guide.md) — 아래는 목차·교차 참조용 요약.  
+> 모달 안 input/button/select 스타일은 Part 4·5와 동일. 껍데기·Decision·`kl-modal-form`은 **modal-guide**를 본다.
 
 <div style="font-size:12px;line-height:1.45">
 
@@ -661,7 +662,7 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 `actionsAlign` · `right`→`.actionsRight` · `center`→`.actionsCenter` · `left`→`.actionsLeft`
 
 **패딩·버튼 색** · `BaseModal.module.scss` — `.header` `.content` `.actions` 및 `.actions :global(.MuiButton`  
-**스크롤바** · `src/styles/kl-scrollbar-thin.css` → `.kl-base-modal-content`
+**스크롤바** · `src/assets/styles/kl-scrollbar-thin.css` → `.kl-base-modal-content`
 
 ### 5. ② Decision — `BaseModal` 위 추가 클래스
 
@@ -760,7 +761,7 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 
 | 항목 | 토큰 / 값 |
 |------|-----------|
-| **모서리** | **`--radius-sm`(4px)** — 모달 하단 버튼(`modal-spec.md` §3·`BaseModal` `.actions`)과 동일. |
+| **모서리** | **`--radius-sm`(4px)** — 모달 하단 버튼(`BaseModal` `.actions`)과 동일. |
 | **테두리** | `1px solid var(--color-border)` |
 | **포커스** | `border-color: var(--color-accent)` + `box-shadow: var(--shadow-focus-input)` (`kl-tokens-theme-map.css`). 네이티브는 `kl-modal-form.css`에서 **`!important`** 및 **`:invalid:focus`** 보강(브라우저·MUI 간섭, `type=email` 등) |
 | **한 줄 `input` / `textarea`** | 패딩 **`calc(var(--spacing-sm) + var(--spacing-xs))` `14px`** (`kl-modal-form.css` · 레거시 `kl-legacy-modal.css` `.modal-native-field` 동일) |
@@ -790,7 +791,7 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 ## 7) 유지보수 노트
 
 - 팝업이 아닌 **테이블/노트북 상세** 등 더 작은 컨트롤이 필요하면 **`kl-table-form`** 같은 별도 접두사·별 문서**로 분리하는 것을 권장한다.
-- 신규 모달 추가 시: 타입만 `modal-spec.md`에 맞추고, 폼이 있으면 **`kl-modal-form` + `ModalFormField`(또는 동일 클래스)** 로 시작한다.
+- 신규 모달 추가 시: 타입은 **`modal-guide.md`** §2·§6을 따르고, 폼이 있으면 **`kl-modal-form` + `ModalFormField`** 로 시작한다.
 
 
 
@@ -834,6 +835,19 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 
 **규칙:** `table-toolbar`는 **`table-area`의 첫 자식**으로 둔다. FAQ·회원 관리·프롬프트 목록과 동일. (`kl-main-sticky-head` 안에 툴바만 두면 카드 밖으로 빠져 레이아웃이 어긋난다.)
 
+### 2.1 `kl-page--fill` (선택 수정자)
+
+- **기본:** 루트는 `kl-page`만 — 표·카드 높이는 **행 수만큼**. 길면 `main-content`가 스크롤한다.
+- **추가:** 같은 루트에 `kl-page--fill`을 **함께** 붙이면 남은 세로를 채우고, `basic-table-shell` **안에서** 목록이 스크롤한다 (`kl-basic-table.css` · [KlPage.css](../src/components/common/KlPage.css)).
+- **붙이는 곳:** 해당 **화면 페이지 루트** 한 곳. `Admin.jsx` 같은 **라우트 호스트**·탭 래퍼에는 붙이지 않는다.
+- **쓰는 경우:** 행이 많은 관리·고객센터 **목록** (워크스페이스·회원·프롬프트·공지 등).
+- **쓰지 않는 경우:** 행이 적거나 펼침·카드형 UI ([AdminArangoManagement.jsx](../src/pages/admin/AdminArangoManagement.jsx), [DomainSelection.jsx](../src/pages/DomainSelection.jsx)).
+- **노트북:** [NotebookDetail.jsx](../src/components/NotebookDetail.jsx) — 패널 레이아웃용으로 `--fill` 유지 (표 목록과 목적이 다름).
+
+```jsx
+<div className="kl-page kl-page--fill">
+```
+
 **예외**
 
 | 화면 | 툴바 차이 |
@@ -842,7 +856,7 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 | [Home.jsx](../src/pages/Home.jsx) | `kl-main-sticky-head` 밖 `table-area` — `.table-toolbar--end` + `.toolbar-view-toggle` · `.toolbar-select` (헤더는 `admin-btn-primary`만) |
 | [AdminConfigManagement.jsx](../src/pages/admin/AdminConfigManagement.jsx) | 좌 `kl-table-toolbar-summary` · 우 `toolbar-select`(카테고리) — 검색 없음 |
 | [AdminUpgradeRequests.jsx](../src/pages/admin/AdminUpgradeRequests.jsx) | 좌 `kl-table-toolbar-summary`만 — 검색·필터 없음 |
-| [AdminArangoManagement.jsx](../src/pages/admin/AdminArangoManagement.jsx) | 좌 `kl-table-toolbar-summary`만 — 검색·필터 없음 |
+| [AdminArangoManagement.jsx](../src/pages/admin/AdminArangoManagement.jsx) | 좌 `kl-table-toolbar-summary`만 — 검색·필터 없음 · **`kl-page`만** (`--fill` 없음) |
 | [PromptList.jsx](../../src/prompt/components/prompts/PromptList.jsx) | `table-area` 안 툴바 — 좌 `kl-table-toolbar-summary`(총 N건) · 우 `search-area` + `toolbar-select` |
 
 ---
@@ -854,12 +868,15 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 | 툴바 한 줄 레이아웃·간격 | `table-toolbar` | [TableToolbar.css](../src/components/common/TableToolbar.css) |
 | 툴바 내용만 우측 정렬 | `table-toolbar--end` | 동일 |
 | 툴바 좌측 묶음 | `toolbar-left` | 동일 |
-| 툴바 좌측 건수 요약 | `kl-table-toolbar-summary` | 동일 (`총 **N**건`) · 컨트롤과 **하단 정렬** (`TableToolbar.css`) |
+| 툴바 좌측 건수 요약 | `kl-table-toolbar-summary` | 동일 (`총 **N**건` — 마크업 `총 <strong>N</strong>건`, 스타일은 상위 span) · 컨트롤과 **하단 정렬** |
 | 툴바 우측 묶음 | `toolbar-right` | 동일 |
 | 툴바 네이티브 select(32px) | `toolbar-select` | 동일 |
 | 툴바 그리드·리스트 전환 | `toolbar-view-toggle` / `toolbar-view-btn` / `is-active` | 동일 |
 | 검색 입력 박스(높이 38px 등) | `search-area` / `search-area-icon` / `search-area-input` | 동일 |
-| 페이지 루트 셸 | `kl-page` · `kl-page--fill`(노트북) | [KlPage.css](../src/components/common/KlPage.css) |
+| 페이지 루트 셸 | `kl-page` · 선택 `kl-page--fill` ([§2.1](#21-kl-page--fill-선택-수정자)) | [KlPage.css](../src/components/common/KlPage.css) |
+| 헤더·툴바 새로고침(아이콘만) | `kl-btn gray-outline md icon-only` + `KlIconButton` | [kl-buttons.css](../src/assets/styles/kit/kl-buttons.css) |
+| 헤더 작성·추가 CTA | `kl-btn primary-full md` (+ 아이콘 14px) | 동일 |
+| 로딩·오류·빈 목록(표 thead 유지) | `listTableEmptyState()` → `BasicTable` `emptyState` | [supportMock.js](../src/config/supportMock.js) |
 | 표 바깥 카드 | `table-card` | [TableCard.css](../src/components/common/TableCard.css) |
 | 페이지 제목·breadcrumb·sticky·헤더 버튼 | `page-header` · `kl-main-sticky-head` … | **[PageHeader.css](../src/components/common/PageHeader.css)만** |
 | 어드민 헤더 래퍼 | `AdminPageHeader` → 내부 `PageHeader` | [AdminPageHeader.jsx](../src/components/admin/AdminPageHeader.jsx) (스타일 없음) |
@@ -921,7 +938,7 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 
 ### 5.1 `main.jsx` → `styles/global.css` (앱 전체)
 
-`main.jsx`는 **`import './styles/global.css'` 한 줄**만 쓴다. 번들 순서·파일 목록은 **Part 1.2** · [global.css](../src/styles/global.css) `@import` 를 본다.
+`main.jsx`는 **`import './assets/styles/global.css'` 한 줄**만 쓴다. 번들 순서·파일 목록은 **Part 1.2** · [global.css](../src/assets/styles/global.css) `@import` 를 본다.
 
 | 구분 | 대표 파일 | 내용 |
 |------|-----------|------|
@@ -1030,7 +1047,7 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 
 ## 10. 향후 개선 (선택)
 
-팀 합의 시 `src/styles/app-global.css`를 만들고 `main.jsx`의 §5.1 파일들을 `@import`로 묶을 수 있습니다.  
+팀 합의 시 `src/assets/styles/app-global.css`를 만들고 `main.jsx`의 §5.1 파일들을 `@import`로 묶을 수 있습니다.  
 **소스 파일은 분리·로드 지점만 한곳**으로 모으는 방식이며, 동작은 현재와 동일합니다.
 
 
@@ -1128,7 +1145,7 @@ CSS에서는 선택자로 **`._ellipsis`**처럼 앞에 점(`.`)을 붙이고, �
 - **체크박스/라디오** 열: 너비는 최소한으로, 헤더 정렬은 보통 가운데.
 - **선택 열은 화면마다 옵션**: 어드민 공통 CSS에 `.admin-th-select` / `.admin-td-select`가 있으면, 해당 테이블의 **첫 열**에만 `<th class="admin-th-select">` / `<td class="admin-td-select">`와 `input type="checkbox"`를 조건부로 넣는다. 페이지 상단에 `SHOW_ROW_CHECKBOX_COLUMN` 같은 상수로 켜고 끄는 패턴을 쓸 수 있다(예: `AdminMemberManagement.jsx`).
 - **아이콘만 액션**(수정·삭제): 버튼형일 경우 **터치/클릭 영역** 최소 약 32~36px 유지(가독성·접근성).
-- **행 내 아이콘 버튼 통일 (`src/styles/kl-buttons.css` — `.kl-table-icon-btn` 등, `global.css`에서 전역 로드)**  
+- **행 내 아이콘 버튼 통일 (`src/assets/styles/kl-buttons.css` — `.kl-table-icon-btn` 등, `global.css`에서 전역 로드)**  
   - **크기·간격**: `kl-buttons.css`의 `.kl-table-icon-btn` 및 관련 규칙(히트 영역·SVG 크기). 행 내 액션 SVG는 Lucide 기본 24px에 의존하지 않도록 통일한다.  
   - 기본 베이스: `.kl-table-icon-btn` (히트 영역·라운드·포커스 링). 행 내 `svg` 크기는 `--kl-table-action-icon-size`로 통일.  
   - **편집·일반**: `.kl-table-icon-btn--neutral` — 기본 `var(--color-text-secondary)`, 호버 시 삭제와 같은 방식의 연한 채움 + `var(--color-text-primary)`.  
@@ -1211,7 +1228,7 @@ CSS에서는 선택자로 **`._ellipsis`**처럼 앞에 점(`.`)을 붙이고, �
 ### 2.3 아이콘만 있는 버튼에 이름 없음
 
 - **문제**: 보조 기술 사용자에게 동작이 전달되지 않는다.
-- **대안**: `aria-label` 또는 시각적으로 숨긴 텍스트. 프로젝트 공통은 [kl-buttons.css](../src/styles/kl-buttons.css)의 `.kl-table-icon-btn` 패턴 참고.
+- **대안**: `aria-label` 또는 시각적으로 숨긴 텍스트. 프로젝트 공통은 [kl-buttons.css](../src/assets/styles/kl-buttons.css)의 `.kl-table-icon-btn` 패턴 참고.
 
 ### 2.4 표를 `div` + CSS 그리드로만 흉내 내기 (데이터 표인 경우)
 
@@ -1430,7 +1447,7 @@ import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '…/commo
 
 <div style="font-size:12px;line-height:1.45">
 
-**기준 코드** · `KlTooltip` — `src/components/common/KlTooltip.{jsx,module.scss}` · `KlPopover` — `src/components/common/KlPopover.{jsx,module.scss}` · 트리거 버튼 — `src/styles/kl-buttons.css` (`kl-popover-icon-btn`, `kl-table-icon-btn`)
+**기준 코드** · `KlTooltip` — `src/components/common/KlTooltip.{jsx,module.scss}` · `KlPopover` — `src/components/common/KlPopover.{jsx,module.scss}` · 트리거 버튼 — `src/assets/styles/kl-buttons.css` (`kl-popover-icon-btn`, `kl-table-icon-btn`)
 
 **상태** · 2026-05-20 — 표 관리 열·GNB·툴바·헤더 아이콘: `KlTableRowActions` / `KlIconButton` / `KlTooltip`. 표 셀 잘림 `title=`·NotebookDetail 등은 별도.
 
@@ -1547,7 +1564,7 @@ import KlTooltip from '../components/common/KlTooltip';
 
 | 트리거 | 클래스·아이콘 |
 |:--|:--|
-| 설명 `?` / `i` | `kl-popover-icon-btn` + Lucide `HelpCircle` 16px — `src/styles/kl-buttons.css` |
+| 설명 `?` / `i` | `kl-popover-icon-btn` + Lucide `HelpCircle` 16px — `src/assets/styles/kl-buttons.css` |
 
 Popover는 **호버 Tooltip이 아님** — `KlTooltip`으로 바꾸지 않음.
 
