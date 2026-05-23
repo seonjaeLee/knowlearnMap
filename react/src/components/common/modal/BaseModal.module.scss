@@ -156,6 +156,11 @@
   box-shadow: none !important;
 }
 
+/* Form 하단 kl-btn — MUI contained 와 동일 min-width (modal-guide §2.1) */
+.actions :global(.kl-btn.primary-full) {
+  min-width: 150px !important;
+}
+
 .actions :global(.MuiButton-contained:hover) {
   background-color: var(--color-accent-hover) !important;
   border-color: var(--color-accent-hover) !important;

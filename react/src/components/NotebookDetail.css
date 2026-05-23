@@ -262,13 +262,13 @@
 
 .sync-status-warning-needed {
     background-color: #fff3cd;
-    border: 1px solid #ffc107;
+    border: none;
     color: #856404;
 }
 
 .sync-status-warning-running {
     background-color: #d1ecf1;
-    border: 1px solid #17a2b8;
+    border: none;
     color: #0c5460;
 }
 
@@ -369,6 +369,10 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* 소스 행 ⋯ 메뉴: 세로 중앙, 행 우측(패딩)까지 당김 — DocumentSourceItem.css는 그대로 */
@@ -379,40 +383,18 @@
     margin-right: -10px;
 }
 
-/* 좌측 패널 · 소스 추가 — pill 형태 유지, 색·호버는 :root 토큰 */
-.add-source-btn {
+/* 노트북 좌·우 패널 CTA — kl-btn primary-full + pill 라운드(소스 추가·페르소나 관리 공통) */
+.kl-btn.notebook-panel-cta {
     width: 100%;
-    padding: 10px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background-color: var(--color-accent);
-    color: #fff;
-    border: none;
+    padding: 10px var(--spacing-md);
     border-radius: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     line-height: 1.25;
-    transition: background-color var(--transition-fast);
-}
-
-.add-source-btn:hover:not(:disabled) {
-    background-color: var(--color-accent-hover);
-}
-
-.add-source-btn:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-}
-
-.add-source-btn:disabled {
-    cursor: not-allowed;
-    background-color: var(--btn-disabled-bg);
-    color: var(--btn-disabled-text);
-    opacity: 1;
 }
 
 /* 비즈/IT 용어 — 팝업 호출 보조 버튼: 기본은 테두리·글자 모두 accent(아웃라인형), 설정됨은 is-active로 채움 구분 */
@@ -472,52 +454,17 @@
 
 .source-search-icon {
     position: absolute;
-    left: 8px;
+    left: var(--spacing-sm);
     top: 50%;
     transform: translateY(-50%);
-    color: #666;
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    z-index: 1;
 }
 
-/*
- * 좌측 소스 검색: 무테·회색 기본 / 포커스만 1px 프라이머리·흰 배경·크기 동일.
- * 글자·placeholder는 사전·KG 모달과 동일: 입력 12px, placeholder 11px·#8a9099.
- */
-.source-search-input {
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 30px;
-    padding: 2px 6px 2px 30px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    background-color: #f1f3f4;
-    font-size: 12px;
-    line-height: 1.35;
-    outline: none;
-    transition:
-        background-color var(--transition-fast),
-        border-color var(--transition-fast);
-}
-
-.source-search-input::placeholder {
-    font-size: 11px;
-    color: #8a9099;
-}
-
-.source-search-input:focus,
-.source-search-input:focus-visible {
-    outline: none;
-    border-color: var(--color-accent);
-    background-color: var(--color-bg-secondary, #fff);
-}
-
-.source-search-input:disabled {
-    background-color: var(--form-control-disabled-bg);
-    color: var(--form-control-disabled-text);
-    cursor: not-allowed;
-}
-
-.source-search-input:disabled::placeholder {
-    color: var(--form-control-disabled-placeholder);
+/* 좌측 소스 검색 — kl-input gray-fill sm + 아이콘 여백 */
+.source-search-wrap .kl-input.gray-fill.sm {
+    padding-left: 30px;
 }
 
 .source-toolbar-row {
@@ -563,11 +510,16 @@
 }
 
 .source-sync-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
     background: none;
     border: none;
     padding: 4px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    line-height: 1.25;
 }
 
 .source-sync-btn:focus-visible {
@@ -587,30 +539,18 @@
     opacity: 1;
 }
 
-.source-sync-text.is-disabled {
-    color: var(--form-control-disabled-text);
-}
-
 .source-sync-btn.is-synced {
     color: #5f6368;
+    font-weight: var(--font-weight-normal);
 }
 
 .source-sync-btn.is-needed {
     color: #d93025;
+    font-weight: var(--font-weight-medium);
 }
 
 .source-sync-text {
-    font-size: 12px;
-}
-
-.source-sync-text.is-synced {
-    color: #5f6368;
-    font-weight: 400;
-}
-
-.source-sync-text.is-needed {
-    color: #d93025;
-    font-weight: 500;
+    font-size: var(--font-size-xs);
 }
 
 .source-empty-state {
@@ -671,46 +611,6 @@
 .studio-action-wrap {
     margin-top: 16px;
     padding: 0 4px;
-}
-
-.studio-primary-btn {
-    width: 100%;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background-color: var(--color-accent);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    transition: background-color var(--transition-fast);
-}
-
-.studio-primary-btn:hover:not(:disabled):not(.is-disabled) {
-    background-color: var(--color-accent-hover);
-}
-
-.studio-primary-btn:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-}
-
-.studio-primary-btn.is-disabled,
-.studio-primary-btn:disabled {
-    background-color: var(--btn-disabled-bg);
-    color: var(--btn-disabled-text);
-    cursor: not-allowed;
-    opacity: 1;
-}
-
-.studio-primary-btn.is-disabled:hover,
-.studio-primary-btn:disabled:hover {
-    background-color: var(--btn-disabled-bg);
 }
 
 .studio-recent-box {
@@ -939,17 +839,6 @@
 }
 
 
-/* Vertical text for collapsed state */
-.vertical-text {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    padding: 20px 0;
-    margin: 0 auto;
-    font-weight: 600;
-    color: #666;
-    font-size: 14px;
-}
-
 /* Panel Body */
 .panel-body {
     flex: 1;
@@ -961,6 +850,28 @@
 .panel-left.collapsed .panel-body,
 .panel-right.collapsed .panel-body {
     display: none;
+}
+
+/* 좌측 소스 패널(목록): 상단 도구·모두 선택 행 고정, 문서 목록만 스크롤 — 접힘·뷰어 모드 제외 */
+.panel-left:not(.viewer-active):not(.collapsed) .panel-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.panel-left:not(.viewer-active):not(.collapsed) .sync-status-warning {
+    flex-shrink: 0;
+}
+
+.panel-left:not(.viewer-active):not(.collapsed) .source-list-section {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.panel-left:not(.viewer-active):not(.collapsed) .source-panel-group--list-tools {
+    flex-shrink: 0;
 }
 
 /* Tabs in Center Panel — gap 0(세로선까지 맞춤). 좌측 3탭은 균등 분배·열 최소폭 없음, 온톨로지는 내용 폭만 */
@@ -1768,25 +1679,12 @@
 .search-section {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-sm);
 }
 
-.search-input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 12px;
-}
-
-.search-input::placeholder {
-    font-size: 11px;
-    color: #8a9099;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #1a73e8;
+.search-section .kl-input {
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .search-navigation {
@@ -2123,6 +2021,10 @@
 
 .chat-messages p {
     margin-bottom: 8px;
+}
+
+.notebook-chat-bubble p:last-child {
+    margin-bottom: 0;
 }
 
 .chat-messages ul, .chat-messages ol {

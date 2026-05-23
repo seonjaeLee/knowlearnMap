@@ -1355,9 +1355,8 @@ function NotebookDetail() {
                             <ChevronsLeft size={16} className="kl-toolbar-icon-toggle__icon" aria-hidden />
                         </KlIconButton>
                     </div>
+                    {leftSidebarOpen && (
                     <div className="panel-body">
-                        {leftSidebarOpen ? (
-                            <>
                                 {/* Sync Status Warning - Compact */}
                                 {!viewerOpen && syncStatus === 'SYNC_NEEDED' && (
                                     <div className="sync-status-warning sync-status-warning-needed">
@@ -1378,7 +1377,7 @@ function NotebookDetail() {
                                     <div className="source-actions source-actions-stack">
                                         {!isReadOnly && (
                                             <div className="source-panel-group source-panel-group--actions">
-                                                <button type="button" className="add-source-btn" onClick={() => setUploadModalOpen(true)}>
+                                                <button type="button" className="kl-btn primary-full md notebook-panel-cta" onClick={() => setUploadModalOpen(true)}>
                                                     <Plus size={18} aria-hidden /> 소스 추가
                                                 </button>
                                                 <div className="source-meta-btn-row">
@@ -1406,7 +1405,8 @@ function NotebookDetail() {
                                                 <input
                                                     type="text"
                                                     placeholder="찾아내 새 소스 검색하세요"
-                                                    className="source-search-input"
+                                                    className="kl-input gray-fill sm"
+                                                    aria-label="소스 검색"
                                                     disabled={documents.length === 0}
                                                 />
                                             </div>
@@ -1439,21 +1439,22 @@ function NotebookDetail() {
                                                             >
                                                                 <RefreshCw
                                                                     size={16}
-                                                                    className={syncStatus === 'SYNCING' ? "spin-animation" : ""}
+                                                                    className={syncStatus === 'SYNCING' ? 'spin-animation' : ''}
+                                                                    aria-hidden
                                                                 />
+                                                                <span className="source-sync-text">
+                                                                    {syncStatus === 'SYNCED' && '동기화 완료'}
+                                                                    {syncStatus === 'SYNC_NEEDED' && '동기화 필요'}
+                                                                    {syncStatus === 'SYNCING' && '동기화 중'}
+                                                                </span>
                                                             </button>
-                                                            <span className={`source-sync-text ${syncStatus === 'SYNCED' ? 'is-synced' : 'is-needed'}${documents.length === 0 ? ' is-disabled' : ''}`}>
-                                                                {syncStatus === 'SYNCED' && '동기화 완료'}
-                                                                {syncStatus === 'SYNC_NEEDED' && '동기화 필요'}
-                                                                {syncStatus === 'SYNCING' && '동기화 중'}
-                                                            </span>
                                                         </>
                                                     )}
                                                 </div>
                                             </div>
                                         </div>
                                     )}
-                                    <div className={`source-list ${viewerOpen ? 'viewer-mode' : ''}`}>
+                                    <div className={`source-list ${viewerOpen ? 'viewer-mode' : 'kl-scrollbar-thin'}`}>
                                     {!viewerOpen ? (
                                         // Document List
                                         documents.length === 0 ? (
@@ -1536,7 +1537,8 @@ function NotebookDetail() {
                                                         placeholder={viewerMode === 'page' ? "페이지 내 검색..." : "청크 내 검색..."}
                                                         value={searchQuery}
                                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                                        className="search-input"
+                                                        className="kl-input gray-fill sm"
+                                                        aria-label={viewerMode === 'page' ? '페이지 내 검색' : '청크 내 검색'}
                                                     />
                                                     {searchResults.length > 0 && (
                                                         <div className="search-navigation">
@@ -1675,11 +1677,8 @@ function NotebookDetail() {
                                     )}
                                 </div>
                                 </div>
-                            </>
-                        ) : (
-                            <div className="vertical-text">SOURCE</div>
-                        )}
                     </div>
+                    )}
                 </div>
 
                 {/* Center Panel: Content */}
@@ -2088,7 +2087,7 @@ function NotebookDetail() {
                                     type="button"
                                     onClick={() => setReportModalOpen(true)}
                                     disabled={selectedDocumentIds.length === 0}
-                                    className={`studio-primary-btn ${selectedDocumentIds.length === 0 ? 'is-disabled' : ''}`}
+                                    className="kl-btn primary-full md notebook-panel-cta"
                                 >
                                     <FileText size={16} aria-hidden /> 페르소나 관리
                                 </button>

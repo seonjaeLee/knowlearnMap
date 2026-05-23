@@ -63,6 +63,37 @@ textarea:focus-visible:not(:disabled):not([readonly]) {
   cursor: not-allowed;
 }
 
+/* gray-fill — 면·테두리 동색(씰룩 방지). input은 텍스트 가독을 위해 default를 --color-bg-hover(연회색) */
+.kl-input.gray-fill {
+  border: 1px solid var(--color-bg-hover);
+  border-radius: var(--kl-control-radius);
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.kl-input.gray-fill::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.kl-input.gray-fill:hover:not(:disabled):not([readonly]) {
+  border-color: var(--color-border);
+  background-color: var(--color-border);
+}
+
+.kl-input.gray-fill:focus:not(:disabled):not([readonly]),
+.kl-input.gray-fill:focus-visible:not(:disabled):not([readonly]) {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+  background-color: var(--kl-control-bg-focus);
+}
+
+.kl-input.gray-fill:disabled {
+  background-color: var(--form-control-disabled-bg);
+  border-color: var(--form-control-disabled-border);
+  color: var(--form-control-disabled-text);
+  cursor: not-allowed;
+}
+
 .kl-input.md,
 .table-toolbar .toolbar-field-group .toolbar-field-input {
   height: var(--kl-control-height);

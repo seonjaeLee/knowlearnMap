@@ -463,8 +463,18 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 
 | 클래스 | 용도 | 레거시 대응 |
 |--------|------|-------------|
-| `gray-outline` | 기본 필드 — `--kl-control-border` / `--kl-control-bg` | `.toolbar-field-input`, `kl-form-control`, `.toolbar-select` 톤 |
-| `gray-fill` | (예약) 읽기 전용·강조 배경 필드 | — |
+| `gray-outline` | **기본** 폼·툴바 필드 — `--kl-control-border` / `--kl-control-bg` | `.toolbar-field-input`, `kl-form-control`, `.toolbar-select` 톤 |
+| `gray-fill` | **보조·저강조 입력** — default `--color-bg-hover` 면·테두리 **동색** · 패널 내 검색 등 | `.source-search-input`, `.search-input`(뷰어) → **폐지** |
+
+**variant 선택 (입력)**
+
+| 상황 | 조합 |
+|------|------|
+| 목록 툴바 검색(아이콘+wrapper) | `search-area` / `search-area-input` — **Part 7** |
+| 일반 폼·Audit 필터 필드 | `kl-input gray-outline md` |
+| 패널·보조 검색(단일 input) | `kl-input gray-fill sm` (아이콘은 페이지에서 absolute) |
+
+`kl-input.gray-fill` 상태: default·hover는 **배경·테두리 동색**(default `--color-bg-hover`, hover `--color-border` — 버튼 `gray-fill`보다 연한 면, 텍스트 가독). focus는 `--color-accent` + `--shadow-focus-input` + `--kl-control-bg-focus`. (`kl-btn.gray-fill`은 default `--color-border` — 입력과 토큰 구분)
 
 ### 4.3 Size
 
@@ -472,11 +482,12 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 
 ### 4.4 상태
 
-| 상태 | 구현 |
-|------|------|
-| 비활성 | `disabled` + `--form-control-disabled-*` |
-| 읽기 전용 | `readonly` + `--form-control-readonly-*` (토큰 정의 시) |
-| 포커스 | `:focus` + `--color-accent` / `--shadow-focus-input` |
+| 상태 | `gray-outline` | `gray-fill` |
+|------|----------------|-------------|
+| hover | 테두리 `--kl-control-border-hover` | 배경·테두리 **동시** `--color-border` |
+| 포커스 | `:focus` + `--color-accent` / `--shadow-focus-input` | 동일 |
+| 비활성 | `disabled` + `--form-control-disabled-*` | 동일 |
+| 읽기 전용 | `readonly` + `--form-control-readonly-*` (토큰 정의 시) | — |
 
 ### 4.5 너비
 

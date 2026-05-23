@@ -414,3 +414,38 @@
 - **참고:** 항목 24와 같은 흐름의 선행·병행 작업. Audit Log 파일럿·버튼 variant(`kl-btn` + `gray-fill` / `gray-outline` + `md`) 등은 **jsx·기능 유지**, 스타일만 정리.
 - **파일:** `kl-layout-toolbar.css`, `kl-layout-modal.css`, `kl-forms.css`, `kl-buttons.css`(`icon-only`, `ghost`), `TableToolbar.css` 스텁, `AdminAuditLog` 툴바 `kl-input` / `kl-btn` 조합
 - **문서:** `kl-ui-guide.md` 통합본 유지 · 분산 spec 삭제
+
+---
+
+## 2026-05-23
+
+### 1) 페르소나 관리 모달 — 공지·시멘틱·1:1 문의 UI 패턴 정렬
+
+- **목적:** `ReportGenerationModal` 편집·기초값(읽기전용)을 프로젝트 공통 모달 폼 규격에 맞춤 (mapdev 기준 화면과 동기)
+- **영향:** 노트북 상세 → 페르소나 관리 팝업
+
+#### 레이아웃·마크업
+- **이름** — `kl-modal-form-row` (라벨 좌 · 필드 우, 라벨 `align-items: start`)
+- **지시문** — `kl-modal-form-field-stack` (라벨 위 · textarea 아래, 첨부 프롬프트 「내용」형)
+- **사용안함** — `persona-disable-consent` (1:1 문의 개인정보 동의 체크박스 리듬)
+- **푸터** — 목록이동 좌(`kl-btn primary-outline`); 기초값은 **닫기·안내 문구 제거** (헤더 X만)
+
+#### 읽기전용(기초값)
+- 지시문 본문: API 또는 fallback 상수 (`PERSONA_DEFAULT_PROMPT_TEXT`)
+- `kl-form-readonly--control` — 이름·지시문 textarea 동일 **흰 배경 박스**
+- 안내 `kl-modal-form-helper` 「기초값 지시문은…」 삭제
+
+#### 공통 CSS (`kl-layout-modal.css`, `kl-form-readonly.css`)
+- `kl-modal-form-row` / `kl-modal-form-field-stack` 신규
+- 읽기전용 textarea `--control` variant (input과 동일 흰 박스)
+- `admin-semantic-form-row` 기본 정렬 `start`
+
+#### 파일
+- `src/components/ReportGenerationModal.jsx`, `.css`
+- `src/assets/styles/layout/kl-layout-modal.css`, `kit/kl-form-readonly.css`
+- `src/pages/admin/AdminSemanticPage.css`
+
+#### 다음 작업(예정)
+- 이번에 **페르소나 모달에만** 반영한 `kl-modal-form-row`, `kl-modal-form-field-stack`, `kl-form-readonly--control`, `kl-btn` 푸터 패턴 등을 **미적용 페이지·모달에 순차 이관** (마크업·클래스·레거시 `ModalFormField`/MUI 버튼 잔존 정리). `kl-ui-guide.md`·`modal-guide.md` 기준으로 화면별 점검.
+
+---

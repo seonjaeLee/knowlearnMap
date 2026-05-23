@@ -4,6 +4,7 @@
  * 적용 방법
  * - input / textarea: `readonly` 또는 `readOnly` (HTML readonly)
  * - 팝업 한 줄(이메일 등): `kl-form-readonly kl-form-readonly--control` — select와 동일 크기(흰 배경·테두리=배경색)
+ * - 팝업 여러 줄(textarea): `kl-form-readonly kl-form-readonly--control` — textarea도 동일 흰 배경 박스
  * - select: `className="kl-form-readonly"` + `disabled` 또는 `aria-readonly="true"` + pointer-events 차단
  * - MUI Outlined: 내부 input·textarea에 readonly
  * - 컨테이너: `.kl-form-readonly` 래퍼로 하위 input·textarea·select 일괄 적용
@@ -14,12 +15,12 @@
 /* 네이티브 input 타입 (checkbox·radio·button 등 제외) */
 :is(
   input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
-  textarea[readonly],
+  textarea[readonly]:not(.kl-form-readonly--control),
   select.kl-form-readonly,
   input.kl-form-readonly:not(.kl-form-readonly--control),
-  textarea.kl-form-readonly,
+  textarea.kl-form-readonly:not(.kl-form-readonly--control),
   .kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control),
-  .kl-form-readonly textarea,
+  .kl-form-readonly textarea:not(.kl-form-readonly--control),
   .kl-form-readonly select
 ) {
   border: none !important;
@@ -34,32 +35,32 @@
 
 :is(
   input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
-  textarea[readonly],
+  textarea[readonly]:not(.kl-form-readonly--control),
   select.kl-form-readonly,
   input.kl-form-readonly:not(.kl-form-readonly--control),
-  textarea.kl-form-readonly,
+  textarea.kl-form-readonly:not(.kl-form-readonly--control),
   .kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control),
-  .kl-form-readonly textarea,
+  .kl-form-readonly textarea:not(.kl-form-readonly--control),
   .kl-form-readonly select
 ):hover,
 :is(
   input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
-  textarea[readonly],
+  textarea[readonly]:not(.kl-form-readonly--control),
   select.kl-form-readonly,
   input.kl-form-readonly:not(.kl-form-readonly--control),
-  textarea.kl-form-readonly,
+  textarea.kl-form-readonly:not(.kl-form-readonly--control),
   .kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control),
-  .kl-form-readonly textarea,
+  .kl-form-readonly textarea:not(.kl-form-readonly--control),
   .kl-form-readonly select
 ):focus,
 :is(
   input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden'])[readonly]:not(.kl-form-readonly--control),
-  textarea[readonly],
+  textarea[readonly]:not(.kl-form-readonly--control),
   select.kl-form-readonly,
   input.kl-form-readonly:not(.kl-form-readonly--control),
-  textarea.kl-form-readonly,
+  textarea.kl-form-readonly:not(.kl-form-readonly--control),
   .kl-form-readonly input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):not(.kl-form-readonly--control),
-  .kl-form-readonly textarea,
+  .kl-form-readonly textarea:not(.kl-form-readonly--control),
   .kl-form-readonly select
 ):focus-visible {
   border: none !important;
@@ -114,12 +115,41 @@ input.kl-form-readonly.kl-form-readonly--control:focus-visible,
   background-color: var(--kl-control-bg) !important;
 }
 
-textarea[readonly],
-textarea.kl-form-readonly,
-.kl-form-readonly textarea {
-  min-height: 0 !important;
-  padding: 0 !important;
+/* 팝업 폼 — 읽기전용 textarea (이름 input--control 과 동일 흰 배경 박스) */
+textarea.kl-form-readonly.kl-form-readonly--control,
+.kl-modal-form textarea.kl-form-readonly.kl-form-readonly--control[readonly] {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: calc(4 * var(--spacing-md));
+  padding: var(--spacing-sm) var(--kl-control-padding-inline) !important;
+  border: 1px solid var(--kl-control-bg) !important;
+  border-radius: var(--kl-control-radius) !important;
+  background-color: var(--kl-control-bg) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  font-family: var(--font-family);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  line-height: 1.5;
+  color: var(--kl-control-readonly-text) !important;
+  white-space: pre-wrap;
+  cursor: var(--kl-control-readonly-cursor) !important;
+  -webkit-text-fill-color: var(--kl-control-readonly-text);
   resize: none !important;
+  transition: var(--kl-control-transition);
+}
+
+textarea.kl-form-readonly.kl-form-readonly--control:hover,
+textarea.kl-form-readonly.kl-form-readonly--control:focus,
+textarea.kl-form-readonly.kl-form-readonly--control:focus-visible,
+.kl-modal-form textarea.kl-form-readonly.kl-form-readonly--control[readonly]:hover,
+.kl-modal-form textarea.kl-form-readonly.kl-form-readonly--control[readonly]:focus,
+.kl-modal-form textarea.kl-form-readonly.kl-form-readonly--control[readonly]:focus-visible {
+  border: 1px solid var(--kl-control-bg) !important;
+  border-color: var(--kl-control-bg) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: var(--kl-control-bg) !important;
 }
 
 select.kl-form-readonly,
