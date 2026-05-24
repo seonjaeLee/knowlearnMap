@@ -1,0 +1,134 @@
+/* 1:1 문의 등록·수정 — 520px (`qna-form-modal-paper`) */
+:global(.kl-base-modal-paper.qna-form-modal-paper) {
+    width: 520px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
+    min-height: unset !important;
+}
+
+:global(.kl-base-modal-content.qna-create-modal-content) {
+    padding: var(--spacing-lg) !important;
+    padding-bottom: var(--spacing-2xl) !important;
+}
+
+.qna-hidden-file-input {
+    display: none;
+}
+
+.qna-create-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: 0;
+}
+
+/* 라벨(좌) · 입력(우) 한 줄 */
+.qna-form-row {
+    display: grid;
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--spacing-md);
+}
+
+.qna-form-row__label {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    line-height: 1.4;
+}
+
+.qna-form-row__control {
+    min-width: 0;
+}
+
+/* 내용 — 라벨(좌) · 이미지 첨부(우), textarea 전체 너비 */
+.qna-form-content {
+    display: grid;
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    column-gap: var(--spacing-md);
+    row-gap: var(--spacing-xs);
+}
+
+.qna-form-content__label {
+    margin: 0;
+    align-self: center;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    line-height: 1.4;
+}
+
+.qna-content-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
+.qna-form-content textarea {
+    grid-column: 1 / -1;
+}
+
+.qna-form-content textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.qna-privacy-agreement {
+    margin: 0;
+}
+
+.qna-privacy-consent {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: 0 0 var(--spacing-sm);
+    padding: 0;
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    color: var(--color-text-primary);
+}
+
+.qna-privacy-consent input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--color-accent);
+}
+
+.qna-privacy-consent span {
+    line-height: var(--font-size-base);
+}
+
+.privacy-text {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.qna-create-modal-actions {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
+}
+
+@media (max-width: 768px) {
+    :global(.kl-base-modal-paper.qna-form-modal-paper) {
+        width: calc(100vw - 48px) !important;
+    }
+
+    .qna-form-row,
+    .qna-form-content {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+        row-gap: var(--spacing-xs);
+    }
+
+    .qna-form-content textarea {
+        grid-column: 1;
+    }
+}

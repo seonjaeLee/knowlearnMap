@@ -1,0 +1,28 @@
+.wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.selectWrap {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+}
+
+.wrap--withInput .selectWrap {
+    flex: 0 0 38%;
+    width: 38%;
+    max-width: 9.5rem;
+}
+
+.inputWrap {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.selectWrap :global(select),
+.inputWrap :global(input) {
+    width: 100%;
+}

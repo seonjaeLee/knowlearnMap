@@ -1,0 +1,211 @@
+/**
+ * 1:1 문의 상세 — 답변 영역 전용 (문의 head·본문은 CsDetailModal.css)
+ */
+
+/* 1:1 문의 상세 팝업 — 가로 670px (공지·FAQ 상세 cs-detail-modal-paper 620px과 분리) */
+:global(.kl-base-modal-paper.qna-detail-modal-paper) {
+    width: 670px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
+    height: auto !important;
+    max-height: calc(100vh - 48px) !important;
+    min-height: unset !important;
+}
+
+:global(.kl-base-modal-paper.qna-detail-modal-paper .kl-base-modal-content-shell) {
+    flex: 0 1 auto !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+:global(.kl-base-modal-paper.qna-detail-modal-paper .cs-detail-modal-content) {
+    flex: none;
+    max-height: calc(100vh - 180px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    :global(.kl-base-modal-paper.qna-detail-modal-paper) {
+        width: calc(100vw - 48px) !important;
+    }
+
+    :global(.kl-base-modal-paper.qna-detail-modal-paper .cs-detail-modal-content) {
+        max-height: calc(100vh - 160px);
+    }
+}
+
+.qna-detail-hidden-file-input {
+    display: none;
+}
+
+.cs-detail-meta-status.is-answered {
+    color: var(--color-icon-success-emphasis);
+}
+
+.cs-detail-meta-status.is-waiting {
+    color: var(--color-accent);
+}
+
+/* 답변 — 문의 본문 대비 간격(본문 하단 48px 여백과 맞춤), 좌측 들여쓰기는 section 한 곳만 */
+.qna-detail-answers-section {
+    margin-top: var(--spacing-lg);
+    padding-left: var(--spacing-xl);
+}
+
+.qna-answers-title {
+    margin: 0 0 var(--spacing-md);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.qna-answers-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.qna-answer-item {
+    padding: var(--spacing-md);
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+}
+
+.qna-answer-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.qna-answer-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height:19px;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    background: var(--color-grey6);
+    color: #fff;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.qna-answer-date {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.qna-answer-btn-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+.qna-answer-btn-delete:hover {
+    color: var(--color-icon-danger);
+}
+
+.qna-answer-content {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+}
+
+.qna-no-answers {
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.qna-no-answers p {
+    margin: 0;
+}
+
+.qna-answer-form-container {
+    margin-top: var(--spacing-md);
+    border: none;
+    background: transparent;
+}
+
+.qna-answer-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.qna-answer-toolbar {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--spacing-sm);
+    width: 100%;
+    align-self: stretch;
+}
+
+.qna-answer-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: calc(var(--spacing-sm) + var(--spacing-xs));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    background: var(--color-bg-secondary);
+    resize: vertical;
+    align-self: stretch;
+}
+
+.qna-answer-form textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-focus-input);
+}
+
+.qna-answer-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.qna-detail-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    background: var(--color-bg-primary);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-border-subtle);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: qna-detail-spin 1s linear infinite;
+    margin-bottom: var(--spacing-md);
+}
+
+@keyframes qna-detail-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+

@@ -1,0 +1,53 @@
+/* 짧은 호버 안내 — KlPopover 패널과 동일 톤 (`--color-*` 토큰) */
+.popper {
+  z-index: 1200 !important;
+}
+
+/* LNB NavLink 등 — 세로 목록 레이아웃 */
+.triggerBlock {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* 테이블 kl-table-icon-btn — inline-flex 유지 */
+.triggerIcon {
+  display: inline-flex;
+  width: auto;
+  flex: 0 0 auto;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+/* GNB·툴바·헤더 아이콘 버튼 — 인라인 레이아웃 유지 */
+:global(.kl-icon-btn-tooltip-trigger) {
+  display: inline-flex;
+  width: auto;
+  flex: 0 0 auto;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.tooltip {
+  box-sizing: border-box;
+  max-width: 280px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-bg-secondary) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-medium) !important;
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-medium) !important;
+  line-height: 1.4 !important;
+  color: var(--color-text-primary) !important;
+}
+
+.arrow {
+  color: var(--color-bg-secondary) !important;
+
+  &::before {
+    border: 1px solid var(--color-border-subtle);
+  }
+}

@@ -2,7 +2,7 @@
  * BasicTable 목록 공통 — `table-area` · `basic-table-shell` · 행/푸터/페이지네이션 · 스크롤
  * - DOM: `kl-page` > `kl-main-sticky-head` + `table-area` > `table-toolbar` + `basic-table-shell` > BasicTable
  * - 세로 꽉 채움·shell 내부 스크롤: 페이지 루트에 `kl-page--fill` 있을 때만 (Part 7 §2.1)
- * - 로드: `global.css` (구 TableArea.css · BasicTable.global.css · kl-table-list-scroll.css 통합)
+ * - 로드: `kl-global.css` (구 TableArea.css · BasicTable.global.css · kl-table-list-scroll.css 통합)
  * - 어드민 높이 체인: MainLayout.css `.main-content-outlet-wrap--admin-center`
  *
  */

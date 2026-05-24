@@ -1,0 +1,92 @@
+---
+description: 모달 UI 일괄 이관 — 노트북 상세 제외 전 메뉴 BaseModal을 modal-guide·ReportGenerationModal 패턴으로 마크업·클래스 정리. 새 채팅에서 팝업 UI 작업 시 먼저 읽는다.
+alwaysApply: false
+---
+
+# 인수인계 — 모달 UI 일괄 이관
+
+> **새 채팅·팝업 UI 작업 시 본 규칙을 먼저 읽는다.**  
+> 작업 일기는 사용자 요청 시만 `react/docs/ui-history2.md`.  
+> **참조 구현:** `react/src/components/ReportGenerationModal.jsx` · `.css` (2026-05-23)
+
+## 1. 작업 목표 (한 줄)
+
+**`NotebookDetail` 제외**, 전체 메뉴·화면에서 쓰는 **`BaseModal` 팝업**의 **마크업·클래스명**을 `react/docs/modal-guide.md` · `react/docs/kl-ui-guide.md` · 본 규칙에 맞게 통일한다.
+
+- **하단 버튼:** MUI `Button` → **`kl-btn`** (시나리오별 좌·우 배치)
+- **본문 폼:** **`kl-modal-form-row`** (한 줄) · **`kl-modal-form-field-stack`** (지시문·긴 textarea) · 읽기전용 **`kl-form-readonly--control`**
+- **기능·API 변경 없음** · `:root` 토큰 무단 추가 금지
+- **진행:** 팝업 **1~2개씩** → `npm run build` → 사용자 확인
+
+### 범위
+
+| 포함 | 제외 |
+|------|------|
+| 공지·FAQ·QnA, 어드민, 홈·도메인, 프롬프트 다이얼로그 등 **메뉴/페이지의 `BaseModal`** | **`react/src/components/NotebookDetail.jsx`** 및 그 **직속 CSS** 안의 팝업 전부 |
+| 이미 맞춘 **`ReportGenerationModal`** (페르소나 — 노트북에서 열리지만 본 파일은 기준·완료 참고용) | `useDialog` (`alert`/`confirm`/`prompt`) — **별도 Phase** |
+
+팝업 찾기: `react/src`에서 `BaseModal` import·사용처 grep. **`NotebookDetail` 경로는 스킵.**
+
+## 2. SSOT
+
+| 문서·코드 | 용도 |
+|-----------|------|
+| `react/docs/modal-guide.md` | Form / No-Footer, 푸터, `kl-modal-form` |
+| `react/docs/kl-ui-guide.md` | 버튼 variant, 토큰 |
+| `react/src/assets/styles/layout/kl-layout-modal.css` | `kl-modal-form-row`, `kl-modal-form-field-stack` |
+| `react/src/assets/styles/kit/kl-form-readonly.css` | `--control` 흰 박스 |
+| `react/src/assets/styles/kit/kl-buttons.css` | `kl-btn` |
+| `react/src/components/ReportGenerationModal.jsx` | **기준 구현** |
+| `NoticeCreateModal` · `NoticeDetailModal` · `QnaCreateModal` | 공지·1:1 참고 |
+| `AdminSemanticCategoryPage.jsx` | helper = 컨트롤 열·입력 아래 |
+
+## 3. 패턴 요약
+
+- `contentClassName`에 **`kl-modal-form`** 필수.
+- **한 줄 필드:** `kl-modal-form-row` · `__label` · `__control`, 라벨 **top**, helper는 **컨트롤 안·입력 아래** (`kl-modal-form-helper`).
+- **긴 본문(지시문 등):** `kl-modal-form-field-stack` — **라벨 위 · 필드 아래**.
+- **읽기전용:** `kl-form-readonly kl-form-readonly--control` + `readOnly` (`disabled`로 조회 UI 내지 않음).
+- **푸터:** `kl-btn` + `width:100%` / `space-between` 래퍼 (예: `persona-modal-actions-layout`).
+
+### 푸터 시나리오
+
+| 용도 | 좌 | 우 |
+|------|-----|-----|
+| 등록·수정 | (선택) 삭제 `gray-outline md` | 취소 + 저장 `primary-full md` |
+| 상세·목록 복귀 | 목록이동 `primary-outline md` | 닫기 `primary-full md` |
+| 페르소나 기초값(읽기전용) | 목록이동만 | 닫기 없음 (헤더 X만) |
+
+## 4. 작업 순서
+
+1. 본 규칙 + `modal-guide.md` §2  
+2. `BaseModal` grep → **NotebookDetail 제외** 목록  
+3. 대상 1개: `ReportGenerationModal`과 diff → 마크업·클래스·푸터 반영 → 모달 전용 **중복 form-row CSS** 정리  
+4. `cd react && npm run build`  
+5. 사용자 육안 확인 (대규모 전 컨펌 규칙 준수)
+
+## 5. 하지 말 것
+
+- `NotebookDetail` 안 팝업 수정  
+- Tailwind · MUI `sx`로 폼 테두리 덮어쓰기  
+- 신규 Form에 `ModalFormField` 세로 스택만 쓰기 (가로 row / field-stack 우선)  
+- helper를 이름 입력열 아래에 붙이기  
+- `index.css` / `:root` 토큰 무단 추가  
+- `ui-history2` 임의 갱신  
+
+## 6. 모달 1건 완료 기준
+
+- [ ] `kl-modal-form` on content  
+- [ ] 폼 row / field-stack / helper / 읽기전용 규칙 충족  
+- [ ] 푸터 `kl-btn` + 가이드 배치  
+- [ ] build 통과  
+
+## 7. 새 채팅 시작 문장 (복사용)
+
+```
+.cursor/rules/handoff-modal-ui-rollout.mdc 와 react/docs/modal-guide.md 를 읽고,
+NotebookDetail 제외한 전체 메뉴의 BaseModal 팝업 마크업·클래스명을
+공통 가이드에 맞게 바꿔 주세요.
+(푸터 kl-btn, kl-modal-form-row / field-stack, 읽기전용 --control, ReportGenerationModal 참고)
+한 번에 1~2개 팝업씩, 기능/API 변경 없이, build 확인 후 진행.
+ui-history2·index.css 토큰 변경은 하지 마세요.
+```

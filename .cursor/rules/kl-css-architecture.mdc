@@ -13,11 +13,11 @@ alwaysApply: true
 
 ## 진입점 (전역 KL 스타일)
 
-- **`react/src/assets/styles/global.css`** 한 파일만 `main.jsx`에서 import 한다. (`global.scss`는 호환 스텁만)
-- import **순서는 `global.css` `@import` 안에서만** 고정한다. `main.jsx`에 CSS를 여러 줄 나열하지 않는다.
-- 본문은 `tokens/` · `foundation/` · `layout/` · `kit/` · `patterns/` · `legacy/` — 루트 `kl-*.css`는 **호환 스텁**만.
+- **`react/src/assets/styles/kl-global.css`** 한 파일만 `main.jsx`에서 import 한다.
+- import **순서는 `kl-global.css` `@import` 안에서만** 고정한다. `main.jsx`에 CSS를 여러 줄 나열하지 않는다.
+- 본문은 `tokens/` · `foundation/` · `layout/` · `utilities/` · `kit/` · `patterns/` · `legacy/` — **`styles/` 루트에 `kl-*.css` 스텁 두지 않음.**
 
-## 토큰 — `index.css`에 두지 않음
+## 토큰
 
 | 파일 | 역할 |
 |------|------|
@@ -29,15 +29,11 @@ alwaysApply: true
 
 ## UI 키트 (Map에서만 정의·수정)
 
-`foundation/kl-reset-common`, `layout/kl-layout-*`, `kit/kl-forms`, `kit/kl-buttons`, `kit/kl-basic-table`, `patterns/*`, `legacy/kl-legacy-modal` — **`global.css`** 가 순서대로 로드.
+`foundation/kl-reset-common`, `layout/kl-layout-*`, `utilities/kl-util.css`, `kit/kl-forms`, `kit/kl-buttons`, `kit/kl-basic-table`, `patterns/*`, `legacy/kl-legacy-modal` — **`kl-global.css`** 가 순서대로 로드.
 
+- **원자 유틸** (`kl-vert-*` 등): `utilities/kl-util.css` — flex/grid **컨테이너**에 멀티클래스. spacing 등은 필요 시 동일 파일에 섹션 추가.
 - 컴포넌트 클래스: **`kl-btn` / `kl-input` + variant + size** (장소별 전용 클래스 신규 금지 목표).
 - **공통 CSS에 페이지별 `width: 160px` 등 고정값 금지** — 너비는 페이지 CSS.
-
-## `index.css`
-
-- Vite 관성 파일일 수 있으나 **디자인 토큰·kl 번들 본문을 두지 않는다.**
-- 남길 것: 앱 전용 최소 규칙만, 또는 `global.css`로 위임하는 `@import` 한 줄.
 
 ## 페이지·기능 CSS
 
@@ -48,14 +44,13 @@ alwaysApply: true
 ## 작업 순서 (Map)
 
 1. 전역 CSS 인벤토리·역할 확정 (문서 `kl-ui-guide.md` Part 0)
-2. 토큰 분리 + `global.css` 진입점
-3. `index.css` 잔여 규칙을 역할에 맞는 파일로 이관
-4. 빌드·주요 화면 확인
-5. **(별도 합의)** jsx className 이관
+2. 토큰 분리 + `kl-global.css` 진입점
+3. 빌드·주요 화면 확인
+4. **(별도 합의)** jsx className 이관
 
 ## 확장 시 (Exp — 지금 구현 X)
 
 - Map의 `kl-tokens-core` + UI 키트는 **복사·패키지·vendor**로 공유.
-- Exp만 `kl-tokens-theme-exp.css` 또는 `exp-style.css`에 **색·소량 override** — `kl-buttons.css` 등 **fork 금지**.
+- Exp만 `kl-tokens-theme-exp.css` 또는 `exp-style.css`에 **색·소량 override** — `kit/kl-buttons.css` 등 **fork 금지**.
 
 상세: `react/docs/kl-ui-guide.md` Part 0.

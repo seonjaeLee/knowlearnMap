@@ -1,0 +1,132 @@
+/**
+ * 레거시 네이티브 모달 (LoginModal, SlideCreationModal 등)
+ * 신규는 BaseModal + kl-modal-form / kl-input
+ */
+
+.modal-native-field label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.modal-native-field input[type='text'],
+.modal-native-field input[type='password'],
+.modal-native-field input[type='email'] {
+  width: 100%;
+  height: var(--kl-control-height);
+  padding: 0 var(--kl-control-padding-inline);
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  font-size: var(--kl-control-font-size);
+  font-weight: var(--kl-control-font-weight);
+  line-height: var(--kl-control-line-height);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background-color: var(--kl-control-bg);
+  transition: var(--kl-control-transition);
+  box-sizing: border-box;
+}
+
+.modal-native-field input[type='text']:hover:not(:disabled),
+.modal-native-field input[type='password']:hover:not(:disabled),
+.modal-native-field input[type='email']:hover:not(:disabled) {
+  border-color: var(--kl-control-border-hover);
+  background-color: var(--kl-control-bg-hover);
+}
+
+.modal-native-field input[type='text']:focus,
+.modal-native-field input[type='password']:focus,
+.modal-native-field input[type='email']:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+  background-color: var(--kl-control-bg-focus);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-medium);
+  text-align: center;
+  min-width: 350px;
+  max-width: 90%;
+}
+
+.modal-icon {
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+}
+
+.modal-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-input {
+  width: 100%;
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) var(--spacing-md);
+  font-size: var(--font-size-base);
+  border: var(--kl-control-border);
+  border-radius: var(--kl-control-radius);
+  margin-bottom: var(--spacing-md);
+  transition: var(--kl-control-transition);
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus-input);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: calc(var(--spacing-sm) + var(--spacing-xs));
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: calc(var(--spacing-sm) + var(--spacing-xs)) var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  min-width: 100px;
+}
+
+.cancel-btn {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+}
+
+.cancel-btn:hover {
+  background-color: var(--color-bg-dark);
+}
+
+.confirm-btn {
+  background-color: var(--color-accent);
+  color: var(--color-bg-secondary);
+}
+
+.confirm-btn:hover {
+  background-color: var(--color-accent-hover);
+}

@@ -1,0 +1,185 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
+    color: white;
+}
+/* .login-container img {
+    filter:brightness(6.8);
+  
+} */
+
+.login-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 3rem;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.login-logo-wrap {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.login-logo-img {
+    height: 52px;
+}
+
+.login-hidden-title {
+    visibility: hidden;
+    height: 64px;
+    margin: 0;
+}
+
+.login-card h1 {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 2px;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-base);
+    color: #a0a0b0;
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: var(--font-size-lg);
+    transition: all 0.3s ease;
+}
+
+/* 전역 kl-form-control hover·focus(흰 배경) — 다크 로그인 입력 유지 */
+.login-container .form-group input:hover:not(:disabled),
+.login-container .form-group input:focus,
+.login-container .form-group input:focus-visible {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    color: white !important;
+}
+
+.login-container .form-group input:focus,
+.login-container .form-group input:focus-visible {
+    border-color: #646cff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.login-btn {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: #646cff;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: var(--spacing-md);
+}
+
+.login-btn:hover:not(:disabled) {
+    background: #535bf2;
+}
+
+.login-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.login-footer {
+    margin-top: var(--spacing-lg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-base);
+}
+
+.login-footer a,
+.text-btn {
+    color: #a0a0b0;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: inherit;
+    padding: 0;
+}
+
+.login-footer a:hover,
+.text-btn:hover {
+    color: white;
+}
+
+.divider {
+    color: #4a4a5a;
+}
+
+.error-message {
+    background: rgba(255, 87, 87, 0.1);
+    color: #ff5757;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+}
+
+.error-reset-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: var(--spacing-sm);
+    background: #646cff;
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.login-signup-link {
+    color: #646cff;
+}
+
+.options-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: #a0a0b0;
+    font-size: var(--font-size-base);
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}

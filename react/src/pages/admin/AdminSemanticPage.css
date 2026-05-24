@@ -145,7 +145,6 @@
 .admin-semantic-modal-actions {
   padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
 }
-
 @media (max-width: 768px) {
   .admin-semantic-form-row {
     grid-template-columns: 1fr;
@@ -153,3 +152,4 @@
     row-gap: var(--spacing-xs);
   }
 }
+

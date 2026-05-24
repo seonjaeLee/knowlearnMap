@@ -1,0 +1,64 @@
+/**
+ * 구조 토큰 — 사이트 간 동일 (Map 마더 SSOT)
+ * 색·브랜드 semantic → kl-tokens-theme-map.css
+ */
+
+:root {
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Typography */
+  --font-family: 'Pretendard', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout (목록 sticky 등 — 페이지에서 덮어쓸 수 있음) */
+  --kl-list-sticky-thead-top: 148px;
+
+  /* 스크롤바 치수 — kl-scrollbar-thin.css */
+  --kl-scrollbar-size: 10px;
+  --kl-scrollbar-thumb: rgba(95, 99, 104, 0.45);
+  --kl-scrollbar-track: transparent;
+
+  /* BaseModal Paper 최소 높이 (alert/confirm 제외) */
+  --base-modal-paper-min-height: 340px;
+
+  /* 컨트롤 치수 (색은 theme · kl-variables.css) */
+  --kl-control-height: 32px;
+  --kl-control-padding-inline: 12px;
+  --kl-control-padding-inline-end-select: 28px;
+  --kl-control-font-size: var(--font-size-sm);
+  --kl-control-font-weight: var(--font-weight-medium);
+  --kl-control-line-height: 1;
+  --kl-control-radius: var(--radius-sm);
+
+  /* 데이터 표 행 높이 — DomainManagement 등 */
+  --kl-data-table-thead-row-height: 34px;
+  --kl-data-table-tbody-row-height: 43px;
+  --kl-table-action-hit-size: 36px;
+  --kl-table-action-icon-size: 16px;
+  --kl-table-action-icon-gap: 0px;
+}

@@ -1,0 +1,54 @@
+/**
+ * Map 브랜드 semantic 토큰 (다른 사이트는 별도 theme 파일)
+ */
+
+:root {
+  /* Color Palette */
+  --color-bg-primary: #f8f9fa;
+  --color-bg-secondary: #ffffff;
+  --color-bg-hover: #f1f3f4;
+  --color-bg-dark: #e8eaed;
+  --color-bg-subtle: #f9fafb;
+
+  --color-text-primary: #202124;
+  --color-text-secondary: #5f6368;
+  --color-text-tertiary: #80868b;
+  --color-grey6: #666666;
+
+  --color-accent: #1a73e8;
+  --color-accent-hover: #1557b0;
+  --color-accent-light: #e8f0fe;
+
+  --color-icon-danger: #dc2626;
+  --color-icon-danger-emphasis: #b91c1c;
+  --color-icon-success: #2b8a3e;
+  --color-icon-success-emphasis: #1b6e2f;
+
+  --color-border: #dadce0;
+  --color-border-subtle: #e5e7eb;
+  --color-border-hover: #bdc1c6;
+
+  --shadow-focus-input: 0 0 0 2px color-mix(in srgb, var(--color-accent) 32%, transparent);
+
+  --form-control-disabled-bg: #eceff1;
+  --form-control-disabled-border: #dadce0;
+  --form-control-disabled-text: #80868b;
+  --form-control-disabled-placeholder: #9aa0a6;
+  --btn-disabled-bg: #dadce0;
+  --btn-disabled-text: #5f6368;
+
+  --control-pill-active-bg: var(--color-accent);
+  --control-pill-active-text: #ffffff;
+  --control-pill-active-hover-bg: var(--color-accent-hover);
+
+  --color-notebook-yellow: #fef7e0;
+  --color-notebook-blue: #e8f0fe;
+  --color-notebook-purple: #f3e8fd;
+  --color-notebook-pink: #fce8f3;
+
+  --shadow-small: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  --shadow-medium: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+  --shadow-hover: 0 2px 6px 2px rgba(60, 64, 67, 0.15), 0 8px 24px 4px rgba(60, 64, 67, 0.15);
+
+  --color-required-asterisk: #ff0000;
+}

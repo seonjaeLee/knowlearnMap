@@ -1,0 +1,351 @@
+/**
+ * 고객센터 팝업 공통 (공지·FAQ·1:1 문의)
+ * - 상세: head·본문 / 작성·수정: 가로·본문 하단 여백
+ */
+
+.cs-detail-modal-content {
+    --base-modal-content-min-height: 0;
+    background: var(--color-bg-primary);
+}
+
+/* 상세 팝업 — 가로 620px, 내용 높이에 맞춤, 긴 본문만 뷰포트 내 스크롤 */
+:global(.kl-base-modal-paper.cs-detail-modal-paper) {
+    width: 620px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
+}
+
+:global(.kl-base-modal-paper.cs-form-modal-paper) {
+    width: 800px !important;
+    max-width: calc(100vw - 48px) !important;
+    min-width: unset !important;
+}
+
+:global(.kl-base-modal-paper.cs-detail-modal-paper) {
+    height: auto !important;
+    max-height: calc(100vh - 48px) !important;
+    min-height: unset !important;
+}
+
+:global(.kl-base-modal-paper.cs-detail-modal-paper .kl-base-modal-content-shell) {
+    flex: 0 1 auto !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+:global(.kl-base-modal-paper.cs-detail-modal-paper .cs-detail-modal-content) {
+    flex: none;
+    max-height: calc(100vh - 180px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.cs-detail-modal-body {
+    min-height: 0;
+    padding-bottom: var(--spacing-lg);
+}
+
+/* 고객센터 작성·수정 팝업 본문 하단 여백 (48px) */
+:global(.kl-base-modal-content.cs-form-modal-content) {
+    padding-bottom: var(--spacing-2xl) !important;
+}
+
+.cs-detail-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* 분류·제목·메타 */
+.cs-detail-head {
+    padding-block: 0;
+    background: transparent;
+}
+
+.cs-detail-head-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.cs-detail-title-block {
+    min-width: 0;
+    flex: 1;
+}
+
+.cs-detail-category {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 2px var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--color-accent) 10%, white);
+    color: var(--color-accent);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.cs-detail-title {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: 20px;
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.cs-detail-title-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-size: 20px;
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.35;
+}
+
+.cs-detail-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+.cs-detail-inline-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+}
+
+.cs-detail-inline-meta > span:not(:last-child)::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 10px;
+    margin-left: var(--spacing-xs);
+    background: var(--color-border-subtle);
+    vertical-align: middle;
+}
+
+.cs-detail-updated {
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+.cs-detail-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+}
+
+.cs-detail-btn-edit,
+.cs-detail-btn-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.cs-detail-btn-edit:hover {
+    background: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
+    color: var(--color-text-primary);
+}
+
+.cs-detail-btn-delete {
+    color: var(--color-icon-danger);
+}
+
+.cs-detail-btn-delete:hover {
+    background: color-mix(in srgb, var(--color-icon-danger) 10%, transparent);
+    color: var(--color-icon-danger-emphasis);
+}
+
+/* 본문 — 편집 시 입력 박스, 조회 시 border 없음 · 높이는 내용에 맞춤 */
+.cs-detail-body-box {
+    min-height: 0;
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+}
+
+.cs-detail-body-box--view {
+    border: none;
+}
+
+.cs-detail-body-content {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    line-height: 1.75;
+}
+
+.cs-detail-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.cs-detail-edit-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: calc(var(--spacing-sm) + var(--spacing-xs));
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    resize: vertical;
+    min-height: 220px;
+}
+
+.cs-detail-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}
+
+.cs-detail-btn-cancel,
+.cs-detail-btn-save {
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    cursor: pointer;
+}
+
+.cs-detail-btn-cancel {
+    border: 1px solid #6b7280;
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.cs-detail-btn-save {
+    border: 1px solid var(--color-accent);
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.cs-detail-loading,
+.cs-detail-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: var(--spacing-2xl) var(--spacing-md);
+    color: var(--color-text-secondary);
+}
+
+.cs-detail-modal-actions {
+    background: var(--color-bg-primary);
+}
+
+.cs-detail-actions-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: var(--spacing-md);
+}
+
+.cs-detail-actions-left {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
+.cs-detail-actions-left .MuiButton-root {
+    min-width: 88px !important;
+}
+
+/* 상세 푸터 「목록이동」— outlinedPrimary 톤 (기본 크기) */
+.cs-detail-modal-actions :global(.cs-detail-list-move-btn) {
+    border-color: var(--color-accent) !important;
+    color: var(--color-accent) !important;
+    background-color: var(--color-bg-secondary) !important;
+}
+
+.cs-detail-modal-actions :global(.cs-detail-list-move-btn:hover) {
+    border-color: var(--color-accent-hover) !important;
+    color: var(--color-accent-hover) !important;
+    background-color: #f0f7ff !important;
+}
+
+/* 이전글·다음글 — 아이콘은 라벨보다 밝은 톤(같은 hue), 비활성 회색과 구분 */
+.cs-detail-modal-actions :global(.cs-detail-post-nav-btn) .cs-detail-post-nav-icon {
+    color: color-mix(in srgb, currentColor 62%, #ffffff);
+}
+
+.cs-detail-modal-actions :global(.cs-detail-post-nav-btn:hover:not(.Mui-disabled)) .cs-detail-post-nav-icon {
+    color: color-mix(in srgb, currentColor 78%, #ffffff);
+}
+
+/* 이전글·다음글 — 아이콘↔라벨 4px, 바깥쪽 -8px (패딩은 MUI outlined 기본값) */
+.cs-detail-modal-actions .cs-detail-post-nav-btn.MuiButton-root .MuiButton-startIcon {
+    margin-right: var(--spacing-xs) !important;
+    margin-left: calc(-2 * var(--spacing-xs)) !important;
+}
+
+.cs-detail-modal-actions .cs-detail-post-nav-btn.MuiButton-root .MuiButton-endIcon {
+    margin-left: var(--spacing-xs) !important;
+    margin-right: calc(-2 * var(--spacing-xs)) !important;
+}
+
+@media (max-width: 768px) {
+    :global(.kl-base-modal-paper.cs-detail-modal-paper),
+    :global(.kl-base-modal-paper.cs-form-modal-paper) {
+        width: calc(100vw - 48px) !important;
+    }
+
+    :global(.kl-base-modal-paper.cs-detail-modal-paper .cs-detail-modal-content) {
+        max-height: calc(100vh - 160px);
+    }
+
+    .cs-detail-meta-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cs-detail-updated {
+        white-space: normal;
+    }
+
+    .cs-detail-actions-layout {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .cs-detail-actions-left {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .cs-detail-actions-layout > :global(.MuiButton-contained) {
+        width: 100%;
+    }
+}

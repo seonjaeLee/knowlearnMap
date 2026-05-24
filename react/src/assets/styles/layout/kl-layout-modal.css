@@ -88,10 +88,68 @@
   color: var(--color-icon-danger);
 }
 
+/* 팝업 본문 세로 스택 — row·content-field·kl-infotxt-note 간격은 gap만 */
+.kl-modal-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: 0;
+  margin: 0;
+}
+
+/* 내용·JSON — 라벨(좌)·툴바(우) 한 줄 + textarea 전체 너비 */
+.kl-modal-form-content-field {
+  display: grid;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
+  column-gap: var(--spacing-md);
+  row-gap: var(--spacing-xs);
+  width: 100%;
+  min-width: 0;
+}
+
+.kl-modal-form-content-field__label {
+  align-self: center;
+  margin: 0;
+}
+
+.kl-modal-form-content-field > .kl-modal-form-toolbar {
+  grid-column: 2;
+}
+
+.kl-modal-form-content-field > textarea {
+  grid-column: 1 / -1;
+  min-height: 140px;
+  resize: vertical;
+}
+
+.kl-modal-form-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.kl-modal-form-hidden-input {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .kl-modal-form-row {
     grid-template-columns: 1fr;
     align-items: stretch;
     row-gap: var(--spacing-xs);
+  }
+
+  .kl-modal-form-content-field {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    row-gap: var(--spacing-xs);
+  }
+
+  .kl-modal-form-content-field > .kl-modal-form-toolbar {
+    grid-column: 1;
+  }
+
+  .kl-modal-form-content-field > textarea {
+    grid-column: 1;
   }
 }

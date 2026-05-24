@@ -317,7 +317,6 @@
     color: #dc2626;
     font-size: var(--font-size-sm);
 }
-
 @media (max-width: 768px) {
     .domain-form-row {
         grid-template-columns: 1fr;
@@ -325,3 +324,4 @@
         row-gap: var(--spacing-xs);
     }
 }
+

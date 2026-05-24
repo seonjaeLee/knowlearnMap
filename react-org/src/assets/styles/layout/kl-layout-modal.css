@@ -1,0 +1,97 @@
+/**
+ * Modal · 필드 행·라벨·보조문 레이아웃만 (컨트롤 모양은 kl-forms.css)
+ * contentClassName: kl-modal-form
+ * docs/kl-ui-guide.md Part 6
+ */
+
+.kl-modal-form {
+  font-family: var(--font-family);
+}
+
+.kl-modal-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.kl-modal-form-field:last-child {
+  margin-bottom: 0;
+}
+
+.kl-modal-form-label {
+  display: block;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.kl-modal-form-control {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 가로 form-row — 라벨(좌)·컨트롤(우), 라벨 열 상단 정렬 · 보조문은 컨트롤 하단 */
+.kl-modal-form-row {
+  display: grid;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--spacing-md);
+}
+
+.kl-modal-form-row__label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.kl-modal-form-row__control {
+  min-width: 0;
+}
+
+.kl-modal-form-row__control .kl-modal-form-helper {
+  margin-top: var(--spacing-xs);
+}
+
+/* 라벨 위 · 컨트롤 아래 (긴 textarea·본문 필드) */
+.kl-modal-form-field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+}
+
+.kl-modal-form-field-stack__label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.kl-modal-form-field-stack__control {
+  width: 100%;
+  min-width: 0;
+}
+
+.kl-modal-form-helper {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.kl-modal-form-helper--error {
+  color: var(--color-icon-danger);
+}
+
+@media (max-width: 768px) {
+  .kl-modal-form-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    row-gap: var(--spacing-xs);
+  }
+}

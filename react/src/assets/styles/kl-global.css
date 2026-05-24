@@ -1,0 +1,37 @@
+/**
+ * KL 전역 스타일 진입점 — main.jsx 에서만 import
+ * tokens · foundation · layout · utilities · kit · patterns · legacy
+ * @see docs/kl-ui-guide.md Part 1.2
+ */
+
+/* 1. 토큰 */
+@import './tokens/kl-tokens-core.css';
+@import './tokens/kl-tokens-theme-map.css';
+@import './tokens/kl-variables.css';
+
+/* 2. 리셋 */
+@import './foundation/kl-reset-common.css';
+
+/* 3. 레이아웃 */
+@import './layout/kl-layout-page.css';
+@import './layout/kl-layout-toolbar.css';
+@import './layout/kl-layout-modal.css';
+
+/* 3b. 유틸 (layout 기본값 override — modal row 뒤) */
+@import './utilities/kl-util.css';
+
+/* 4. 폼 · 버튼 · 표 */
+@import './kit/kl-forms.css';
+@import './kit/kl-form-readonly.css';
+@import './kit/kl-modal-form.css';
+@import './kit/kl-buttons.css';
+@import './kit/kl-basic-table.css';
+
+/* 5. 패턴 */
+@import './patterns/kl-scrollbar-thin.css';
+@import './patterns/kl-infotxt-note.css';
+@import './patterns/kl-subtabs.css';
+@import './patterns/kl-split-panel.css';
+
+/* 6. 레거시 (이관 완료 후 제거) */
+@import './legacy/kl-legacy-modal.css';

@@ -1,0 +1,283 @@
+/* 전역 `fadeIn` 키프레임과 이름이 겹치면(CustomAlert의 scale 등) 본문이 팝업처럼 보일 수 있어 진입 애니메이션 없음 */
+.domain-management-container {
+    padding: 0;
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+}
+
+/* admin-table-card + admin-table-wrap(admin-common) — 도메인 목록 전용 열 폭·액션 */
+.domain-mgmt-table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 1000px;
+}
+
+.domain-mgmt-table .domain-mgmt-th-name,
+.domain-mgmt-table .domain-mgmt-td-name {
+    min-width: 240px;
+    width: 21%;
+}
+
+.domain-mgmt-table .domain-mgmt-th-desc,
+.domain-mgmt-table .domain-mgmt-td-desc {
+    min-width: 320px;
+    width: 27%;
+}
+
+.domain-mgmt-table .domain-mgmt-th-ws,
+.domain-mgmt-table .domain-mgmt-td-ws {
+    min-width: calc(var(--spacing-2xl) * 4 + var(--spacing-md));
+    width: 22%;
+    text-align: left;
+}
+
+.domain-mgmt-table .domain-mgmt-th-created,
+.domain-mgmt-table .domain-mgmt-td-created {
+    min-width: calc(var(--spacing-2xl) * 2 + var(--spacing-md));
+    width: 8%;
+}
+
+.domain-mgmt-table .domain-mgmt-th-arango,
+.domain-mgmt-table .domain-mgmt-td-arango {
+    min-width: calc(var(--spacing-2xl) + var(--spacing-xl) + var(--spacing-lg));
+    width: 10%;
+}
+
+/* `<colgroup>` + 훅으로 열 너비 제어 시 셀의 %·min-width와 충돌 방지 */
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-th-name,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-td-name,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-th-desc,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-td-desc,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-th-ws,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-td-ws,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-th-created,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-td-created,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-th-arango,
+.domain-mgmt-table.domain-mgmt-table--resizable .domain-mgmt-td-arango {
+    width: auto !important;
+    min-width: 0 !important;
+}
+
+/* 행 클릭 → 수정 모달 (관리 열 제거) */
+.domain-mgmt-tr-clickable {
+    cursor: pointer;
+}
+
+.domain-mgmt-tr-clickable:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+}
+
+/* 모달 하단: 페르소나 팝업 삭제 버튼과 동일 MUI 클래스(`persona-delete-btn`) + 좌측 정렬 */
+.domain-modal-actions-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-right: auto;
+}
+
+.domain-mgmt-name-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
+.domain-mgmt-name-icon {
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+}
+
+.domain-mgmt-name-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.domain-mgmt-td-desc {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--color-text-primary);
+}
+
+/* 워크스페이스: 배지 + 이름 목록 한 줄(말줄임). 괄호 속 생성자/도메인 표시 없음 */
+.domain-mgmt-ws-cell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    max-width: 100%;
+}
+
+.domain-mgmt-ws-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-bg-hover);
+    border-radius: 999px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+}
+
+.domain-mgmt-ws-names {
+    min-width: 0;
+    flex: 1 1 auto;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+/* 행 높이: `kl-tokens-core.css` `--kl-data-table-*` (본문 43px 공통) */
+.domain-mgmt-table-card {
+    --kl-table-action-hit-size: 32px;
+}
+
+.domain-mgmt-table-card .domain-mgmt-table thead tr {
+    height: var(--kl-data-table-thead-row-height);
+}
+
+.domain-mgmt-table-card .domain-mgmt-table thead th {
+    height: var(--kl-data-table-thead-row-height);
+}
+
+.domain-mgmt-table-card .domain-mgmt-table tbody tr:not(.domain-mgmt-tr-empty) {
+    height: var(--kl-data-table-tbody-row-height);
+}
+
+.domain-mgmt-table-card .domain-mgmt-table tbody td {
+    height: var(--kl-data-table-tbody-row-height);
+}
+
+.domain-mgmt-table-card .domain-mgmt-table th,
+.domain-mgmt-table-card .domain-mgmt-table td {
+    padding-block: 0;
+    padding-inline: var(--spacing-sm);
+    line-height: 1.25;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.domain-mgmt-table-card .domain-mgmt-table tbody tr.domain-mgmt-tr-empty td,
+.domain-mgmt-table-card .domain-mgmt-table td.domain-mgmt-empty {
+    height: auto !important;
+    padding: var(--spacing-2xl) var(--spacing-md) !important;
+}
+
+.domain-mgmt-table-card .domain-mgmt-ws-badge {
+    padding: 2px var(--spacing-xs);
+}
+
+.domain-mgmt-arango-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    min-width: 0;
+}
+
+.domain-mgmt-arango-row span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.domain-mgmt-empty {
+    text-align: center;
+    padding: var(--spacing-2xl) var(--spacing-md) !important;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+}
+
+.domain-modal-content {
+    overflow-y: auto;
+}
+
+.domain-modal-content input:not([type='checkbox']):not([type='radio']),
+.domain-modal-content .MuiOutlinedInput-root {
+    background-color: var(--color-bg-secondary) !important;
+}
+
+.domain-input-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.domain-input-group > :first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.domain-input-group > button {
+    flex-shrink: 0;
+}
+
+.domain-validation-msg {
+    margin: calc(-1 * var(--spacing-sm)) 0 var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+}
+
+.domain-validation-msg.success {
+    color: #059669;
+}
+
+.domain-validation-msg.error {
+    color: #dc2626;
+}
+
+.domain-prompt-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.domain-helper-error {
+    color: #dc2626 !important;
+}
+
+.domain-info-note {
+    margin-top: var(--spacing-md);
+    padding: 12px var(--spacing-md);
+    border: 1px solid #fde68a;
+    border-radius: var(--radius-md);
+    background-color: #fef3c7;
+    color: #92400e;
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.domain-error-note {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #fecaca;
+    background-color: #fee2e2;
+    color: #dc2626;
+    font-size: var(--font-size-sm);
+}
+
+@media (max-width: 1023px) {
+    .domain-prompt-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,67 @@
+/* Audit Log — 표 셀·로딩·툴바 필드 너비(페이지 전용). 툴바·표·푸터·버튼은 global.css 공통 */
+/* 목록 shell 스크롤: `kl-basic-table.css` · 루트 `kl-page--fill` · `audit-log-page` */
+
+.audit-log-page {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.audit-log-toolbar__field {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.audit-log-toolbar__field--entity {
+  flex-basis: 200px;
+  min-width: 120px;
+}
+
+.audit-log-toolbar__field--action {
+  flex-basis: 120px;
+  min-width: 96px;
+}
+
+.audit-log-toolbar__field--actor {
+  flex-basis: 200px;
+  min-width: 120px;
+}
+
+.audit-log-loading {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.audit-log-basic-table {
+  min-width: 1200px;
+}
+
+.audit-log-col-date {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-size-sm);
+}
+
+.audit-log-col-id {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.audit-log-value {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}

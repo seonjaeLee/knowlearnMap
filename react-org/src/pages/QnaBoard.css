@@ -1,0 +1,285 @@
+/* QnaBoard.css */
+.qna-page {
+    padding: 0;
+    width: 100%;
+    margin: 0;
+    background-color: transparent;
+    min-height: 0;
+}
+
+.qna-container {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.qna-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.qna-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.qna-create-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background-color: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.qna-create-btn:hover {
+    background-color: #1557b0;
+}
+
+.qna-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.qna-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+}
+
+.qna-search-wrapper input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border: 1px solid #e0e0e0;
+    border-radius: 24px;
+    font-size: 14px;
+    outline: none;
+    transition: box-shadow 0.2s;
+}
+
+.qna-search-wrapper input:focus {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: #ccc;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.qna-status-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.status-select {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+}
+
+.qna-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    table-layout: fixed;
+}
+
+.qna-table th {
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+}
+
+.qna-table td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.qna-row:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.td-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.question-title-text {
+    font-weight: 600;
+    color: #1a73e8;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.open {
+    background-color: #E8F0FE;
+    color: #1a73e8;
+    /* Blue text */
+}
+
+.status-badge.solved {
+    background-color: #5f6368;
+    /* Grey background */
+    color: #fff;
+    /* White text */
+}
+
+/* Column widths */
+.th-title {
+    width: 45%;
+}
+
+.th-id {
+    width: 10%;
+}
+
+.th-created {
+    width: 15%;
+}
+
+.th-activity {
+    width: 15%;
+}
+
+.th-status {
+    width: 15%;
+    text-align: center;
+}
+
+.td-status {
+    text-align: center;
+}
+
+.qna-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.pagination-btn {
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.pagination-btn:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: #fafafa;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #666;
+}
+
+.td-loading,
+.td-empty {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+/* Floating Create Button if needed, or adjust placement */
+.btn-add-question {
+    /* If used elsewhere, keep basic styling */
+    padding: 10px 20px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .qna-container {
+        padding: 0;
+    }
+
+    .qna-tabs {
+        gap: 16px;
+    }
+
+    .qna-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .qna-search-wrapper {
+        max-width: none;
+    }
+
+    .qna-table th,
+    .qna-table td {
+        padding: 12px;
+        font-size: 13px;
+    }
+
+    .th-id,
+    .td-id,
+    .th-created,
+    .td-created,
+    .th-activity,
+    .td-activity {
+        display: none;
+        /* Hide less important columns on mobile */
+    }
+}
