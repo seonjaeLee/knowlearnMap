@@ -89,17 +89,33 @@ export const semanticFormModalPaperSx = klFormModalPaperSx;
 /** @deprecated — `klFormModalPaperSx` 사용 */
 export const promptFormModalPaperSx = klFormModalPaperSx;
 
-/** 홈 워크스페이스 프롬프트 변경 */
-export const KL_MODAL_PAPER_WIDTH_HOME_PROMPT = 670;
+/** 홈 워크스페이스 이름 변경 */
+export const KL_MODAL_PAPER_WIDTH_HOME_RENAME = 440;
 
-/** @deprecated — `KL_MODAL_PAPER_WIDTH_HOME_PROMPT` 와 동일 */
-export const HOME_PROMPT_MODAL_WIDTH = KL_MODAL_PAPER_WIDTH_HOME_PROMPT;
-
-export const homePromptModalPaperSx = {
-  width: KL_MODAL_PAPER_WIDTH_HOME_PROMPT,
+export const homeRenameModalPaperSx = {
+  width: KL_MODAL_PAPER_WIDTH_HOME_RENAME,
   maxWidth: 'calc(100vw - 48px)',
   minHeight: 'unset',
   maxHeight: 'calc(100vh - 48px)',
 };
+
+/** 긴 Form 팝업 (도메인 관리·워크스페이스 프롬프트 등) — 가로 670 */
+export const KL_MODAL_PAPER_WIDTH_TALL_FORM = 670;
+
+export const klTallFormModalPaperSx = {
+  width: KL_MODAL_PAPER_WIDTH_TALL_FORM,
+  maxWidth: 'calc(100vw - 48px)',
+  minHeight: 'unset',
+  maxHeight: 'calc(100vh - 48px)',
+};
+
+/** 홈 워크스페이스 프롬프트 변경 */
+export const KL_MODAL_PAPER_WIDTH_HOME_PROMPT = KL_MODAL_PAPER_WIDTH_TALL_FORM;
+
+/** @deprecated — `KL_MODAL_PAPER_WIDTH_HOME_PROMPT` 와 동일 */
+export const HOME_PROMPT_MODAL_WIDTH = KL_MODAL_PAPER_WIDTH_HOME_PROMPT;
+
+/** @deprecated — `klTallFormModalPaperSx` 사용 */
+export const homePromptModalPaperSx = klTallFormModalPaperSx;
 
 export const homePromptModalPaperClassName = 'home-prompt-modal-paper';

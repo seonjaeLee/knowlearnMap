@@ -18,7 +18,16 @@ import KlModalSelect from '../components/common/modal/KlModalSelect';
 import {
     homePromptModalPaperClassName,
     homePromptModalPaperSx,
+    homeRenameModalPaperSx,
 } from '../components/common/modal/klModalPaper';
+import {
+    KL_MODAL_FORM_CONTROL_ROW_CLASS,
+    KL_MODAL_FORM_ELEMENT_ID,
+    KL_MODAL_FORM_STACK_CLASS,
+    KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS,
+    KL_MODAL_FORM_TOGGLE_BTN_CLASS,
+    klModalFormContentClassName,
+} from '../components/common/modal/klModalForm';
 import './Home.css';
 
 /**
@@ -898,32 +907,36 @@ function Home() {
                 open={renameModalOpen}
                 onClose={() => setRenameModalOpen(false)}
                 title="워크스페이스 이름 변경"
-                maxWidth="xs"
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={homeRenameModalPaperSx}
                 disableBackdropClose
-                contentClassName="home-rename-modal-content kl-modal-form"
-                actionsClassName="home-rename-modal-actions"
-                actionsAlign="right"
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <button
-                            type="button"
-                            className="kl-btn gray-outline md"
-                            onClick={() => setRenameModalOpen(false)}
-                        >
-                            취소
-                        </button>
-                        <button
-                            type="button"
-                            className="kl-btn primary-full md"
-                            onClick={handleRenameSubmit}
-                        >
-                            저장
-                        </button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={() => setRenameModalOpen(false)}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                className="kl-btn primary-full md"
+                                form={KL_MODAL_FORM_ELEMENT_ID}
+                            >
+                                저장
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
                 <form
-                    className="kl-modal-form-stack"
+                    id={KL_MODAL_FORM_ELEMENT_ID}
+                    className={KL_MODAL_FORM_STACK_CLASS}
                     onSubmit={(e) => {
                         e.preventDefault();
                         handleRenameSubmit();
@@ -957,8 +970,7 @@ function Home() {
                 fullWidth={false}
                 paperSx={homePromptModalPaperSx}
                 paperClassName={homePromptModalPaperClassName}
-                contentClassName="home-prompt-modal-content kl-modal-form"
-                actionsClassName="home-prompt-modal-actions"
+                contentClassName={klModalFormContentClassName}
                 actions={(
                     <div className="kl-modal-actions-split">
                         <div className="kl-modal-actions-split__left">
@@ -979,9 +991,9 @@ function Home() {
                                 취소
                             </button>
                             <button
-                                type="button"
+                                type="submit"
                                 className="kl-btn primary-full md"
-                                onClick={handleSavePrompt}
+                                form={KL_MODAL_FORM_ELEMENT_ID}
                             >
                                 저장
                             </button>
@@ -990,7 +1002,8 @@ function Home() {
                 )}
             >
                 <form
-                    className="kl-modal-form-stack home-prompt-modal-form"
+                    id={KL_MODAL_FORM_ELEMENT_ID}
+                    className={KL_MODAL_FORM_STACK_CLASS}
                     onSubmit={(e) => {
                         e.preventDefault();
                         handleSavePrompt();
@@ -1017,10 +1030,9 @@ function Home() {
                                 청킹 프롬프트
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <div className="home-prompt-inline-row">
+                                <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
                                     <KlModalSelect
                                         id="workspace-prompt-chunk"
-                                        className="home-prompt-select-flex"
                                         value={chunkPromptValue}
                                         onChange={(e) => setChunkPromptValue(e.target.value)}
                                         options={chunkPromptCodes}
@@ -1029,7 +1041,7 @@ function Home() {
                                     />
                                     <button
                                         type="button"
-                                        className={`home-prompt-none-btn ${chunkPromptValue === 'NONE' ? 'home-prompt-none-btn--active' : ''}`}
+                                        className={`${KL_MODAL_FORM_TOGGLE_BTN_CLASS}${chunkPromptValue === 'NONE' ? ` ${KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS}` : ''}`}
                                         onClick={() => setChunkPromptValue(chunkPromptValue === 'NONE' ? '' : 'NONE')}
                                     >
                                         NONE
@@ -1073,11 +1085,11 @@ function Home() {
 
                         <div className="kl-modal-form-row kl-vert-start">
                             <label
-                                className="kl-modal-form-row__label home-prompt-label--stacked"
+                                className="kl-modal-form-row__label kl-modal-form-row__label--stacked"
                                 htmlFor="workspace-prompt-content-ontology"
                             >
-                                <span className="home-prompt-label-line">CONTENT</span>
-                                <span className="home-prompt-label-line">온톨로지</span>
+                                <span className="kl-modal-form-row__label-line">CONTENT</span>
+                                <span className="kl-modal-form-row__label-line">온톨로지</span>
                             </label>
                             <div className="kl-modal-form-row__control">
                                 <KlModalSelect

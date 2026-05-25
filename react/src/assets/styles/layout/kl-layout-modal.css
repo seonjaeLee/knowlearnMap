@@ -47,6 +47,18 @@
   line-height: 1.4;
 }
 
+.kl-modal-form-row__label--stacked {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  line-height: 1.35;
+}
+
+.kl-modal-form-row__label-line {
+  display: block;
+}
+
 .kl-modal-form-required {
   color: var(--color-icon-danger);
 }
@@ -137,7 +149,7 @@
 }
 
 .kl-modal-form-helper {
-  margin: 0;
+  margin: 0 0 var(--spacing-sm);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
   color: var(--color-text-secondary);
@@ -148,11 +160,111 @@
   color: var(--color-icon-danger);
 }
 
+/* select/input flex:1 + 옆 버튼 (청킹 NONE·중복확인·KlModalSelect 등) */
+.kl-modal-form-control-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  min-width: 0;
+}
+
+.kl-modal-form-control-row > .kl-modal-select,
+.kl-modal-form-control-row > select,
+.kl-modal-form-control-row > input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']) {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+/* 옆 보조 버튼 — 중복확인·NONE 등 열 너비 통일 (도메인·프롬프트 팝업) */
+.kl-modal-form-control-row > .kl-btn,
+.kl-modal-form-control-row > .kl-modal-form-toggle-btn {
+  flex-shrink: 0;
+  min-width: 5rem;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.kl-modal-form-control-row > .kl-modal-form-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+.kl-modal-form-toggle-btn {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  min-height: var(--kl-control-height);
+  padding: var(--spacing-xs) calc(var(--spacing-sm) + var(--spacing-xs));
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+}
+
+.kl-modal-form-toggle-btn:hover:not(.kl-modal-form-toggle-btn--active) {
+  background: var(--color-bg-hover);
+}
+
+.kl-modal-form-toggle-btn--active {
+  background-color: var(--color-icon-danger);
+  color: #fff;
+  border-color: var(--color-icon-danger);
+}
+
+.kl-modal-form-toggle-btn--active:hover {
+  background-color: var(--color-icon-danger-emphasis);
+  border-color: var(--color-icon-danger-emphasis);
+  color: #fff;
+}
+
+.kl-modal-form-feedback {
+  margin: var(--spacing-xs) 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.kl-modal-form-feedback--success {
+  color: #059669;
+}
+
+.kl-modal-form-feedback--error {
+  color: var(--color-icon-danger);
+}
+
+.kl-modal-form-error-banner {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs));
+  border-radius: var(--radius-sm);
+  border: 1px solid #fecaca;
+  background-color: #fee2e2;
+  color: var(--color-icon-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* 긴 Form 팝업 본문 — 스크롤·패딩 (도메인·프롬프트 등) */
+.kl-base-modal-content.kl-modal-form.kl-scrollbar-thin {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  max-height: calc(100vh - 160px);
+  padding: var(--spacing-lg) !important;
+  padding-bottom: var(--spacing-2xl) !important;
+}
+
 /* 팝업 본문 세로 스택 — row·content-field·kl-infotxt-note 간격은 gap만 */
 .kl-modal-form-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   padding: 0;
   margin: 0;
 }

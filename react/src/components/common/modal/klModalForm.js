@@ -18,3 +18,15 @@ export const KL_MODAL_FORM_INLINE_CONTROLS_CLASS = 'kl-modal-form-inline-control
 export const KL_MODAL_FORM_INLINE_CONTROLS_FIELD_CLASS = 'kl-modal-form-inline-controls__field';
 export const KL_MODAL_FORM_CHECK_CLASS = 'kl-modal-form-check';
 export const KL_MODAL_FORM_CHECK_EMPHASIS_CLASS = 'kl-modal-form-check--emphasis';
+
+/** row 컨트롤 — select/input flex:1 + 옆 버튼 (청킹 NONE·중복확인 등) */
+export const KL_MODAL_FORM_CONTROL_ROW_CLASS = 'kl-modal-form-control-row';
+
+export const KL_MODAL_FORM_TOGGLE_BTN_CLASS = 'kl-modal-form-toggle-btn';
+export const KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS = 'kl-modal-form-toggle-btn--active';
+
+export const KL_MODAL_FORM_FEEDBACK_CLASS = 'kl-modal-form-feedback';
+export const KL_MODAL_FORM_FEEDBACK_SUCCESS_CLASS = 'kl-modal-form-feedback--success';
+export const KL_MODAL_FORM_FEEDBACK_ERROR_CLASS = 'kl-modal-form-feedback--error';
+
+export const KL_MODAL_FORM_ERROR_BANNER_CLASS = 'kl-modal-form-error-banner';

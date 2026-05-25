@@ -2255,35 +2255,38 @@ function NotebookDetail() {
                     contentClassName="meta-modal-content kl-modal-form notebook-meta-modal-content"
                     actionsClassName="meta-modal-actions"
                     actions={(
-                        <>
-                            <button
-                                type="button"
-                                className="kl-btn gray-outline md"
-                                onClick={() => setBizMetaOpen(false)}
-                                disabled={bizMetaSaving}
-                            >
-                                취소
-                            </button>
-                            <button
-                                type="button"
-                                className="kl-btn primary-full md"
-                                onClick={async () => {
-                                    try {
-                                        setBizMetaSaving(true);
-                                        await workspaceApi.saveBizMeta(id, bizMetaText);
-                                        showAlert('용어사전 저장 완료', 'success');
-                                        fetchNotebook();
-                                    } catch (err) {
-                                        showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
-                                    } finally {
-                                        setBizMetaSaving(false);
-                                    }
-                                }}
-                                disabled={bizMetaSaving}
-                            >
-                                {bizMetaSaving ? '저장 중...' : '저장'}
-                            </button>
-                        </>
+                        <div className="kl-modal-actions-split">
+                            <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                            <div className="kl-modal-actions-split__right">
+                                <button
+                                    type="button"
+                                    className="kl-btn gray-outline md"
+                                    onClick={() => setBizMetaOpen(false)}
+                                    disabled={bizMetaSaving}
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    type="button"
+                                    className="kl-btn primary-full md"
+                                    onClick={async () => {
+                                        try {
+                                            setBizMetaSaving(true);
+                                            await workspaceApi.saveBizMeta(id, bizMetaText);
+                                            showAlert('용어사전 저장 완료', 'success');
+                                            fetchNotebook();
+                                        } catch (err) {
+                                            showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                                        } finally {
+                                            setBizMetaSaving(false);
+                                        }
+                                    }}
+                                    disabled={bizMetaSaving}
+                                >
+                                    {bizMetaSaving ? '저장 중...' : '저장'}
+                                </button>
+                            </div>
+                        </div>
                     )}
                 >
                     <div className="kl-modal-form-stack">
@@ -2357,35 +2360,38 @@ function NotebookDetail() {
                     contentClassName="meta-modal-content kl-modal-form notebook-meta-modal-content"
                     actionsClassName="meta-modal-actions"
                     actions={(
-                        <>
-                            <button
-                                type="button"
-                                className="kl-btn gray-outline md"
-                                onClick={() => setItMetaOpen(false)}
-                                disabled={itMetaSaving}
-                            >
-                                취소
-                            </button>
-                            <button
-                                type="button"
-                                className="kl-btn primary-full md"
-                                onClick={async () => {
-                                    try {
-                                        setItMetaSaving(true);
-                                        await workspaceApi.saveItMeta(id, itMetaText);
-                                        showAlert('IT 용어사전 저장 완료', 'success');
-                                        fetchNotebook();
-                                    } catch (err) {
-                                        showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
-                                    } finally {
-                                        setItMetaSaving(false);
-                                    }
-                                }}
-                                disabled={itMetaSaving}
-                            >
-                                {itMetaSaving ? '저장 중...' : '저장'}
-                            </button>
-                        </>
+                        <div className="kl-modal-actions-split">
+                            <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                            <div className="kl-modal-actions-split__right">
+                                <button
+                                    type="button"
+                                    className="kl-btn gray-outline md"
+                                    onClick={() => setItMetaOpen(false)}
+                                    disabled={itMetaSaving}
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    type="button"
+                                    className="kl-btn primary-full md"
+                                    onClick={async () => {
+                                        try {
+                                            setItMetaSaving(true);
+                                            await workspaceApi.saveItMeta(id, itMetaText);
+                                            showAlert('IT 용어사전 저장 완료', 'success');
+                                            fetchNotebook();
+                                        } catch (err) {
+                                            showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                                        } finally {
+                                            setItMetaSaving(false);
+                                        }
+                                    }}
+                                    disabled={itMetaSaving}
+                                >
+                                    {itMetaSaving ? '저장 중...' : '저장'}
+                                </button>
+                            </div>
+                        </div>
                     )}
                 >
                     <div className="kl-modal-form-stack">

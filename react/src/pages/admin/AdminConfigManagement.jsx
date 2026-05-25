@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { adminConfigApi } from '../../services/api';
-import { Button } from '@mui/material';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
 import { attachRowSpanMeta, getRowSpanCellProps } from '../../hooks/useTableRowSpanGroups';
@@ -13,9 +12,12 @@ import KlIconButton from '../../components/common/KlIconButton';
 import { listTableEmptyState } from '../../config/supportMock';
 import KlTooltip from '../../components/common/KlTooltip';
 import BaseModal from '../../components/common/modal/BaseModal';
+import { klFormModalPaperSx } from '../../components/common/modal/klModalPaper';
 import {
-    klFormModalPaperSx,
-} from '../../components/common/modal/klModalPaper';
+    KL_MODAL_FORM_ELEMENT_ID,
+    KL_MODAL_FORM_STACK_CLASS,
+    klModalFormContentClassName,
+} from '../../components/common/modal/klModalForm';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import { mockAdminConfigCategories, mockAdminConfigItems } from '../../data/adminConfigMockData';
 import './admin-common.css';
@@ -578,27 +580,45 @@ function AdminConfigManagement() {
                 paperSx={klFormModalPaperSx}
                 disableBackdropClose={saving}
                 disableEscapeKeyDown={saving}
-                contentClassName="config-mgmt-edit-modal-content kl-modal-form"
-                actionsClassName="config-mgmt-modal-actions"
-                actionsAlign="right"
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <Button variant="outlined" onClick={closeEditModal} disabled={saving}>
-                            취소
-                        </Button>
-                        <Button variant="contained" onClick={() => void handleSaveEdit()} disabled={saving}>
-                            저장
-                        </Button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={closeEditModal}
+                                disabled={saving}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                className="kl-btn primary-full md"
+                                form={KL_MODAL_FORM_ELEMENT_ID}
+                                disabled={saving}
+                            >
+                                {saving ? '저장 중...' : '저장'}
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
                 {editModalRow ? (
-                    <form className="config-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
-                        <div className="config-form-row">
-                            <label className="config-form-row__label" htmlFor="config-edit-category">
+                    <form
+                        id={KL_MODAL_FORM_ELEMENT_ID}
+                        className={KL_MODAL_FORM_STACK_CLASS}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            void handleSaveEdit();
+                        }}
+                    >
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="config-edit-category">
                                 카테고리
                             </label>
-                            <div className="config-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="config-edit-category"
                                     type="text"
@@ -610,11 +630,11 @@ function AdminConfigManagement() {
                                 />
                             </div>
                         </div>
-                        <div className="config-form-row">
-                            <label className="config-form-row__label" htmlFor="config-edit-key">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="config-edit-key">
                                 키
                             </label>
-                            <div className="config-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="config-edit-key"
                                     type="text"
@@ -626,11 +646,11 @@ function AdminConfigManagement() {
                                 />
                             </div>
                         </div>
-                        <div className="config-form-row">
-                            <label className="config-form-row__label" htmlFor="config-edit-type">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="config-edit-type">
                                 타입
                             </label>
-                            <div className="config-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="config-edit-type"
                                     type="text"
@@ -642,11 +662,11 @@ function AdminConfigManagement() {
                                 />
                             </div>
                         </div>
-                        <div className="config-form-row">
-                            <label className="config-form-row__label" htmlFor="config-edit-description">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="config-edit-description">
                                 설명
                             </label>
-                            <div className="config-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="config-edit-description"
                                     type="text"
@@ -661,11 +681,11 @@ function AdminConfigManagement() {
                                 />
                             </div>
                         </div>
-                        <div className="config-form-row config-form-row--start">
-                            <label className="config-form-row__label" htmlFor="config-edit-value">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="config-edit-value">
                                 값
                             </label>
-                            <div className="config-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <textarea
                                     id="config-edit-value"
                                     value={editDraft}

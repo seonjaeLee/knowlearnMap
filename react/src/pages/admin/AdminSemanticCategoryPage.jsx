@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Button } from '@mui/material';
 import { adminSemanticApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import {
@@ -18,10 +17,12 @@ import {
 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BaseModal from '../../components/common/modal/BaseModal';
-import KlModalSelect from '../../components/common/modal/KlModalSelect';
+import { klFormModalPaperSx } from '../../components/common/modal/klModalPaper';
 import {
-  klFormModalPaperSx,
-} from '../../components/common/modal/klModalPaper';
+  KL_MODAL_FORM_ELEMENT_ID,
+  KL_MODAL_FORM_STACK_CLASS,
+  klModalFormContentClassName,
+} from '../../components/common/modal/klModalForm';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import ToolbarMoreMenu from '../../components/common/ToolbarMoreMenu';
 import BasicTable from '../../components/common/BasicTable';
@@ -552,25 +553,43 @@ function AdminSemanticCategoryPage({
       maxWidth={false}
       fullWidth={false}
       paperSx={klFormModalPaperSx}
-      contentClassName="admin-semantic-edit-content kl-modal-form"
-      actionsClassName="admin-semantic-modal-actions"
-      actionsAlign="right"
+      contentClassName={klModalFormContentClassName}
       actions={(
-        <>
-          <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
-          <Button variant="contained" onClick={handleSave}>
-            저장
-          </Button>
-        </>
+        <div className="kl-modal-actions-split">
+          <div className="kl-modal-actions-split__left" aria-hidden="true" />
+          <div className="kl-modal-actions-split__right">
+            <button
+              type="button"
+              className="kl-btn gray-outline md"
+              onClick={() => setEditing(null)}
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              className="kl-btn primary-full md"
+              form={KL_MODAL_FORM_ELEMENT_ID}
+            >
+              저장
+            </button>
+          </div>
+        </div>
       )}
     >
       {editing ? (
-        <form className="admin-semantic-modal-form" onSubmit={(e) => e.preventDefault()}>
-          <div className="admin-semantic-form-row">
-            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-name-en">
-              영문명 <span className="required-asterisk" aria-hidden="true">*</span>
+        <form
+          id={KL_MODAL_FORM_ELEMENT_ID}
+          className={KL_MODAL_FORM_STACK_CLASS}
+          onSubmit={(e) => {
+            e.preventDefault();
+            void handleSave();
+          }}
+        >
+          <div className="kl-modal-form-row">
+            <label className="kl-modal-form-row__label" htmlFor="semantic-cat-name-en">
+              영문명 <span className="kl-modal-form-required" aria-hidden="true">*</span>
             </label>
-            <div className="admin-semantic-form-row__control">
+            <div className="kl-modal-form-row__control">
               <input
                 id="semantic-cat-name-en"
                 type="text"
@@ -581,11 +600,11 @@ function AdminSemanticCategoryPage({
               />
             </div>
           </div>
-          <div className="admin-semantic-form-row">
-            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-name-ko">
-              한글명 <span className="required-asterisk" aria-hidden="true">*</span>
+          <div className="kl-modal-form-row">
+            <label className="kl-modal-form-row__label" htmlFor="semantic-cat-name-ko">
+              한글명 <span className="kl-modal-form-required" aria-hidden="true">*</span>
             </label>
-            <div className="admin-semantic-form-row__control">
+            <div className="kl-modal-form-row__control">
               <input
                 id="semantic-cat-name-ko"
                 type="text"
@@ -596,11 +615,11 @@ function AdminSemanticCategoryPage({
               />
             </div>
           </div>
-          <div className="admin-semantic-form-row">
-            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-code">
+          <div className="kl-modal-form-row kl-vert-start">
+            <label className="kl-modal-form-row__label" htmlFor="semantic-cat-code">
               코드
             </label>
-            <div className="admin-semantic-form-row__control">
+            <div className="kl-modal-form-row__control">
               <input
                 id="semantic-cat-code"
                 type="text"
@@ -609,17 +628,16 @@ function AdminSemanticCategoryPage({
                 placeholder="e.g. skin-type"
                 autoComplete="off"
               />
-              <p className="admin-semantic-form-helper">비우면 영문명에서 자동 생성됩니다.</p>
+              <p className="kl-modal-form-helper">비우면 영문명에서 자동 생성됩니다.</p>
             </div>
           </div>
-          <div className="admin-semantic-form-row">
-            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-parent">
+          <div className="kl-modal-form-row">
+            <label className="kl-modal-form-row__label" htmlFor="semantic-cat-parent">
               상위 카테고리
             </label>
-            <div className="admin-semantic-form-row__control">
-              <KlModalSelect
+            <div className="kl-modal-form-row__control">
+              <select
                 id="semantic-cat-parent"
-                placeholder="(루트 — 최상위)"
                 value={editing.parentId != null ? String(editing.parentId) : ''}
                 onChange={(e) =>
                   setEditing({
@@ -627,20 +645,23 @@ function AdminSemanticCategoryPage({
                     parentId: e.target.value ? Number(e.target.value) : null,
                   })
                 }
-                optionItems={displayItems
+              >
+                <option value="">(루트 — 최상위)</option>
+                {displayItems
                   .filter((it) => it.id !== editing.id)
-                  .map((it) => ({
-                    value: it.id,
-                    label: `${it.path || it.nameEn} — ${it.nameKo}`,
-                  }))}
-              />
+                  .map((it) => (
+                    <option key={it.id} value={String(it.id)}>
+                      {`${it.path || it.nameEn} — ${it.nameKo}`}
+                    </option>
+                  ))}
+              </select>
             </div>
           </div>
-          <div className="admin-semantic-form-row admin-semantic-form-row--start">
-            <label className="admin-semantic-form-row__label" htmlFor="semantic-cat-description">
+          <div className="kl-modal-form-row kl-vert-start">
+            <label className="kl-modal-form-row__label" htmlFor="semantic-cat-description">
               설명
             </label>
-            <div className="admin-semantic-form-row__control">
+            <div className="kl-modal-form-row__control">
               <textarea
                 id="semantic-cat-description"
                 rows={3}

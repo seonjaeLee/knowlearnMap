@@ -4,9 +4,8 @@ import { workspaceApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
 import { useAuth } from '../context/AuthContext';
 import BaseModal from './common/modal/BaseModal';
-import {
-    klFormModalPaperSx,
-} from './common/modal/klModalPaper';
+import { klFormModalPaperSx } from './common/modal/klModalPaper';
+import { klModalFormContentClassName } from './common/modal/klModalForm';
 import {
     getMockSharedMembers,
     mockMemberSearchSuggestions,
@@ -244,23 +243,25 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
             maxWidth={false}
             fullWidth={false}
             paperSx={klFormModalPaperSx}
-            contentClassName="share-modal-content kl-modal-form"
+            contentClassName={`share-modal-content ${klModalFormContentClassName}`}
             actionsClassName="share-modal-actions"
-            actionsAlign="right"
             actions={(
-                <>
-                    <button type="button" className="kl-btn gray-outline md" onClick={onClose}>
-                        취소
-                    </button>
-                    <button
-                        type="button"
-                        className="kl-btn primary-full md"
-                        onClick={handleSave}
-                        disabled={loading}
-                    >
-                        {loading ? '저장 중...' : '저장'}
-                    </button>
-                </>
+                <div className="kl-modal-actions-split">
+                    <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                    <div className="kl-modal-actions-split__right">
+                        <button type="button" className="kl-btn gray-outline md" onClick={onClose}>
+                            취소
+                        </button>
+                        <button
+                            type="button"
+                            className="kl-btn primary-full md"
+                            onClick={handleSave}
+                            disabled={loading}
+                        >
+                            {loading ? '저장 중...' : '저장'}
+                        </button>
+                    </div>
+                </div>
             )}
         >
             <div className="share-modal-body">

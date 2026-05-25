@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Button } from '@mui/material';
 import { actionApi } from '../../services/api';
 import { useAlert } from '../../context/AlertContext';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
@@ -11,9 +10,12 @@ import { listTableEmptyState } from '../../config/supportMock';
 import KlTooltip from '../../components/common/KlTooltip';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
+import { homeRenameModalPaperSx } from '../../components/common/modal/klModalPaper';
 import {
-  klFormModalPaperSx,
-} from '../../components/common/modal/klModalPaper';
+  KL_MODAL_FORM_ELEMENT_ID,
+  KL_MODAL_FORM_STACK_CLASS,
+  klModalFormContentClassName,
+} from '../../components/common/modal/klModalForm';
 import {
   getMockActionLogs,
   getMockActionsForWorkspace,
@@ -57,30 +59,43 @@ function WorkspaceIdModal({
       onClose={onClose}
       maxWidth={false}
       fullWidth={false}
-      paperSx={klFormModalPaperSx}
-      contentClassName="admin-action-ws-modal-content kl-modal-form"
-      actionsClassName="admin-action-ws-modal-actions"
-      actionsAlign="right"
+      paperSx={homeRenameModalPaperSx}
+      contentClassName={klModalFormContentClassName}
       actions={(
-        <>
-          <Button variant="outlined" onClick={onClose}>
-            취소
-          </Button>
-          <Button variant="contained" onClick={onConfirm} disabled={parsed == null}>
-            확인
-          </Button>
-        </>
+        <div className="kl-modal-actions-split">
+          <div className="kl-modal-actions-split__left" aria-hidden="true" />
+          <div className="kl-modal-actions-split__right">
+            <button type="button" className="kl-btn gray-outline md" onClick={onClose}>
+              취소
+            </button>
+            <button
+              type="submit"
+              className="kl-btn primary-full md"
+              form={KL_MODAL_FORM_ELEMENT_ID}
+              disabled={parsed == null}
+            >
+              확인
+            </button>
+          </div>
+        </div>
       )}
     >
-      <form className="admin-action-ws-modal-form" onSubmit={(e) => e.preventDefault()}>
-        <p className="admin-action-ws-form-hint">
+      <form
+        id={KL_MODAL_FORM_ELEMENT_ID}
+        className={KL_MODAL_FORM_STACK_CLASS}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (parsed != null) onConfirm();
+        }}
+      >
+        <p className="kl-modal-form-helper">
           Action 관리 대상 workspaceId 를 입력하세요. 다음 방문 시에도 유지됩니다.
         </p>
-        <div className="admin-action-ws-form-row">
-          <label className="admin-action-ws-form-row__label" htmlFor="admin-action-ws-id">
+        <div className="kl-modal-form-row">
+          <label className="kl-modal-form-row__label" htmlFor="admin-action-ws-id">
             워크스페이스 ID
           </label>
-          <div className="admin-action-ws-form-row__control">
+          <div className="kl-modal-form-row__control">
             <input
               id="admin-action-ws-id"
               type="text"
@@ -89,12 +104,6 @@ function WorkspaceIdModal({
               placeholder="예: 71"
               value={draft}
               onChange={(e) => onDraftChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && parsed != null) {
-                  e.preventDefault();
-                  onConfirm();
-                }
-              }}
             />
           </div>
         </div>
@@ -139,7 +148,7 @@ function AdminActionPage() {
       <div className="kl-page kl-page--fill admin-action-page">
         {wsModal}
         <div className="admin-action-ws-empty">
-          <p>Action 관리 대상 workspaceId 가 필요합니다.</p>
+          <p>Action 관리에 워크스페이스 ID가 필요합니다.</p>
           <button type="button" className="kl-btn primary-full md" onClick={openWsModal}>
             워크스페이스 ID 입력
           </button>

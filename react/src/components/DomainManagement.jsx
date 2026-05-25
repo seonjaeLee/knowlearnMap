@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Button } from '@mui/material';
 import {
     Search, Plus, RotateCcw, Globe, CheckCircle, AlertCircle, Database, Layout, Info,
 } from 'lucide-react';
@@ -9,9 +8,19 @@ import { apiCall } from '../services/api';
 import AdminPageHeader from './admin/AdminPageHeader';
 import BaseModal from './common/modal/BaseModal';
 import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
+import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 import {
-    klFormModalPaperSx,
-} from './common/modal/klModalPaper';
+    KL_MODAL_FORM_CONTROL_ROW_CLASS,
+    KL_MODAL_FORM_ELEMENT_ID,
+    KL_MODAL_FORM_ERROR_BANNER_CLASS,
+    KL_MODAL_FORM_FEEDBACK_CLASS,
+    KL_MODAL_FORM_FEEDBACK_ERROR_CLASS,
+    KL_MODAL_FORM_FEEDBACK_SUCCESS_CLASS,
+    KL_MODAL_FORM_STACK_CLASS,
+    KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS,
+    KL_MODAL_FORM_TOGGLE_BTN_CLASS,
+    klModalFormContentClassName,
+} from './common/modal/klModalForm';
 import KlIconButton from './common/KlIconButton';
 import BasicTable from './common/BasicTable';
 import KlTableRowActions from './common/table/KlTableRowActions';
@@ -548,31 +557,44 @@ function DomainManagement() {
                 title={isEditMode ? '도메인 정보 수정' : '새 도메인 추가'}
                 maxWidth={false}
                 fullWidth={false}
-                paperSx={klFormModalPaperSx}
-                contentClassName="domain-mgmt-modal-content kl-modal-form"
-                actionsClassName="domain-mgmt-modal-actions"
-                actionsAlign="right"
+                paperSx={klTallFormModalPaperSx}
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <Button variant="outlined" onClick={() => setIsModalOpen(false)}>
-                            취소
-                        </Button>
-                        <Button
-                            variant="contained"
-                            onClick={handleSubmit}
-                            disabled={!isEditMode && !isArangoDbChecked}
-                        >
-                            {getModalSubmitLabel(isEditMode, false, '생성하기')}
-                        </Button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={() => setIsModalOpen(false)}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                className="kl-btn primary-full md"
+                                form={KL_MODAL_FORM_ELEMENT_ID}
+                                disabled={!isEditMode && !isArangoDbChecked}
+                            >
+                                {getModalSubmitLabel(isEditMode, false, '생성하기')}
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
-                <form className="domain-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
-                    <div className="domain-form-row">
-                        <label className="domain-form-row__label" htmlFor="domain-mgmt-name">
-                            도메인명 <span className="domain-required" aria-hidden="true">*</span>
+                <form
+                    id={KL_MODAL_FORM_ELEMENT_ID}
+                    className={KL_MODAL_FORM_STACK_CLASS}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSubmit();
+                    }}
+                >
+                    <div className="kl-modal-form-row">
+                        <label className="kl-modal-form-row__label" htmlFor="domain-mgmt-name">
+                            도메인명 <span className="kl-modal-form-required" aria-hidden="true">*</span>
                         </label>
-                        <div className="domain-form-row__control">
+                        <div className="kl-modal-form-row__control">
                             <input
                                 id="domain-mgmt-name"
                                 type="text"
@@ -585,11 +607,11 @@ function DomainManagement() {
                         </div>
                     </div>
 
-                    <div className="domain-form-row">
-                        <label className="domain-form-row__label" htmlFor="domain-mgmt-desc">
+                    <div className="kl-modal-form-row">
+                        <label className="kl-modal-form-row__label" htmlFor="domain-mgmt-desc">
                             설명
                         </label>
-                        <div className="domain-form-row__control">
+                        <div className="kl-modal-form-row__control">
                             <input
                                 id="domain-mgmt-desc"
                                 type="text"
@@ -601,20 +623,20 @@ function DomainManagement() {
                         </div>
                     </div>
 
-                    <div className="domain-form-row domain-form-row--start">
+                    <div className="kl-modal-form-row kl-vert-start">
                         <label
-                            className="domain-form-row__label domain-form-row__label--stacked"
+                            className="kl-modal-form-row__label kl-modal-form-row__label--stacked"
                             htmlFor={isEditMode ? 'domain-mgmt-arango-readonly' : 'domain-mgmt-arango'}
                         >
-                            <span className="domain-form-row__label-line">ArangoDB</span>
-                            <span className="domain-form-row__label-line">
+                            <span className="kl-modal-form-row__label-line">ArangoDB</span>
+                            <span className="kl-modal-form-row__label-line">
                                 데이터베이스명
                                 {!isEditMode ? (
-                                    <span className="domain-required" aria-hidden="true"> *</span>
+                                    <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                                 ) : null}
                             </span>
                         </label>
-                        <div className="domain-form-row__control">
+                        <div className="kl-modal-form-row__control">
                             {isEditMode ? (
                                 <input
                                     id="domain-mgmt-arango-readonly"
@@ -624,7 +646,7 @@ function DomainManagement() {
                                 />
                             ) : (
                                 <>
-                                    <div className="domain-input-group">
+                                    <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
                                         <input
                                             id="domain-mgmt-arango"
                                             type="text"
@@ -633,15 +655,21 @@ function DomainManagement() {
                                             onChange={handleInputChange}
                                             placeholder="예: mydomaindb (소문자)"
                                         />
-                                        <button type="button" className="domain-mgmt-btn" onClick={handleDuplicateCheck}>
+                                        <button
+                                            type="button"
+                                            className="kl-btn gray-fill md"
+                                            onClick={handleDuplicateCheck}
+                                        >
                                             중복확인
                                         </button>
                                     </div>
-                                    <p className="domain-mgmt-field-help">
+                                    <p className="kl-modal-form-helper">
                                         * 생성 후에는 변경할 수 없습니다. (영문 소문자만 가능)
                                     </p>
                                     {checkMessage ? (
-                                        <div className={`domain-validation-msg ${isArangoDbChecked ? 'success' : 'error'}`}>
+                                        <div
+                                            className={`${KL_MODAL_FORM_FEEDBACK_CLASS} ${isArangoDbChecked ? KL_MODAL_FORM_FEEDBACK_SUCCESS_CLASS : KL_MODAL_FORM_FEEDBACK_ERROR_CLASS}`}
+                                        >
                                             {isArangoDbChecked ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
                                             {checkMessage}
                                         </div>
@@ -651,12 +679,12 @@ function DomainManagement() {
                         </div>
                     </div>
 
-                    <div className="domain-form-row">
-                        <label className="domain-form-row__label" htmlFor="domain-mgmt-chunk-prompt">
+                    <div className="kl-modal-form-row kl-vert-start">
+                        <label className="kl-modal-form-row__label" htmlFor="domain-mgmt-chunk-prompt">
                             청킹 프롬프트
                         </label>
-                        <div className="domain-form-row__control">
-                            <div className="domain-input-group">
+                        <div className="kl-modal-form-row__control">
+                            <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
                                 {renderPromptCodeSelect('chunkPrompt', chunkPromptCodes, {
                                     id: 'domain-mgmt-chunk-prompt',
                                     ariaLabel: '청킹 프롬프트',
@@ -664,27 +692,27 @@ function DomainManagement() {
                                 })}
                                 <button
                                     type="button"
-                                    className={`domain-mgmt-btn ${formData.chunkPrompt === 'NONE' ? 'domain-mgmt-btn--danger' : ''}`}
+                                    className={`${KL_MODAL_FORM_TOGGLE_BTN_CLASS}${formData.chunkPrompt === 'NONE' ? ` ${KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS}` : ''}`}
                                     onClick={() => setFormData((prev) => ({ ...prev, chunkPrompt: prev.chunkPrompt === 'NONE' ? '' : 'NONE' }))}
                                 >
                                     NONE
                                 </button>
                             </div>
-                            <p className={`domain-mgmt-field-help ${formData.chunkPrompt === 'NONE' ? 'domain-helper-error' : ''}`}>
+                            <p className={`kl-modal-form-helper${formData.chunkPrompt === 'NONE' ? ' kl-modal-form-helper--error' : ''}`}>
                                 {formData.chunkPrompt === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
                             </p>
                         </div>
                     </div>
 
                     {promptSelectConfigs.map((item) => (
-                        <div key={item.key} className="domain-form-row">
+                        <div key={item.key} className="kl-modal-form-row kl-vert-start">
                             <label
-                                className={`domain-form-row__label${item.labelLines ? ' domain-form-row__label--stacked' : ''}`}
+                                className={`kl-modal-form-row__label${item.labelLines ? ' kl-modal-form-row__label--stacked' : ''}`}
                                 htmlFor={`domain-mgmt-${item.key}`}
                             >
                                 {item.labelLines ? (
                                     item.labelLines.map((line) => (
-                                        <span key={line} className="domain-form-row__label-line">
+                                        <span key={line} className="kl-modal-form-row__label-line">
                                             {line}
                                         </span>
                                     ))
@@ -692,12 +720,12 @@ function DomainManagement() {
                                     item.label
                                 )}
                             </label>
-                            <div className="domain-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 {renderPromptCodeSelect(item.key, item.options, {
                                     id: `domain-mgmt-${item.key}`,
                                     ariaLabel: item.label,
                                 })}
-                                <p className="domain-mgmt-field-help">{item.helper}</p>
+                                <p className="kl-modal-form-helper">{item.helper}</p>
                             </div>
                         </div>
                     ))}
@@ -711,7 +739,7 @@ function DomainManagement() {
                         </div>
                     ) : null}
 
-                    {error ? <div className="domain-error-note">{error}</div> : null}
+                    {error ? <div className={KL_MODAL_FORM_ERROR_BANNER_CLASS}>{error}</div> : null}
                 </form>
             </BaseModal>
         </div>

@@ -542,3 +542,21 @@
 - **문서:** `docs/modal-guide.md` §5 · §9 반영
 
 ---
+
+### 2) 어드민·워크스페이스 Form 팝업 — `modal-guide` / `ReportGenerationModal` 패턴 이관
+
+- **목적:** 고객센터 Form SSOT 이후, 어드민·홈·도메인 팝업을 `kl-modal-form` · `kl-btn` · `kl-modal-actions-split` · `KL_MODAL_FORM_*` 상수로 통일. 페이지 전용 모달 CSS·MUI `Button` 제거.
+- **Paper:** `klModalPaper.js` — Form 550(`klFormModalPaperSx`), 긴 Form 670(`klTallFormModalPaperSx`), 짧은 Form 440(`homeRenameModalPaperSx`)
+- **전역:** `kl-layout-modal.css` — `kl-modal-form-stack` gap `--spacing-sm`(8px), `kl-modal-form-control-row`·toggle·feedback·error banner, `kl-modal-form-helper` `margin-bottom: var(--spacing-sm)`
+- **적용(jsx):** `Home.jsx`·`ShareSettingsModal.jsx`(프롬프트 670·이름 440), `DomainManagement.jsx`(670), `AdminMemberManagement.jsx`, `AdminConfigManagement.jsx`, `AdminSemanticCategoryPage.jsx`, `semantic/SemanticEntitySplitPage.jsx`, `AdminActionPage.jsx`(워크스페이스 선택 440)
+- **노트북 상세:** 비즈·IT 용어 팝업 — 푸터 `kl-btn`·split만 정리(크기 유지)
+- **문서:** `docs/modal-guide.md` — stack gap 8px 문구 일부 반영
+
+---
+
+### 3) Action · 시멘틱 팝업 보정
+
+- **Action — 워크스페이스 선택:** `kl-infotxt-note` 시도 후 제거. 안내는 기존 문구 한 줄(`Action 관리 대상 workspaceId …`)·입력 **위** `kl-modal-form-helper` 유지.
+- **시멘틱 — select:** `KlModalSelect`(MUI) 제거 → 사용자 관리와 동일 **네이티브 `<select>`** + `.kl-modal-form select` (카테고리 상위·엔티티 카테고리). 펼침 UI는 OS·브라우저 의존(합의).
+
+---

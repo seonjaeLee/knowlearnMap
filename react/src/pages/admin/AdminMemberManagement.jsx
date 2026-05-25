@@ -1,7 +1,6 @@
 import React, {
     useState, useEffect, useMemo, useRef, useCallback,
 } from 'react';
-import { Button } from '@mui/material';
 import { apiCall, memberApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
@@ -15,14 +14,20 @@ import KlIconButton from '../../components/common/KlIconButton';
 import { listTableEmptyState } from '../../config/supportMock';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
+import { klFormModalPaperSx } from '../../components/common/modal/klModalPaper';
 import {
-    klFormModalPaperSx,
-} from '../../components/common/modal/klModalPaper';
+    KL_MODAL_FORM_CONTROL_ROW_CLASS,
+    KL_MODAL_FORM_ELEMENT_ID,
+    KL_MODAL_FORM_FEEDBACK_CLASS,
+    KL_MODAL_FORM_FEEDBACK_ERROR_CLASS,
+    KL_MODAL_FORM_FEEDBACK_SUCCESS_CLASS,
+    KL_MODAL_FORM_STACK_CLASS,
+    klModalFormContentClassName,
+} from '../../components/common/modal/klModalForm';
 import { mockAdminMembers } from '../../data/memberMockData';
 import { mockDomains } from '../../data/domainMockData';
 import './admin-common.css';
 import './AdminMemberManagement.css';
-import '../../components/admin/DomainManagement.css';
 
 const isMemberMockEnabled = import.meta.env.VITE_ENABLE_MEMBER_MOCK === 'true';
 const isDomainMockEnabled = import.meta.env.VITE_ENABLE_DOMAIN_MOCK === 'true';
@@ -758,27 +763,43 @@ function AdminMemberManagement() {
                 maxWidth={false}
                 fullWidth={false}
                 paperSx={klFormModalPaperSx}
-                contentClassName="member-mgmt-member-edit-content kl-modal-form"
-                actionsClassName="member-mgmt-modal-actions"
-                actionsAlign="right"
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <Button variant="outlined" onClick={() => setEditMember(null)}>
-                            취소
-                        </Button>
-                        <Button variant="contained" onClick={handleEditSave}>
-                            저장
-                        </Button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={() => setEditMember(null)}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                className="kl-btn primary-full md"
+                                form={KL_MODAL_FORM_ELEMENT_ID}
+                            >
+                                저장
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
                 {editMember ? (
-                    <form className="member-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="member-edit-email">
+                    <form
+                        id={KL_MODAL_FORM_ELEMENT_ID}
+                        className={KL_MODAL_FORM_STACK_CLASS}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleEditSave();
+                        }}
+                    >
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="member-edit-email">
                                 이메일
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="member-edit-email"
                                     type="email"
@@ -791,11 +812,11 @@ function AdminMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="member-edit-role">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="member-edit-role">
                                 권한 (Role)
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="member-edit-role"
                                     value={editMember.role}
@@ -808,11 +829,11 @@ function AdminMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="member-edit-grade">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="member-edit-grade">
                                 등급 (Grade)
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="member-edit-grade"
                                     value={editMember.grade}
@@ -826,11 +847,11 @@ function AdminMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="member-edit-status">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="member-edit-status">
                                 상태 (Status)
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="member-edit-status"
                                     value={editMember.status}
@@ -854,26 +875,40 @@ function AdminMemberManagement() {
                 maxWidth={false}
                 fullWidth={false}
                 paperSx={klFormModalPaperSx}
-                contentClassName="member-mgmt-member-edit-content kl-modal-form"
-                actionsClassName="member-mgmt-modal-actions"
-                actionsAlign="right"
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <Button variant="outlined" onClick={() => setCreateMember(null)} disabled={createSubmitting}>
-                            취소
-                        </Button>
-                        <Button
-                            variant="contained"
-                            onClick={handleCreateSubmit}
-                            disabled={createSubmitting || !canSubmitCreate}
-                        >
-                            {createSubmitting ? '등록 중...' : '등록'}
-                        </Button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={() => setCreateMember(null)}
+                                disabled={createSubmitting}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                className="kl-btn primary-full md"
+                                form={KL_MODAL_FORM_ELEMENT_ID}
+                                disabled={createSubmitting || !canSubmitCreate}
+                            >
+                                {createSubmitting ? '등록 중...' : '등록'}
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
                 {createMember ? (
-                    <form className="member-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
+                    <form
+                        id={KL_MODAL_FORM_ELEMENT_ID}
+                        className={KL_MODAL_FORM_STACK_CLASS}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleCreateSubmit();
+                        }}
+                    >
                         <input
                             type="text"
                             name="km-trap-username"
@@ -897,13 +932,13 @@ function AdminMemberManagement() {
                             readOnly
                         />
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="admin-member-create-loginid">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="admin-member-create-loginid">
                                 로그인 ID
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
-                                <div className="domain-input-group">
+                            <div className="kl-modal-form-row__control">
+                                <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
                                     <input
                                         id="admin-member-create-loginid"
                                         type="text"
@@ -919,7 +954,7 @@ function AdminMemberManagement() {
                                     />
                                     <button
                                         type="button"
-                                        className="admin-btn"
+                                        className="kl-btn gray-fill md"
                                         onClick={handleCheckLoginId}
                                         disabled={isLoginIdChecking || !(createMember.loginId || '').trim()}
                                     >
@@ -928,7 +963,7 @@ function AdminMemberManagement() {
                                 </div>
                                 {loginIdCheckMessage ? (
                                     <div
-                                        className={`domain-validation-msg ${isLoginIdAvailable ? 'success' : 'error'}`}
+                                        className={`${KL_MODAL_FORM_FEEDBACK_CLASS} ${isLoginIdAvailable ? KL_MODAL_FORM_FEEDBACK_SUCCESS_CLASS : KL_MODAL_FORM_FEEDBACK_ERROR_CLASS}`}
                                         role="status"
                                     >
                                         {isLoginIdAvailable ? (
@@ -939,19 +974,19 @@ function AdminMemberManagement() {
                                         {loginIdCheckMessage}
                                     </div>
                                 ) : (
-                                    <p className="member-form-row__hint">
+                                    <p className="kl-modal-form-helper">
                                         이메일 또는 영문/숫자 ID (3–255자). 중복확인 후 등록할 수 있습니다.
                                     </p>
                                 )}
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="admin-member-create-password">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="admin-member-create-password">
                                 비밀번호
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="admin-member-create-password"
                                     type="password"
@@ -964,12 +999,12 @@ function AdminMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="admin-member-create-password-confirm">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="admin-member-create-password-confirm">
                                 비밀번호 확인
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="admin-member-create-password-confirm"
                                     type="password"
@@ -984,7 +1019,10 @@ function AdminMemberManagement() {
                                 />
                                 {Boolean(createMember.passwordConfirm)
                                     && createMember.password !== createMember.passwordConfirm ? (
-                                        <div className="domain-validation-msg error" role="alert">
+                                        <div
+                                            className={`${KL_MODAL_FORM_FEEDBACK_CLASS} ${KL_MODAL_FORM_FEEDBACK_ERROR_CLASS}`}
+                                            role="alert"
+                                        >
                                             <AlertCircle size={14} aria-hidden />
                                             비밀번호가 일치하지 않습니다.
                                         </div>
@@ -992,12 +1030,12 @@ function AdminMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="admin-member-create-role">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="admin-member-create-role">
                                 권한 (Role)
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="admin-member-create-role"
                                     value={createMember.role}
@@ -1010,12 +1048,12 @@ function AdminMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="admin-member-create-grade">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="admin-member-create-grade">
                                 등급 (Grade)
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="admin-member-create-grade"
                                     value={createMember.grade}
@@ -1029,12 +1067,12 @@ function AdminMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="admin-member-create-domain">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="admin-member-create-domain">
                                 도메인
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="admin-member-create-domain"
                                     value={createMember.domainName}
@@ -1054,7 +1092,7 @@ function AdminMemberManagement() {
                                         ))
                                     )}
                                 </select>
-                                <p className="member-form-row__hint">
+                                <p className="kl-modal-form-helper">
                                     등록할 사용자가 소속될 도메인을 선택합니다.
                                 </p>
                             </div>

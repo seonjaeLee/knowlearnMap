@@ -156,7 +156,7 @@ import {
 | 테두리 | `1px solid var(--color-border)` |
 | 포커스 | `var(--color-accent)` + `var(--shadow-focus-input)` |
 | input/textarea 패딩 | `calc(var(--spacing-sm) + var(--spacing-xs))` `14px` |
-| 필드 블록 간격 | `--spacing-md` |
+| 필드 블록 간격 (`kl-modal-form-stack` gap) | `--spacing-sm` (8px) |
 | 라벨↔컨트롤 | `--spacing-sm` |
 
 **유지보수:** `kit/kl-modal-form.css` + `legacy/kl-legacy-modal.css` (`.modal-native-field`, `.modal-input`) **함께** 본다.
