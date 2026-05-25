@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
-import { Button } from '@mui/material';
 import { ChevronsLeft } from 'lucide-react';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
 import AdminSemanticCategoryPage from '../AdminSemanticCategoryPage';
 import BaseModal from '../../../components/common/modal/BaseModal';
-import KlModalSelect from '../../../components/common/modal/KlModalSelect';
+import { klFormModalPaperSx } from '../../../components/common/modal/klModalPaper';
 import {
-  semanticFormModalPaperClassName,
-  semanticFormModalPaperSx,
-} from '../../../components/common/modal/supportFormModalPaperSx';
+  KL_MODAL_FORM_ELEMENT_ID,
+  KL_MODAL_FORM_STACK_CLASS,
+  klModalFormContentClassName,
+} from '../../../components/common/modal/klModalForm';
 import SplitPane from '../../../components/common/SplitPane';
 import KlIconButton from '../../../components/common/KlIconButton';
 import SemanticEntityListPanel from './SemanticEntityListPanel';
@@ -160,25 +160,44 @@ function SemanticEntitySplitPage({
         onClose={() => setEditing(null)}
         maxWidth={false}
         fullWidth={false}
-        paperSx={semanticFormModalPaperSx}
-        paperClassName={semanticFormModalPaperClassName}
-        contentClassName="admin-semantic-edit-content kl-modal-form"
-        actionsClassName="admin-semantic-modal-actions"
-        actionsAlign="right"
+        paperSx={klFormModalPaperSx}
+        contentClassName={klModalFormContentClassName}
         actions={(
-          <>
-            <Button variant="outlined" onClick={() => setEditing(null)}>취소</Button>
-            <Button variant="contained" onClick={handleSave}>저장</Button>
-          </>
+          <div className="kl-modal-actions-split">
+            <div className="kl-modal-actions-split__left" aria-hidden="true" />
+            <div className="kl-modal-actions-split__right">
+              <button
+                type="button"
+                className="kl-btn gray-outline md"
+                onClick={() => setEditing(null)}
+              >
+                취소
+              </button>
+              <button
+                type="submit"
+                className="kl-btn primary-full md"
+                form={KL_MODAL_FORM_ELEMENT_ID}
+              >
+                저장
+              </button>
+            </div>
+          </div>
         )}
       >
         {editing ? (
-          <form className="admin-semantic-modal-form" onSubmit={(e) => e.preventDefault()}>
-            <div className="admin-semantic-form-row">
-              <label className="admin-semantic-form-row__label" htmlFor={`semantic-${entityKey}-name-en`}>
-                영문명 <span className="required-asterisk" aria-hidden="true">*</span>
+          <form
+            id={KL_MODAL_FORM_ELEMENT_ID}
+            className={KL_MODAL_FORM_STACK_CLASS}
+            onSubmit={(e) => {
+              e.preventDefault();
+              void handleSave();
+            }}
+          >
+            <div className="kl-modal-form-row">
+              <label className="kl-modal-form-row__label" htmlFor={`semantic-${entityKey}-name-en`}>
+                영문명 <span className="kl-modal-form-required" aria-hidden="true">*</span>
               </label>
-              <div className="admin-semantic-form-row__control">
+              <div className="kl-modal-form-row__control">
                 <input
                   id={`semantic-${entityKey}-name-en`}
                   type="text"
@@ -188,11 +207,11 @@ function SemanticEntitySplitPage({
                 />
               </div>
             </div>
-            <div className="admin-semantic-form-row">
-              <label className="admin-semantic-form-row__label" htmlFor={`semantic-${entityKey}-name-ko`}>
-                한글명 <span className="required-asterisk" aria-hidden="true">*</span>
+            <div className="kl-modal-form-row">
+              <label className="kl-modal-form-row__label" htmlFor={`semantic-${entityKey}-name-ko`}>
+                한글명 <span className="kl-modal-form-required" aria-hidden="true">*</span>
               </label>
-              <div className="admin-semantic-form-row__control">
+              <div className="kl-modal-form-row__control">
                 <input
                   id={`semantic-${entityKey}-name-ko`}
                   type="text"
@@ -202,31 +221,33 @@ function SemanticEntitySplitPage({
                 />
               </div>
             </div>
-            <div className="admin-semantic-form-row">
-              <label className="admin-semantic-form-row__label" htmlFor={`semantic-${entityKey}-category`}>
+            <div className="kl-modal-form-row">
+              <label className="kl-modal-form-row__label" htmlFor={`semantic-${entityKey}-category`}>
                 {categoryFieldLabel}
               </label>
-              <div className="admin-semantic-form-row__control">
-                <KlModalSelect
+              <div className="kl-modal-form-row__control">
+                <select
                   id={`semantic-${entityKey}-category`}
-                  placeholder="(선택 안 함)"
                   value={editing.categoryId != null ? String(editing.categoryId) : ''}
                   onChange={(e) => setEditing({
                     ...editing,
                     categoryId: e.target.value ? Number(e.target.value) : null,
                   })}
-                  optionItems={categories.map((c) => ({
-                    value: c.id,
-                    label: `${c.path || c.nameEn} — ${c.nameKo}`,
-                  }))}
-                />
+                >
+                  <option value="">(선택 안 함)</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={String(c.id)}>
+                      {`${c.path || c.nameEn} — ${c.nameKo}`}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-            <div className="admin-semantic-form-row admin-semantic-form-row--start">
-              <label className="admin-semantic-form-row__label" htmlFor={`semantic-${entityKey}-description`}>
+            <div className="kl-modal-form-row kl-vert-start">
+              <label className="kl-modal-form-row__label" htmlFor={`semantic-${entityKey}-description`}>
                 설명
               </label>
-              <div className="admin-semantic-form-row__control">
+              <div className="kl-modal-form-row__control">
                 <textarea
                   id={`semantic-${entityKey}-description`}
                   rows={3}

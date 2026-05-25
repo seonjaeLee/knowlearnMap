@@ -56,6 +56,8 @@ const Login = () => {
 
             if (role === 'ADMIN') {
                 navigate('/');
+            } else if (role === 'SYSOP') {
+                navigate('/sysop/member');
             } else {
                 navigate('/workspaces');
             }

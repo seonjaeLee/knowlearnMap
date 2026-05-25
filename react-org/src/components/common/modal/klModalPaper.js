@@ -90,7 +90,7 @@ export const semanticFormModalPaperSx = klFormModalPaperSx;
 export const promptFormModalPaperSx = klFormModalPaperSx;
 
 /** 홈 워크스페이스 이름 변경 */
-export const KL_MODAL_PAPER_WIDTH_HOME_RENAME = 460;
+export const KL_MODAL_PAPER_WIDTH_HOME_RENAME = 440;
 
 export const homeRenameModalPaperSx = {
   width: KL_MODAL_PAPER_WIDTH_HOME_RENAME,

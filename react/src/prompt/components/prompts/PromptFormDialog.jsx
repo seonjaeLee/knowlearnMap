@@ -1,20 +1,19 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useAlert } from '../../../context/AlertContext';
 import { useAuth } from '../../../context/AuthContext';
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  Select,
-  MenuItem
-} from '@mui/material';
 import { useCreatePrompt, usePrompts } from '../../hooks/usePrompts';
 import { useVersions } from '../../hooks/useVersions';
 import { promptService } from '../../api/promptService';
 import { testService } from '../../api/testService';
 import PromptEditTabs from '../common/PromptEditTabs';
 import BaseModal from '../../../components/common/modal/BaseModal';
+import {
+  KL_MODAL_FORM_CONTROL_ROW_CLASS,
+  KL_MODAL_FORM_ELEMENT_ID,
+  KL_MODAL_FORM_STACK_CLASS,
+  klModalFormContentClassName,
+} from '../../../components/common/modal/klModalForm';
+import { klTallFormModalPaperSx } from '../../../components/common/modal/klModalPaper';
 import './PromptDialogs.css';
 
 const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }) => {
@@ -340,304 +339,244 @@ const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }
     setIsExpanded(false);
   };
 
+  const fieldsEnabled = codeCheckStatus === 'available';
+  const submitDisabled = codeCheckStatus !== 'available'
+    || !formData.code
+    || !formData.name
+    || variableCheckNeeded
+    || createPrompt.isPending;
+
+  const submitLabel = createPrompt.isPending
+    ? (mode === 'edit' ? '버전 생성 중...' : '생성 중...')
+    : codeCheckStatus !== 'available'
+      ? '코드 확인 필요'
+      : !formData.name
+        ? '이름 입력 필요'
+        : variableCheckNeeded
+          ? '변수 체크 필요'
+          : (mode === 'edit' ? '버전 생성' : '생성');
+
   return (
     <BaseModal
       open={open}
       title={mode === 'edit' ? '프롬프트 버전 생성' : '새 프롬프트 생성'}
       onClose={handleClose}
-      maxWidth="md"
+      maxWidth={false}
+      fullWidth={false}
+      paperSx={klTallFormModalPaperSx}
       disableBackdropClose
       disableEscapeKeyDown
-      contentClassName="prompt-form-modal-content kl-modal-form"
+      contentClassName={klModalFormContentClassName}
       actions={(
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
-          {codeCheckStatus !== 'available' && (
-            <Typography variant="caption" color="error.main" sx={{ textAlign: 'center' }}>
-              ⚠️ 코드 중복 확인을 완료해주세요
-            </Typography>
-          )}
-          {variableCheckNeeded && (
-            <Typography variant="caption" color="error.main" sx={{ textAlign: 'center' }}>
-              ⚠️ 변수 체크를 완료해주세요
-            </Typography>
-          )}
-          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', mb: 1 }}>
-            💡 변수는 {`{{변수명}}`} 형태로 입력하세요. 변수 체크 버튼을 눌러 변수를 추출하세요.
-          </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-            <Button
-              variant="outlined"
-              onClick={handleClose}
-              sx={{
-                color: 'text.secondary',
-                '&:hover': { bgcolor: 'action.hover' }
-              }}
-            >
+        <div className="kl-modal-actions-split prompt-form-dialog-actions">
+          <div className="kl-modal-actions-split__left">
+            {codeCheckStatus !== 'available' ? (
+              <span className="kl-modal-form-helper kl-modal-form-helper--error">
+                코드 중복 확인을 완료해주세요
+              </span>
+            ) : null}
+            {variableCheckNeeded ? (
+              <span className="kl-modal-form-helper kl-modal-form-helper--error">
+                변수 체크를 완료해주세요
+              </span>
+            ) : null}
+          </div>
+          <div className="kl-modal-actions-split__right">
+            <button type="button" className="kl-btn gray-outline md" onClick={handleClose}>
               취소
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              disabled={
-                codeCheckStatus !== 'available' ||
-                !formData.code ||
-                !formData.name ||
-                variableCheckNeeded ||
-                createPrompt.isPending
-              }
-              sx={{
-                minWidth: 100,
-                boxShadow: 'none',
-                '&:hover': {
-                  boxShadow: '0px 2px 8px rgba(0,0,0,0.15)',
-                },
-                '&.Mui-disabled': {
-                  bgcolor: 'action.disabledBackground',
-                  color: 'text.disabled',
-                }
-              }}
+            </button>
+            <button
+              type="submit"
+              className="kl-btn primary-full md"
+              form={KL_MODAL_FORM_ELEMENT_ID}
+              disabled={submitDisabled}
             >
-              {createPrompt.isPending ? (mode === 'edit' ? '버전 생성 중...' : '생성 중...') :
-                codeCheckStatus !== 'available' ? '코드 확인 필요' :
-                  !formData.name ? '이름 입력 필요' :
-                    variableCheckNeeded ? '변수 체크 필요' :
-                      (mode === 'edit' ? '버전 생성' : '생성')}
-            </Button>
-          </Box>
-        </Box>
+              {submitLabel}
+            </button>
+          </div>
+        </div>
       )}
     >
-      <Box sx={{ pt: 1, pb: 1, overflow: 'auto' }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-          {/* 코드, 버전, 이름, 카테고리 - 한 줄 배치 */}
-          <Box display="flex" gap={2} alignItems="flex-start">
-            {/* 코드 - 30% */}
-            <Box flex="1 1 30%">
-              <Typography
-                variant="body2"
-                sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
-              >
-                코드 <Typography component="span" className="required-asterisk">*</Typography>
-              </Typography>
-              <Box display="flex" gap={1}>
-                {/* ... existing code textfield ... */}
-                <TextField
-                  value={formData.code}
-                  onChange={(e) => {
-                    if (mode === 'edit') return;
-                    const value = e.target.value
-                      .replace(/[^a-zA-Z0-9_]/g, '')
-                      .toUpperCase();
-                    setFormData(prev => ({ ...prev, code: value }));
-                    setCodeCheckStatus(null);
-                  }}
-                  fullWidth
-                  placeholder="코드 입력"
-                  size="small"
-                  disabled={mode === 'edit' || isCodeLocked || !!initialData}
-                  error={codeCheckStatus === 'duplicate'}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: (mode === 'edit' || isCodeLocked) ? 'action.hover' : 'background.paper',
-                    }
-                  }}
-                />
-                {mode !== 'edit' && (
-                  <Button
-                    variant="outlined"
-                    onClick={handleCheckCode}
-                    disabled={!formData.code.trim() || isCodeLocked || !!initialData}
-                    sx={{
-                      minWidth: 40,
-                      px: 1,
-                      borderColor: codeCheckStatus === 'available' ? 'success.main' : undefined,
-                      color: codeCheckStatus === 'available' ? 'success.main' : undefined,
-                    }}
-                  >
-                    {codeCheckStatus === 'checking' ? '...' :
-                      codeCheckStatus === 'available' ? '✓' : '확인'}
-                  </Button>
-                )}
-              </Box>
-              {/* ... error messages ... */}
-              {codeCheckStatus === 'duplicate' && mode !== 'edit' && (
-                <Typography variant="caption" color="error.main" sx={{ mt: 0.5, display: 'block' }}>
-                  중복됨
-                </Typography>
-              )}
-            </Box>
+      <form
+        id={KL_MODAL_FORM_ELEMENT_ID}
+        className={KL_MODAL_FORM_STACK_CLASS}
+        onSubmit={(e) => {
+          e.preventDefault();
+          void handleSubmit();
+        }}
+      >
+        <p className="kl-modal-form-helper">
+          변수는 {`{{변수명}}`} 형태로 입력하세요. 변수 체크 버튼으로 변수를 추출하세요.
+        </p>
 
-            {/* 버전 - 10% */}
-            {codeCheckStatus === 'available' && (
-              <Box flex="0 0 10%">
-                <Typography
-                  variant="body2"
-                  sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
-                >
-                  버전
-                </Typography>
-                <TextField
-                  value="1"
-                  size="small"
-                  disabled
-                  fullWidth
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: 'action.hover',
-                    }
-                  }}
-                />
-              </Box>
-            )}
-
-            {/* 이름 - 30% */}
-            <Box flex="1 1 30%">
-              <Typography
-                variant="body2"
-                sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
-              >
-                이름 <Typography component="span" className="required-asterisk">*</Typography>
-              </Typography>
-              <TextField
-                value={formData.name}
+        <div className="kl-modal-form-row kl-vert-start">
+          <label className="kl-modal-form-row__label" htmlFor="prompt-form-code">
+            코드
+            <span className="kl-modal-form-required" aria-hidden="true"> *</span>
+          </label>
+          <div className="kl-modal-form-row__control">
+            <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
+              <input
+                id="prompt-form-code"
+                type="text"
+                value={formData.code}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  setFormData(prev => ({ ...prev, name: value }));
+                  if (mode === 'edit') return;
+                  const value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '').toUpperCase();
+                  setFormData((prev) => ({ ...prev, code: value }));
+                  setCodeCheckStatus(null);
                 }}
-                fullWidth
-                placeholder="이름 입력"
-                size="small"
-                disabled={codeCheckStatus !== 'available'}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    bgcolor: 'background.paper',
-                  }
-                }}
+                placeholder="코드 입력"
+                disabled={mode === 'edit' || isCodeLocked || Boolean(initialData)}
+                autoComplete="off"
               />
-            </Box>
+              {mode !== 'edit' ? (
+                <button
+                  type="button"
+                  className="kl-btn gray-fill md"
+                  onClick={handleCheckCode}
+                  disabled={!formData.code.trim() || isCodeLocked || Boolean(initialData)}
+                >
+                  {codeCheckStatus === 'checking' ? '...' : codeCheckStatus === 'available' ? '✓' : '확인'}
+                </button>
+              ) : null}
+            </div>
+            {codeCheckStatus === 'duplicate' && mode !== 'edit' ? (
+              <p className="kl-modal-form-helper kl-modal-form-helper--error">중복됨</p>
+            ) : null}
+          </div>
+        </div>
 
-            {/* 카테고리 - 15% */}
-            <Box flex="1 1 15%">
-              <Typography
-                variant="body2"
-                sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
-              >
+        {fieldsEnabled ? (
+          <>
+            <div className="kl-modal-form-row">
+              <label className="kl-modal-form-row__label" htmlFor="prompt-form-version">
+                버전
+              </label>
+              <div className="kl-modal-form-row__control">
+                <input
+                  id="prompt-form-version"
+                  type="text"
+                  className="kl-form-readonly kl-form-readonly--control"
+                  value="1"
+                  readOnly
+                  aria-readonly="true"
+                />
+              </div>
+            </div>
+
+            <div className="kl-modal-form-row">
+              <label className="kl-modal-form-row__label" htmlFor="prompt-form-name">
+                이름
+                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
+              </label>
+              <div className="kl-modal-form-row__control">
+                <input
+                  id="prompt-form-name"
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  placeholder="이름 입력"
+                />
+              </div>
+            </div>
+
+            <div className="kl-modal-form-row">
+              <label className="kl-modal-form-row__label" htmlFor="prompt-form-category">
                 카테고리
-              </Typography>
-              <Select
-                value={formData.category || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                fullWidth
-                size="small"
-                disabled={codeCheckStatus !== 'available'}
-                displayEmpty
-              >
-                <MenuItem value=""><em>선택</em></MenuItem>
-                {categories.map((cat) => (
-                  <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                ))}
-              </Select>
-            </Box>
+              </label>
+              <div className="kl-modal-form-row__control">
+                <select
+                  id="prompt-form-category"
+                  value={formData.category || ''}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+                >
+                  <option value="">선택</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-            {/* 용도 - 15% */}
-            <Box flex="1 1 15%">
-              <Typography
-                variant="body2"
-                sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
-              >
+            <div className="kl-modal-form-row">
+              <label className="kl-modal-form-row__label" htmlFor="prompt-form-purpose">
                 용도
-              </Typography>
-              <Select
-                value={formData.purpose || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, purpose: e.target.value }))}
-                fullWidth
-                size="small"
-                disabled={codeCheckStatus !== 'available'}
-                displayEmpty
-              >
-                <MenuItem value=""><em>선택</em></MenuItem>
-                {purposes.map((p) => (
-                  <MenuItem key={p} value={p}>{p}</MenuItem>
-                ))}
-              </Select>
-            </Box>
+              </label>
+              <div className="kl-modal-form-row__control">
+                <select
+                  id="prompt-form-purpose"
+                  value={formData.purpose || ''}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, purpose: e.target.value }))}
+                >
+                  <option value="">선택</option>
+                  {purposes.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-            {/* 보안 등급 - 15% */}
-            <Box flex="1 1 15%">
-              <Typography
-                variant="body2"
-                sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
-              >
+            <div className="kl-modal-form-row">
+              <label className="kl-modal-form-row__label" htmlFor="prompt-form-security">
                 보안 등급
-              </Typography>
-              <Select
-                value={formData.securityLevel}
-                onChange={(e) => setFormData(prev => ({ ...prev, securityLevel: e.target.value }))}
-                fullWidth
-                size="small"
-                disabled={codeCheckStatus !== 'available'}
-              >
-                {securityLevels.map((level) => (
-                  <MenuItem key={level.value} value={level.value}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: level.color }} />
+              </label>
+              <div className="kl-modal-form-row__control">
+                <select
+                  id="prompt-form-security"
+                  value={formData.securityLevel}
+                  onChange={(e) => setFormData((prev) => ({
+                    ...prev,
+                    securityLevel: e.target.value,
+                  }))}
+                >
+                  {securityLevels.map((level) => (
+                    <option key={level.value} value={level.value}>
                       {level.label}
-                    </Box>
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
-          </Box>
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-          {/* 설명 */}
-          <Box>
-            <Typography
-              variant="body2"
-              sx={{ mb: 0.75, fontWeight: 500, color: 'text.primary' }}
-            >
-              설명
-            </Typography>
-            <TextField
-              value={formData.description}
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData(prev => ({ ...prev, description: value }));
-              }}
-              fullWidth
-              multiline
-              rows={3}
-              placeholder="프롬프트에 대한 설명을 입력하세요"
-              size="small"
-              disabled={codeCheckStatus !== 'available'}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  bgcolor: 'background.paper',
-                }
-              }}
-            />
-          </Box>
+            <div className="kl-modal-form-row kl-vert-start">
+              <label className="kl-modal-form-row__label" htmlFor="prompt-form-description">
+                설명
+              </label>
+              <div className="kl-modal-form-row__control">
+                <textarea
+                  id="prompt-form-description"
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))}
+                  placeholder="프롬프트에 대한 설명을 입력하세요"
+                />
+              </div>
+            </div>
 
-          {/* 탭 영역 */}
-          <Box sx={{ mt: 2 }}>
-            <PromptEditTabs
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              extractedVariables={extractedVariables}
-              promptContent={formData.promptContent}
-              onPromptContentChange={handlePromptContentChange}
-              variables={variables}
-              onVariableUpdate={handleUpdateVariable}
-              onCheckVariables={handleCheckVariables}
-              disabled={codeCheckStatus !== 'available'}
-              showToolbar={true}
-              isExpanded={isExpanded}
-              onToggleExpand={handleToggleExpand}
-              customHeight={isExpanded ? '500px' : '250px'}
-            />
-          </Box>
-
-        </Box>
-      </Box>
+            <div className="kl-modal-form-field-stack">
+              <PromptEditTabs
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                extractedVariables={extractedVariables}
+                promptContent={formData.promptContent}
+                onPromptContentChange={handlePromptContentChange}
+                variables={variables}
+                onVariableUpdate={handleUpdateVariable}
+                onCheckVariables={handleCheckVariables}
+                disabled={false}
+                showToolbar
+                isExpanded={isExpanded}
+                onToggleExpand={handleToggleExpand}
+                customHeight={isExpanded ? '500px' : '250px'}
+              />
+            </div>
+          </>
+        ) : null}
+      </form>
     </BaseModal>
   );
 };

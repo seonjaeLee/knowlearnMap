@@ -110,14 +110,22 @@
   cursor: pointer;
 }
 
+/* 명시적 비활성(NONE 등) — 빨간 테두리·글자, 배경은 일반 컨트롤과 동일 */
 .kl-modal-form select.kl-modal-form-control--warning,
-.kl-modal-form input.kl-modal-form-control--warning,
-.kl-modal-form select.modal-input--chunk-none,
-.kl-modal-form input.modal-input--chunk-none {
-  background-color: #fef2f2 !important;
+.kl-modal-form input.kl-modal-form-control--warning {
+  background-color: var(--kl-control-bg) !important;
   border-color: #fca5a5 !important;
   color: #dc2626 !important;
   font-weight: var(--font-weight-semibold) !important;
+}
+
+.kl-modal-form select.kl-modal-form-control--warning:hover:not(:disabled),
+.kl-modal-form select.kl-modal-form-control--warning:focus,
+.kl-modal-form select.kl-modal-form-control--warning:focus-visible {
+  border-color: #fca5a5 !important;
+  color: #dc2626 !important;
+  background-color: var(--kl-control-bg) !important;
+  box-shadow: 0 0 0 1px #fca5a5 !important;
 }
 
 /* 전역 `.modal-input` 여백·단위가 팝업 그리드와 충돌할 때 정리 */

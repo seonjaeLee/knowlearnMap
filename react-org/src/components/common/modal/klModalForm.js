@@ -22,9 +22,6 @@ export const KL_MODAL_FORM_CHECK_EMPHASIS_CLASS = 'kl-modal-form-check--emphasis
 /** row 컨트롤 — select/input flex:1 + 옆 버튼 (청킹 NONE·중복확인 등) */
 export const KL_MODAL_FORM_CONTROL_ROW_CLASS = 'kl-modal-form-control-row';
 
-/** 네이티브 select/input 경고 상태 (청킹 NONE 등) */
-export const KL_MODAL_FORM_CONTROL_WARNING_CLASS = 'kl-modal-form-control--warning';
-
 export const KL_MODAL_FORM_TOGGLE_BTN_CLASS = 'kl-modal-form-toggle-btn';
 export const KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS = 'kl-modal-form-toggle-btn--active';
 

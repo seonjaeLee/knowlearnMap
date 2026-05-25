@@ -1,10 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@mui/material';
 import './DictionaryView.css';
 import { dictionaryApi } from '../services/api';
 import { useDialog } from '../hooks/useDialog';
 import { Edit2, ArrowRightCircle, ChevronLeft, ChevronRight, X, Plus, BookOpen } from 'lucide-react';
 import BaseModal from './common/modal/BaseModal';
+import {
+    KL_MODAL_FORM_CHECK_CLASS,
+    KL_MODAL_FORM_ELEMENT_ID,
+    KL_MODAL_FORM_STACK_CLASS,
+    klModalFormContentClassName,
+} from './common/modal/klModalForm';
+import { klFormModalPaperSx } from './common/modal/klModalPaper';
 
 /** 카테고리 API 결과와 테이블 행의 category 값을 합침 — API가 빈 배열이거나 캐시에 categories만 ['All']일 때도 행에 나온 카테고리가 select에 남음 */
 function mergeDictionaryCategories(existingList, rows) {
@@ -680,44 +686,85 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                 open={isEditModalOpen && Boolean(editingTerm)}
                 title="항목 수정"
                 onClose={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}
-                maxWidth="sm"
-                contentClassName="dictionary-modal-content kl-modal-form"
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={klFormModalPaperSx}
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <Button variant="outlined" onClick={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}>취소</Button>
-                        <Button variant="contained" onClick={handleSaveEdit}>저장</Button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={() => { setIsEditModalOpen(false); setEditSynonyms([]); }}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                className="kl-btn primary-full md"
+                                form="dictionary-edit-form"
+                            >
+                                저장
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
                 {editingTerm ? (
-                    <div className="edit-form">
-                            <div className="form-group">
-                                <label>라벨(KR)</label>
+                    <form
+                        id="dictionary-edit-form"
+                        className={KL_MODAL_FORM_STACK_CLASS}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSaveEdit();
+                        }}
+                    >
+                            <div className="kl-modal-form-row">
+                                <label className="kl-modal-form-row__label" htmlFor="dict-edit-label-kr">
+                                    라벨(KR)
+                                </label>
+                                <div className="kl-modal-form-row__control">
                                 <input
+                                    id="dict-edit-label-kr"
                                     type="text"
                                     value={editingTerm.label || ''}
                                     onChange={(e) => handleModalChange('label', e.target.value)}
                                 />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>라벨(EN)</label>
+                            <div className="kl-modal-form-row">
+                                <label className="kl-modal-form-row__label" htmlFor="dict-edit-label-en">
+                                    라벨(EN)
+                                </label>
+                                <div className="kl-modal-form-row__control">
                                 <input
+                                    id="dict-edit-label-en"
                                     type="text"
                                     value={editingTerm.labelEn || ''}
                                     onChange={(e) => handleModalChange('labelEn', e.target.value)}
                                 />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>설명</label>
+                            <div className="kl-modal-form-row kl-vert-start">
+                                <label className="kl-modal-form-row__label" htmlFor="dict-edit-description">
+                                    설명
+                                </label>
+                                <div className="kl-modal-form-row__control">
                                 <textarea
+                                    id="dict-edit-description"
                                     value={editingTerm.description || ''}
                                     onChange={(e) => handleModalChange('description', e.target.value)}
-                                    rows="3"
+                                    rows={3}
                                 />
+                                </div>
                             </div>
-                            {/* 유의어 */}
-                            <div className="form-group">
-                                <label>유의어</label>
+                            <div className="kl-modal-form-row kl-vert-start">
+                                <label className="kl-modal-form-row__label">
+                                    유의어
+                                </label>
+                                <div className="kl-modal-form-row__control">
                                 <div className="dict-synonym-list">
                                     {editSynonyms.length === 0 && (
                                         <span className="dict-synonym-empty">등록된 유의어가 없습니다.</span>
@@ -759,8 +806,9 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                                         </button>
                                     </div>
                                 )}
+                                </div>
                             </div>
-                    </div>
+                    </form>
                 ) : null}
             </BaseModal>
 
@@ -769,25 +817,47 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                 open={isMoveModalOpen && Boolean(moveSourceItem)}
                 title={`${viewMode === 'concept' ? '개념' : '관계'} 이동 (병합)`}
                 onClose={() => setIsMoveModalOpen(false)}
-                maxWidth="sm"
-                contentClassName="dictionary-modal-content kl-modal-form"
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={klFormModalPaperSx}
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <Button variant="outlined" onClick={() => setIsMoveModalOpen(false)}>취소</Button>
-                        <Button variant="contained" onClick={handleConfirmMove} disabled={!moveTargetId}>이동</Button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={() => setIsMoveModalOpen(false)}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="button"
+                                className="kl-btn primary-full md"
+                                onClick={handleConfirmMove}
+                                disabled={!moveTargetId}
+                            >
+                                이동
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
                 {moveSourceItem ? (
-                    <>
-                        <p className="dict-move-desc">
+                    <div className={KL_MODAL_FORM_STACK_CLASS}>
+                        <p className="kl-modal-form-helper dict-move-desc">
                             <b>'{moveSourceItem.label}'</b> {viewMode === 'concept' ? '개념' : '관계'}을 다른 {viewMode === 'concept' ? '개념' : '관계'}으로 이동(병합)합니다. <br />
                             이동 후 원본 {viewMode === 'concept' ? '개념' : '관계'}은 삭제되며, 모든 문서 출처와 관계가 대상 {viewMode === 'concept' ? '개념' : '관계'}으로 이전됩니다.
                         </p>
 
-                        <div className="dict-move-section">
-                            <label className="dict-move-label">이동할 대상 검색</label>
+                        <div className="kl-modal-form-row kl-vert-start dict-move-section">
+                            <label className="kl-modal-form-row__label" htmlFor="dict-move-search">
+                                이동할 대상 검색
+                            </label>
+                            <div className="kl-modal-form-row__control">
                             <input
+                                id="dict-move-search"
                                 type="text"
                                 placeholder="대상 검색..."
                                 value={moveSearchTerm}
@@ -825,22 +895,20 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                                     <div className="dict-candidate-empty">검색 결과가 없습니다.</div>
                                 )}
                             </div>
+                            </div>
                         </div>
 
-                        <div className="dict-keep-synonym-row">
+                        <label className={`${KL_MODAL_FORM_CHECK_CLASS} dict-keep-synonym-row`} htmlFor="keepSourceAsSynonym">
                             <input
                                 type="checkbox"
                                 id="keepSourceAsSynonym"
                                 checked={keepSourceAsSynonym}
                                 onChange={(e) => setKeepSourceAsSynonym(e.target.checked)}
-                                className="dict-keep-synonym-check"
                             />
-                            <label htmlFor="keepSourceAsSynonym" className="dict-keep-synonym-label">
-                                원본 용어를 유의어로 추가 (병합 후 검색 가능)
-                            </label>
-                        </div>
+                            <span>원본 용어를 유의어로 추가 (병합 후 검색 가능)</span>
+                        </label>
 
-                    </>
+                    </div>
                 ) : null}
             </BaseModal>
         </div>

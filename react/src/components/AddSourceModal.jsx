@@ -6,6 +6,8 @@ import { structuredApi } from '../services/api';
 import axios from 'axios';
 import DbConnectionModal from './DbConnectionModal';
 import BaseModal from './common/modal/BaseModal';
+import { klModalFormContentClassName } from './common/modal/klModalForm';
+import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 
 function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComplete }) {
     const [currentView, setCurrentView] = useState('main'); // main, website, youtube, text, drive, csv
@@ -703,10 +705,12 @@ function AddSourceModal({ isOpen, onClose, workspaceId, domainId, onUploadComple
                         handleBack();
                     }
                 }}
-                maxWidth="md"
+                maxWidth={false}
+                fullWidth={false}
+                paperSx={klTallFormModalPaperSx}
                 disableEscapeKeyDown
                 headerVariant="filled"
-                contentClassName="add-source-modal-content kl-modal-form"
+                contentClassName={`add-source-modal-content ${klModalFormContentClassName}`}
             >
                 <div className={`modal-container ${currentView}`}>
                     {currentView === 'main' && renderMainView()}

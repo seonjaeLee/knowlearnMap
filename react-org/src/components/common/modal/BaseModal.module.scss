@@ -19,7 +19,7 @@
   min-height: unset !important;
 }
 
-/* Form 팝업 — index `--base-modal-paper-min-height` 미적용, paperSx로 세로 확보 */
+/* Form 팝업 — min-height만 해제. 가로는 klModalPaper.js `klFormModalPaperSx` */
 .dialogPaperForm {
   min-height: unset !important;
 }

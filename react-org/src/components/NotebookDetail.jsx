@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Button, Stack } from '@mui/material';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm'; // Added import for GFM support (tables)
@@ -10,7 +9,7 @@ import { documentApi } from '../services/documentApi';
 import { chatApi } from '../services/chatApi';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
-import { ChevronsLeft, MessageSquare, Network, Book, Plus, Trash2, Search, RefreshCw, Users, Pen, X, Save, Copy, ChevronDown, ChevronRight, FileText, Upload, BookOpen, Database, ExternalLink } from 'lucide-react';
+import { ChevronsLeft, MessageSquare, Network, Book, Plus, Trash2, Search, RefreshCw, Users, Pen, X, Save, Copy, ChevronDown, ChevronRight, FileText, Upload, BookOpen, Database, ExternalLink, Info } from 'lucide-react';
 import KlIconButton from './common/KlIconButton';
 
 import DocumentSourceItem from './DocumentSourceItem';
@@ -2253,81 +2252,102 @@ function NotebookDetail() {
                     onClose={() => setBizMetaOpen(false)}
                     maxWidth="md"
                     headerClassName="meta-modal-header"
-                    contentClassName="meta-modal-content kl-modal-form"
+                    contentClassName="meta-modal-content kl-modal-form notebook-meta-modal-content"
                     actionsClassName="meta-modal-actions"
                     actions={(
-                        <>
-                            <Button
-                                variant="outlined"
-                                onClick={() => setBizMetaOpen(false)}
-                                disabled={bizMetaSaving}
-                            >
-                                취소
-                            </Button>
-                            <Button
-                                variant="contained"
-                                onClick={async () => {
-                                    try {
-                                        setBizMetaSaving(true);
-                                        await workspaceApi.saveBizMeta(id, bizMetaText);
-                                        showAlert('용어사전 저장 완료', 'success');
-                                        fetchNotebook();
-                                    } catch (err) {
-                                        showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
-                                    } finally {
-                                        setBizMetaSaving(false);
-                                    }
-                                }}
-                                disabled={bizMetaSaving}
-                            >
-                                저장
-                            </Button>
-                        </>
+                        <div className="kl-modal-actions-split">
+                            <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                            <div className="kl-modal-actions-split__right">
+                                <button
+                                    type="button"
+                                    className="kl-btn gray-outline md"
+                                    onClick={() => setBizMetaOpen(false)}
+                                    disabled={bizMetaSaving}
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    type="button"
+                                    className="kl-btn primary-full md"
+                                    onClick={async () => {
+                                        try {
+                                            setBizMetaSaving(true);
+                                            await workspaceApi.saveBizMeta(id, bizMetaText);
+                                            showAlert('용어사전 저장 완료', 'success');
+                                            fetchNotebook();
+                                        } catch (err) {
+                                            showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                                        } finally {
+                                            setBizMetaSaving(false);
+                                        }
+                                    }}
+                                    disabled={bizMetaSaving}
+                                >
+                                    {bizMetaSaving ? '저장 중...' : '저장'}
+                                </button>
+                            </div>
+                        </div>
                     )}
                 >
-                    <div className="meta-modal-top-row">
-                        <p className="meta-modal-description">
-                            도메인 용어를 등록하면 AQL 생성 및 채팅 답변 품질이 향상됩니다.<br />
-                            CSV 파일(이름, 설명) 업로드 또는 직접 편집할 수 있습니다.
-                        </p>
-                        <Button
-                            variant="outlined"
-                            onClick={() => bizMetaFileRef.current?.click()}
-                            disabled={bizMetaSaving}
-                            startIcon={<Upload size={14} />}
-                        >
-                            CSV 업로드
-                        </Button>
+                    <div className="kl-modal-form-stack">
+                        <div className="kl-modal-form-content-field">
+                            <label
+                                className="kl-modal-form-row__label kl-modal-form-content-field__label"
+                                htmlFor="biz-meta-content"
+                            >
+                                내용
+                            </label>
+                            <div className="kl-modal-form-toolbar">
+                                <button
+                                    type="button"
+                                    className="kl-icon-label-btn"
+                                    onClick={() => bizMetaFileRef.current?.click()}
+                                    disabled={bizMetaSaving}
+                                    title="CSV 업로드"
+                                >
+                                    <Upload size={16} aria-hidden />
+                                    {bizMetaSaving ? '업로드 중...' : 'CSV 업로드'}
+                                </button>
+                                <input
+                                    ref={bizMetaFileRef}
+                                    type="file"
+                                    accept=".csv"
+                                    className="kl-modal-form-hidden-input"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        try {
+                                            setBizMetaSaving(true);
+                                            const result = await workspaceApi.uploadBizMeta(id, file);
+                                            setBizMetaText(result.data || '');
+                                            showAlert('CSV 업로드 완료', 'success');
+                                            fetchNotebook();
+                                        } catch (err) {
+                                            showAlert('CSV 파일 업로드에 실패했습니다. 파일 형식을 확인해주세요.', 'error');
+                                        } finally {
+                                            setBizMetaSaving(false);
+                                            e.target.value = '';
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <textarea
+                                id="biz-meta-content"
+                                value={bizMetaText}
+                                onChange={(e) => setBizMetaText(e.target.value)}
+                                placeholder='[&#10;  {"name":"공통코드","desc":"공통코드 그룹의 분류 안에서 실제 사용할 번호","owner":"홍길동","keyword":"공통코드, 코드"},&#10;  ...&#10;]'
+                                className="notebook-meta-textarea"
+                                rows={10}
+                            />
+                        </div>
+                        <div className="kl-infotxt-note">
+                            <Info size={16} aria-hidden />
+                            <span>
+                                도메인 용어를 등록하면 AQL 생성 및 채팅 답변 품질이 향상됩니다.
+                                CSV 파일(이름, 설명) 업로드 또는 직접 편집할 수 있습니다.
+                            </span>
+                        </div>
                     </div>
-                    <input
-                        ref={bizMetaFileRef}
-                        type="file"
-                        accept=".csv"
-                        className="meta-modal-hidden-input"
-                        onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            try {
-                                setBizMetaSaving(true);
-                                const result = await workspaceApi.uploadBizMeta(id, file);
-                                setBizMetaText(result.data || '');
-                                showAlert('CSV 업로드 완료', 'success');
-                                fetchNotebook();
-                            } catch (err) {
-                                showAlert('CSV 파일 업로드에 실패했습니다. 파일 형식을 확인해주세요.', 'error');
-                            } finally {
-                                setBizMetaSaving(false);
-                                e.target.value = '';
-                            }
-                        }}
-                    />
-                    <textarea
-                        value={bizMetaText}
-                        onChange={e => setBizMetaText(e.target.value)}
-                        placeholder='[&#10;  {"name":"공통코드","desc":"공통코드 그룹의 분류 안에서 실제 사용할 번호","owner":"홍길동","keyword":"공통코드, 코드"},&#10;  ...&#10;]'
-                        className="meta-modal-textarea"
-                        rows={10}
-                    />
                 </BaseModal>
 
                 {/* ItMeta Modal */}
@@ -2337,81 +2357,102 @@ function NotebookDetail() {
                     onClose={() => setItMetaOpen(false)}
                     maxWidth="md"
                     headerClassName="meta-modal-header"
-                    contentClassName="meta-modal-content kl-modal-form"
+                    contentClassName="meta-modal-content kl-modal-form notebook-meta-modal-content"
                     actionsClassName="meta-modal-actions"
                     actions={(
-                        <>
-                            <Button
-                                variant="outlined"
-                                onClick={() => setItMetaOpen(false)}
-                                disabled={itMetaSaving}
-                            >
-                                취소
-                            </Button>
-                            <Button
-                                variant="contained"
-                                onClick={async () => {
-                                    try {
-                                        setItMetaSaving(true);
-                                        await workspaceApi.saveItMeta(id, itMetaText);
-                                        showAlert('IT 용어사전 저장 완료', 'success');
-                                        fetchNotebook();
-                                    } catch (err) {
-                                        showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
-                                    } finally {
-                                        setItMetaSaving(false);
-                                    }
-                                }}
-                                disabled={itMetaSaving}
-                            >
-                                저장
-                            </Button>
-                        </>
+                        <div className="kl-modal-actions-split">
+                            <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                            <div className="kl-modal-actions-split__right">
+                                <button
+                                    type="button"
+                                    className="kl-btn gray-outline md"
+                                    onClick={() => setItMetaOpen(false)}
+                                    disabled={itMetaSaving}
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    type="button"
+                                    className="kl-btn primary-full md"
+                                    onClick={async () => {
+                                        try {
+                                            setItMetaSaving(true);
+                                            await workspaceApi.saveItMeta(id, itMetaText);
+                                            showAlert('IT 용어사전 저장 완료', 'success');
+                                            fetchNotebook();
+                                        } catch (err) {
+                                            showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                                        } finally {
+                                            setItMetaSaving(false);
+                                        }
+                                    }}
+                                    disabled={itMetaSaving}
+                                >
+                                    {itMetaSaving ? '저장 중...' : '저장'}
+                                </button>
+                            </div>
+                        </div>
                     )}
                 >
-                    <div className="meta-modal-top-row">
-                        <p className="meta-modal-description">
-                            CSV 컬럼명과 의미를 등록하면 컬럼 매핑 및 AQL 생성 품질이 향상됩니다.<br />
-                            CSV 파일(컬럼명, 설명) 업로드 또는 직접 편집할 수 있습니다.
-                        </p>
-                        <Button
-                            variant="outlined"
-                            onClick={() => itMetaFileRef.current?.click()}
-                            disabled={itMetaSaving}
-                            startIcon={<Upload size={14} />}
-                        >
-                            CSV 업로드
-                        </Button>
+                    <div className="kl-modal-form-stack">
+                        <div className="kl-modal-form-content-field">
+                            <label
+                                className="kl-modal-form-row__label kl-modal-form-content-field__label"
+                                htmlFor="it-meta-content"
+                            >
+                                내용
+                            </label>
+                            <div className="kl-modal-form-toolbar">
+                                <button
+                                    type="button"
+                                    className="kl-icon-label-btn"
+                                    onClick={() => itMetaFileRef.current?.click()}
+                                    disabled={itMetaSaving}
+                                    title="CSV 업로드"
+                                >
+                                    <Upload size={16} aria-hidden />
+                                    {itMetaSaving ? '업로드 중...' : 'CSV 업로드'}
+                                </button>
+                                <input
+                                    ref={itMetaFileRef}
+                                    type="file"
+                                    accept=".csv"
+                                    className="kl-modal-form-hidden-input"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        try {
+                                            setItMetaSaving(true);
+                                            const result = await workspaceApi.uploadItMeta(id, file);
+                                            setItMetaText(result.data || '');
+                                            showAlert('CSV 업로드 완료', 'success');
+                                            fetchNotebook();
+                                        } catch (err) {
+                                            showAlert('CSV 파일 업로드에 실패했습니다. 파일 형식을 확인해주세요.', 'error');
+                                        } finally {
+                                            setItMetaSaving(false);
+                                            e.target.value = '';
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <textarea
+                                id="it-meta-content"
+                                value={itMetaText}
+                                onChange={(e) => setItMetaText(e.target.value)}
+                                placeholder='[&#10;  {"table_name":"cls_m_code","table_desc":"코드마스터","column_name":"code_group","column_type":"varchar(50)","column_biz_meta":"공통코드그룹"},&#10;  ...&#10;]'
+                                className="notebook-meta-textarea"
+                                rows={10}
+                            />
+                        </div>
+                        <div className="kl-infotxt-note">
+                            <Info size={16} aria-hidden />
+                            <span>
+                                CSV 컬럼명과 의미를 등록하면 컬럼 매핑 및 AQL 생성 품질이 향상됩니다.
+                                CSV 파일(컬럼명, 설명) 업로드 또는 직접 편집할 수 있습니다.
+                            </span>
+                        </div>
                     </div>
-                    <input
-                        ref={itMetaFileRef}
-                        type="file"
-                        accept=".csv"
-                        className="meta-modal-hidden-input"
-                        onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            try {
-                                setItMetaSaving(true);
-                                const result = await workspaceApi.uploadItMeta(id, file);
-                                setItMetaText(result.data || '');
-                                showAlert('CSV 업로드 완료', 'success');
-                                fetchNotebook();
-                            } catch (err) {
-                                showAlert('CSV 파일 업로드에 실패했습니다. 파일 형식을 확인해주세요.', 'error');
-                            } finally {
-                                setItMetaSaving(false);
-                                e.target.value = '';
-                            }
-                        }}
-                    />
-                    <textarea
-                        value={itMetaText}
-                        onChange={e => setItMetaText(e.target.value)}
-                        placeholder='[&#10;  {"table_name":"cls_m_code","table_desc":"코드마스터","column_name":"code_group","column_type":"varchar(50)","column_biz_meta":"공통코드그룹"},&#10;  ...&#10;]'
-                        className="meta-modal-textarea"
-                        rows={10}
-                    />
                 </BaseModal>
 
             </div>

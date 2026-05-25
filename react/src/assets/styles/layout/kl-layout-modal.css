@@ -212,16 +212,17 @@
   background: var(--color-bg-hover);
 }
 
+/* @deprecated — NONE 등 토글은 `kl-btn danger-outline` / `gray-outline` 사용 (채움 빨강 제거) */
 .kl-modal-form-toggle-btn--active {
-  background-color: var(--color-icon-danger);
-  color: #fff;
-  border-color: var(--color-icon-danger);
+  border: 1px solid var(--color-icon-danger);
+  background: var(--color-bg-secondary);
+  color: var(--color-icon-danger);
 }
 
 .kl-modal-form-toggle-btn--active:hover {
-  background-color: var(--color-icon-danger-emphasis);
   border-color: var(--color-icon-danger-emphasis);
-  color: #fff;
+  color: var(--color-icon-danger-emphasis);
+  background: color-mix(in srgb, var(--color-icon-danger) 10%, var(--color-bg-secondary));
 }
 
 .kl-modal-form-feedback {

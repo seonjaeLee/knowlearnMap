@@ -3,9 +3,8 @@ import { Button } from '@mui/material';
 import BaseModal from '../../../components/common/modal/BaseModal';
 import KlModalSelect from '../../../components/common/modal/KlModalSelect';
 import {
-  promptFormModalPaperClassName,
-  promptFormModalPaperSx,
-} from '../../../components/common/modal/supportFormModalPaperSx';
+  klFormModalPaperSx,
+} from '../../../components/common/modal/klModalPaper';
 import { PROMPT_SECURITY_SELECT_ITEMS } from '../../constants/securityLevels';
 import './PromptDialogs.css';
 
@@ -52,8 +51,7 @@ const EditPromptDialog = ({
       onClose={onClose}
       maxWidth={false}
       fullWidth={false}
-      paperSx={promptFormModalPaperSx}
-      paperClassName={promptFormModalPaperClassName}
+      paperSx={klFormModalPaperSx}
       contentClassName="prompt-edit-modal-content kl-modal-form"
       actionsClassName="prompt-modal-actions"
       actionsAlign="right"

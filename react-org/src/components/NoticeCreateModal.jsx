@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { ImagePlus } from 'lucide-react';
-import { Button } from '@mui/material';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
 import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
 import {
-    noticeFormModalPaperClassName,
-    noticeFormModalPaperSx,
-} from './common/modal/supportFormModalPaperSx';
+    KL_MODAL_FORM_ELEMENT_ID,
+    KL_MODAL_FORM_STACK_CLASS,
+    klModalFormContentClassName,
+} from './common/modal/klModalForm';
+import { klFormModalPaperSx } from './common/modal/klModalPaper';
 import './NoticeCreateModal.css';
 
 function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
@@ -88,6 +89,8 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
 
     if (!isOpen) return null;
 
+    const submitDisabled = !title.trim() || !content.trim() || isSubmitting;
+
     return (
         <BaseModal
             open={isOpen}
@@ -95,31 +98,37 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
             title={editingNotice ? '공지사항 수정' : '공지사항 작성'}
             maxWidth={false}
             fullWidth={false}
-            paperSx={noticeFormModalPaperSx}
-            paperClassName={noticeFormModalPaperClassName}
-            contentClassName="notice-create-modal-content kl-modal-form"
-            actionsClassName="notice-modal-actions"
-            actionsAlign="right"
+            paperSx={klFormModalPaperSx}
+            contentClassName={klModalFormContentClassName}
             actions={(
-                <>
-                    <Button variant="outlined" onClick={onClose}>취소</Button>
-                    <Button
-                        variant="contained"
-                        type="submit"
-                        form="notice-create-form"
-                        disabled={!title.trim() || !content.trim() || isSubmitting}
-                    >
-                        {getModalSubmitLabel(Boolean(editingNotice), isSubmitting)}
-                    </Button>
-                </>
+                <div className="kl-modal-actions-split">
+                    <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                    <div className="kl-modal-actions-split__right">
+                        <button type="button" className="kl-btn gray-outline md" onClick={onClose}>
+                            취소
+                        </button>
+                        <button
+                            type="submit"
+                            className="kl-btn primary-full md"
+                            form={KL_MODAL_FORM_ELEMENT_ID}
+                            disabled={submitDisabled}
+                        >
+                            {getModalSubmitLabel(Boolean(editingNotice), isSubmitting)}
+                        </button>
+                    </div>
+                </div>
             )}
         >
-            <form id="notice-create-form" onSubmit={handleSubmit} className="notice-modal-form">
-                <div className="notice-form-row">
-                    <label className="notice-form-row__label" htmlFor="notice-title">
-                        제목 <span className="notice-required" aria-hidden="true">*</span>
+            <form
+                id={KL_MODAL_FORM_ELEMENT_ID}
+                onSubmit={handleSubmit}
+                className={KL_MODAL_FORM_STACK_CLASS}
+            >
+                <div className="kl-modal-form-row">
+                    <label className="kl-modal-form-row__label" htmlFor="notice-title">
+                        제목 <span className="kl-modal-form-required" aria-hidden="true">*</span>
                     </label>
-                    <div className="notice-form-row__control">
+                    <div className="kl-modal-form-row__control">
                         <input
                             id="notice-title"
                             type="text"
@@ -132,11 +141,11 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                     </div>
                 </div>
 
-                <div className="notice-form-row">
-                    <label className="notice-form-row__label" htmlFor="notice-category">
+                <div className="kl-modal-form-row">
+                    <label className="kl-modal-form-row__label" htmlFor="notice-category">
                         카테고리
                     </label>
-                    <div className="notice-form-row__control">
+                    <div className="kl-modal-form-row__control">
                         <input
                             id="notice-category"
                             type="text"
@@ -148,11 +157,14 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                     </div>
                 </div>
 
-                <div className="notice-form-content">
-                    <label className="notice-form-content__label" htmlFor="notice-content">
-                        내용 <span className="notice-required" aria-hidden="true">*</span>
+                <div className="kl-modal-form-content-field">
+                    <label
+                        className="kl-modal-form-row__label kl-modal-form-content-field__label"
+                        htmlFor="notice-content"
+                    >
+                        내용 <span className="kl-modal-form-required" aria-hidden="true">*</span>
                     </label>
-                    <div className="notice-content-toolbar">
+                    <div className="kl-modal-form-toolbar">
                         <button
                             type="button"
                             className="kl-icon-label-btn"
@@ -168,7 +180,7 @@ function NoticeCreateModal({ isOpen, onClose, onSubmit, editingNotice }) {
                             type="file"
                             accept="image/jpeg,image/png,image/gif,image/webp"
                             onChange={handleImageUpload}
-                            className="notice-hidden-file-input"
+                            className="kl-modal-form-hidden-input"
                         />
                     </div>
                     <textarea

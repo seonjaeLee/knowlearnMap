@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Play, Loader2 } from 'lucide-react';
-import { Button } from '@mui/material';
 import { structuredApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
 import BaseModal from './common/modal/BaseModal';
-import KlModalSelect from './common/modal/KlModalSelect';
+import { klModalFormContentClassName } from './common/modal/klModalForm';
+import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 import './ScheduledImportModal.css';
 
 function ScheduledImportModal({ workspaceId, documents, onClose }) {
@@ -98,28 +98,36 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
         d.sourceType === 'CSV' || d.sourceType === 'DATABASE'
     );
 
-    const actions = (
-        <>
-            {!showForm && (
-                <Button onClick={() => setShowForm(true)} variant="contained" startIcon={<Plus size={16} />}>
-                    새 스케줄 추가
-                </Button>
-            )}
-            <Button onClick={onClose} variant="outlined">
-                닫기
-            </Button>
-        </>
-    );
-
     return (
         <BaseModal
             open
             onClose={onClose}
             title="스케줄 임포트 관리"
-            maxWidth="md"
-            fullWidth
-            contentClassName="sched-modal-content kl-modal-form"
-            actions={actions}
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={klTallFormModalPaperSx}
+            contentClassName={klModalFormContentClassName}
+            actions={(
+                <div className="kl-modal-actions-split">
+                    <div className="kl-modal-actions-split__left">
+                        {!showForm ? (
+                            <button
+                                type="button"
+                                className="kl-btn primary-outline md"
+                                onClick={() => setShowForm(true)}
+                            >
+                                <Plus size={16} aria-hidden />
+                                새 스케줄 추가
+                            </button>
+                        ) : null}
+                    </div>
+                    <div className="kl-modal-actions-split__right">
+                        <button type="button" className="kl-btn gray-outline md" onClick={onClose}>
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            )}
         >
                 <div className="sched-modal-body">
                     {loading ? (
@@ -184,37 +192,38 @@ function ScheduledImportModal({ workspaceId, documents, onClose }) {
                                     <div className="sched-form-grid">
                                         <div className="sched-form-group">
                                             <label>소스 유형</label>
-                                            <KlModalSelect
-                                                includeEmptyOption={false}
+                                            <select
                                                 value={formData.sourceType}
-                                                onChange={(e) => setFormData((prev) => ({ ...prev, sourceType: e.target.value }))}
-                                                optionItems={[
-                                                    { value: 'DB_TABLE', label: 'DB 테이블' },
-                                                    { value: 'CSV_DIRECTORY', label: 'CSV 디렉토리' },
-                                                    { value: 'API', label: 'API' },
-                                                ]}
-                                            />
+                                                onChange={(e) => setFormData((prev) => ({
+                                                    ...prev,
+                                                    sourceType: e.target.value,
+                                                }))}
+                                            >
+                                                <option value="DB_TABLE">DB 테이블</option>
+                                                <option value="CSV_DIRECTORY">CSV 디렉토리</option>
+                                                <option value="API">API</option>
+                                            </select>
                                         </div>
                                         <div className="sched-form-group">
                                             <label>매핑 기준 문서</label>
-                                            <KlModalSelect
-                                                placeholder="-- 선택 --"
+                                            <select
                                                 value={
                                                     formData.sourceDocumentId === '' || formData.sourceDocumentId == null
                                                         ? ''
                                                         : String(formData.sourceDocumentId)
                                                 }
-                                                onChange={(e) =>
-                                                    setFormData((prev) => ({
-                                                        ...prev,
-                                                        sourceDocumentId: e.target.value,
-                                                    }))
-                                                }
-                                                optionItems={structuredDocs.map((doc) => ({
-                                                    value: doc.id,
-                                                    label: `${doc.filename || doc.name} (#${doc.id})`,
+                                                onChange={(e) => setFormData((prev) => ({
+                                                    ...prev,
+                                                    sourceDocumentId: e.target.value,
                                                 }))}
-                                            />
+                                            >
+                                                <option value="">-- 선택 --</option>
+                                                {structuredDocs.map((doc) => (
+                                                    <option key={doc.id} value={String(doc.id)}>
+                                                        {`${doc.filename || doc.name} (#${doc.id})`}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                         <div className="sched-form-group">
                                             <label>Cron 표현식</label>

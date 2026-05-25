@@ -24,6 +24,8 @@ import ReportGenerationModal from './ReportGenerationModal';
 import ReportResultModal from './ReportResultModal';
 import PageHeader from './common/PageHeader';
 import BaseModal from './common/modal/BaseModal';
+import { klModalFormContentClassName } from './common/modal/klModalForm';
+import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 
 import './NotebookDetail.css';
 
@@ -2207,9 +2209,11 @@ function NotebookDetail() {
                         </span>
                     )}
                     onClose={() => setChunkModalPage(null)}
-                    maxWidth="md"
+                    maxWidth={false}
+                    fullWidth={false}
+                    paperSx={klTallFormModalPaperSx}
                     headerVariant="filled"
-                    contentClassName="chunk-modal-body kl-modal-form"
+                    contentClassName={`chunk-modal-body ${klModalFormContentClassName}`}
                 >
                     {chunkModalPage ? highlightText(chunkModalPage.content, searchQuery, chunkModalPage.id) : null}
                 </BaseModal>
@@ -2250,10 +2254,11 @@ function NotebookDetail() {
                     open={bizMetaOpen}
                     title="비즈니스 용어사전"
                     onClose={() => setBizMetaOpen(false)}
-                    maxWidth="md"
+                    maxWidth={false}
+                    fullWidth={false}
+                    paperSx={klTallFormModalPaperSx}
                     headerClassName="meta-modal-header"
-                    contentClassName="meta-modal-content kl-modal-form notebook-meta-modal-content"
-                    actionsClassName="meta-modal-actions"
+                    contentClassName={`${klModalFormContentClassName} notebook-meta-modal-content`}
                     actions={(
                         <div className="kl-modal-actions-split">
                             <div className="kl-modal-actions-split__left" aria-hidden="true" />
@@ -2355,10 +2360,11 @@ function NotebookDetail() {
                     open={itMetaOpen}
                     title="IT 용어사전 (컬럼 정보)"
                     onClose={() => setItMetaOpen(false)}
-                    maxWidth="md"
+                    maxWidth={false}
+                    fullWidth={false}
+                    paperSx={klTallFormModalPaperSx}
                     headerClassName="meta-modal-header"
-                    contentClassName="meta-modal-content kl-modal-form notebook-meta-modal-content"
-                    actionsClassName="meta-modal-actions"
+                    contentClassName={`${klModalFormContentClassName} notebook-meta-modal-content`}
                     actions={(
                         <div className="kl-modal-actions-split">
                             <div className="kl-modal-actions-split__left" aria-hidden="true" />

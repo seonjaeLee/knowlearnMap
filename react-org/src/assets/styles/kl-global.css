@@ -1,6 +1,6 @@
 /**
- * 전역 스타일 진입점 — main.jsx 에서만 import
- * 1단계: tokens · foundation · layout · kit · patterns · legacy
+ * KL 전역 스타일 진입점 — main.jsx 에서만 import
+ * tokens · foundation · layout · utilities · kit · patterns · legacy
  * @see docs/kl-ui-guide.md Part 1.2
  */
 
@@ -16,6 +16,9 @@
 @import './layout/kl-layout-page.css';
 @import './layout/kl-layout-toolbar.css';
 @import './layout/kl-layout-modal.css';
+
+/* 3b. 유틸 (layout 기본값 override — modal row 뒤) */
+@import './utilities/kl-util.css';
 
 /* 4. 폼 · 버튼 · 표 */
 @import './kit/kl-forms.css';

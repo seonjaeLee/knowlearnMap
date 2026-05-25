@@ -31,11 +31,11 @@
   min-width: 0;
 }
 
-/* 가로 form-row — 라벨(좌)·컨트롤(우), 라벨 열 상단 정렬 · 보조문은 컨트롤 하단 */
+/* 가로 form-row — 라벨(좌)·컨트롤(우), 기본 세로 가운데 · 높은 컨트롤은 .kl-vert-start */
 .kl-modal-form-row {
   display: grid;
   grid-template-columns: 6.75rem minmax(0, 1fr);
-  align-items: start;
+  align-items: center;
   column-gap: var(--spacing-md);
 }
 
@@ -47,12 +47,84 @@
   line-height: 1.4;
 }
 
+.kl-modal-form-row__label--stacked {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  line-height: 1.35;
+}
+
+.kl-modal-form-row__label-line {
+  display: block;
+}
+
+.kl-modal-form-required {
+  color: var(--color-icon-danger);
+}
+
 .kl-modal-form-row__control {
   min-width: 0;
 }
 
 .kl-modal-form-row__control .kl-modal-form-helper {
   margin-top: var(--spacing-xs);
+}
+
+/* row 컨트롤 열 — 좁은 숫자 입력 + 체크박스 등 가로 배치 (FAQ 표시순서·활성화 등) */
+.kl-modal-form-inline-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.kl-modal-form-inline-controls__field {
+  flex: 0 0 38%;
+  width: 38%;
+  max-width: 9.5rem;
+  min-width: 0;
+}
+
+.kl-modal-form-inline-controls__field input {
+  width: 100% !important;
+  max-width: none;
+}
+
+/* 모달 Form 체크박스 라벨 (활성화·동의 등) */
+.kl-modal-form-check {
+  display: inline-flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.kl-modal-form-check--emphasis {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+}
+
+.kl-modal-form-check input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+}
+
+.kl-modal-form-helper--legal {
+  font-size: var(--font-size-xs);
 }
 
 /* 라벨 위 · 컨트롤 아래 (긴 textarea·본문 필드) */
@@ -77,7 +149,7 @@
 }
 
 .kl-modal-form-helper {
-  margin: 0;
+  margin: 0 0 var(--spacing-sm);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
   color: var(--color-text-secondary);
@@ -88,10 +160,210 @@
   color: var(--color-icon-danger);
 }
 
+/* select/input flex:1 + 옆 버튼 (청킹 NONE·중복확인·KlModalSelect 등) */
+.kl-modal-form-control-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  min-width: 0;
+}
+
+.kl-modal-form-control-row > .kl-modal-select,
+.kl-modal-form-control-row > select,
+.kl-modal-form-control-row > input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']) {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+/* 옆 보조 버튼 — 중복확인·NONE 등 열 너비 통일 (도메인·프롬프트 팝업) */
+.kl-modal-form-control-row > .kl-btn,
+.kl-modal-form-control-row > .kl-modal-form-toggle-btn {
+  flex-shrink: 0;
+  min-width: 5rem;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.kl-modal-form-control-row > .kl-modal-form-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+.kl-modal-form-toggle-btn {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  min-height: var(--kl-control-height);
+  padding: var(--spacing-xs) calc(var(--spacing-sm) + var(--spacing-xs));
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+}
+
+.kl-modal-form-toggle-btn:hover:not(.kl-modal-form-toggle-btn--active) {
+  background: var(--color-bg-hover);
+}
+
+.kl-modal-form-toggle-btn--active {
+  background-color: var(--color-icon-danger);
+  color: #fff;
+  border-color: var(--color-icon-danger);
+}
+
+.kl-modal-form-toggle-btn--active:hover {
+  background-color: var(--color-icon-danger-emphasis);
+  border-color: var(--color-icon-danger-emphasis);
+  color: #fff;
+}
+
+.kl-modal-form-feedback {
+  margin: var(--spacing-xs) 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.kl-modal-form-feedback--success {
+  color: #059669;
+}
+
+.kl-modal-form-feedback--error {
+  color: var(--color-icon-danger);
+}
+
+.kl-modal-form-error-banner {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs));
+  border-radius: var(--radius-sm);
+  border: 1px solid #fecaca;
+  background-color: #fee2e2;
+  color: var(--color-icon-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* 긴 Form 팝업 본문 — 스크롤·패딩 (도메인·프롬프트 등) */
+.kl-base-modal-content.kl-modal-form.kl-scrollbar-thin {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  max-height: calc(100vh - 160px);
+  padding: var(--spacing-lg) !important;
+  padding-bottom: var(--spacing-2xl) !important;
+}
+
+/* 팝업 본문 세로 스택 — row·content-field·kl-infotxt-note 간격은 gap만 */
+.kl-modal-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 0;
+  margin: 0;
+}
+
+/* 내용·JSON — 라벨(좌)·툴바(우) 한 줄 + textarea 전체 너비 */
+.kl-modal-form-content-field {
+  display: grid;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
+  column-gap: var(--spacing-md);
+  row-gap: var(--spacing-xs);
+  width: 100%;
+  min-width: 0;
+}
+
+.kl-modal-form-content-field__label {
+  align-self: center;
+  margin: 0;
+}
+
+.kl-modal-form-content-field > .kl-modal-form-toolbar {
+  grid-column: 2;
+}
+
+.kl-modal-form-content-field > textarea {
+  grid-column: 1 / -1;
+  min-height: 140px;
+  resize: vertical;
+}
+
+.kl-modal-form-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.kl-modal-form-hidden-input {
+  display: none;
+}
+
 @media (max-width: 768px) {
+  .kl-modal-form-inline-controls {
+    flex-wrap: wrap;
+  }
+
   .kl-modal-form-row {
     grid-template-columns: 1fr;
     align-items: stretch;
     row-gap: var(--spacing-xs);
+  }
+
+  .kl-modal-form-content-field {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    row-gap: var(--spacing-xs);
+  }
+
+  .kl-modal-form-content-field > .kl-modal-form-toolbar {
+    grid-column: 1;
+  }
+
+  .kl-modal-form-content-field > textarea {
+    grid-column: 1;
+  }
+}
+
+/* 팝업 하단 — 좌·우 분할 (목록이동·삭제 | 저장·닫기 등) */
+.kl-base-modal-actions:has(.kl-modal-actions-split) {
+  justify-content: stretch !important;
+}
+
+.kl-modal-actions-split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--spacing-md);
+}
+
+.kl-modal-actions-split__left,
+.kl-modal-actions-split__right {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .kl-modal-actions-split {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .kl-modal-actions-split__left,
+  .kl-modal-actions-split__right {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .kl-modal-actions-split__right > .kl-btn.primary-full {
+    width: 100%;
   }
 }

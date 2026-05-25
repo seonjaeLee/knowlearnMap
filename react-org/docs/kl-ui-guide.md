@@ -417,6 +417,7 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 | `gray-outline` | 회색 테두리·흰 배경·본문색 글자 (보조) | `kl-btn`, `kl-btn--secondary` |
 | `gray-fill` | **테두리색(`--color-border`)과 동일한 회색 면 채움** · 본문색 글자 (툴바「검색」등) | *(전용)* `.toolbar-bundle__submit` → **폐지 예정** |
 | `danger-full` | 위험 면 채움 | `kl-btn--danger` |
+| `danger-outline` | 위험 테두리·빨간 글자 (모달 삭제 등) | `persona-modal-delete-btn` (폐기) |
 | `outline-success` | 성공 톤 아웃라인 (드묾) | `kl-btn--outline-success` |
 
 **신규 variant 추가:** 본 표 + CSS에 정의 추가 → registry·본 문서 갱신 → 사용자 컨펌.
@@ -1828,7 +1829,7 @@ KlTableRowActions  ← `.kl-table-actions` + kind 프리셋 배열
 | 모달 폼 레이아웃 | `kl-modal-form`, `*-form-row` | — | **Part 4** |
 | 모달 select | `KlModalSelect` | 네이티브 `<select>` in modal | **Part 4** |
 | 모달 버튼 | MUI `Button` in `actions` | — | **Part 6** |
-| 모달 paper 520px | `supportFormModalPaperSx` 등 | — | `src/components/common/modal/supportCsModalPaper.js` |
+| 모달 paper `paperSx` | `klModalPaper.js` · Form `klFormModalPaperSx` (550) · 상세·홈 `paperSx.width` (670 등) | — | **`modal-guide.md` §9 체크리스트** |
 | 호버 툴팁 (짧은 안내) | **`KlTooltip`** | HTML `title=`, MUI `Tooltip` 직접 | **Part 9** |
 | 클릭 설명 (`?` / `i`) | **`KlPopover`** + `kl-popover-icon-btn` | MUI `Popover` 직접, 페이지별 panel 색 하드코딩 | **Part 9** |
 | 표 관리 열 (아이콘 액션) | **`KlTableRowActions`** + **`KlIconButton`** | 페이지별 `kl-table-actions` 복붙, HTML `title=` | **Part 9** |

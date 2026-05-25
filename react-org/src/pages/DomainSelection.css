@@ -5,9 +5,9 @@
 }
 
 /* ── 도메인 선택 (카드형, 선택 전용) ── */
-.domain-select-area {
+/* .domain-select-area {
     padding: var(--spacing-lg);
-}
+} */
 
 .domain-select-toolbar {
     display: flex;

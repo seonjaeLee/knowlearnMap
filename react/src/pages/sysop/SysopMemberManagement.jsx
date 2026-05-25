@@ -1,7 +1,6 @@
 import React, {
     useState, useEffect, useMemo, useRef, useCallback,
 } from 'react';
-import { Button } from '@mui/material';
 import { memberApi } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useDialog } from '../../hooks/useDialog';
@@ -14,9 +13,16 @@ import KlIconButton from '../../components/common/KlIconButton';
 import { listTableEmptyState } from '../../config/supportMock';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
+import { klFormModalPaperSx } from '../../components/common/modal/klModalPaper';
 import {
-    klFormModalPaperSx,
-} from '../../components/common/modal/klModalPaper';
+    KL_MODAL_FORM_CONTROL_ROW_CLASS,
+    KL_MODAL_FORM_ELEMENT_ID,
+    KL_MODAL_FORM_FEEDBACK_CLASS,
+    KL_MODAL_FORM_FEEDBACK_ERROR_CLASS,
+    KL_MODAL_FORM_FEEDBACK_SUCCESS_CLASS,
+    KL_MODAL_FORM_STACK_CLASS,
+    klModalFormContentClassName,
+} from '../../components/common/modal/klModalForm';
 import { mockAdminMembers } from '../../data/memberMockData';
 import '../admin/admin-common.css';
 import '../admin/AdminMemberManagement.css';
@@ -710,27 +716,43 @@ function SysopMemberManagement() {
                 maxWidth={false}
                 fullWidth={false}
                 paperSx={klFormModalPaperSx}
-                contentClassName="member-mgmt-member-edit-content kl-modal-form"
-                actionsClassName="member-mgmt-modal-actions"
-                actionsAlign="right"
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <Button variant="outlined" onClick={() => setEditMember(null)}>
-                            취소
-                        </Button>
-                        <Button variant="contained" onClick={handleEditSave}>
-                            저장
-                        </Button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={() => setEditMember(null)}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                className="kl-btn primary-full md"
+                                form={KL_MODAL_FORM_ELEMENT_ID}
+                            >
+                                저장
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
                 {editMember ? (
-                    <form className="member-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-edit-email">
+                    <form
+                        id={KL_MODAL_FORM_ELEMENT_ID}
+                        className={KL_MODAL_FORM_STACK_CLASS}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleEditSave();
+                        }}
+                    >
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-edit-email">
                                 이메일
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="sysop-member-edit-email"
                                     type="email"
@@ -742,11 +764,11 @@ function SysopMemberManagement() {
                                 />
                             </div>
                         </div>
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-edit-role">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-edit-role">
                                 권한 (Role)
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="sysop-member-edit-role"
                                     value={editMember.role}
@@ -757,11 +779,11 @@ function SysopMemberManagement() {
                                 </select>
                             </div>
                         </div>
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-edit-grade">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-edit-grade">
                                 등급 (Grade)
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="sysop-member-edit-grade"
                                     value={editMember.grade}
@@ -774,11 +796,11 @@ function SysopMemberManagement() {
                                 </select>
                             </div>
                         </div>
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-edit-status">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-edit-status">
                                 상태 (Status)
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="sysop-member-edit-status"
                                     value={editMember.status}
@@ -802,26 +824,40 @@ function SysopMemberManagement() {
                 maxWidth={false}
                 fullWidth={false}
                 paperSx={klFormModalPaperSx}
-                contentClassName="member-mgmt-member-edit-content kl-modal-form"
-                actionsClassName="member-mgmt-modal-actions"
-                actionsAlign="right"
+                contentClassName={klModalFormContentClassName}
                 actions={(
-                    <>
-                        <Button variant="outlined" onClick={() => setCreateMember(null)} disabled={createSubmitting}>
-                            취소
-                        </Button>
-                        <Button
-                            variant="contained"
-                            onClick={handleCreateSubmit}
-                            disabled={createSubmitting || !canSubmit}
-                        >
-                            {createSubmitting ? '등록 중...' : '등록'}
-                        </Button>
-                    </>
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
+                                onClick={() => setCreateMember(null)}
+                                disabled={createSubmitting}
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                className="kl-btn primary-full md"
+                                form={KL_MODAL_FORM_ELEMENT_ID}
+                                disabled={createSubmitting || !canSubmit}
+                            >
+                                {createSubmitting ? '등록 중...' : '등록'}
+                            </button>
+                        </div>
+                    </div>
                 )}
             >
                 {createMember ? (
-                    <form className="member-mgmt-modal-form" onSubmit={(e) => e.preventDefault()}>
+                    <form
+                        id={KL_MODAL_FORM_ELEMENT_ID}
+                        className={KL_MODAL_FORM_STACK_CLASS}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleCreateSubmit();
+                        }}
+                    >
                         <input
                             type="text"
                             name="km-trap-username"
@@ -841,13 +877,13 @@ function SysopMemberManagement() {
                             readOnly
                         />
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-create-loginid">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-create-loginid">
                                 로그인 ID
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
-                                <div className="domain-input-group">
+                            <div className="kl-modal-form-row__control">
+                                <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
                                     <input
                                         id="sysop-member-create-loginid"
                                         type="text"
@@ -863,7 +899,7 @@ function SysopMemberManagement() {
                                     />
                                     <button
                                         type="button"
-                                        className="admin-btn"
+                                        className="kl-btn gray-fill md"
                                         onClick={handleCheckLoginId}
                                         disabled={isLoginIdChecking || !(createMember.loginId || '').trim()}
                                     >
@@ -872,7 +908,7 @@ function SysopMemberManagement() {
                                 </div>
                                 {loginIdCheckMessage ? (
                                     <div
-                                        className={`domain-validation-msg ${isLoginIdAvailable ? 'success' : 'error'}`}
+                                        className={`${KL_MODAL_FORM_FEEDBACK_CLASS} ${isLoginIdAvailable ? KL_MODAL_FORM_FEEDBACK_SUCCESS_CLASS : KL_MODAL_FORM_FEEDBACK_ERROR_CLASS}`}
                                         role="status"
                                     >
                                         {isLoginIdAvailable ? (
@@ -883,19 +919,19 @@ function SysopMemberManagement() {
                                         {loginIdCheckMessage}
                                     </div>
                                 ) : (
-                                    <p className="member-form-row__hint">
+                                    <p className="kl-modal-form-helper">
                                         이메일 또는 영문/숫자 ID (3–255자). 중복확인 후 등록할 수 있습니다.
                                     </p>
                                 )}
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-create-password">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-create-password">
                                 비밀번호
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="sysop-member-create-password"
                                     type="password"
@@ -908,12 +944,12 @@ function SysopMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-create-password-confirm">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-create-password-confirm">
                                 비밀번호 확인
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="sysop-member-create-password-confirm"
                                     type="password"
@@ -928,7 +964,7 @@ function SysopMemberManagement() {
                                 />
                                 {Boolean(createMember.passwordConfirm)
                                     && createMember.password !== createMember.passwordConfirm ? (
-                                        <div className="domain-validation-msg error" role="alert">
+                                        <div className={`${KL_MODAL_FORM_FEEDBACK_CLASS} ${KL_MODAL_FORM_FEEDBACK_ERROR_CLASS}`} role="alert">
                                             <AlertCircle size={14} aria-hidden />
                                             비밀번호가 일치하지 않습니다.
                                         </div>
@@ -936,12 +972,12 @@ function SysopMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-create-role">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-create-role">
                                 권한 (Role)
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="sysop-member-create-role"
                                     value={createMember.role}
@@ -950,18 +986,18 @@ function SysopMemberManagement() {
                                     <option value="USER">USER</option>
                                     <option value="VIEWER">VIEWER</option>
                                 </select>
-                                <p className="member-form-row__hint">
+                                <p className="kl-modal-form-helper">
                                     SYSOP는 USER(일반) 또는 VIEWER(조회 전용)만 생성할 수 있습니다.
                                 </p>
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-create-grade">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-create-grade">
                                 등급 (Grade)
-                                <span className="member-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <select
                                     id="sysop-member-create-grade"
                                     value={createMember.grade}
@@ -975,11 +1011,11 @@ function SysopMemberManagement() {
                             </div>
                         </div>
 
-                        <div className="member-form-row">
-                            <label className="member-form-row__label" htmlFor="sysop-member-create-domain">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="sysop-member-create-domain">
                                 도메인
                             </label>
-                            <div className="member-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="sysop-member-create-domain"
                                     type="text"
@@ -988,7 +1024,7 @@ function SysopMemberManagement() {
                                     readOnly
                                     aria-readonly="true"
                                 />
-                                <p className="member-form-row__hint">
+                                <p className="kl-modal-form-helper">
                                     SYSOP 본인 도메인으로 자동 설정됩니다.
                                 </p>
                             </div>

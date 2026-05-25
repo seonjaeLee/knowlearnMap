@@ -111,12 +111,3 @@
   color: #f08c00;
 }
 
-.admin-upgrade-reject-content {
-  min-height: auto !important;
-}
-
-.admin-upgrade-reject-desc {
-  font-size: var(--admin-font-md) !important;
-  color: var(--color-text-secondary) !important;
-  margin-bottom: var(--spacing-sm) !important;
-}

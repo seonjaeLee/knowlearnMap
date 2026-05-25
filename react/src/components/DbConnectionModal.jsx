@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@mui/material';
 import './DbConnectionModal.css';
 import { structuredApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
 import BaseModal from './common/modal/BaseModal';
-import KlModalSelect from './common/modal/KlModalSelect';
+import { klModalFormContentClassName } from './common/modal/klModalForm';
+import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 
 const DB_TYPES = [
     { value: 'MYSQL', label: 'MySQL', defaultPort: 3306 },
@@ -362,15 +362,16 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
                     <div className="db-form-row">
                         <label className="db-form-label">네트워크 유형:</label>
                         <div className="db-form-value">
-                            <KlModalSelect
-                                includeEmptyOption={false}
+                            <select
                                 value={form.dbType}
                                 onChange={(e) => handleFormChange('dbType', e.target.value)}
-                                optionItems={DB_TYPES.map((db) => ({
-                                    value: db.value,
-                                    label: `${db.label} (TCP/IP)`,
-                                }))}
-                            />
+                            >
+                                {DB_TYPES.map((db) => (
+                                    <option key={db.value} value={db.value}>
+                                        {`${db.label} (TCP/IP)`}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                     <div className="db-form-row">
@@ -621,32 +622,49 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
     );
 
     const actions = (
-        <div className="db-modal-actions-layout">
-            <div className="db-footer-left">
-                {step === 1 && (
-                    <Button variant="outlined" onClick={handleTestConnection} disabled={!isFormValid || testing}>
-                        {testing ? '테스트 중...' : '연결 테스트'}{testResult === true && ' ✓'}{testResult === false && ' ✗'}
-                    </Button>
-                )}
-                {step === 2 && (
-                    <Button variant="outlined" onClick={() => setStep(1)}>
+        <div className="kl-modal-actions-split">
+            <div className="kl-modal-actions-split__left">
+                {step === 1 ? (
+                    <button
+                        type="button"
+                        className="kl-btn gray-outline md"
+                        onClick={handleTestConnection}
+                        disabled={!isFormValid || testing}
+                    >
+                        {testing ? '테스트 중...' : '연결 테스트'}
+                        {testResult === true ? ' ✓' : ''}
+                        {testResult === false ? ' ✗' : ''}
+                    </button>
+                ) : null}
+                {step === 2 ? (
+                    <button type="button" className="kl-btn gray-outline md" onClick={() => setStep(1)}>
                         이전
-                    </Button>
-                )}
+                    </button>
+                ) : null}
             </div>
-            <div className="db-footer-right">
-                {step === 1 && (
+            <div className="kl-modal-actions-split__right">
+                {step === 1 ? (
                     <>
-                        <Button variant="outlined" onClick={onClose}>
+                        <button type="button" className="kl-btn gray-outline md" onClick={onClose}>
                             취소
-                        </Button>
-                        <Button variant="contained" onClick={handleNextToTables} disabled={!selectedConnectionId || loadingTables}>
+                        </button>
+                        <button
+                            type="button"
+                            className="kl-btn primary-full md"
+                            onClick={handleNextToTables}
+                            disabled={!selectedConnectionId || loadingTables}
+                        >
                             {loadingTables ? '로딩...' : '열기'}
-                        </Button>
+                        </button>
                     </>
-                )}
-                {step === 2 && (
-                    <Button variant="contained" onClick={handleImport} disabled={selectedTables.size === 0 || importing}>
+                ) : null}
+                {step === 2 ? (
+                    <button
+                        type="button"
+                        className="kl-btn primary-full md"
+                        onClick={handleImport}
+                        disabled={selectedTables.size === 0 || importing}
+                    >
                         {importing
                             ? `임포트 중... (${importingTable || ''})`
                             : selectedTables.size > 1
@@ -654,13 +672,13 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
                                 : selectedTables.size === 1
                                     ? `'${[...selectedTables][0]}' 임포트`
                                     : '테이블을 선택하세요'}
-                    </Button>
-                )}
-                {step === 3 && (
-                    <Button variant="contained" onClick={onClose}>
+                    </button>
+                ) : null}
+                {step === 3 ? (
+                    <button type="button" className="kl-btn primary-full md" onClick={onClose}>
                         닫기
-                    </Button>
-                )}
+                    </button>
+                ) : null}
             </div>
         </div>
     );
@@ -670,11 +688,11 @@ function DbConnectionModal({ isOpen, onClose, workspaceId, domainId, onImportCom
             open={isOpen}
             onClose={onClose}
             title={step === 1 ? 'DB 테이블 연결' : step === 2 ? '테이블 선택' : '임포트 완료'}
-            maxWidth="lg"
-            fullWidth
-            contentClassName="db-modal-content kl-modal-form"
+            maxWidth={false}
+            fullWidth={false}
+            paperSx={klTallFormModalPaperSx}
+            contentClassName={klModalFormContentClassName}
             actions={actions}
-            actionsAlign="left"
         >
             <div className="db-modal-body">
                 {renderSteps()}

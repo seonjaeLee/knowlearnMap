@@ -11,14 +11,13 @@ import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
 import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 import {
     KL_MODAL_FORM_CONTROL_ROW_CLASS,
+    KL_MODAL_FORM_CONTROL_WARNING_CLASS,
     KL_MODAL_FORM_ELEMENT_ID,
     KL_MODAL_FORM_ERROR_BANNER_CLASS,
     KL_MODAL_FORM_FEEDBACK_CLASS,
     KL_MODAL_FORM_FEEDBACK_ERROR_CLASS,
     KL_MODAL_FORM_FEEDBACK_SUCCESS_CLASS,
     KL_MODAL_FORM_STACK_CLASS,
-    KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS,
-    KL_MODAL_FORM_TOGGLE_BTN_CLASS,
     klModalFormContentClassName,
 } from './common/modal/klModalForm';
 import KlIconButton from './common/KlIconButton';
@@ -391,7 +390,7 @@ function DomainManagement() {
 
     const renderPromptCodeSelect = (fieldKey, options, { ariaLabel, warnNone = false, id: selectId } = {}) => {
         const value = formData[fieldKey] ?? '';
-        const warnClass = warnNone && value === 'NONE' ? 'modal-input--chunk-none' : '';
+        const warnClass = warnNone && value === 'NONE' ? KL_MODAL_FORM_CONTROL_WARNING_CLASS : '';
         return (
             <select
                 id={selectId}
@@ -692,7 +691,7 @@ function DomainManagement() {
                                 })}
                                 <button
                                     type="button"
-                                    className={`${KL_MODAL_FORM_TOGGLE_BTN_CLASS}${formData.chunkPrompt === 'NONE' ? ` ${KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS}` : ''}`}
+                                    className={`kl-btn md ${formData.chunkPrompt === 'NONE' ? 'danger-outline' : 'gray-outline'}`}
                                     onClick={() => setFormData((prev) => ({ ...prev, chunkPrompt: prev.chunkPrompt === 'NONE' ? '' : 'NONE' }))}
                                 >
                                     NONE

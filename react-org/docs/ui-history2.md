@@ -451,3 +451,112 @@
 **`NotebookDetail` 제외**, 전 메뉴 `BaseModal` 팝업을 가이드·`ReportGenerationModal` 패턴으로 마크업·클래스 통일.
 
 ---
+
+## 2026-05-24
+
+### 1) 전역 CSS 진입점 `kl-global.css` 정리 · 루트 스텁 제거 · `utilities/`
+
+- **목적:** `kl-ui.css` → `global.scss` → `global.css` 체인·루트 `kl-*.css` 스텁 중복을 없애고, 진입점 이름을 KL 규칙(`kl-*`)에 맞춤. 원자 유틸(세로 정렬 등)은 한 파일에 단계적으로 추가.
+- **영향:** `main.jsx` 전역 CSS 로드 · 에이전트 규칙 · SSOT 문서 경로
+
+#### 진입·폴더
+- **`react/src/assets/styles/kl-global.css`** — `main.jsx`에서 **이 파일만** import (`tokens/` · `foundation/` · `layout/` · `utilities/` · `kit/` · `patterns/` · `legacy/`)
+- **`styles/` 루트** — `kl-global.css` + `README.md`만 유지 (본문은 하위 폴더만)
+
+#### 삭제(호환 스텁·미사용)
+- `global.css`, `global.scss`, `kl-ui.css`, `src/index.css`
+- 루트 `kl-*.css` 스텁 18개 (`@import`만 있던 파일)
+- `src/components/common/TableToolbar.css` (jsx import 없음 — 툴바는 `kl-global` → `layout/kl-layout-toolbar.css`)
+
+#### 신규
+- **`utilities/kl-util.css`** — 1차: `kl-vert-start` / `kl-vert-cnt` / `kl-vert-end` (flex·grid 컨테이너 opt-in)
+- `kl-global.css`에서 `layout/kl-layout-modal.css` **뒤**에 로드 (row 기본값 override)
+
+#### 규칙·문서
+- `.cursor/rules/kl-css-architecture.mdc` — 진입 `kl-global.css`, 루트 스텁 금지
+- `docs/kl-ui-guide.md`, `modal-guide.md`, `docs/README.md` 등 — `global.css` → `kl-global.css` · `tokens/` 경로 정리(일부)
+
+#### 검증
+- `npm run build` 통과
+
+---
+
+### 2) `kl-layout-modal` — 본문 스택·내용 필드(공통)
+
+- **목적:** 팝업 본문에서 textarea와 `kl-infotxt-note` 등 블록 간격을 **부모 `gap`만**으로 맞추기 (`kl-infotxt-note`에 margin 추가하지 않음).
+- **영향:** 노트북 용어 팝업 등 `kl-modal-form-stack` 사용 화면
+
+#### `layout/kl-layout-modal.css` 추가
+- `.kl-modal-form-stack` — `gap: var(--spacing-md)`
+- `.kl-modal-form-content-field` — 라벨(좌)·툴바(우)·textarea 전체 너비
+- `.kl-modal-form-toolbar`, `.kl-modal-form-hidden-input`
+
+---
+
+### 3) 노트북 상세 — 비즈·IT 용어사전 팝업 UI
+
+- **목적:** 상단 설명+ MUI CSV 버튼 구조를 공통 폼 패턴으로 정리하고, 안내 문구를 하단 `kl-infotxt-note`로 이동. textarea와 안내 박스 간격 분리.
+- **영향:** `NotebookDetail` → 비즈니스 용어사전 · IT 용어사전(컬럼 정보) `BaseModal`
+- **유지:** `maxWidth="md"` (가로 변경 없음)
+
+#### 마크업
+- 본문: `kl-modal-form-stack` → `kl-modal-form-content-field`(라벨 「내용」·`kl-icon-label-btn` CSV) → textarea
+- 하단: `kl-infotxt-note` + `Info` (기존 `meta-modal-description` 문구)
+- 푸터: MUI `Button` → `kl-btn gray-outline md` / `kl-btn primary-full md`
+- `NotebookDetail.jsx` — `@mui/material` `Button` import 제거(용어 팝업 구간)
+
+#### CSS
+- `NotebookDetail.css` — `.notebook-meta-textarea` (JSON monospace·최소 높이 등, `meta-modal-textarea` 대체)
+
+---
+
+### 4) 모달 UI 일괄 이관 — **중단·되돌림** (고객센터 작성 팝업)
+
+- **배경:** 공지·FAQ·1:1 **작성** 팝업에 `kl-modal-form-stack` 이관 시도 중, CSS 진입점 불일치·범위 과다로 dev/build·화면 꼬임. **컨펌 없이 진행** 지적 후 정리.
+- **현재(세션 종료 시점):**
+  - **공지·FAQ·1:1 작성** — 페이지 전용 클래스 유지 (`notice-modal-form`, `faq-modal-form`, `qna-create-modal-form` 등). `kl-modal-form-stack` **미적용**.
+  - **고객센터 상세(행 클릭)** — 이번 범위 제외 유지.
+  - **모달 일괄 이관** — `handoff-modal-ui-rollout.mdc` · `ReportGenerationModal` 기준, **1~2개씩** 재개 예정.
+
+#### 작업 방식 합의(재발 방지)
+- 논의 → **명시적 컨펌 후** 구현 (`workflow-confirm-before-implement.mdc`)
+- 한 세션에 CSS 구조 변경 + 팝업 마크업 **섞지 않음** · 단위별 **사용자 커밋**
+- `ui-history2` — **사용자 지시 시만** 기록
+
+#### 다음(예정) 우선순위
+1. 화면 확인 후 사용자 커밋(기준선 고정)
+2. **공지 작성 팝업 1개** — `kl-modal-form-stack` + `kl-infotxt-note` 간격(gap만)
+3. 이후 FAQ·1:1 작성 → 그다음 `NotebookDetail` 제외 전 메뉴 모달 이관
+
+---
+
+## 2026-05-25
+
+### 1) 고객센터 Form — 페이지별 `*-create-form` 제거 · 전역 class 통일
+
+- **목적:** 공지·FAQ·1:1 **작성/수정** 팝업 `<form>`·`contentClassName` 이 메뉴마다 달라 DevTools·유지보수 혼선 — 동일 레이아웃은 **전역 상수만** 사용
+- **SSOT:** `src/components/common/modal/klModalForm.js` — `KL_MODAL_FORM_STACK_CLASS`, `KL_MODAL_FORM_ELEMENT_ID` (`kl-modal-form`), `klModalFormContentClassName`
+- **적용:** `NoticeCreateModal.jsx`, `FaqCreateModal.jsx`, `QnaCreateModal.jsx` — `notice-create-form` / `faq-create-form` / `qna-create-form` 및 `*-create-modal-content` 제거
+- **인라인·체크박스:** `faq-order-*` · `faq-active-*` · `qna-privacy-consent` 제거 → `kl-layout-modal.css`의 `kl-modal-form-inline-controls` · `kl-modal-form-check` · `kl-modal-form-helper--legal` (상수 `klModalForm.js`)
+- **삭제:** `FaqCreateModal.css`, `QnaCreateModal.css` (전역으로 이관)
+- **문서:** `docs/modal-guide.md` §5 · §9 반영
+
+---
+
+### 2) 어드민·워크스페이스 Form 팝업 — `modal-guide` / `ReportGenerationModal` 패턴 이관
+
+- **목적:** 고객센터 Form SSOT 이후, 어드민·홈·도메인 팝업을 `kl-modal-form` · `kl-btn` · `kl-modal-actions-split` · `KL_MODAL_FORM_*` 상수로 통일. 페이지 전용 모달 CSS·MUI `Button` 제거.
+- **Paper:** `klModalPaper.js` — Form 550(`klFormModalPaperSx`), 긴 Form 670(`klTallFormModalPaperSx`), 짧은 Form 440(`homeRenameModalPaperSx`)
+- **전역:** `kl-layout-modal.css` — `kl-modal-form-stack` gap `--spacing-sm`(8px), `kl-modal-form-control-row`·toggle·feedback·error banner, `kl-modal-form-helper` `margin-bottom: var(--spacing-sm)`
+- **적용(jsx):** `Home.jsx`·`ShareSettingsModal.jsx`(프롬프트 670·이름 440), `DomainManagement.jsx`(670), `AdminMemberManagement.jsx`, `AdminConfigManagement.jsx`, `AdminSemanticCategoryPage.jsx`, `semantic/SemanticEntitySplitPage.jsx`, `AdminActionPage.jsx`(워크스페이스 선택 440)
+- **노트북 상세:** 비즈·IT 용어 팝업 — 푸터 `kl-btn`·split만 정리(크기 유지)
+- **문서:** `docs/modal-guide.md` — stack gap 8px 문구 일부 반영
+
+---
+
+### 3) Action · 시멘틱 팝업 보정
+
+- **Action — 워크스페이스 선택:** `kl-infotxt-note` 시도 후 제거. 안내는 기존 문구 한 줄(`Action 관리 대상 workspaceId …`)·입력 **위** `kl-modal-form-helper` 유지.
+- **시멘틱 — select:** `KlModalSelect`(MUI) 제거 → 사용자 관리와 동일 **네이티브 `<select>`** + `.kl-modal-form select` (카테고리 상위·엔티티 카테고리). 펼침 UI는 OS·브라우저 의존(합의).
+
+---

@@ -14,7 +14,6 @@ import KlTableRowActions from '../components/common/table/KlTableRowActions';
 import KlTooltip from '../components/common/KlTooltip';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import BaseModal from '../components/common/modal/BaseModal';
-import KlModalSelect from '../components/common/modal/KlModalSelect';
 import {
     homePromptModalPaperClassName,
     homePromptModalPaperSx,
@@ -22,10 +21,9 @@ import {
 } from '../components/common/modal/klModalPaper';
 import {
     KL_MODAL_FORM_CONTROL_ROW_CLASS,
+    KL_MODAL_FORM_CONTROL_WARNING_CLASS,
     KL_MODAL_FORM_ELEMENT_ID,
     KL_MODAL_FORM_STACK_CLASS,
-    KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS,
-    KL_MODAL_FORM_TOGGLE_BTN_CLASS,
     klModalFormContentClassName,
 } from '../components/common/modal/klModalForm';
 import './Home.css';
@@ -372,6 +370,23 @@ function Home() {
             showAlert('프롬프트 저장에 실패했습니다.');
         }
     };
+
+    const renderPromptCodeSelect = (id, value, onChange, codes, { warnNone = false } = {}) => (
+        <select
+            id={id}
+            value={value ?? ''}
+            onChange={onChange}
+            className={warnNone && value === 'NONE' ? KL_MODAL_FORM_CONTROL_WARNING_CLASS : undefined}
+        >
+            <option value="">-- 기본값 --</option>
+            {warnNone ? <option value="NONE">NONE</option> : null}
+            {(codes || []).map((code) => (
+                <option key={code} value={code}>
+                    {code}
+                </option>
+            ))}
+        </select>
+    );
 
     const handleResetPromptToDefault = () => {
         const defChunk = promptNotebook?.defaultChunkPrompt || '';
@@ -1031,17 +1046,16 @@ function Home() {
                             </label>
                             <div className="kl-modal-form-row__control">
                                 <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
-                                    <KlModalSelect
-                                        id="workspace-prompt-chunk"
-                                        value={chunkPromptValue}
-                                        onChange={(e) => setChunkPromptValue(e.target.value)}
-                                        options={chunkPromptCodes}
-                                        includeNoneOption
-                                        warn={chunkPromptValue === 'NONE'}
-                                    />
+                                    {renderPromptCodeSelect(
+                                        'workspace-prompt-chunk',
+                                        chunkPromptValue,
+                                        (e) => setChunkPromptValue(e.target.value),
+                                        chunkPromptCodes,
+                                        { warnNone: true },
+                                    )}
                                     <button
                                         type="button"
-                                        className={`${KL_MODAL_FORM_TOGGLE_BTN_CLASS}${chunkPromptValue === 'NONE' ? ` ${KL_MODAL_FORM_TOGGLE_BTN_ACTIVE_CLASS}` : ''}`}
+                                        className={`kl-btn md ${chunkPromptValue === 'NONE' ? 'danger-outline' : 'gray-outline'}`}
                                         onClick={() => setChunkPromptValue(chunkPromptValue === 'NONE' ? '' : 'NONE')}
                                     >
                                         NONE
@@ -1058,12 +1072,12 @@ function Home() {
                                 온톨로지 프롬프트
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <KlModalSelect
-                                    id="workspace-prompt-ontology"
-                                    value={ontologyPromptValue}
-                                    onChange={(e) => setOntologyPromptValue(e.target.value)}
-                                    options={ontologyPromptCodes}
-                                />
+                                {renderPromptCodeSelect(
+                                    'workspace-prompt-ontology',
+                                    ontologyPromptValue,
+                                    (e) => setOntologyPromptValue(e.target.value),
+                                    ontologyPromptCodes,
+                                )}
                                 <p className="kl-modal-form-helper">Chunk → LLM 온톨로지 추출</p>
                             </div>
                         </div>
@@ -1073,12 +1087,12 @@ function Home() {
                                 채팅 프롬프트
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <KlModalSelect
-                                    id="workspace-prompt-chat"
-                                    value={chatResultPromptValue}
-                                    onChange={(e) => setChatResultPromptValue(e.target.value)}
-                                    options={chatPromptCodes}
-                                />
+                                {renderPromptCodeSelect(
+                                    'workspace-prompt-chat',
+                                    chatResultPromptValue,
+                                    (e) => setChatResultPromptValue(e.target.value),
+                                    chatPromptCodes,
+                                )}
                                 <p className="kl-modal-form-helper">Chat 응답 생성</p>
                             </div>
                         </div>
@@ -1092,12 +1106,12 @@ function Home() {
                                 <span className="kl-modal-form-row__label-line">온톨로지</span>
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <KlModalSelect
-                                    id="workspace-prompt-content-ontology"
-                                    value={contentOntologyPromptValue}
-                                    onChange={(e) => setContentOntologyPromptValue(e.target.value)}
-                                    options={contentOntologyPromptCodes}
-                                />
+                                {renderPromptCodeSelect(
+                                    'workspace-prompt-content-ontology',
+                                    contentOntologyPromptValue,
+                                    (e) => setContentOntologyPromptValue(e.target.value),
+                                    contentOntologyPromptCodes,
+                                )}
                                 <p className="kl-modal-form-helper">정형 Chunk → LLM 온톨로지</p>
                             </div>
                         </div>
@@ -1107,12 +1121,12 @@ function Home() {
                                 스키마 분석
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <KlModalSelect
-                                    id="workspace-prompt-schema"
-                                    value={schemaAnalysisPromptValue}
-                                    onChange={(e) => setSchemaAnalysisPromptValue(e.target.value)}
-                                    options={schemaAnalysisPromptCodes}
-                                />
+                                {renderPromptCodeSelect(
+                                    'workspace-prompt-schema',
+                                    schemaAnalysisPromptValue,
+                                    (e) => setSchemaAnalysisPromptValue(e.target.value),
+                                    schemaAnalysisPromptCodes,
+                                )}
                                 <p className="kl-modal-form-helper">CSV/DB 스키마 자동 분석</p>
                             </div>
                         </div>
@@ -1122,12 +1136,12 @@ function Home() {
                                 테이블 간 관계
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <KlModalSelect
-                                    id="workspace-prompt-inter-table"
-                                    value={interTableAnalysisPromptValue}
-                                    onChange={(e) => setInterTableAnalysisPromptValue(e.target.value)}
-                                    options={interTableAnalysisPromptCodes}
-                                />
+                                {renderPromptCodeSelect(
+                                    'workspace-prompt-inter-table',
+                                    interTableAnalysisPromptValue,
+                                    (e) => setInterTableAnalysisPromptValue(e.target.value),
+                                    interTableAnalysisPromptCodes,
+                                )}
                                 <p className="kl-modal-form-helper">다건 테이블 간 FK/관계 분석</p>
                             </div>
                         </div>
@@ -1137,12 +1151,12 @@ function Home() {
                                 AQL 생성
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <KlModalSelect
-                                    id="workspace-prompt-aql-gen"
-                                    value={aqlGenerationPromptValue}
-                                    onChange={(e) => setAqlGenerationPromptValue(e.target.value)}
-                                    options={aqlGenerationPromptCodes}
-                                />
+                                {renderPromptCodeSelect(
+                                    'workspace-prompt-aql-gen',
+                                    aqlGenerationPromptValue,
+                                    (e) => setAqlGenerationPromptValue(e.target.value),
+                                    aqlGenerationPromptCodes,
+                                )}
                                 <p className="kl-modal-form-helper">자연어 → AQL 쿼리 생성</p>
                             </div>
                         </div>
@@ -1152,12 +1166,12 @@ function Home() {
                                 AQL 결과 해석
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <KlModalSelect
-                                    id="workspace-prompt-aql-interpret"
-                                    value={aqlInterpretationPromptValue}
-                                    onChange={(e) => setAqlInterpretationPromptValue(e.target.value)}
-                                    options={aqlInterpretationPromptCodes}
-                                />
+                                {renderPromptCodeSelect(
+                                    'workspace-prompt-aql-interpret',
+                                    aqlInterpretationPromptValue,
+                                    (e) => setAqlInterpretationPromptValue(e.target.value),
+                                    aqlInterpretationPromptCodes,
+                                )}
                                 <p className="kl-modal-form-helper">AQL 쿼리 결과 자연어 해석</p>
                             </div>
                         </div>
@@ -1167,12 +1181,12 @@ function Home() {
                                 집계 전략
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <KlModalSelect
-                                    id="workspace-prompt-aggregation"
-                                    value={aggregationStrategyPromptValue}
-                                    onChange={(e) => setAggregationStrategyPromptValue(e.target.value)}
-                                    options={aggregationStrategyPromptCodes}
-                                />
+                                {renderPromptCodeSelect(
+                                    'workspace-prompt-aggregation',
+                                    aggregationStrategyPromptValue,
+                                    (e) => setAggregationStrategyPromptValue(e.target.value),
+                                    aggregationStrategyPromptCodes,
+                                )}
                                 <p className="kl-modal-form-helper">대규모 정형 데이터 집계 전략</p>
                             </div>
                         </div>

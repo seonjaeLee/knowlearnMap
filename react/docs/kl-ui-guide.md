@@ -763,7 +763,7 @@ React 컴포넌트의 `variant` / `size` / `disabled` prop 조합과 같은 역�
 | **`kl-modal-form-label`** | 필드 라벨(상단). 필수 시 자식으로 `.required-asterisk` 사용. |
 | **`kl-modal-form-control`** | 컨트롤 래퍼(`width: 100%`, `min-width: 0`). |
 | **`kl-modal-form-helper`** | 보조 설명(`--font-size-sm`, 보조 색). |
-| **`kl-modal-form-control--warning`** | 네이티브 `select`/`input` 등에 붙이면 경고 테두리·배경(청킹 NONE 등 특수 상태용). |
+| **`kl-modal-form-control--warning`** | 네이티브 `select`/`input` 경고 상태 — 빨간 테두리·글자, 배경 `var(--kl-control-bg)` (청킹 NONE 등). `klModalForm.js` → `KL_MODAL_FORM_CONTROL_WARNING_CLASS`. 레거시 `modal-input--chunk-none` 사용 금지. |
 
 ---
 

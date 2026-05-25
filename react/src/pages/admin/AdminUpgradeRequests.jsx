@@ -1,10 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, TextField, Typography } from '@mui/material';
 import { HelpCircle, RotateCcw } from 'lucide-react';
 import { upgradeApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
 import BaseModal from '../../components/common/modal/BaseModal';
+import {
+    KL_MODAL_FORM_ELEMENT_ID,
+    KL_MODAL_FORM_STACK_CLASS,
+    klModalFormContentClassName,
+} from '../../components/common/modal/klModalForm';
+import { klFormModalPaperSx } from '../../components/common/modal/klModalPaper';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
@@ -369,33 +374,62 @@ function AdminUpgradeRequests() {
                     open={rejectModalOpen}
                     onClose={() => setRejectModalOpen(false)}
                     title="거절 사유 입력"
-                    maxWidth="sm"
-                    fullWidth
-                    contentClassName="admin-upgrade-reject-content kl-modal-form"
+                    maxWidth={false}
+                    fullWidth={false}
+                    paperSx={klFormModalPaperSx}
+                    contentClassName={klModalFormContentClassName}
                     actions={(
-                        <>
-                            <Button variant="outlined" onClick={() => setRejectModalOpen(false)}>
-                                취소
-                            </Button>
-                            <Button variant="contained" color="error" onClick={handleRejectSubmit}>
-                                거절 처리
-                            </Button>
-                        </>
+                        <div className="kl-modal-actions-split">
+                            <div className="kl-modal-actions-split__left" aria-hidden="true" />
+                            <div className="kl-modal-actions-split__right">
+                                <button
+                                    type="button"
+                                    className="kl-btn gray-outline md"
+                                    onClick={() => setRejectModalOpen(false)}
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="kl-btn danger-outline md"
+                                    form={KL_MODAL_FORM_ELEMENT_ID}
+                                >
+                                    거절 처리
+                                </button>
+                            </div>
+                        </div>
                     )}
                 >
-                    <Typography className="admin-upgrade-reject-desc">
-                        거절 사유를 입력하시면 해당 내용이 메일로 발송됩니다.
-                    </Typography>
-                    <TextField
-                        multiline
-                        minRows={5}
-                        fullWidth
-                        value={rejectReason}
-                        onChange={(e) => setRejectReason(e.target.value)}
-                        placeholder="거절 사유를 자세히 적어주세요."
-                        autoFocus
-                        size="small"
-                    />
+                    <form
+                        id={KL_MODAL_FORM_ELEMENT_ID}
+                        className={KL_MODAL_FORM_STACK_CLASS}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            void handleRejectSubmit();
+                        }}
+                    >
+                        <p className="kl-modal-form-helper">
+                            거절 사유를 입력하시면 해당 내용이 메일로 발송됩니다.
+                        </p>
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label
+                                className="kl-modal-form-row__label"
+                                htmlFor="admin-upgrade-reject-reason"
+                            >
+                                거절 사유
+                            </label>
+                            <div className="kl-modal-form-row__control">
+                                <textarea
+                                    id="admin-upgrade-reject-reason"
+                                    rows={5}
+                                    value={rejectReason}
+                                    onChange={(e) => setRejectReason(e.target.value)}
+                                    placeholder="거절 사유를 자세히 적어주세요."
+                                    autoFocus
+                                />
+                            </div>
+                        </div>
+                    </form>
                 </BaseModal>
             )}
         </div>

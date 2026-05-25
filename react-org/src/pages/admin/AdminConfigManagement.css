@@ -163,72 +163,12 @@
   font-weight: var(--font-weight-medium);
 }
 
-/* 시스템 설정 수정 — 고객센터 등록 팝업과 동일 520px · 라벨(좌) + 입력(우) */
-:global(.kl-base-modal-paper.config-form-modal-paper) {
-  width: 520px !important;
-  max-width: calc(100vw - 48px) !important;
-  min-width: unset !important;
-  min-height: unset !important;
-}
-
-:global(.kl-base-modal-content.config-mgmt-edit-modal-content) {
-  padding: var(--spacing-lg) !important;
-  padding-bottom: var(--spacing-2xl) !important;
-  min-height: auto !important;
-}
-
-.config-mgmt-modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding: 0;
-  margin: 0;
-}
-
-.config-form-row {
-  display: grid;
-  grid-template-columns: 6.75rem minmax(0, 1fr);
-  align-items: center;
-  column-gap: var(--spacing-md);
-}
-
-.config-form-row--start {
-  align-items: start;
-}
-
-.config-form-row__label {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  line-height: 1.4;
-}
-
-.config-form-row__control {
-  min-width: 0;
-}
-
-.config-form-row__control textarea {
-  width: 100%;
-}
-
+/* 시스템 설정 수정 — 키 readonly 강조 (팝업 본문은 kl-modal-form 전역) */
 .config-mgmt-edit-key-input {
   font-family: var(--font-family);
   font-size: var(--font-size-sm);
   color: var(--color-accent);
   font-weight: var(--font-weight-medium);
-}
-
-.config-mgmt-modal-actions {
-  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
-}
-
-@media (max-width: 768px) {
-  .config-form-row {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-    row-gap: var(--spacing-xs);
-  }
 }
 
 .config-mgmt-type-badge {

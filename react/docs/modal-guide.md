@@ -144,7 +144,7 @@ import {
 | `kl-modal-form-inline-controls` | row 컨트롤 열 — 좁은 숫자 입력 + 체크박스 가로 (`__field` 자식) |
 | `kl-modal-form-check` | 체크박스 라벨 (활성화 등, `font-size-sm`) |
 | `kl-modal-form-check--emphasis` | 체크박스 라벨 강조 (동의 제목, `font-size-base`) |
-| `kl-modal-form-control--warning` | 경고 테두리·배경 |
+| `kl-modal-form-control--warning` | 경고 테두리·빨간 글자, 배경은 일반 컨트롤과 동일 (`KL_MODAL_FORM_CONTROL_WARNING_CLASS`, 청킹 NONE 등) |
 
 **금지:** `faq-order-*`, `faq-active-*`, `qna-privacy-consent` 등 **메뉴·도메인 접두 클래스** — 위 전역 클래스·`klModalForm.js` 상수만 사용.
 

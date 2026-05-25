@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react';
-import { Button } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import { noticeApi } from '../services/api';
@@ -9,7 +8,7 @@ import BaseModal from './common/modal/BaseModal';
 import {
     supportDetailModalPaperClassName,
     supportDetailModalPaperSx,
-} from './common/modal/supportDetailModalPaperSx';
+} from './common/modal/klModalPaper';
 import './CsDetailModal.css';
 
 function NoticeDetailModal({
@@ -126,30 +125,32 @@ function NoticeDetailModal({
             contentClassName="cs-detail-modal-content kl-modal-form"
             actionsClassName="cs-detail-modal-actions"
             actions={(
-                <div className="cs-detail-actions-layout">
-                    <div className="cs-detail-actions-left">
-                        <Button
-                            variant="outlined"
-                            className="cs-detail-post-nav-btn"
+                <div className="kl-modal-actions-split">
+                    <div className="kl-modal-actions-split__left">
+                        <button
+                            type="button"
+                            className="kl-btn gray-outline md cs-detail-post-nav-btn"
                             onClick={onPrevious}
                             disabled={!hasPrevious}
-                            startIcon={<ChevronLeft className="cs-detail-post-nav-icon" size={16} aria-hidden />}
                         >
+                            <ChevronLeft className="cs-detail-post-nav-icon" size={16} aria-hidden />
                             이전글
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            className="cs-detail-post-nav-btn"
+                        </button>
+                        <button
+                            type="button"
+                            className="kl-btn gray-outline md cs-detail-post-nav-btn"
                             onClick={onNext}
                             disabled={!hasNext}
-                            endIcon={<ChevronRight className="cs-detail-post-nav-icon" size={16} aria-hidden />}
                         >
                             다음글
-                        </Button>
+                            <ChevronRight className="cs-detail-post-nav-icon" size={16} aria-hidden />
+                        </button>
                     </div>
-                    <Button variant="contained" onClick={onClose}>
-                        닫기
-                    </Button>
+                    <div className="kl-modal-actions-split__right">
+                        <button type="button" className="kl-btn primary-full md" onClick={onClose}>
+                            닫기
+                        </button>
+                    </div>
                 </div>
             )}
         >
@@ -230,14 +231,14 @@ function NoticeDetailModal({
                                         <div className="cs-detail-edit-actions">
                                             <button
                                                 type="button"
-                                                className="cs-detail-btn-cancel"
+                                                className="kl-btn gray-outline md"
                                                 onClick={() => setIsEditing(false)}
                                             >
                                                 취소
                                             </button>
                                             <button
                                                 type="button"
-                                                className="cs-detail-btn-save"
+                                                className="kl-btn primary-full md"
                                                 onClick={handleUpdateNotice}
                                                 disabled={isSubmitting}
                                             >
