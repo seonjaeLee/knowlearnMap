@@ -1,5 +1,0 @@
-/* 드래그 리사이즈 중 전역 커서 — `useSplitPaneResize` */
-body.kl-split-pane-resizing {
-  cursor: col-resize !important;
-  user-select: none;
-}
