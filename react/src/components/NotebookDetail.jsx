@@ -24,10 +24,19 @@ import ReportGenerationModal from './ReportGenerationModal';
 import ReportResultModal from './ReportResultModal';
 import PageHeader from './common/PageHeader';
 import BaseModal from './common/modal/BaseModal';
-import { klModalFormContentClassName } from './common/modal/klModalForm';
+import {
+    KL_MODAL_FORM_STACK_CLASS,
+    klModalFormContentClassName,
+} from './common/modal/klModalForm';
 import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 
+import './ReportGenerationModal.css';
 import './NotebookDetail.css';
+
+const NOTEBOOK_BIZ_META_FORM_ID = 'notebook-biz-meta-form';
+const NOTEBOOK_IT_META_FORM_ID = 'notebook-it-meta-form';
+const NOTEBOOK_TERM_MODAL_CONTENT_CLASS =
+    'report-generation-edit-modal-content report-generation-modal-content kl-modal-form kl-scrollbar-thin';
 
 function NotebookDetail() {
     const { id } = useParams(); // workspace(notebook) ID
@@ -2254,11 +2263,11 @@ function NotebookDetail() {
                     open={bizMetaOpen}
                     title="비즈니스 용어사전"
                     onClose={() => setBizMetaOpen(false)}
-                    maxWidth={false}
-                    fullWidth={false}
-                    paperSx={klTallFormModalPaperSx}
-                    headerClassName="meta-modal-header"
-                    contentClassName={`${klModalFormContentClassName} notebook-meta-modal-content`}
+                    maxWidth="md"
+                    fullWidth
+                    headerClassName="report-generation-modal-header"
+                    contentClassName={NOTEBOOK_TERM_MODAL_CONTENT_CLASS}
+                    actionsClassName="report-generation-modal-actions"
                     actions={(
                         <div className="kl-modal-actions-split">
                             <div className="kl-modal-actions-split__left" aria-hidden="true" />
@@ -2272,20 +2281,9 @@ function NotebookDetail() {
                                     취소
                                 </button>
                                 <button
-                                    type="button"
+                                    type="submit"
                                     className="kl-btn primary-full md"
-                                    onClick={async () => {
-                                        try {
-                                            setBizMetaSaving(true);
-                                            await workspaceApi.saveBizMeta(id, bizMetaText);
-                                            showAlert('용어사전 저장 완료', 'success');
-                                            fetchNotebook();
-                                        } catch (err) {
-                                            showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
-                                        } finally {
-                                            setBizMetaSaving(false);
-                                        }
-                                    }}
+                                    form={NOTEBOOK_BIZ_META_FORM_ID}
                                     disabled={bizMetaSaving}
                                 >
                                     {bizMetaSaving ? '저장 중...' : '저장'}
@@ -2294,7 +2292,23 @@ function NotebookDetail() {
                         </div>
                     )}
                 >
-                    <div className="kl-modal-form-stack">
+                    <form
+                        id={NOTEBOOK_BIZ_META_FORM_ID}
+                        className={`${KL_MODAL_FORM_STACK_CLASS} report-generation-edit-modal-body`}
+                        onSubmit={async (e) => {
+                            e.preventDefault();
+                            try {
+                                setBizMetaSaving(true);
+                                await workspaceApi.saveBizMeta(id, bizMetaText);
+                                showAlert('용어사전 저장 완료', 'success');
+                                fetchNotebook();
+                            } catch (err) {
+                                showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                            } finally {
+                                setBizMetaSaving(false);
+                            }
+                        }}
+                    >
                         <div className="kl-modal-form-content-field">
                             <label
                                 className="kl-modal-form-row__label kl-modal-form-content-field__label"
@@ -2308,7 +2322,7 @@ function NotebookDetail() {
                                     className="kl-icon-label-btn"
                                     onClick={() => bizMetaFileRef.current?.click()}
                                     disabled={bizMetaSaving}
-                                    title="CSV 업로드"
+                                    aria-label="CSV 업로드"
                                 >
                                     <Upload size={16} aria-hidden />
                                     {bizMetaSaving ? '업로드 중...' : 'CSV 업로드'}
@@ -2342,7 +2356,8 @@ function NotebookDetail() {
                                 onChange={(e) => setBizMetaText(e.target.value)}
                                 placeholder='[&#10;  {"name":"공통코드","desc":"공통코드 그룹의 분류 안에서 실제 사용할 번호","owner":"홍길동","keyword":"공통코드, 코드"},&#10;  ...&#10;]'
                                 className="notebook-meta-textarea"
-                                rows={10}
+                                rows={8}
+                                disabled={bizMetaSaving}
                             />
                         </div>
                         <div className="kl-infotxt-note">
@@ -2352,7 +2367,7 @@ function NotebookDetail() {
                                 CSV 파일(이름, 설명) 업로드 또는 직접 편집할 수 있습니다.
                             </span>
                         </div>
-                    </div>
+                    </form>
                 </BaseModal>
 
                 {/* ItMeta Modal */}
@@ -2360,11 +2375,11 @@ function NotebookDetail() {
                     open={itMetaOpen}
                     title="IT 용어사전 (컬럼 정보)"
                     onClose={() => setItMetaOpen(false)}
-                    maxWidth={false}
-                    fullWidth={false}
-                    paperSx={klTallFormModalPaperSx}
-                    headerClassName="meta-modal-header"
-                    contentClassName={`${klModalFormContentClassName} notebook-meta-modal-content`}
+                    maxWidth="md"
+                    fullWidth
+                    headerClassName="report-generation-modal-header"
+                    contentClassName={NOTEBOOK_TERM_MODAL_CONTENT_CLASS}
+                    actionsClassName="report-generation-modal-actions"
                     actions={(
                         <div className="kl-modal-actions-split">
                             <div className="kl-modal-actions-split__left" aria-hidden="true" />
@@ -2378,20 +2393,9 @@ function NotebookDetail() {
                                     취소
                                 </button>
                                 <button
-                                    type="button"
+                                    type="submit"
                                     className="kl-btn primary-full md"
-                                    onClick={async () => {
-                                        try {
-                                            setItMetaSaving(true);
-                                            await workspaceApi.saveItMeta(id, itMetaText);
-                                            showAlert('IT 용어사전 저장 완료', 'success');
-                                            fetchNotebook();
-                                        } catch (err) {
-                                            showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
-                                        } finally {
-                                            setItMetaSaving(false);
-                                        }
-                                    }}
+                                    form={NOTEBOOK_IT_META_FORM_ID}
                                     disabled={itMetaSaving}
                                 >
                                     {itMetaSaving ? '저장 중...' : '저장'}
@@ -2400,7 +2404,23 @@ function NotebookDetail() {
                         </div>
                     )}
                 >
-                    <div className="kl-modal-form-stack">
+                    <form
+                        id={NOTEBOOK_IT_META_FORM_ID}
+                        className={`${KL_MODAL_FORM_STACK_CLASS} report-generation-edit-modal-body`}
+                        onSubmit={async (e) => {
+                            e.preventDefault();
+                            try {
+                                setItMetaSaving(true);
+                                await workspaceApi.saveItMeta(id, itMetaText);
+                                showAlert('IT 용어사전 저장 완료', 'success');
+                                fetchNotebook();
+                            } catch (err) {
+                                showAlert('저장에 실패했습니다. 다시 시도해주세요.', 'error');
+                            } finally {
+                                setItMetaSaving(false);
+                            }
+                        }}
+                    >
                         <div className="kl-modal-form-content-field">
                             <label
                                 className="kl-modal-form-row__label kl-modal-form-content-field__label"
@@ -2414,7 +2434,7 @@ function NotebookDetail() {
                                     className="kl-icon-label-btn"
                                     onClick={() => itMetaFileRef.current?.click()}
                                     disabled={itMetaSaving}
-                                    title="CSV 업로드"
+                                    aria-label="CSV 업로드"
                                 >
                                     <Upload size={16} aria-hidden />
                                     {itMetaSaving ? '업로드 중...' : 'CSV 업로드'}
@@ -2448,7 +2468,8 @@ function NotebookDetail() {
                                 onChange={(e) => setItMetaText(e.target.value)}
                                 placeholder='[&#10;  {"table_name":"cls_m_code","table_desc":"코드마스터","column_name":"code_group","column_type":"varchar(50)","column_biz_meta":"공통코드그룹"},&#10;  ...&#10;]'
                                 className="notebook-meta-textarea"
-                                rows={10}
+                                rows={8}
+                                disabled={itMetaSaving}
                             />
                         </div>
                         <div className="kl-infotxt-note">
@@ -2458,7 +2479,7 @@ function NotebookDetail() {
                                 CSV 파일(컬럼명, 설명) 업로드 또는 직접 편집할 수 있습니다.
                             </span>
                         </div>
-                    </div>
+                    </form>
                 </BaseModal>
 
             </div>

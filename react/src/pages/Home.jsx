@@ -34,6 +34,35 @@ import './Home.css';
  */
 const PROMPT_SELECT_UI_SAMPLES = ['SAMPLE_PROMPT_ALPHA', 'SAMPLE_PROMPT_BETA', 'SAMPLE_PROMPT_GAMMA'];
 
+/** 로컬 UI 검증 — INDIVIDUAL 뱃지 미리보기 (DEV만, shareType·API 변경 없음) */
+const DEV_SHARE_BADGE_PREVIEW_INDIVIDUAL = import.meta.env.DEV;
+
+function resolveWorkspaceShareBadgeType(
+    notebook,
+    devPreviewIndividualNotebookId,
+    { devForceIndividualOnPreviewCard = false } = {},
+) {
+    if (
+        DEV_SHARE_BADGE_PREVIEW_INDIVIDUAL
+        && devPreviewIndividualNotebookId != null
+        && notebook.id === devPreviewIndividualNotebookId
+        && devForceIndividualOnPreviewCard
+    ) {
+        return 'INDIVIDUAL';
+    }
+    if (notebook.shareType === 'ALL' || notebook.shareType === 'INDIVIDUAL') {
+        return notebook.shareType;
+    }
+    if (
+        DEV_SHARE_BADGE_PREVIEW_INDIVIDUAL
+        && devPreviewIndividualNotebookId != null
+        && notebook.id === devPreviewIndividualNotebookId
+    ) {
+        return 'INDIVIDUAL';
+    }
+    return null;
+}
+
 function mergePromptCodesForSelectUi(apiCodes) {
     const base = Array.isArray(apiCodes) ? [...apiCodes] : [];
     if (base.length >= 3) return base;
@@ -505,6 +534,29 @@ function Home() {
         return domainName ? [domainName] : [];
     })();
 
+    const devShareBadgeAllAllPreview = useMemo(() => {
+        if (!DEV_SHARE_BADGE_PREVIEW_INDIVIDUAL || notebooks.length === 0) {
+            return false;
+        }
+        return notebooks.every((nb) => nb.shareType === 'ALL');
+    }, [notebooks]);
+
+    const devShareBadgePreviewNotebookId = useMemo(() => {
+        if (!DEV_SHARE_BADGE_PREVIEW_INDIVIDUAL || notebooks.length === 0) {
+            return null;
+        }
+        const withoutShareBadge = notebooks.find(
+            (nb) => !nb.shareType || nb.shareType === 'NONE',
+        );
+        if (withoutShareBadge) {
+            return withoutShareBadge.id;
+        }
+        if (devShareBadgeAllAllPreview && notebooks.length > 1) {
+            return notebooks[1].id;
+        }
+        return null;
+    }, [notebooks, devShareBadgeAllAllPreview]);
+
     const sortedNotebooks = useMemo(() => {
         const list = [...notebooks];
         const getName = (nb) => (nb.name || nb.title || '').trim();
@@ -523,6 +575,32 @@ function Home() {
         return list.sort((a, b) => getTime(b) - getTime(a));
     }, [notebooks, sortBy]);
 
+    const renderWorkspaceShareBadge = (notebook, { list = false } = {}) => {
+        const badgeType = resolveWorkspaceShareBadgeType(
+            notebook,
+            devShareBadgePreviewNotebookId,
+            { devForceIndividualOnPreviewCard: devShareBadgeAllAllPreview },
+        );
+        if (!badgeType) {
+            return null;
+        }
+        const className = [
+            'notebook-share-badge',
+            badgeType === 'ALL' ? 'notebook-share-badge--all' : 'notebook-share-badge--individual',
+            list ? 'home-workspace-list-badge' : '',
+        ]
+            .filter(Boolean)
+            .join(' ');
+        const label = badgeType === 'ALL' ? '전체 공유' : '개별 공유';
+        const Icon = badgeType === 'ALL' ? Globe : Users;
+        return (
+            <span className={className}>
+                <Icon size={12} aria-hidden />
+                <span>{label}</span>
+            </span>
+        );
+    };
+
     const renderWorkspaceListCell = useCallback(({ column, row: notebook }) => {
         switch (column.id) {
             case 'title':
@@ -534,18 +612,7 @@ function Home() {
                         <span className="home-workspace-list-name">
                             {notebook.name || notebook.title || 'Untitled'}
                         </span>
-                        {notebook.shareType === 'ALL' ? (
-                            <span className="notebook-share-badge notebook-share-badge--all home-workspace-list-badge">
-                                <Globe size={12} aria-hidden />
-                                <span>전체 공유</span>
-                            </span>
-                        ) : null}
-                        {notebook.shareType === 'INDIVIDUAL' ? (
-                            <span className="notebook-share-badge notebook-share-badge--individual home-workspace-list-badge">
-                                <Users size={12} aria-hidden />
-                                <span>조직 공유</span>
-                            </span>
-                        ) : null}
+                        {renderWorkspaceShareBadge(notebook, { list: true })}
                     </div>
                 );
             case 'source':
@@ -634,7 +701,7 @@ function Home() {
             default:
                 return undefined;
         }
-    }, [deletingId, isAdmin, notebooks]);
+    }, [deletingId, devShareBadgePreviewNotebookId, isAdmin, notebooks]);
 
     return (
         <div className="kl-page kl-page--fill">
@@ -811,18 +878,7 @@ function Home() {
                                     {notebook.icon || '📄'}
                                 </div>
                                 <div className="card-header-right">
-                                {notebook.shareType === 'ALL' && (
-                                    <div className="notebook-share-badge notebook-share-badge--all">
-                                        <Globe size={12} />
-                                        <span>전체 공유</span>
-                                    </div>
-                                )}
-                                {notebook.shareType === 'INDIVIDUAL' && (
-                                    <div className="notebook-share-badge notebook-share-badge--individual">
-                                        <Users size={12} />
-                                        <span>조직 공유</span>
-                                    </div>
-                                )}
+                                {renderWorkspaceShareBadge(notebook)}
 
                                 {notebook.role === 'Owner' && (
                                         <div className="more-btn-container" ref={openMenuId === notebook.id ? menuRef : null}>

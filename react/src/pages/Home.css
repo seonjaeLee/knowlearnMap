@@ -69,25 +69,26 @@
   margin-left: auto;
 }
 
-/* 그리드 카드 상단 공유 배지 */
+/* 그리드·목록 공유 배지 — pill 형태는 도메인 「현재」와 동일, 색은 유형별 유지 */
 .notebook-share-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 3px;
-  color: #fff;
-  padding: 3px var(--spacing-sm);
-  border-radius: 2px;
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  line-height: 1;
+  gap: calc(var(--spacing-xs) / 2);
+  flex-shrink: 0;
+  color: var(--control-pill-active-text);
+  border-radius: 999px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
 }
 
 .notebook-share-badge--all {
-  background-color: #1a73e8;
+  background: var(--color-accent);
 }
 
 .notebook-share-badge--individual {
-  background-color: #059669;
+  background: #059669;
 }
 
 .menu-item-icon--success {

@@ -560,3 +560,57 @@
 - **시멘틱 — select:** `KlModalSelect`(MUI) 제거 → 사용자 관리와 동일 **네이티브 `<select>`** + `.kl-modal-form select` (카테고리 상위·엔티티 카테고리). 펼침 UI는 OS·브라우저 의존(합의).
 
 ---
+
+### 4) 홈 프롬프트 변경 · 청킹 NONE — 공통 select/버튼·경고 class 정리
+
+- **목적:** `프롬프트 변경` 팝업 select가 MUI(`KlModalSelect`)로 남아 공통 UI와 불일치. 청킹 NONE 시 select·버튼 스타일을 `modal-guide`·도메인 관리와 맞춤. 레거시 `modal-input--chunk-none` 제거.
+- **select:** `Home.jsx` — 9개 프롬프트 필드 네이티브 `<select>` (`renderPromptCodeSelect`). NONE 시 `KL_MODAL_FORM_CONTROL_WARNING_CLASS` (`kl-modal-form-control--warning`) — 빨간 테두리·글자, 배경 `var(--kl-control-bg)`.
+- **NONE 버튼:** `kl-modal-form-toggle-btn--active`(채움 빨강) 제거 → `kl-btn md` + `danger-outline` / `gray-outline` (거절 팝업·삭제와 동일). `DomainManagement.jsx` 청킹 행 동일.
+- **CSS:** `kit/kl-modal-form.css` — `--warning`에 hover/focus 규칙 통합, `modal-input--chunk-none` 삭제.
+- **상수:** `klModalForm.js` — `KL_MODAL_FORM_CONTROL_WARNING_CLASS` export.
+- **문서:** `modal-guide.md` §5.2 · `kl-ui-guide.md` Part 6 — `--warning` 스펙·레거시 class 사용 금지.
+- **Paper(짧은 Form):** `klModalPaper.js` — `KL_MODAL_PAPER_WIDTH_HOME_RENAME` 440→460 (`homeRenameModalPaperSx` 사용 팝업). FAQ 작성은 `klFormModalPaperSx`(550) 유지.
+- **참고:** 모달 진입 시 NONE on/off는 API `chunkPrompt` 값 그대로(`'NONE'`일 때만 활성). 로컬·개발기 차이는 데이터 이슈 가능.
+
+---
+
+### 5) `?` Popover — 호버 툴팁 제거
+
+- **목적:** 시스템 설정 카테고리·승인 관리 사유 등 `kl-popover-icon-btn` — 호버 시 「설명 보기」「사유 보기」 툴팁 제거, **클릭 시 Popover만**
+- **`KlIconButton.jsx`:** `buttonClassName`에 `kl-popover-icon-btn`이면 `KlTooltip` 미감쌈
+- **적용:** `AdminConfigManagement.jsx`, `AdminUpgradeRequests.jsx` — `tooltip` prop 제거
+
+---
+
+### 6) 시스템 설정 — 목록·수정 팝업 설명 UI
+
+- **목록:** `.config-mgmt-desc` — 말줄임(`text-overflow: ellipsis`)
+- **수정 팝업:** 설명 `input` → 읽기전용 `textarea` `rows={3}` · `kl-form-readonly--control` (`AdminConfigManagement.jsx` / `.css`)
+
+---
+
+### 7) 홈 워크스페이스 — 공유 배지 (그리드·목록)
+
+- **스타일:** `.notebook-share-badge` — pill(`border-radius: 999px`). `ALL` → `var(--color-accent)`, `INDIVIDUAL` → `#059669`. `NONE`은 미표시
+- **문구:** 「조직 공유」→「개별 공유」(공유 설정 모달과 동일)
+- **DEV:** `import.meta.env.DEV` 시 `INDIVIDUAL` 뱃지 UI 미리보기(shareType·API 무변경)
+
+---
+
+### 8) 노트북 상세 — 비즈·IT 용어사전 팝업
+
+- **목적:** `ReportGenerationModal`(페르소나 관리)과 동일 모달 셸·폼 리듬
+- **`NotebookDetail.jsx`:** `maxWidth="md"` · `report-generation-modal-header` / `-content` / `-actions` · `form` submit · `rows={8}` · `kl-infotxt-note` 유지
+- **`NotebookDetail.css`:** `.notebook-meta-textarea` — monospace·min-height만, 테두리·배경은 `kl-modal-form` textarea
+
+---
+
+### 9) 페르소나 관리 — 추가 카드 `add-set-card`
+
+- **목적:** 기초값(`default-persona-card`)과 구분되는 **추가 페르소나 목록 카드** 정적 스타일. hover/active는 기존 `.format-card` 유지
+- **마크업:** `format-card add-set-card` · 연필 ✏️ · `add-set-card__edit`
+- **CSS (`ReportGenerationModal.css`):** 흰 배경·테두리 `#c8d6e5` · 헤더 `align-items: center` · 연필 `scaleX(-1)` · 목록만 **사용안함** `justify-content: flex-end`
+- **편집 화면** `persona-disable-consent` — 변경 없음
+- **참고:** 목록 「사용안함」 체크 저장은 `workspaceApi.updateRole` — 로컬은 백엔드·로컬 mock 미완 시 UI만 확인
+
+---

@@ -394,7 +394,6 @@ function AdminConfigManagement() {
                         <div className="config-mgmt-category-cell">
                             <span className="config-mgmt-category-cell-label">{catLabel}</span>
                             <KlIconButton
-                                tooltip="카테고리 설명 보기"
                                 ariaLabel={`${catLabel} 설명 보기`}
                                 onClick={(e) => toggleCategoryHelpPopover(cat, e)}
                                 buttonClassName="kl-popover-icon-btn"
@@ -662,21 +661,21 @@ function AdminConfigManagement() {
                                 />
                             </div>
                         </div>
-                        <div className="kl-modal-form-row">
+                        <div className="kl-modal-form-row kl-vert-start">
                             <label className="kl-modal-form-row__label" htmlFor="config-edit-description">
                                 설명
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <input
+                                <textarea
                                     id="config-edit-description"
-                                    type="text"
-                                    className="kl-form-readonly kl-form-readonly--control"
+                                    className="kl-form-readonly kl-form-readonly--control config-mgmt-edit-description-readonly"
                                     value={
                                         editModalRow.description
                                         || '등록된 설명이 없습니다. 관리자에게 문의하세요.'
                                     }
                                     readOnly
                                     aria-readonly="true"
+                                    rows={3}
                                     autoComplete="off"
                                 />
                             </div>

@@ -336,7 +336,7 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                     {roles.map(role => (
                                         <div
                                             key={role.id}
-                                            className={`format-card ${isRoleDisabled(role) ? 'disabled-persona-card' : ''}`}
+                                            className={`format-card add-set-card${isRoleDisabled(role) ? ' disabled-persona-card' : ''}`}
                                             onClick={() => handleRoleCardClick(role)}
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter' || e.key === ' ') {
@@ -349,7 +349,7 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                         >
                                             <div className="format-header">
                                                 <h4 className="format-title">{role.roleName}</h4>
-                                                <span className="edit-icon-btn edit-icon-disabled" aria-hidden>
+                                                <span className="add-set-card__edit" aria-hidden>
                                                     ✏️
                                                 </span>
                                             </div>

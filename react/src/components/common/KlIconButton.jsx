@@ -31,6 +31,10 @@ function KlIconButton({
   buttonProps = {},
 }) {
   const isTableButton = !buttonClassName;
+  /** Popover `?` — 호버 Tooltip 없음, 클릭만 (`kl-ui-guide` Part 9) */
+  const isPopoverIconBtn = Boolean(
+    buttonClassName && buttonClassName.split(/\s+/).includes('kl-popover-icon-btn'),
+  );
   const toneClass = isTableButton ? `kl-table-icon-btn--${tone}` : '';
   const accentClass = isTableButton && accent && tone === 'neutral' ? ' kl-table-icon-btn--accent' : '';
   const btnClass = isTableButton
@@ -64,7 +68,7 @@ function KlIconButton({
     </button>
   );
 
-  if (!tooltip) {
+  if (!tooltip || isPopoverIconBtn) {
     return button;
   }
 

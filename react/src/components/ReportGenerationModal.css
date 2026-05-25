@@ -152,9 +152,30 @@
     border-color: #c8d6e5;
 }
 
-/* Custom persona card */
-.custom-persona-card {
-    border-style: dashed;
+/* 추가 페르소나 카드 — 기본(정적) 스타일만. hover/active는 .format-card 유지 */
+.format-card.add-set-card {
+    background-color: var(--color-bg-secondary);
+    border-color: #c8d6e5;
+}
+
+.format-card.add-set-card .format-header {
+    align-items: center;
+}
+
+.format-card.add-set-card .add-set-card__edit {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    pointer-events: none;
+    opacity: 1;
+    transform: scaleX(-1) translateY(1px);
+}
+
+/* 목록 카드만 — 사용안함 우측 정렬 (편집 화면 persona-disable-consent 제외) */
+.format-card.add-set-card .persona-checkbox-label {
+    justify-content: flex-end;
 }
 
 /* Disabled persona card */

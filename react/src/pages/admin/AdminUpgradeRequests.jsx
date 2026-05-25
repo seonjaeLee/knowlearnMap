@@ -245,7 +245,6 @@ function AdminUpgradeRequests() {
                                 </span>
                                 {status === 'REJECTED' && (
                                     <KlIconButton
-                                        tooltip="사유 보기"
                                         ariaLabel={`${req.email} 사유 보기`}
                                         buttonClassName="kl-popover-icon-btn"
                                         placement="top"

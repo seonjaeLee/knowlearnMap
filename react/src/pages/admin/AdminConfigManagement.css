@@ -199,8 +199,16 @@
   display: block;
   min-width: 0;
   max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   line-height: 1.45;
+}
+
+/* 수정 팝업 — 읽기전용 설명 약 3줄 (전역 readonly textarea min-height 보정) */
+.config-mgmt-edit-description-readonly {
+  min-height: unset;
 }
 
