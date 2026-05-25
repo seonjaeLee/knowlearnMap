@@ -163,14 +163,7 @@
   font-weight: var(--font-weight-medium);
 }
 
-/* 시스템 설정 수정 — 고객센터 등록 팝업과 동일 520px · 라벨(좌) + 입력(우) */
-:global(.kl-base-modal-paper.config-form-modal-paper) {
-  width: 520px !important;
-  max-width: calc(100vw - 48px) !important;
-  min-width: unset !important;
-  min-height: unset !important;
-}
-
+/* 시스템 설정 수정 — paper 폭은 BaseModal Form 기본 · 라벨(좌) + 입력(우) */
 :global(.kl-base-modal-content.config-mgmt-edit-modal-content) {
   padding: var(--spacing-lg) !important;
   padding-bottom: var(--spacing-2xl) !important;

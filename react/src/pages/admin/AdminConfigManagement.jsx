@@ -14,9 +14,8 @@ import { listTableEmptyState } from '../../config/supportMock';
 import KlTooltip from '../../components/common/KlTooltip';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
-    configFormModalPaperClassName,
-    configFormModalPaperSx,
-} from '../../components/common/modal/supportFormModalPaperSx';
+    klFormModalPaperSx,
+} from '../../components/common/modal/klModalPaper';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import { mockAdminConfigCategories, mockAdminConfigItems } from '../../data/adminConfigMockData';
 import './admin-common.css';
@@ -576,8 +575,7 @@ function AdminConfigManagement() {
                 onClose={closeEditModal}
                 maxWidth={false}
                 fullWidth={false}
-                paperSx={configFormModalPaperSx}
-                paperClassName={configFormModalPaperClassName}
+                paperSx={klFormModalPaperSx}
                 disableBackdropClose={saving}
                 disableEscapeKeyDown={saving}
                 contentClassName="config-mgmt-edit-modal-content kl-modal-form"

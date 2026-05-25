@@ -2,11 +2,8 @@
  * 1:1 문의 상세 — 답변 영역 전용 (문의 head·본문은 CsDetailModal.css)
  */
 
-/* 1:1 문의 상세 팝업 — 가로 670px (공지·FAQ 상세 cs-detail-modal-paper 620px과 분리) */
+/* 1:1 문의 상세 — 가로는 qnaDetailModalPaperSx(670px) · 높이·스크롤만 CSS */
 :global(.kl-base-modal-paper.qna-detail-modal-paper) {
-    width: 670px !important;
-    max-width: calc(100vw - 48px) !important;
-    min-width: unset !important;
     height: auto !important;
     max-height: calc(100vh - 48px) !important;
     min-height: unset !important;
@@ -26,17 +23,9 @@
 }
 
 @media (max-width: 768px) {
-    :global(.kl-base-modal-paper.qna-detail-modal-paper) {
-        width: calc(100vw - 48px) !important;
-    }
-
     :global(.kl-base-modal-paper.qna-detail-modal-paper .cs-detail-modal-content) {
         max-height: calc(100vh - 160px);
     }
-}
-
-.qna-detail-hidden-file-input {
-    display: none;
 }
 
 .cs-detail-meta-status.is-answered {
@@ -184,13 +173,6 @@
     width: 100%;
     margin: 0;
     padding: 0;
-}
-
-.qna-detail-modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--spacing-sm);
-    background: var(--color-bg-primary);
 }
 
 .loading-spinner {

@@ -23,31 +23,6 @@
     resize: vertical;
 }
 
-.persona-form-required {
-    color: var(--color-icon-danger);
-}
-
-/* 푸터 — 목록이동·삭제 좌측, 저장·닫기 우측 (공지 상세·1:1 문의 상세와 동일) */
-.persona-modal-actions.report-generation-modal-actions {
-    justify-content: stretch !important;
-}
-
-.persona-modal-actions-layout {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: var(--spacing-md);
-}
-
-.persona-modal-actions-left,
-.persona-modal-actions-right {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    min-width: 0;
-}
-
 .report-generation-list-modal-body,
 .report-generation-edit-modal-body {
     height: 100%;
@@ -264,17 +239,6 @@
     background-color: rgba(217, 48, 37, 0.1) !important;
 }
 
-.persona-modal-delete-btn {
-    border-color: var(--color-icon-danger) !important;
-    color: var(--color-icon-danger) !important;
-}
-
-.persona-modal-delete-btn:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--color-icon-danger) 10%, var(--color-bg-secondary)) !important;
-    border-color: var(--color-icon-danger-emphasis) !important;
-    color: var(--color-icon-danger-emphasis) !important;
-}
-
 .edit-icon-disabled {
     pointer-events: none;
 }
@@ -301,24 +265,6 @@
     border-color: #1a73e8;
     color: #1a73e8;
     background-color: #f0f7ff;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .persona-modal-actions-layout {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .persona-modal-actions-left,
-    .persona-modal-actions-right {
-        width: 100%;
-        justify-content: stretch;
-    }
-
-    .persona-modal-actions-right .kl-btn {
-        width: 100%;
-    }
 }
 
 @media (max-width: 640px) {

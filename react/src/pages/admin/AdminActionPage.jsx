@@ -12,9 +12,8 @@ import KlTooltip from '../../components/common/KlTooltip';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
-  actionWsModalPaperClassName,
-  actionWsModalPaperSx,
-} from '../../components/common/modal/supportFormModalPaperSx';
+  klFormModalPaperSx,
+} from '../../components/common/modal/klModalPaper';
 import {
   getMockActionLogs,
   getMockActionsForWorkspace,
@@ -58,8 +57,7 @@ function WorkspaceIdModal({
       onClose={onClose}
       maxWidth={false}
       fullWidth={false}
-      paperSx={actionWsModalPaperSx}
-      paperClassName={actionWsModalPaperClassName}
+      paperSx={klFormModalPaperSx}
       contentClassName="admin-action-ws-modal-content kl-modal-form"
       actionsClassName="admin-action-ws-modal-actions"
       actionsAlign="right"

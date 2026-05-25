@@ -219,38 +219,6 @@
     background: var(--color-bg-primary);
 }
 
-.notice-detail-actions-layout {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: var(--spacing-md);
-}
-
-.notice-detail-actions-left {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    min-width: 0;
-}
-
-.notice-detail-actions-left .MuiButton-root {
-    min-width: 88px !important;
-}
-
-/* 목록이동 — 파란 outline (이전글/다음글은 회색 outlined 유지) */
-.notice-detail-modal-actions :global(.notice-list-move-btn) {
-    border-color: var(--color-accent) !important;
-    color: var(--color-accent) !important;
-    background-color: var(--color-bg-secondary) !important;
-}
-
-.notice-detail-modal-actions :global(.notice-list-move-btn:hover) {
-    border-color: var(--color-accent-hover) !important;
-    color: var(--color-accent-hover) !important;
-    background-color: #f0f7ff !important;
-}
-
 @media (max-width: 768px) {
     .notice-detail-modal-content {
         max-height: calc(100vh - 148px);
@@ -265,18 +233,4 @@
         white-space: normal;
     }
 
-    .notice-detail-actions-layout {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .notice-detail-actions-left {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        width: 100%;
-    }
-
-    .notice-detail-actions-layout > :global(.MuiButton-contained) {
-        width: 100%;
-    }
 }

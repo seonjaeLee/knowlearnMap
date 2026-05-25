@@ -20,9 +20,8 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BaseModal from '../../components/common/modal/BaseModal';
 import KlModalSelect from '../../components/common/modal/KlModalSelect';
 import {
-  semanticFormModalPaperClassName,
-  semanticFormModalPaperSx,
-} from '../../components/common/modal/supportFormModalPaperSx';
+  klFormModalPaperSx,
+} from '../../components/common/modal/klModalPaper';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import ToolbarMoreMenu from '../../components/common/ToolbarMoreMenu';
 import BasicTable from '../../components/common/BasicTable';
@@ -552,8 +551,7 @@ function AdminSemanticCategoryPage({
       onClose={() => setEditing(null)}
       maxWidth={false}
       fullWidth={false}
-      paperSx={semanticFormModalPaperSx}
-      paperClassName={semanticFormModalPaperClassName}
+      paperSx={klFormModalPaperSx}
       contentClassName="admin-semantic-edit-content kl-modal-form"
       actionsClassName="admin-semantic-modal-actions"
       actionsAlign="right"

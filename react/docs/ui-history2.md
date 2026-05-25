@@ -529,3 +529,16 @@
 3. 이후 FAQ·1:1 작성 → 그다음 `NotebookDetail` 제외 전 메뉴 모달 이관
 
 ---
+
+## 2026-05-25
+
+### 1) 고객센터 Form — 페이지별 `*-create-form` 제거 · 전역 class 통일
+
+- **목적:** 공지·FAQ·1:1 **작성/수정** 팝업 `<form>`·`contentClassName` 이 메뉴마다 달라 DevTools·유지보수 혼선 — 동일 레이아웃은 **전역 상수만** 사용
+- **SSOT:** `src/components/common/modal/klModalForm.js` — `KL_MODAL_FORM_STACK_CLASS`, `KL_MODAL_FORM_ELEMENT_ID` (`kl-modal-form`), `klModalFormContentClassName`
+- **적용:** `NoticeCreateModal.jsx`, `FaqCreateModal.jsx`, `QnaCreateModal.jsx` — `notice-create-form` / `faq-create-form` / `qna-create-form` 및 `*-create-modal-content` 제거
+- **인라인·체크박스:** `faq-order-*` · `faq-active-*` · `qna-privacy-consent` 제거 → `kl-layout-modal.css`의 `kl-modal-form-inline-controls` · `kl-modal-form-check` · `kl-modal-form-helper--legal` (상수 `klModalForm.js`)
+- **삭제:** `FaqCreateModal.css`, `QnaCreateModal.css` (전역으로 이관)
+- **문서:** `docs/modal-guide.md` §5 · §9 반영
+
+---

@@ -16,9 +16,8 @@ import { listTableEmptyState } from '../../config/supportMock';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import BaseModal from '../../components/common/modal/BaseModal';
 import {
-    memberFormModalPaperClassName,
-    memberFormModalPaperSx,
-} from '../../components/common/modal/supportFormModalPaperSx';
+    klFormModalPaperSx,
+} from '../../components/common/modal/klModalPaper';
 import { mockAdminMembers } from '../../data/memberMockData';
 import { mockDomains } from '../../data/domainMockData';
 import './admin-common.css';
@@ -758,8 +757,7 @@ function AdminMemberManagement() {
                 onClose={() => setEditMember(null)}
                 maxWidth={false}
                 fullWidth={false}
-                paperSx={memberFormModalPaperSx}
-                paperClassName={memberFormModalPaperClassName}
+                paperSx={klFormModalPaperSx}
                 contentClassName="member-mgmt-member-edit-content kl-modal-form"
                 actionsClassName="member-mgmt-modal-actions"
                 actionsAlign="right"
@@ -855,8 +853,7 @@ function AdminMemberManagement() {
                 onClose={() => setCreateMember(null)}
                 maxWidth={false}
                 fullWidth={false}
-                paperSx={memberFormModalPaperSx}
-                paperClassName={memberFormModalPaperClassName}
+                paperSx={klFormModalPaperSx}
                 contentClassName="member-mgmt-member-edit-content kl-modal-form"
                 actionsClassName="member-mgmt-modal-actions"
                 actionsAlign="right"

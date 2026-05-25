@@ -763,14 +763,27 @@
     border-color: var(--color-icon-danger-emphasis);
 }
 
+/** 모달·폼 좌측 삭제 등 — 빨간 테두리·글자 (primary-outline 과 동일 리듬) */
+.kl-btn.danger-outline {
+    border: 1px solid var(--color-icon-danger);
+    background: var(--color-bg-secondary);
+    color: var(--color-icon-danger);
+}
+
+.kl-btn.danger-outline:hover:not(:disabled) {
+    border-color: var(--color-icon-danger-emphasis);
+    color: var(--color-icon-danger-emphasis);
+    background: color-mix(in srgb, var(--color-icon-danger) 10%, var(--color-bg-secondary));
+}
+
 /* variant 없이 md만 — gray-outline 과 동일 */
-.kl-btn.md:not(.primary-full):not(.primary-outline):not(.gray-fill):not(.danger-full):not(.gray-outline) {
+.kl-btn.md:not(.primary-full):not(.primary-outline):not(.gray-fill):not(.danger-full):not(.danger-outline):not(.gray-outline) {
     border: 1px solid var(--color-border);
     background: var(--color-bg-secondary);
     color: var(--color-text-primary);
 }
 
-.kl-btn.md:not(.primary-full):not(.primary-outline):not(.gray-fill):not(.danger-full):not(.gray-outline):hover:not(:disabled) {
+.kl-btn.md:not(.primary-full):not(.primary-outline):not(.gray-fill):not(.danger-full):not(.danger-outline):not(.gray-outline):hover:not(:disabled) {
     background: var(--color-bg-hover);
     border-color: var(--color-border-hover);
 }

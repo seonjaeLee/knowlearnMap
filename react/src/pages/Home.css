@@ -100,34 +100,11 @@
   padding-bottom: var(--spacing-2xl) !important;
 }
 
-.home-workspace-modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding: 0;
-  margin: 0;
+.home-prompt-modal-form .kl-modal-form-row__control .kl-modal-form-helper {
+  margin-top: var(--spacing-xs);
 }
 
-.home-workspace-form-row {
-  display: grid;
-  grid-template-columns: 6.75rem minmax(0, 1fr);
-  align-items: center;
-  column-gap: var(--spacing-md);
-}
-
-.home-workspace-form-row--start {
-  align-items: start;
-}
-
-.home-workspace-form-row__label {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  line-height: 1.4;
-}
-
-.home-workspace-form-row__label--stacked {
+.home-prompt-label--stacked {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -135,23 +112,15 @@
   line-height: 1.35;
 }
 
-.home-workspace-form-row__label-line {
+.home-prompt-label-line {
   display: block;
-}
-
-.home-workspace-form-row__control {
-  min-width: 0;
-}
-
-.home-workspace-form-row__control .kl-modal-form-helper {
-  margin-top: var(--spacing-xs);
 }
 
 .home-rename-modal-actions {
   padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
 }
 
-/* 프롬프트 변경 모달 — 가로 680px · 1단(라벨 좌 + 컨트롤 우) */
+/* 프롬프트 변경 모달 — 가로 670px(paperSx) · 1단(라벨 좌 + 컨트롤 우) */
 
 .home-prompt-modal-content {
   flex: 1 1 auto !important;
@@ -174,27 +143,6 @@
 .kl-base-modal-actions.home-prompt-modal-actions {
   padding: var(--spacing-md) var(--spacing-lg) !important;
   min-height: 0 !important;
-}
-
-.home-prompt-modal-action-layout {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-}
-
-.home-prompt-modal-action-left,
-.home-prompt-modal-action-right {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.home-prompt-modal-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
 }
 
 .home-prompt-inline-row {
@@ -235,7 +183,8 @@
 }
 
 @media (max-width: 768px) {
-  .home-workspace-form-row {
+  .home-rename-modal-content .kl-modal-form-row,
+  .home-prompt-modal-content .kl-modal-form-row {
     grid-template-columns: 1fr;
     align-items: stretch;
     row-gap: var(--spacing-xs);

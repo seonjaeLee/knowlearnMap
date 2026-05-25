@@ -10,9 +10,8 @@ import AdminPageHeader from './admin/AdminPageHeader';
 import BaseModal from './common/modal/BaseModal';
 import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
 import {
-    domainFormModalPaperClassName,
-    domainFormModalPaperSx,
-} from './common/modal/supportFormModalPaperSx';
+    klFormModalPaperSx,
+} from './common/modal/klModalPaper';
 import KlIconButton from './common/KlIconButton';
 import BasicTable from './common/BasicTable';
 import KlTableRowActions from './common/table/KlTableRowActions';
@@ -549,8 +548,7 @@ function DomainManagement() {
                 title={isEditMode ? '도메인 정보 수정' : '새 도메인 추가'}
                 maxWidth={false}
                 fullWidth={false}
-                paperSx={domainFormModalPaperSx}
-                paperClassName={domainFormModalPaperClassName}
+                paperSx={klFormModalPaperSx}
                 contentClassName="domain-mgmt-modal-content kl-modal-form"
                 actionsClassName="domain-mgmt-modal-actions"
                 actionsAlign="right"

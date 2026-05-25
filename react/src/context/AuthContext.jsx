@@ -9,17 +9,35 @@ const isLocalAuthEnabled = import.meta.env.VITE_ENABLE_LOCAL_AUTH === 'true';
 /** 로컬 전용 더미 (VITE_ENABLE_LOCAL_AUTH=true) — ADMIN=어드민센터, SYSOP=SYSOP센터만 */
 const LOCAL_AUTH_ACCOUNTS = {
     admin: {
-        password: 'joy',
+        passwords: ['joy', 'adminPw!'],
         user: { email: 'admin', role: 'ADMIN', domain: 'admin' },
     },
     joy: {
-        password: 'joy',
+        passwords: ['joy'],
         user: { email: 'joy', role: 'ADMIN', domain: 'admin' },
     },
     igloo: {
-        password: '12345678',
+        passwords: ['12345678'],
         user: { email: 'igloo', role: 'SYSOP', domain: 'igloo' },
     },
+};
+
+/** 예전 로컬 로그인(admin/joy)이 role SYSOP·domain local 로 저장되던 데이터 보정 */
+const normalizeStoredLocalUser = (user) => {
+    if (!user || typeof user !== 'object') return user;
+
+    const email = String(user.email || '').trim().toLowerCase();
+    if (email === 'admin' && user.role === 'SYSOP') {
+        return { email: 'admin', role: 'ADMIN', domain: 'admin' };
+    }
+
+    return user;
+};
+
+const localPasswordMatches = (account, password) => {
+    if (!account) return false;
+    const allowed = account.passwords ?? (account.password ? [account.password] : []);
+    return allowed.includes(password);
 };
 
 const getLocalAuthUser = () => {
@@ -27,7 +45,12 @@ const getLocalAuthUser = () => {
     if (!rawUser) return null;
 
     try {
-        return JSON.parse(rawUser);
+        const parsed = JSON.parse(rawUser);
+        const normalized = normalizeStoredLocalUser(parsed);
+        if (JSON.stringify(normalized) !== JSON.stringify(parsed)) {
+            localStorage.setItem(LOCAL_AUTH_USER_KEY, JSON.stringify(normalized));
+        }
+        return normalized;
     } catch (error) {
         localStorage.removeItem(LOCAL_AUTH_USER_KEY);
         return null;
@@ -91,7 +114,7 @@ export const AuthProvider = ({ children }) => {
         if (isLocalAuthEnabled) {
             const id = String(email).trim();
             const account = LOCAL_AUTH_ACCOUNTS[id];
-            if (account && account.password === password) {
+            if (account && localPasswordMatches(account, password)) {
                 localStorage.setItem(LOCAL_AUTH_USER_KEY, JSON.stringify(account.user));
                 setUser(account.user);
                 return { success: true, user: account.user };

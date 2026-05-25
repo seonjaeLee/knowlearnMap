@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus, Info, RotateCcw } from 'lucide-react';
-import { Button } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
@@ -19,7 +18,7 @@ import KlModalSelect from '../components/common/modal/KlModalSelect';
 import {
     homePromptModalPaperClassName,
     homePromptModalPaperSx,
-} from '../components/common/modal/supportFormModalPaperSx';
+} from '../components/common/modal/klModalPaper';
 import './Home.css';
 
 /**
@@ -906,33 +905,35 @@ function Home() {
                 actionsAlign="right"
                 actions={(
                     <>
-                        <Button
-                            variant="outlined"
+                        <button
+                            type="button"
+                            className="kl-btn gray-outline md"
                             onClick={() => setRenameModalOpen(false)}
                         >
                             취소
-                        </Button>
-                        <Button
-                            variant="contained"
+                        </button>
+                        <button
+                            type="button"
+                            className="kl-btn primary-full md"
                             onClick={handleRenameSubmit}
                         >
                             저장
-                        </Button>
+                        </button>
                     </>
                 )}
             >
                 <form
-                    className="home-workspace-modal-form"
+                    className="kl-modal-form-stack"
                     onSubmit={(e) => {
                         e.preventDefault();
                         handleRenameSubmit();
                     }}
                 >
-                    <div className="home-workspace-form-row">
-                        <label className="home-workspace-form-row__label" htmlFor="workspace-rename-input">
+                    <div className="kl-modal-form-row">
+                        <label className="kl-modal-form-row__label" htmlFor="workspace-rename-input">
                             워크스페이스 이름
                         </label>
-                        <div className="home-workspace-form-row__control">
+                        <div className="kl-modal-form-row__control">
                             <input
                                 id="workspace-rename-input"
                                 type="text"
@@ -958,49 +959,48 @@ function Home() {
                 paperClassName={homePromptModalPaperClassName}
                 contentClassName="home-prompt-modal-content kl-modal-form"
                 actionsClassName="home-prompt-modal-actions"
-                actionsAlign="left"
                 actions={(
-                    <div className="home-prompt-modal-action-layout">
-                        <div className="home-prompt-modal-action-left">
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                className="outlinedPrimary-sm"
+                    <div className="kl-modal-actions-split">
+                        <div className="kl-modal-actions-split__left">
+                            <button
+                                type="button"
+                                className="kl-btn primary-outline md"
                                 onClick={handleResetPromptToDefault}
                             >
                                 기본값 초기화
-                            </Button>
+                            </button>
                         </div>
-                        <div className="home-prompt-modal-action-right">
-                            <Button
-                                variant="outlined"
+                        <div className="kl-modal-actions-split__right">
+                            <button
+                                type="button"
+                                className="kl-btn gray-outline md"
                                 onClick={() => setPromptModalOpen(false)}
                             >
                                 취소
-                            </Button>
-                            <Button
-                                variant="contained"
+                            </button>
+                            <button
+                                type="button"
+                                className="kl-btn primary-full md"
                                 onClick={handleSavePrompt}
                             >
                                 저장
-                            </Button>
+                            </button>
                         </div>
                     </div>
                 )}
             >
                 <form
-                    className="home-prompt-modal-form"
+                    className="kl-modal-form-stack home-prompt-modal-form"
                     onSubmit={(e) => {
                         e.preventDefault();
                         handleSavePrompt();
                     }}
                 >
-                    <div className="home-prompt-modal-grid">
-                        <div className="home-workspace-form-row">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-name">
+                        <div className="kl-modal-form-row">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-name">
                                 워크스페이스 이름
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <input
                                     id="workspace-prompt-name"
                                     type="text"
@@ -1012,11 +1012,11 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-chunk">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-chunk">
                                 청킹 프롬프트
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <div className="home-prompt-inline-row">
                                     <KlModalSelect
                                         id="workspace-prompt-chunk"
@@ -1041,11 +1041,11 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-ontology">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-ontology">
                                 온톨로지 프롬프트
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <KlModalSelect
                                     id="workspace-prompt-ontology"
                                     value={ontologyPromptValue}
@@ -1056,11 +1056,11 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-chat">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-chat">
                                 채팅 프롬프트
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <KlModalSelect
                                     id="workspace-prompt-chat"
                                     value={chatResultPromptValue}
@@ -1071,15 +1071,15 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
+                        <div className="kl-modal-form-row kl-vert-start">
                             <label
-                                className="home-workspace-form-row__label home-workspace-form-row__label--stacked"
+                                className="kl-modal-form-row__label home-prompt-label--stacked"
                                 htmlFor="workspace-prompt-content-ontology"
                             >
-                                <span className="home-workspace-form-row__label-line">CONTENT</span>
-                                <span className="home-workspace-form-row__label-line">온톨로지</span>
+                                <span className="home-prompt-label-line">CONTENT</span>
+                                <span className="home-prompt-label-line">온톨로지</span>
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <KlModalSelect
                                     id="workspace-prompt-content-ontology"
                                     value={contentOntologyPromptValue}
@@ -1090,11 +1090,11 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-schema">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-schema">
                                 스키마 분석
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <KlModalSelect
                                     id="workspace-prompt-schema"
                                     value={schemaAnalysisPromptValue}
@@ -1105,11 +1105,11 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-inter-table">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-inter-table">
                                 테이블 간 관계
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <KlModalSelect
                                     id="workspace-prompt-inter-table"
                                     value={interTableAnalysisPromptValue}
@@ -1120,11 +1120,11 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-aql-gen">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-aql-gen">
                                 AQL 생성
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <KlModalSelect
                                     id="workspace-prompt-aql-gen"
                                     value={aqlGenerationPromptValue}
@@ -1135,11 +1135,11 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-aql-interpret">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-aql-interpret">
                                 AQL 결과 해석
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <KlModalSelect
                                     id="workspace-prompt-aql-interpret"
                                     value={aqlInterpretationPromptValue}
@@ -1150,11 +1150,11 @@ function Home() {
                             </div>
                         </div>
 
-                        <div className="home-workspace-form-row home-workspace-form-row--start">
-                            <label className="home-workspace-form-row__label" htmlFor="workspace-prompt-aggregation">
+                        <div className="kl-modal-form-row kl-vert-start">
+                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-aggregation">
                                 집계 전략
                             </label>
-                            <div className="home-workspace-form-row__control">
+                            <div className="kl-modal-form-row__control">
                                 <KlModalSelect
                                     id="workspace-prompt-aggregation"
                                     value={aggregationStrategyPromptValue}
@@ -1164,7 +1164,6 @@ function Home() {
                                 <p className="kl-modal-form-helper">대규모 정형 데이터 집계 전략</p>
                             </div>
                         </div>
-                    </div>
 
                     <div className="kl-infotxt-note">
                         <Info size={16} aria-hidden />

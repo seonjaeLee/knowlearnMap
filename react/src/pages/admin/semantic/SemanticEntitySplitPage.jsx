@@ -6,9 +6,8 @@ import AdminSemanticCategoryPage from '../AdminSemanticCategoryPage';
 import BaseModal from '../../../components/common/modal/BaseModal';
 import KlModalSelect from '../../../components/common/modal/KlModalSelect';
 import {
-  semanticFormModalPaperClassName,
-  semanticFormModalPaperSx,
-} from '../../../components/common/modal/supportFormModalPaperSx';
+  klFormModalPaperSx,
+} from '../../../components/common/modal/klModalPaper';
 import SplitPane from '../../../components/common/SplitPane';
 import KlIconButton from '../../../components/common/KlIconButton';
 import SemanticEntityListPanel from './SemanticEntityListPanel';
@@ -160,8 +159,7 @@ function SemanticEntitySplitPage({
         onClose={() => setEditing(null)}
         maxWidth={false}
         fullWidth={false}
-        paperSx={semanticFormModalPaperSx}
-        paperClassName={semanticFormModalPaperClassName}
+        paperSx={klFormModalPaperSx}
         contentClassName="admin-semantic-edit-content kl-modal-form"
         actionsClassName="admin-semantic-modal-actions"
         actionsAlign="right"

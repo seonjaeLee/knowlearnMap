@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react';
 import { workspaceApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
-import {
-    noticeFormModalPaperClassName,
-    noticeFormModalPaperSx,
-} from './common/modal/supportFormModalPaperSx';
 import { useDialog } from '../hooks/useDialog';
 import './ReportGenerationModal.css';
 
@@ -182,8 +178,8 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
             : (editTitle || '페르소나');
 
     const editActions = !isEdit ? null : (
-        <div className="persona-modal-actions-layout">
-            <div className="persona-modal-actions-left">
+        <div className="kl-modal-actions-split">
+            <div className="kl-modal-actions-split__left">
                 <button
                     type="button"
                     onClick={handleBackToList}
@@ -197,17 +193,17 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                         type="button"
                         onClick={handleDelete}
                         disabled={saving}
-                        className="kl-btn gray-outline md persona-modal-delete-btn"
+                        className="kl-btn danger-outline md"
                     >
                         삭제
                     </button>
                 )}
             </div>
-            <div className="persona-modal-actions-right">
+            <div className="kl-modal-actions-split__right">
                 {!isDefault && canSave && (
                     <button
                         type="submit"
-                        form=""
+                        form="persona-edit-form"
                         disabled={saving || !editTitle.trim()}
                         className="kl-btn primary-full md"
                     >
@@ -224,10 +220,8 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
             onClose={onClose}
             title="페르소나 관리"
             subtitle={isEdit ? editSubtitle : '페르소나'}
-            maxWidth={isEdit ? false : 'md'}
-            fullWidth={!isEdit}
-            paperSx={isEdit ? noticeFormModalPaperSx : undefined}
-            paperClassName={isEdit ? noticeFormModalPaperClassName : undefined}
+            maxWidth="md"
+            fullWidth
             headerVariant={isEdit ? 'default' : 'filled'}
             headerClassName="report-generation-modal-header"
             contentClassName={
@@ -235,16 +229,20 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                     ? 'persona-edit-modal-content report-generation-modal-content kl-modal-form kl-scrollbar-thin'
                     : 'report-generation-list-modal-content report-generation-modal-content kl-modal-form kl-scrollbar-thin'
             }
-            actionsClassName="persona-modal-actions report-generation-modal-actions"
+            actionsClassName="report-generation-modal-actions"
             actions={editActions}
         >
             {isEdit ? (
-                <form id="" onSubmit={handleEditFormSubmit} className="persona-modal-form report-generation-edit-modal-body">
-                    <div className="kl-modal-form-row">
+                <form
+                    id="persona-edit-form"
+                    onSubmit={handleEditFormSubmit}
+                    className="persona-modal-form report-generation-edit-modal-body"
+                >
+                    <div className="kl-modal-form-row kl-vert-start">
                         <label className="kl-modal-form-row__label" htmlFor="persona-name">
                             이름
                             {!isDefault && (
-                                <span className="persona-form-required" aria-hidden="true"> *</span>
+                                <span className="kl-modal-form-required" aria-hidden="true"> *</span>
                             )}
                         </label>
                         <div className="kl-modal-form-row__control">

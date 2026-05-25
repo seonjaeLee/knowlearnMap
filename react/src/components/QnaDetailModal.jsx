@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { Edit2, Trash2, ImagePlus } from 'lucide-react';
-import { Button } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
@@ -10,7 +9,7 @@ import BaseModal from './common/modal/BaseModal';
 import {
     qnaDetailModalPaperClassName,
     qnaDetailModalPaperSx,
-} from './common/modal/supportDetailModalPaperSx';
+} from './common/modal/klModalPaper';
 import './CsDetailModal.css';
 import './QnaDetailModal.css';
 
@@ -198,30 +197,37 @@ function QnaDetailModal({
         }
     };
 
-    const renderFooterActions = () => {
-        if (canEditQuestion && isEditingQuestion) {
-            return (
-                <>
-                    <Button variant="outlined" onClick={handleCancelEditQuestion} disabled={isSubmitting}>
-                        취소
-                    </Button>
-                    <Button
-                        variant="contained"
-                        onClick={handleUpdateQuestion}
-                        disabled={isSubmitting || !editQuestionTitle.trim() || !editQuestionContent.trim()}
-                    >
-                        {isSubmitting ? '저장 중...' : '저장'}
-                    </Button>
-                </>
-            );
-        }
-
-        return (
-            <Button variant="contained" onClick={onClose}>
-                닫기
-            </Button>
-        );
-    };
+    const renderFooterActions = () => (
+        <div className="kl-modal-actions-split">
+            <div className="kl-modal-actions-split__left" aria-hidden="true" />
+            <div className="kl-modal-actions-split__right">
+                {canEditQuestion && isEditingQuestion ? (
+                    <>
+                        <button
+                            type="button"
+                            className="kl-btn gray-outline md"
+                            onClick={handleCancelEditQuestion}
+                            disabled={isSubmitting}
+                        >
+                            취소
+                        </button>
+                        <button
+                            type="button"
+                            className="kl-btn primary-full md"
+                            onClick={handleUpdateQuestion}
+                            disabled={isSubmitting || !editQuestionTitle.trim() || !editQuestionContent.trim()}
+                        >
+                            {isSubmitting ? '저장 중...' : '저장'}
+                        </button>
+                    </>
+                ) : (
+                    <button type="button" className="kl-btn primary-full md" onClick={onClose}>
+                        닫기
+                    </button>
+                )}
+            </div>
+        </div>
+    );
 
     if (!isOpen) return null;
 
@@ -235,7 +241,7 @@ function QnaDetailModal({
             paperSx={qnaDetailModalPaperSx}
             paperClassName={qnaDetailModalPaperClassName}
             contentClassName="cs-detail-modal-content kl-modal-form"
-            actionsClassName="qna-detail-modal-actions"
+            actionsClassName="cs-detail-modal-actions"
             actions={renderFooterActions()}
         >
             <div className="cs-detail-modal-body">
@@ -379,7 +385,7 @@ function QnaDetailModal({
                                                 type="file"
                                                 accept="image/jpeg,image/png,image/gif,image/webp"
                                                 onChange={handleAnswerImageUpload}
-                                                className="qna-detail-hidden-file-input"
+                                                className="kl-modal-form-hidden-input"
                                             />
                                         </div>
                                         <textarea
@@ -390,15 +396,13 @@ function QnaDetailModal({
                                             rows={4}
                                         />
                                         <div className="qna-answer-form-actions">
-                                            <Button
+                                            <button
                                                 type="submit"
-                                                variant="outlined"
-                                                color="primary"
-                                                className="outlinedPrimary-sm"
+                                                className="kl-btn primary-outline md"
                                                 disabled={!answerContent.trim() || isSubmitting}
                                             >
                                                 답변 등록
-                                            </Button>
+                                            </button>
                                         </div>
                                     </form>
                                 </div>

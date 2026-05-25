@@ -186,14 +186,7 @@
     font-size: var(--font-size-base);
 }
 
-/* 도메인 등록/수정 — 고객센터·도메인 선택과 동일 520px · 라벨(좌) + 입력(우) */
-:global(.kl-base-modal-paper.domain-form-modal-paper) {
-    width: 520px !important;
-    max-width: calc(100vw - 48px) !important;
-    min-width: unset !important;
-    min-height: unset !important;
-}
-
+/* 도메인 등록/수정 — paper 폭은 BaseModal Form 기본 · 라벨(좌) + 입력(우) */
 :global(.kl-base-modal-content.domain-mgmt-modal-content) {
     padding: var(--spacing-lg) !important;
     padding-bottom: var(--spacing-2xl) !important;

@@ -1,14 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Users, Globe, Lock } from 'lucide-react';
-import { Button } from '@mui/material';
 import { workspaceApi } from '../services/api';
 import { useAlert } from '../context/AlertContext';
 import { useAuth } from '../context/AuthContext';
 import BaseModal from './common/modal/BaseModal';
 import {
-    shareFormModalPaperClassName,
-    shareFormModalPaperSx,
-} from './common/modal/supportFormModalPaperSx';
+    klFormModalPaperSx,
+} from './common/modal/klModalPaper';
 import {
     getMockSharedMembers,
     mockMemberSearchSuggestions,
@@ -245,21 +243,23 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
             subtitle={`워크스페이스 - ${workspace?.name || '-'}`}
             maxWidth={false}
             fullWidth={false}
-            paperSx={shareFormModalPaperSx}
-            paperClassName={shareFormModalPaperClassName}
+            paperSx={klFormModalPaperSx}
             contentClassName="share-modal-content kl-modal-form"
             actionsClassName="share-modal-actions"
             actionsAlign="right"
             actions={(
                 <>
-                    <Button variant="outlined" onClick={onClose}>취소</Button>
-                    <Button
-                        variant="contained"
+                    <button type="button" className="kl-btn gray-outline md" onClick={onClose}>
+                        취소
+                    </button>
+                    <button
+                        type="button"
+                        className="kl-btn primary-full md"
                         onClick={handleSave}
                         disabled={loading}
                     >
                         {loading ? '저장 중...' : '저장'}
-                    </Button>
+                    </button>
                 </>
             )}
         >
@@ -330,11 +330,11 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
 
                     {shareType === 'INDIVIDUAL' && (
                         <div className="share-members-section">
-                            <div className="share-form-row share-form-row--start">
-                                <label className="share-form-row__label" htmlFor="share-member-email">
+                            <div className="kl-modal-form-row kl-vert-start">
+                                <label className="kl-modal-form-row__label share-member-row__label" htmlFor="share-member-email">
                                     공유 멤버 ({members.length})
                                 </label>
-                                <div className="share-form-row__control">
+                                <div className="kl-modal-form-row__control">
                                     <div className="share-member-input-group">
                                         <div className="share-member-input-field">
                                             <input
@@ -367,7 +367,7 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
                                         </div>
                                         <button
                                             type="button"
-                                            className="kl-btn-primary-sm"
+                                            className="kl-btn primary-outline md"
                                             onClick={handleAddMember}
                                             disabled={addingMember || !newEmail.trim()}
                                         >

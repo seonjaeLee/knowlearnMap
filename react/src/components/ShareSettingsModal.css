@@ -1,11 +1,4 @@
-/* 공유 설정 — 고객센터 등록 팝업과 동일 520px */
-:global(.kl-base-modal-paper.share-form-modal-paper) {
-    width: 520px !important;
-    max-width: calc(100vw - 48px) !important;
-    min-width: unset !important;
-    min-height: unset !important;
-}
-
+/* 공유 설정 — paper 폭은 BaseModal Form 기본(550px) */
 .share-modal-content {
     max-height: min(70vh, 720px);
     overflow-y: auto;
@@ -84,29 +77,12 @@
     border-top: 1px dashed var(--color-border);
 }
 
-/* 공유 멤버 — 도메인·고객센터 팝업과 동일 라벨(좌) + 컨트롤(우) */
-.share-form-row {
-    display: grid;
-    grid-template-columns: 6.75rem minmax(0, 1fr);
-    align-items: start;
-    column-gap: var(--spacing-md);
-}
-
-.share-form-row--start {
-    align-items: start;
-}
-
-.share-form-row__label {
-    margin: 0;
+/* 공유 멤버 — 셀렉트·input 행과 라벨 상단 정렬 */
+.share-member-row__label {
     padding-top: calc((var(--kl-control-height) - 1.4em) / 2);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-    line-height: 1.4;
 }
 
-.share-form-row__control {
-    min-width: 0;
+.share-modal-body .kl-modal-form-row__control {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
@@ -128,7 +104,7 @@
     width: 100%;
 }
 
-.share-member-input-group > .kl-btn-primary-sm {
+.share-member-input-group > .kl-btn {
     flex-shrink: 0;
 }
 

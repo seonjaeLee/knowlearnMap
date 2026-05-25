@@ -2,7 +2,7 @@
 
 ## 진행 중 — 모달 UI 일괄 이관 (2026-05-23~)
 
-**`NotebookDetail` 제외**, 전체 메뉴의 **`BaseModal` 팝업** 마크업·클래스를 `modal-guide` · `ReportGenerationModal` 패턴으로 통일하는 작업이다.
+전체 메뉴(**`NotebookDetail` 포함**)의 **`BaseModal` 팝업** 마크업·클래스를 `modal-guide` · `ReportGenerationModal` 패턴으로 통일하는 작업이다.
 
 새 채팅에서 팝업 UI를 다룰 때:
 

@@ -1,11 +1,4 @@
-/* Action 관리 — 워크스페이스 ID 입력 모달 (520px) */
-:global(.kl-base-modal-paper.action-ws-modal-paper) {
-  width: 520px !important;
-  max-width: calc(100vw - 48px) !important;
-  min-width: unset !important;
-  min-height: unset !important;
-}
-
+/* Action 관리 — paper 폭은 BaseModal Form 기본(550px) */
 :global(.kl-base-modal-content.admin-action-ws-modal-content) {
   padding: var(--spacing-lg) !important;
   padding-bottom: var(--spacing-2xl) !important;
