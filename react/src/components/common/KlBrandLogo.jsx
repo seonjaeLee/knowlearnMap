@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
+import './KlBrandLogo.css';
 
 /**
- * LNB 브랜드 심볼 — 지식 그래프(노드) + 맵 접힘 형태.
- * 기존 knowlearn_logo_w.png 아이콘 톤(스카이 블루·라운드 프레임)을 CSS/SVG로 재현.
+ * 브랜드 심볼 — 지식 그래프(노드) + 맵 접힘 형태 (커스텀 SVG).
  */
-function LnbBrandMark({ className = '' }) {
+export function KlBrandMark({ className = 'kl-brand-mark' }) {
   return (
     <svg
       className={className}
@@ -47,16 +47,27 @@ function LnbBrandMark({ className = '' }) {
   );
 }
 
+export function KlBrandLogo({ showWordmark = true, className = '' }) {
+  const rootClass = ['kl-brand-logo', className].filter(Boolean).join(' ');
+
+  return (
+    <span className={rootClass}>
+      <KlBrandMark />
+      {showWordmark && (
+        <span className="kl-brand-wordmark">
+          <span className="kl-brand-wordmark__knowlearn">knowlearn</span>
+          <span className="kl-brand-wordmark__map">Map</span>
+        </span>
+      )}
+    </span>
+  );
+}
+
+/** LNB 상단 — 접힘 시 심볼만 */
 function LnbBrandLogo({ collapsed = false }) {
   return (
     <Link to="/workspaces" className="lnb-logo-link" aria-label="knowlearnMap 홈">
-      <LnbBrandMark className="lnb-brand-mark" />
-      {!collapsed && (
-        <span className="lnb-brand-wordmark">
-          <span className="lnb-brand-wordmark__knowlearn">knowlearn</span>
-          <span className="lnb-brand-wordmark__map">Map</span>
-        </span>
-      )}
+      <KlBrandLogo showWordmark={!collapsed} />
     </Link>
   );
 }

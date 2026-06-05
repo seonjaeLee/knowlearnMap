@@ -26,7 +26,7 @@ import NotificationBell from './NotificationBell';
 import NoticePopupModal from '../NoticePopupModal';
 import { noticeApi } from '../../services/api';
 import KlTooltip from './KlTooltip';
-import LnbBrandLogo from './LnbBrandLogo';
+import LnbBrandLogo from './KlBrandLogo';
 import './MainLayout.css';
 
 /** LNB 접힘 시 아이콘만 보일 때 — 브라우저 title(~1s) 대신 즉시 표시 */

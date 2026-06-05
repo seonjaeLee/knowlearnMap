@@ -46,43 +46,16 @@
 .lnb-logo-link {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   min-width: 0;
   max-width: 100%;
   text-decoration: none;
 }
 
-.lnb-brand-mark {
-  width: 24px;
-  height: 24px;
-  flex: 0 0 auto;
-  color: #5eb8ff;
-}
-
-.lnb-brand-wordmark {
-  display: inline-flex;
-  align-items: baseline;
-  min-width: 0;
-  font-family: var(--font-family);
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.lnb-brand-wordmark__knowlearn {
-  color: #f1f5f9;
-}
-
-.lnb-brand-wordmark__map {
-  color: #5eb8ff;
-}
-
 .lnb-sidebar.collapsed .lnb-logo-link {
   justify-content: center;
+}
+
+.lnb-sidebar.collapsed .lnb-logo-link .kl-brand-logo {
   gap: 0;
 }
 

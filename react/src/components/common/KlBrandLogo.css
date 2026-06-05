@@ -1,0 +1,55 @@
+/* 브랜드 심볼 + knowlearnMap 워드마크 — LNB·로그인 등 공통 */
+
+.kl-brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.kl-brand-mark {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  color: #5eb8ff;
+}
+
+.kl-brand-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  min-width: 0;
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kl-brand-wordmark__knowlearn {
+  color: #f1f5f9;
+}
+
+.kl-brand-wordmark__map {
+  color: #11e2dc;
+}
+
+/* 로그인 카드 — 심볼 위 · 워드마크 아래 세로 정렬 */
+.kl-brand-logo--login {
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.kl-brand-logo--login .kl-brand-mark {
+  width: 36px;
+  height: 36px;
+}
+
+.kl-brand-logo--login .kl-brand-wordmark {
+  font-size: 20px;
+  justify-content: center;
+}

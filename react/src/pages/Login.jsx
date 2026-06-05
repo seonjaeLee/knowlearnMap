@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
+import { KlBrandLogo } from '../components/common/KlBrandLogo';
 import './Login.css';
 
 
@@ -71,7 +72,7 @@ const Login = () => {
         <div className="login-container">
             <div className="login-card">
                 <div className="login-logo-wrap">
-                    <img src="/knowlearn_logo_w.png" alt="KNOWLEARN MAP" className="login-logo-img" />
+                    <KlBrandLogo className="kl-brand-logo--login" />
                 </div>
                 <h1 className="login-hidden-title">SIGN IN</h1>
                 {error && (

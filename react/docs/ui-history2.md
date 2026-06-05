@@ -708,3 +708,20 @@
 - `LnbBrandLogo.jsx`(신규), `MainLayout.jsx`, `MainLayout.css`
 
 ---
+
+### 8) 브랜드 로고 공통화 · 로그인 적용 · Map 색·비율 보정
+
+- **목적:** LNB 브랜드 로고를 로그인에도 동일 심볼·워드마크로 맞추고, 스타일을 한 곳에서 관리
+- **공통 컴포넌트:** `LnbBrandLogo.jsx` → `KlBrandLogo.jsx` + `KlBrandLogo.css`
+  - `KlBrandLogo` — 심볼 + 워드마크(재사용)
+  - `LnbBrandLogo`(default export) — LNB Link 래퍼
+- **로그인 (`Login.jsx`):** `knowlearn_logo_w.png` 제거 → `KlBrandLogo` + `kl-brand-logo--login`
+  - **레이아웃:** 심볼 위 · `knowlearnMap` 아래 세로·가운데 정렬
+  - **크기:** 심볼 36px · 워드마크 20px
+- **Map 텍스트 색:** LNB·로그인 공통 `#11e2dc` (`.kl-brand-wordmark__map`)
+- **LNB 워드마크:** 15px → **16px** (`.kl-brand-wordmark` 기본값 · 로그인 20px는 `--login` override 유지)
+
+#### 파일
+- `KlBrandLogo.jsx`, `KlBrandLogo.css`(신규), `MainLayout.jsx`, `MainLayout.css`, `Login.jsx`, `Login.css` · `LnbBrandLogo.jsx` 삭제
+
+---
