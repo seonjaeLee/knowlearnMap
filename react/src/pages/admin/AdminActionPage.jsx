@@ -165,26 +165,6 @@ function AdminActionPage() {
           icon={Zap}
           title="Action 관리"
           subtitle="온톨로지 기반 실행 Action 을 정의하고, 개념·트리플에 바인딩합니다. Excel 일괄 업다운 지원."
-          actions={(
-            <div className="kl-header-actions">
-              <KlTooltip
-                title="워크스페이스 ID 변경"
-                placement="bottom"
-                enterDelay={0}
-                triggerClassName="kl-icon-btn-tooltip-trigger"
-              >
-                <button
-                  type="button"
-                  className="kl-btn kl-btn--outline-success"
-                  onClick={openWsModal}
-                  aria-label="워크스페이스 ID 변경"
-                >
-                  <Pencil size={14} aria-hidden />
-                  워크스페이스 ID 변경
-                </button>
-              </KlTooltip>
-            </div>
-          )}
         />
       </div>
 
@@ -205,6 +185,24 @@ function AdminActionPage() {
           <Clock size={14} aria-hidden />
           실행 이력
         </button>
+        <div className="kl-subtabs__actions">
+          <KlTooltip
+            title="워크스페이스 ID 변경"
+            placement="bottom"
+            enterDelay={0}
+            triggerClassName="kl-icon-btn-tooltip-trigger"
+          >
+            <button
+              type="button"
+              className="kl-btn kl-btn--outline-success md"
+              onClick={openWsModal}
+              aria-label="워크스페이스 ID 변경"
+            >
+              <Pencil size={14} aria-hidden />
+              워크스페이스 ID 변경
+            </button>
+          </KlTooltip>
+        </div>
       </div>
 
       {subTab === 'list' && <ActionListTab workspaceId={workspaceId} />}

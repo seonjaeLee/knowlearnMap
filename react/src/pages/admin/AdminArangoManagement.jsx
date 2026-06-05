@@ -342,17 +342,6 @@ function AdminArangoManagement() {
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="ArangoDB 관리"
-                    actions={(
-                        <KlIconButton
-                            tooltip="새로고침"
-                            ariaLabel="ArangoDB 목록 새로고침"
-                            onClick={handleRefresh}
-                            buttonClassName="kl-btn gray-outline md icon-only"
-                            stopPropagation={false}
-                        >
-                            <RotateCcw size={16} aria-hidden />
-                        </KlIconButton>
-                    )}
                 />
             </div>
 
@@ -362,6 +351,17 @@ function AdminArangoManagement() {
                         <span className="kl-table-toolbar-summary">
                             총 <strong>{databases.length}</strong>건
                         </span>
+                    </div>
+                    <div className="toolbar-right">
+                        <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="ArangoDB 목록 새로고침"
+                            onClick={handleRefresh}
+                            buttonClassName="kl-btn gray-outline md icon-only"
+                            stopPropagation={false}
+                        >
+                            <RotateCcw size={16} aria-hidden />
+                        </KlIconButton>
                     </div>
                 </div>
 

@@ -207,18 +207,9 @@ function Faq() {
         );
       case 'category': {
         const category = row.category;
-        return (
-          <span
-            className={[
-              'support-badge support-badge--soft',
-              isTableCellBlank(category) ? 'kl-table-cell-blank' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
-            {formatTableCellText(category)}
-          </span>
-        );
+        return isTableCellBlank(category)
+          ? <span className="kl-table-cell-blank">{formatTableCellText(category)}</span>
+          : <span className="faq-category-badge">{category}</span>;
       }
       case 'author': {
         const author = row.authorEmail?.split('@')[0] || row.createdBy;
@@ -255,28 +246,6 @@ function Faq() {
         <PageHeader
           title="자주 묻는 질문"
           breadcrumbs={['고객센터', '자주 묻는 질문']}
-          actions={(
-            <>
-              <KlIconButton
-                tooltip="새로고침"
-                ariaLabel="FAQ 목록 새로고침"
-                onClick={() => {
-                  fetchFaqs();
-                  fetchCategories();
-                }}
-                buttonClassName="kl-btn gray-outline md icon-only"
-                stopPropagation={false}
-              >
-                <RotateCcw size={16} aria-hidden />
-              </KlIconButton>
-              {isAdmin ? (
-                <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
-                  <Plus size={14} aria-hidden />
-                  자주 묻는 질문 작성
-                </button>
-              ) : null}
-            </>
-          )}
         />
 
       </div>
@@ -320,6 +289,24 @@ function Faq() {
                 ))}
               </select>
             </div>
+            <KlIconButton
+              tooltip="새로고침"
+              ariaLabel="FAQ 목록 새로고침"
+              onClick={() => {
+                fetchFaqs();
+                fetchCategories();
+              }}
+              buttonClassName="kl-btn gray-outline md icon-only"
+              stopPropagation={false}
+            >
+              <RotateCcw size={16} aria-hidden />
+            </KlIconButton>
+            {isAdmin ? (
+              <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                <Plus size={14} aria-hidden />
+                자주 묻는 질문 작성
+              </button>
+            ) : null}
           </div>
         </div>
         <div className="basic-table-shell">

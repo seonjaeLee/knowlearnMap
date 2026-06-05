@@ -154,12 +154,7 @@ function AdminWorkspaceManagement() {
             switch (column.id) {
                 case 'name':
                     return (
-                        <div className="workspace-mgmt-name-cell">
-                            <span className="workspace-mgmt-icon" aria-hidden>
-                                {ws.icon || '📄'}
-                            </span>
-                            <span className="workspace-mgmt-name-text">{ws.name}</span>
-                        </div>
+                        <span className="workspace-mgmt-name-text">{ws.name}</span>
                     );
                 case 'domainName': {
                     const domainName = ws.domainName;
@@ -269,17 +264,6 @@ function AdminWorkspaceManagement() {
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="워크스페이스 관리"
-                    actions={(
-                        <KlIconButton
-                            tooltip="새로고침"
-                            ariaLabel="워크스페이스 목록 새로고침"
-                            onClick={fetchWorkspaces}
-                            buttonClassName="kl-btn gray-outline md icon-only"
-                            stopPropagation={false}
-                        >
-                            <RotateCcw size={16} aria-hidden />
-                        </KlIconButton>
-                    )}
                 />
             </div>
 
@@ -302,6 +286,15 @@ function AdminWorkspaceManagement() {
                                 aria-label="워크스페이스 검색"
                             />
                         </div>
+                        <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="워크스페이스 목록 새로고침"
+                            onClick={fetchWorkspaces}
+                            buttonClassName="kl-btn gray-outline md icon-only"
+                            stopPropagation={false}
+                        >
+                            <RotateCcw size={16} aria-hidden />
+                        </KlIconButton>
                     </div>
                 </div>
                 <div className="basic-table-shell">

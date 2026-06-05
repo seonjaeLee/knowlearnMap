@@ -12,6 +12,20 @@
   background: var(--color-bg-subtle);
 }
 
+/* 우측 액션 슬롯 — 탭바 하단에 정렬, 버튼 높이는 32px 고정 */
+.kl-subtabs__actions {
+  margin-left: auto;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding-bottom: 6px;
+}
+
+.kl-subtabs__actions .kl-btn {
+  height: var(--kl-control-height);
+}
+
 .kl-subtab {
   display: inline-flex;
   align-items: center;

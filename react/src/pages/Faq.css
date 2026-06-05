@@ -1,3 +1,17 @@
+/* 카테고리 뱃지 — 시멘틱(admin-badge-info)과 동일 스타일 */
+.faq-category-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.4;
+    white-space: nowrap;
+    background: #dbeafe;
+    color: #1e40af;
+}
+
 .faq-page {
     padding: 0;
     width: 100%;

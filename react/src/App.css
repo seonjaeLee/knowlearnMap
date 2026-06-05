@@ -165,7 +165,8 @@
 }
 
 .notebooks-container.grid {
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* DomainSelection 카드와 동일한 기본 폭 */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
 .notebooks-container.list {
@@ -230,7 +231,7 @@
 .notebooks-container.list .notebook-source {
   flex: 0 0 auto;
   min-width: 100px;
-  font-size: var(--font-size-xs);
+  font-size: 14px;
   color: var(--color-text-secondary);
 }
 
@@ -322,13 +323,15 @@
 .notebook-card {
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--spacing-lg);
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  height: 200px;
+  height: auto;
   display: flex;
   flex-direction: column;
 }
@@ -339,43 +342,10 @@
   z-index: 5;
 }
 
-.notebook-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-  pointer-events: none;
-}
-
 .notebook-card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(calc(-1 * var(--spacing-xs)));
-  border-color: var(--color-border-hover);
-}
-
-.notebook-card:hover::before {
-  opacity: 1;
-}
-
-.notebook-card.yellow {
-  background-color: var(--color-notebook-yellow);
-}
-
-.notebook-card.blue {
-  background-color: var(--color-notebook-blue);
-}
-
-.notebook-card.purple {
-  background-color: var(--color-notebook-purple);
-}
-
-.notebook-card.pink {
-  background-color: var(--color-notebook-pink);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-small);
+  transform: translateY(-1px);
 }
 
 /* Create Card */
@@ -429,9 +399,20 @@
 }
 
 .notebook-icon {
-  font-size: 48px;
-  line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notebook-icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
 }
 
 .more-btn-container {
@@ -513,6 +494,13 @@
   }
 }
 
+.notebook-source {
+  margin-top: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: var(--font-weight-normal);
+}
+
 .popup-menu .menu-item {
   display: flex;
   align-items: center;
@@ -562,15 +550,122 @@
   justify-content: flex-end;
 }
 
+.notebook-title-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+  min-width: 0;
+}
+
 .notebook-title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 0;
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+/* 제목 + 연필 묶음 버튼 — 텍스트 폭에 딱 맞게 */
+.notebook-title-edit-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 3px 6px 3px 4px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.notebook-title-edit-group:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.notebook-title-edit-group .notebook-title {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 연필 아이콘 */
+.notebook-title-pen {
+  flex-shrink: 0;
+  color: var(--color-text-tertiary, #aaa);
+  opacity: 0.55;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.notebook-title-edit-group:hover .notebook-title-pen {
+  opacity: 1;
+  color: var(--color-text-secondary, #555);
+}
+
+/* 인라인 편집 — input + 체크버튼 묶음 */
+.notebook-title-edit-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  padding: 3px 0 3px 4px;
+}
+
+.notebook-title-confirm-btn {
+  flex-shrink: 0;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-tertiary, #bbb);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0.5;
+  transition: color 0.15s, opacity 0.15s;
+}
+
+/* 텍스트가 변경된 경우 파란색 강조 */
+.notebook-title-confirm-btn.is-dirty {
+  color: var(--color-accent, #4f8ef7);
+  opacity: 1;
+}
+
+/* hover — 파란색으로 채움 (배경 없이) */
+.notebook-title-confirm-btn:hover {
+  color: var(--color-accent, #4f8ef7);
+  opacity: 1;
+  background: transparent;
+}
+
+/* 인라인 제목 수정 input */
+.notebook-title-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-bottom: 1.5px solid var(--color-accent, #4f8ef7);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  outline: none;
+  padding: 0 0 2px;
+  line-height: 1.4;
+}
+
+.notebook-title-input--list {
+  font-size: var(--font-size-sm);
 }
 
 .notebook-date {
@@ -586,16 +681,13 @@
   }
 
   .notebooks-container.grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    /* DomainSelection 반응형과 동일 */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
 
 }
 
 @media (max-width: 480px) {
-  .notebooks-container.grid {
-    grid-template-columns: 1fr;
-  }
-
   .header-left .logo-text {
     display: none;
   }

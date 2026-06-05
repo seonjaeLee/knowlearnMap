@@ -92,7 +92,7 @@ function DomainSelection() {
                     <span className="kl-table-toolbar-summary">
                         총 <strong>{domains.length}</strong>건
                     </span>
-                    <span className="domain-toolbar-user">관리자 로그인 ({user.email})</span>
+
                 </div>
 
                 {error ? (

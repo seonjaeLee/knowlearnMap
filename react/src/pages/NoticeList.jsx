@@ -285,25 +285,6 @@ function NoticeList() {
         <PageHeader
           title="공지사항"
           breadcrumbs={['고객센터', '공지사항']}
-          actions={(
-            <>
-              <KlIconButton
-                tooltip="새로고침"
-                ariaLabel="공지사항 목록 새로고침"
-                onClick={fetchNotices}
-                buttonClassName="kl-btn gray-outline md icon-only"
-                stopPropagation={false}
-              >
-                <RotateCcw size={16} aria-hidden />
-              </KlIconButton>
-              {isAdmin ? (
-                <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
-                  <Plus size={14} aria-hidden />
-                  공지 작성
-                </button>
-              ) : null}
-            </>
-          )}
         />
 
         
@@ -328,6 +309,21 @@ function NoticeList() {
                 aria-label="공지사항 검색"
               />
             </div>
+            <KlIconButton
+              tooltip="새로고침"
+              ariaLabel="공지사항 목록 새로고침"
+              onClick={fetchNotices}
+              buttonClassName="kl-btn gray-outline md icon-only"
+              stopPropagation={false}
+            >
+              <RotateCcw size={16} aria-hidden />
+            </KlIconButton>
+            {isAdmin ? (
+              <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                <Plus size={14} aria-hidden />
+                공지 작성
+              </button>
+            ) : null}
           </div>
         </div>
 

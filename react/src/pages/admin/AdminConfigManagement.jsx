@@ -463,35 +463,6 @@ function AdminConfigManagement() {
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="시스템 설정"
-                    actions={(
-                        <div className="kl-header-actions">
-                            <KlTooltip
-                                title="캐시 새로고침"
-                                placement="bottom"
-                                enterDelay={0}
-                                triggerClassName="kl-icon-btn-tooltip-trigger"
-                            >
-                                <button
-                                    type="button"
-                                    onClick={handleRefreshCache}
-                                    className="kl-btn kl-btn--outline-success"
-                                    aria-label="캐시 새로고침"
-                                >
-                                    <RefreshCw size={14} aria-hidden />
-                                    캐시 갱신
-                                </button>
-                            </KlTooltip>
-                            <KlIconButton
-                                tooltip="목록 새로고침"
-                                ariaLabel="설정 목록 새로고침"
-                                onClick={handleRefreshList}
-                                buttonClassName="kl-btn gray-outline md icon-only"
-                                stopPropagation={false}
-                            >
-                                <RotateCcw size={16} aria-hidden />
-                            </KlIconButton>
-                        </div>
-                    )}
                 />
             </div>
 
@@ -522,6 +493,31 @@ function AdminConfigManagement() {
                                     ))}
                                 </select>
                             </div>
+                            <KlTooltip
+                                title="캐시 새로고침"
+                                placement="bottom"
+                                enterDelay={0}
+                                triggerClassName="kl-icon-btn-tooltip-trigger"
+                            >
+                                <button
+                                    type="button"
+                                    onClick={handleRefreshCache}
+                                    className="kl-btn kl-btn--outline-success md"
+                                    aria-label="캐시 새로고침"
+                                >
+                                    <RefreshCw size={14} aria-hidden />
+                                    캐시 갱신
+                                </button>
+                            </KlTooltip>
+                            <KlIconButton
+                                tooltip="목록 새로고침"
+                                ariaLabel="설정 목록 새로고침"
+                                onClick={handleRefreshList}
+                                buttonClassName="kl-btn gray-outline md icon-only"
+                                stopPropagation={false}
+                            >
+                                <RotateCcw size={16} aria-hidden />
+                            </KlIconButton>
                     </div>
                     </div>
                     <div className="basic-table-shell">

@@ -674,27 +674,6 @@ function AdminMemberManagement() {
                 <AdminPageHeader
                     icon={Users}
                     title="사용자 관리"
-                    actions={(
-                        <>
-                            <KlIconButton
-                                tooltip="새로고침"
-                                ariaLabel="사용자 목록 새로고침"
-                                onClick={fetchMembers}
-                                buttonClassName="kl-btn gray-outline md icon-only"
-                                stopPropagation={false}
-                            >
-                                <RotateCcw size={16} aria-hidden />
-                            </KlIconButton>
-                            <button
-                                type="button"
-                                className="kl-btn primary-full md"
-                                onClick={openCreateModal}
-                            >
-                                <Plus size={14} aria-hidden />
-                                사용자 추가
-                            </button>
-                        </>
-                    )}
                 />
 
                 
@@ -719,6 +698,23 @@ function AdminMemberManagement() {
                     aria-label="사용자 검색"
                     />
                     </div>
+                    <KlIconButton
+                        tooltip="새로고침"
+                        ariaLabel="사용자 목록 새로고침"
+                        onClick={fetchMembers}
+                        buttonClassName="kl-btn gray-outline md icon-only"
+                        stopPropagation={false}
+                    >
+                        <RotateCcw size={16} aria-hidden />
+                    </KlIconButton>
+                    <button
+                        type="button"
+                        className="kl-btn primary-full md"
+                        onClick={openCreateModal}
+                    >
+                        <Plus size={14} aria-hidden />
+                        사용자 추가
+                    </button>
                     </div>
                     </div>
                     <div className="basic-table-shell">

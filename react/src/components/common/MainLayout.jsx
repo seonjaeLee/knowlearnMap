@@ -8,9 +8,7 @@ import {
   HelpCircle,
   MessageSquareText,
   ChevronDown,
-  ChevronRight,
   ChevronsLeft,
-  ChevronsRight,
   Bell,
   SlidersHorizontal,
   Sparkles,
@@ -21,13 +19,13 @@ import {
   Workflow,
   Bot,
   FolderKanban,
+  CircleUser,
 } from 'lucide-react';
 import UpgradeModal from '../UpgradeModal';
 import NotificationBell from './NotificationBell';
 import NoticePopupModal from '../NoticePopupModal';
 import { noticeApi } from '../../services/api';
 import KlTooltip from './KlTooltip';
-import KlIconButton from './KlIconButton';
 import './MainLayout.css';
 
 /** LNB 접힘 시 아이콘만 보일 때 — 브라우저 title(~1s) 대신 즉시 표시 */
@@ -109,6 +107,8 @@ function MainLayout() {
     setLnbOpenGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }));
   };
 
+  const unbLoginLabel = user?.username || user?.email || 'User';
+
   const mainOutletContext = useMemo(
     () => ({ setLnbCollapsed: setIsLnbCollapsed }),
     [setIsLnbCollapsed],
@@ -116,55 +116,19 @@ function MainLayout() {
 
   return (
     <div className="main-layout">
-      <header className="gnb-header">
-        <div className="gnb-left">
-          <Link to="/workspaces" className="site-logo">
-            <img src="/knowlearn_logo_w.png" alt="KNOWLEARN MAP" style={{ height: '32px' }} />
+      <aside className={`lnb-sidebar ${isLnbCollapsed ? 'collapsed' : ''}`}>
+        {/* 로고 */}
+        <div className="lnb-logo">
+          <Link to="/workspaces" className="lnb-logo-link">
+            {isLnbCollapsed ? (
+              <span className="lnb-logo-collapsed">KL</span>
+            ) : (
+              <img src="/knowlearn_logo_w.png" alt="KNOWLEARN MAP" className="lnb-logo-img" />
+            )}
           </Link>
         </div>
-        <div className="gnb-right">
-          <NotificationBell />
 
-          {/* Service Info Button with Grade Badge */}
-          <KlTooltip
-            title="서비스 정보 및 업그레이드"
-            placement="bottom"
-            enterDelay={0}
-            leaveDelay={LNB_TOOLTIP_LEAVE_MS}
-            triggerClassName="kl-icon-btn-tooltip-trigger"
-          >
-            <button
-              type="button"
-              className="service-info-btn"
-              onClick={() => setUpgradeModalOpen(true)}
-              aria-label="서비스 정보 및 업그레이드"
-            >
-              <span className="service-label">이용 서비스</span>
-              <span className={`grade-tag ${user?.grade?.toLowerCase() || 'free'}`}>
-                {user?.grade || 'FREE'}
-              </span>
-            </button>
-          </KlTooltip>
-
-          <div className="user-info">
-            {user?.email || user?.username || 'User'}
-          </div>
-
-          <KlIconButton
-            tooltip="로그아웃"
-            ariaLabel="로그아웃"
-            onClick={handleLogout}
-            buttonClassName="logout-btn"
-            stopPropagation={false}
-          >
-            <LogOut size={20} aria-hidden />
-          </KlIconButton>
-        </div>
-      </header>
-
-      <div className="layout-body">
-        <aside className={`lnb-sidebar ${isLnbCollapsed ? 'collapsed' : ''}`}>
-          <nav className="lnb-nav" aria-label="주요 메뉴">
+        <nav className="lnb-nav" aria-label="주요 메뉴">
             <div className="lnb-group">
               {!isLnbCollapsed && (
                 <button type="button" className="lnb-group-toggle" onClick={() => toggleLnbGroup('workspace')}>
@@ -321,50 +285,109 @@ function MainLayout() {
               </div>
             </div>
           </nav>
-          <KlTooltip
-            title={isLnbCollapsed ? '메뉴 펼치기' : '메뉴 접기'}
-            placement="right"
-            enterDelay={LNB_TOOLTIP_ENTER_MS}
-            leaveDelay={LNB_TOOLTIP_LEAVE_MS}
-            triggerClassName="lnb-tooltip-trigger lnb-tooltip-trigger--collapse"
-          >
+
+        {/* LNB 하단 — 알림·서비스·사용자·로그아웃 (수직) */}
+        <div className="lnb-footer">
+
+          {/* 공지 알림 — showLabel=true 시 버튼이 전체 행 차지 */}
+          <div className="lnb-footer-bell-row">
+            <NotificationBell
+              tooltipPlacement={isLnbCollapsed ? 'right' : 'bottom'}
+              showLabel={!isLnbCollapsed}
+            />
+          </div>
+
+          {/* 이용 서비스 — grade는 서비스 등급 (ADMIN/FREE/PRO), 계정명과 무관 */}
+          {wrapLnbTooltip(isLnbCollapsed, `이용 서비스 · ${user?.grade || 'FREE'}`, (
             <button
               type="button"
-              className={`lnb-collapse-toggle ${isLnbCollapsed ? 'is-collapsed' : ''}`}
-              onClick={() => setIsLnbCollapsed((prev) => !prev)}
-              aria-label={isLnbCollapsed ? '메뉴 펼치기' : '메뉴 접기'}
+              className="lnb-item lnb-footer-service"
+              onClick={() => setUpgradeModalOpen(true)}
+              aria-label={`서비스 정보 및 업그레이드 (${user?.grade || 'FREE'})`}
             >
-              <ChevronsLeft size={16} className="lnb-collapse-icon" />
+              <Sparkles size={14} className="lnb-item-icon" />
+              {!isLnbCollapsed && (
+                <>
+                  <span>이용 서비스</span>
+                  <span className={`grade-tag lnb-grade-tag ${user?.grade?.toLowerCase() || 'free'}`}>
+                    {user?.grade || 'FREE'}
+                  </span>
+                </>
+              )}
             </button>
-          </KlTooltip>
-        </aside>
+          ))}
 
-        <div className="content-panel">
-          <main
-            className={
-              isNotebookShellRoute
-                ? 'main-content main-content--notebook'
-                : 'main-content'
-            }
-          >
-            <div className="main-content-scroll-inner">
-              <div
-                className={[
-                  'main-content-outlet-wrap',
-                  isNotebookShellRoute && 'main-content-outlet-wrap--notebook',
-                  isAdminCenterOutletFill && 'main-content-outlet-wrap--admin-center',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-              >
-                <Outlet context={mainOutletContext} />
-              </div>
-              <footer className="site-footer">
-                <p>© 2025 KNOWLEARN MAP. All rights reserved.</p>
-              </footer>
+          {/* 로그인 사용자 — 접속 계정명 표시 전용 */}
+          {wrapLnbTooltip(isLnbCollapsed, unbLoginLabel, (
+            <div
+              className="lnb-item lnb-footer-user"
+              aria-label={`로그인: ${unbLoginLabel}`}
+            >
+              <CircleUser size={14} className="lnb-item-icon" />
+              {!isLnbCollapsed && (
+                <span className="lnb-footer-username">{unbLoginLabel}</span>
+              )}
             </div>
-          </main>
+          ))}
+
+          {/* 로그아웃 */}
+          {wrapLnbTooltip(isLnbCollapsed, '로그아웃', (
+            <button
+              type="button"
+              className="lnb-item lnb-footer-logout"
+              onClick={handleLogout}
+              aria-label="로그아웃"
+            >
+              <LogOut size={14} className="lnb-item-icon" />
+              {!isLnbCollapsed && <span>로그아웃</span>}
+            </button>
+          ))}
+
         </div>
+
+        <KlTooltip
+          title={isLnbCollapsed ? '메뉴 펼치기' : '메뉴 접기'}
+          placement="right"
+          enterDelay={LNB_TOOLTIP_ENTER_MS}
+          leaveDelay={LNB_TOOLTIP_LEAVE_MS}
+          triggerClassName="lnb-tooltip-trigger lnb-tooltip-trigger--collapse"
+        >
+          <button
+            type="button"
+            className={`lnb-collapse-toggle ${isLnbCollapsed ? 'is-collapsed' : ''}`}
+            onClick={() => setIsLnbCollapsed((prev) => !prev)}
+            aria-label={isLnbCollapsed ? '메뉴 펼치기' : '메뉴 접기'}
+          >
+            <ChevronsLeft size={16} className="lnb-collapse-icon" />
+          </button>
+        </KlTooltip>
+      </aside>
+
+      <div className="content-panel">
+        <main
+          className={
+            isNotebookShellRoute
+              ? 'main-content main-content--notebook'
+              : 'main-content'
+          }
+        >
+          <div className="main-content-scroll-inner">
+            <div
+              className={[
+                'main-content-outlet-wrap',
+                isNotebookShellRoute && 'main-content-outlet-wrap--notebook',
+                isAdminCenterOutletFill && 'main-content-outlet-wrap--admin-center',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <Outlet context={mainOutletContext} />
+            </div>
+            <footer className="site-footer">
+              <p>© 2025 KNOWLEARN MAP. All rights reserved.</p>
+            </footer>
+          </div>
+        </main>
       </div>
 
       <UpgradeModal

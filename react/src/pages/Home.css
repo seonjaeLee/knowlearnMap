@@ -109,11 +109,24 @@
 
 .home-workspace-list-icon {
   flex-shrink: 0;
-  font-size: 18px;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-workspace-list-icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
 }
 
 .home-workspace-list-name {
+  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -126,12 +139,60 @@
   flex-shrink: 0;
 }
 
+/* 리스트 — 묶음 버튼 세로 정렬 */
+.notebook-title-edit-group--list {
+  padding: 1px 4px 1px 2px;
+}
+
 .home-workspace-list-muted {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
 
+/* 공유 설정 뱃지 — AdminWorkspaceManagement와 동일 스타일 */
+.workspace-mgmt-share-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.workspace-mgmt-share-badge.share-all {
+  background-color: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.workspace-mgmt-share-badge.share-individual {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+
 .home-workspace-list-row--deleting {
   opacity: 0.55;
   pointer-events: none;
+}
+
+/* table-toolbar 우측 끝으로 이동한 헤더 액션 그룹 보정 */
+.home-toolbar-actions-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-left: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.toolbar-right > .home-toolbar-actions-inline {
+  order: 99;
+}
+
+.home-toolbar-actions-inline > .kl-btn {
+  height: var(--kl-control-height);
+}
+
+.home-toolbar-actions-inline .kl-btn.primary-full.md {
+  height: var(--kl-control-height);
 }

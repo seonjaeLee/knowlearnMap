@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Edit2, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus, Info, RotateCcw } from 'lucide-react';
+import { Pen, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus, Info, RotateCcw, Files } from 'lucide-react';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
@@ -70,7 +70,8 @@ function mergePromptCodesForSelectUi(apiCodes) {
 }
 
 const WORKSPACE_LIST_COLUMNS = [
-    { id: 'title', label: '제목', width: '36%', align: 'left' },
+    { id: 'title', label: '제목', width: '30%', align: 'left' },
+    { id: 'share', label: '공유 설정', width: '18%', align: 'left', ellipsis: false },
     { id: 'source', label: '소스(개수)', width: 96, align: 'left', ellipsis: false },
     { id: 'createdAt', label: '소스생성일', width: 120, align: 'left' },
     { id: 'role', label: '역할', width: 88, align: 'left' },
@@ -98,10 +99,15 @@ function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Rename Modal State
+    // Rename Modal State (legacy — 모달 방식, 하단 BaseModal에서 사용)
     const [renameModalOpen, setRenameModalOpen] = useState(false);
     const [renamingNotebook, setRenamingNotebook] = useState(null);
     const [newName, setNewName] = useState('');
+
+    // 인라인 제목 수정 state
+    const [inlineEditId, setInlineEditId] = useState(null);
+    const [inlineEditValue, setInlineEditValue] = useState('');
+    const [inlineEditOriginal, setInlineEditOriginal] = useState('');
 
     // Prompt Modal State
     const [promptModalOpen, setPromptModalOpen] = useState(false);
@@ -464,6 +470,37 @@ function Home() {
         setOpenMenuId(null);
     };
 
+    // 인라인 제목 수정 핸들러
+    const handleInlineEditStart = useCallback((e, notebook) => {
+        e.stopPropagation();
+        setOpenMenuId(null);
+        const original = notebook.name || notebook.title || '';
+        setInlineEditId(notebook.id);
+        setInlineEditValue(original);
+        setInlineEditOriginal(original);
+    }, []);
+
+    const handleInlineEditSave = useCallback(async (notebookId) => {
+        const trimmed = inlineEditValue.trim();
+        setInlineEditId(null);
+        if (!trimmed) return;
+        const notebook = notebooks.find(nb => nb.id === notebookId);
+        if (!notebook || trimmed === (notebook.name || notebook.title)) return;
+        try {
+            const updated = await workspaceApi.update(notebookId, { ...notebook, name: trimmed });
+            setNotebooks(prev => prev.map(nb =>
+                nb.id === updated.id ? { ...nb, name: updated.name, title: updated.name } : nb
+            ));
+        } catch (err) {
+            console.error('워크스페이스 이름 수정 실패:', err);
+        }
+    }, [inlineEditValue, notebooks]);
+
+    const handleInlineEditKeyDown = useCallback((e, notebookId) => {
+        if (e.key === 'Enter') { e.preventDefault(); handleInlineEditSave(notebookId); }
+        if (e.key === 'Escape') { setInlineEditId(null); setInlineEditValue(''); }
+    }, [handleInlineEditSave]);
+
     const handleRenameSubmit = async () => {
         if (!newName.trim()) {
             await alert({
@@ -605,16 +642,25 @@ function Home() {
         switch (column.id) {
             case 'title':
                 return (
-                    <div className="home-workspace-list-title">
-                        <span className="home-workspace-list-icon" aria-hidden>
-                            {notebook.icon || '📄'}
-                        </span>
-                        <span className="home-workspace-list-name">
-                            {notebook.name || notebook.title || 'Untitled'}
-                        </span>
-                        {renderWorkspaceShareBadge(notebook, { list: true })}
-                    </div>
+                    <span className="home-workspace-list-name">
+                        {notebook.name || notebook.title || 'Untitled'}
+                    </span>
                 );
+            case 'share': {
+                const shareType = resolveWorkspaceShareBadgeType(
+                    notebook,
+                    devShareBadgePreviewNotebookId,
+                    { devForceIndividualOnPreviewCard: devShareBadgeAllAllPreview },
+                );
+                if (shareType === 'ALL' || shareType === 'INDIVIDUAL') {
+                    return (
+                        <span className={`workspace-mgmt-share-badge share-${shareType.toLowerCase()}`}>
+                            {shareType === 'ALL' ? '전체' : '개별'}
+                        </span>
+                    );
+                }
+                return <span className="kl-table-cell-blank">—</span>;
+            }
             case 'source':
                 return (
                     <span className="home-workspace-list-muted">
@@ -683,11 +729,6 @@ function Home() {
                 return (
                     <KlTableRowActions
                         actions={[
-                            {
-                                kind: 'rename',
-                                ariaLabel: `${workspaceLabel} 제목 수정`,
-                                onClick: (e) => handleRename(e, notebook.id),
-                            },
                             ...adminActions,
                             {
                                 kind: 'delete',
@@ -701,7 +742,27 @@ function Home() {
             default:
                 return undefined;
         }
-    }, [deletingId, devShareBadgePreviewNotebookId, isAdmin, notebooks]);
+    }, [deletingId, devShareBadgePreviewNotebookId, isAdmin, notebooks, renderWorkspaceShareBadge]);
+
+    const workspaceHeaderActions = (
+        <div className="home-toolbar-actions-inline">
+            <KlIconButton
+                tooltip="새로고침"
+                ariaLabel="워크스페이스 목록 새로고침"
+                onClick={fetchWorkspaces}
+                buttonClassName="kl-btn gray-outline md icon-only"
+                stopPropagation={false}
+            >
+                <RotateCcw size={16} aria-hidden />
+            </KlIconButton>
+            {viewMode === 'list' && (
+                <button type="button" className="kl-btn primary-full md" onClick={handleCreateNew}>
+                    <Plus size={14} aria-hidden />
+                    새 워크스페이스
+                </button>
+            )}
+        </div>
+    );
 
     return (
         <div className="kl-page kl-page--fill">
@@ -709,23 +770,6 @@ function Home() {
                 <PageHeader
                     title={pageTitle}
                     breadcrumbs={workspaceBreadcrumbs}
-                    actions={(
-                        <>
-                            <KlIconButton
-                                tooltip="새로고침"
-                                ariaLabel="워크스페이스 목록 새로고침"
-                                onClick={fetchWorkspaces}
-                                buttonClassName="kl-btn gray-outline md icon-only"
-                                stopPropagation={false}
-                            >
-                                <RotateCcw size={16} aria-hidden />
-                            </KlIconButton>
-                            <button type="button" className="kl-btn primary-full md" onClick={handleCreateNew}>
-                                <Plus size={14} aria-hidden />
-                                새 워크스페이스
-                            </button>
-                        </>
-                    )}
                 />
             </div>
 
@@ -789,6 +833,7 @@ function Home() {
                             <option value="오래된순">오래된순</option>
                             <option value="이름순">이름순</option>
                         </select>
+                        {workspaceHeaderActions}
                     </div>
                 </div>
 
@@ -858,7 +903,7 @@ function Home() {
                     {sortedNotebooks.map((notebook) => (
                         <div
                             key={notebook.id}
-                            className={`notebook-card ${notebook.color || 'yellow'}${
+                            className={`notebook-card${
                                 openMenuId === notebook.id ? ' notebook-card--menu-open' : ''
                             }`}
                             onClick={() => handleNotebookClick(notebook.id)}
@@ -875,7 +920,9 @@ function Home() {
                             )}
                             <div className="card-header">
                                 <div className="notebook-icon">
-                                    {notebook.icon || '📄'}
+                                    <span className="notebook-icon-box">
+                                        <Files size={18} aria-hidden />
+                                    </span>
                                 </div>
                                 <div className="card-header-right">
                                 {renderWorkspaceShareBadge(notebook)}
@@ -922,13 +969,6 @@ function Home() {
                                                 <div
                                                     className={`popup-menu${workspaceMenuOpenUp ? ' popup-menu--open-up' : ''}`}
                                                 >
-                                                    <button
-                                                        className="menu-item"
-                                                        onClick={(e) => handleRename(e, notebook.id)}
-                                                    >
-                                                        <Edit2 size={14} />
-                                                        <span>제목 수정</span>
-                                                    </button>
                                                     {isAdmin && (
                                                         <>
                                                             <button
@@ -963,7 +1003,42 @@ function Home() {
                                 </div>
                             </div>
                             <div className="card-body">
-                                <h3 className="notebook-title">{notebook.name || notebook.title || 'Untitled'}</h3>
+                                <div className="notebook-title-row">
+                                    {inlineEditId === notebook.id ? (
+                                        <div className="notebook-title-edit-row" onClick={(e) => e.stopPropagation()}>
+                                            <input
+                                                autoFocus
+                                                className="notebook-title-input"
+                                                value={inlineEditValue}
+                                                onChange={(e) => setInlineEditValue(e.target.value)}
+                                                onBlur={() => handleInlineEditSave(notebook.id)}
+                                                onKeyDown={(e) => handleInlineEditKeyDown(e, notebook.id)}
+                                            />
+                                            <button
+                                                type="button"
+                                                className={`notebook-title-confirm-btn${inlineEditValue !== inlineEditOriginal ? ' is-dirty' : ''}`}
+                                                onMouseDown={(e) => e.preventDefault()}
+                                                onClick={() => handleInlineEditSave(notebook.id)}
+                                                aria-label="제목 저장"
+                                            >
+                                                <Check size={16} aria-hidden />
+                                            </button>
+                                        </div>
+                                    ) : notebook.role === 'Owner' ? (
+                                        <button
+                                            type="button"
+                                            className="notebook-title-edit-group"
+                                            onClick={(e) => handleInlineEditStart(e, notebook)}
+                                            aria-label="제목 수정"
+                                            title="클릭하여 제목 수정"
+                                        >
+                                            <h3 className="notebook-title">{notebook.name || notebook.title || 'Untitled'}</h3>
+                                            <Pen size={12} className="notebook-title-pen" aria-hidden />
+                                        </button>
+                                    ) : (
+                                        <h3 className="notebook-title">{notebook.name || notebook.title || 'Untitled'}</h3>
+                                    )}
+                                </div>
                                 <p className="notebook-source">소스 {notebook.documentCount || 0}개</p>
                             </div>
                         </div>

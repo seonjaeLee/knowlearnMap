@@ -182,17 +182,6 @@ function AdminAuditLog() {
                 <AdminPageHeader
                     icon={History}
                     title="Audit Log"
-                    actions={(
-                        <KlIconButton
-                            tooltip="새로고침"
-                            ariaLabel="Audit Log 새로고침"
-                            onClick={fetchLogs}
-                            buttonClassName="kl-btn gray-outline md icon-only"
-                            stopPropagation={false}
-                        >
-                            <RotateCcw size={16} aria-hidden />
-                        </KlIconButton>
-                    )}
                 />
             </div>
 
@@ -269,6 +258,15 @@ function AdminAuditLog() {
                             >
                                 초기화
                             </button>
+                            <KlIconButton
+                                tooltip="새로고침"
+                                ariaLabel="Audit Log 새로고침"
+                                onClick={fetchLogs}
+                                buttonClassName="kl-btn gray-outline md icon-only"
+                                stopPropagation={false}
+                            >
+                                <RotateCcw size={16} aria-hidden />
+                            </KlIconButton>
                         </div>
                     </div>
 

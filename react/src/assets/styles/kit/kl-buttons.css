@@ -437,6 +437,7 @@
     background: var(--color-bg-hover);
 }
 
+/* 성공 색상 변형 — 반드시 md 사이즈 클래스와 함께 사용: kl-btn kl-btn--outline-success md */
 .kl-btn--outline-success,
 .admin-btn-outline-success {
     border-color: color-mix(in srgb, var(--color-icon-success) 40%, var(--color-border));
@@ -776,14 +777,14 @@
     background: color-mix(in srgb, var(--color-icon-danger) 10%, var(--color-bg-secondary));
 }
 
-/* variant 없이 md만 — gray-outline 과 동일 */
-.kl-btn.md:not(.primary-full):not(.primary-outline):not(.gray-fill):not(.danger-full):not(.danger-outline):not(.gray-outline) {
+/* variant 없이 md만 — gray-outline 과 동일 (kl-btn--* 더블대시 변형은 제외) */
+.kl-btn.md:not(.primary-full):not(.primary-outline):not(.gray-fill):not(.danger-full):not(.danger-outline):not(.gray-outline):not(.kl-btn--outline-success):not(.kl-btn--outline-primary):not(.kl-btn--primary):not(.kl-btn--secondary):not(.kl-btn--danger) {
     border: 1px solid var(--color-border);
     background: var(--color-bg-secondary);
     color: var(--color-text-primary);
 }
 
-.kl-btn.md:not(.primary-full):not(.primary-outline):not(.gray-fill):not(.danger-full):not(.danger-outline):not(.gray-outline):hover:not(:disabled) {
+.kl-btn.md:not(.primary-full):not(.primary-outline):not(.gray-fill):not(.danger-full):not(.danger-outline):not(.gray-outline):not(.kl-btn--outline-success):not(.kl-btn--outline-primary):not(.kl-btn--primary):not(.kl-btn--secondary):not(.kl-btn--danger):hover:not(:disabled) {
     background: var(--color-bg-hover);
     border-color: var(--color-border-hover);
 }

@@ -494,23 +494,6 @@ function DomainManagement() {
             <div className="kl-main-sticky-head">
             <AdminPageHeader
                 title="도메인 관리"
-                actions={(
-                    <>
-                        <KlIconButton
-                            tooltip="새로고침"
-                            ariaLabel="도메인 목록 새로고침"
-                            onClick={fetchDomains}
-                            buttonClassName="kl-btn gray-outline md icon-only"
-                            stopPropagation={false}
-                        >
-                            <RotateCcw size={16} aria-hidden />
-                        </KlIconButton>
-                        <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
-                            <Plus size={14} aria-hidden />
-                            새 도메인
-                        </button>
-                    </>
-                )}
             />
 
             
@@ -525,16 +508,29 @@ function DomainManagement() {
                         </div>
                         <div className="toolbar-right">
                             <div className="search-area">
-                    <Search size={16} className="search-area-icon" aria-hidden />
-                    <input
-                    type="text"
-                    className="search-area-input"
-                    placeholder="도메인 검색..."
-                    value={domainSearch}
-                    onChange={(e) => setDomainSearch(e.target.value)}
-                    aria-label="도메인 검색"
+                                <Search size={16} className="search-area-icon" aria-hidden />
+                                <input
+                                    type="text"
+                                    className="search-area-input"
+                                    placeholder="도메인 검색..."
+                                    value={domainSearch}
+                                    onChange={(e) => setDomainSearch(e.target.value)}
+                                    aria-label="도메인 검색"
                                 />
                             </div>
+                            <KlIconButton
+                                tooltip="새로고침"
+                                ariaLabel="도메인 목록 새로고침"
+                                onClick={fetchDomains}
+                                buttonClassName="kl-btn gray-outline md icon-only"
+                                stopPropagation={false}
+                            >
+                                <RotateCcw size={16} aria-hidden />
+                            </KlIconButton>
+                            <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                                <Plus size={14} aria-hidden />
+                                새 도메인
+                            </button>
                         </div>
                     </div>
 

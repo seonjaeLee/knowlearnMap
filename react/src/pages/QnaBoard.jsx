@@ -245,23 +245,6 @@ function QnaBoard() {
         <PageHeader
           title="1:1 문의"
           breadcrumbs={['고객센터', '1:1 문의']}
-          actions={(
-            <>
-              <KlIconButton
-                tooltip="새로고침"
-                ariaLabel="1:1 문의 목록 새로고침"
-                onClick={fetchQuestions}
-                buttonClassName="kl-btn gray-outline md icon-only"
-                stopPropagation={false}
-              >
-                <RotateCcw size={16} aria-hidden />
-              </KlIconButton>
-              <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
-                <Plus size={14} aria-hidden />
-                1:1 문의 등록
-              </button>
-            </>
-          )}
         />
 
         
@@ -303,6 +286,19 @@ function QnaBoard() {
                     <option value="ANSWERED">답변완료</option>
                     </select>
                     </div>
+                    <KlIconButton
+                      tooltip="새로고침"
+                      ariaLabel="1:1 문의 목록 새로고침"
+                      onClick={fetchQuestions}
+                      buttonClassName="kl-btn gray-outline md icon-only"
+                      stopPropagation={false}
+                    >
+                      <RotateCcw size={16} aria-hidden />
+                    </KlIconButton>
+                    <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                      <Plus size={14} aria-hidden />
+                      1:1 문의 등록
+                    </button>
                     </div>
                     </div>
 

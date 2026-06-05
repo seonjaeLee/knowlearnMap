@@ -245,23 +245,6 @@ const PromptListContent = () => {
           title="프롬프트 관리"
           count={prompts.length}
           subtitle="시스템 프롬프트의 카테고리·용도·버전·보안 등급을 관리합니다."
-          actions={(
-            <>
-              <KlIconButton
-                tooltip="새로고침"
-                ariaLabel="프롬프트 목록 새로고침"
-                onClick={() => refetch()}
-                buttonClassName="kl-btn gray-outline md icon-only"
-                stopPropagation={false}
-              >
-                <RotateCcw size={16} aria-hidden />
-              </KlIconButton>
-              <button type="button" className="kl-btn primary-full md" onClick={() => setOpenDialog(true)}>
-                <Plus size={14} aria-hidden />
-                생성
-              </button>
-            </>
-          )}
         />
       </div>
 
@@ -316,6 +299,19 @@ const PromptListContent = () => {
               <option value="false">비활성</option>
               <option value="all">전체</option>
             </select>
+            <KlIconButton
+              tooltip="새로고침"
+              ariaLabel="프롬프트 목록 새로고침"
+              onClick={() => refetch()}
+              buttonClassName="kl-btn gray-outline md icon-only"
+              stopPropagation={false}
+            >
+              <RotateCcw size={16} aria-hidden />
+            </KlIconButton>
+            <button type="button" className="kl-btn primary-full md" onClick={() => setOpenDialog(true)}>
+              <Plus size={14} aria-hidden />
+              생성
+            </button>
           </div>
         </div>
 

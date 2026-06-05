@@ -309,17 +309,6 @@ function AdminUpgradeRequests() {
             <div className="kl-main-sticky-head">
                 <AdminPageHeader
                     title="승인 관리"
-                    actions={(
-                        <KlIconButton
-                            tooltip="새로고침"
-                            ariaLabel="승인 요청 목록 새로고침"
-                            onClick={fetchRequests}
-                            buttonClassName="kl-btn gray-outline md icon-only"
-                            stopPropagation={false}
-                        >
-                            <RotateCcw size={16} aria-hidden />
-                        </KlIconButton>
-                    )}
                 />
             </div>
 
@@ -329,6 +318,17 @@ function AdminUpgradeRequests() {
                     <span className="kl-table-toolbar-summary">
                         총 <strong>{requests.length}</strong>건
                     </span>
+                </div>
+                <div className="toolbar-right">
+                    <KlIconButton
+                        tooltip="새로고침"
+                        ariaLabel="승인 요청 목록 새로고침"
+                        onClick={fetchRequests}
+                        buttonClassName="kl-btn gray-outline md icon-only"
+                        stopPropagation={false}
+                    >
+                        <RotateCcw size={16} aria-hidden />
+                    </KlIconButton>
                 </div>
                 </div>
 

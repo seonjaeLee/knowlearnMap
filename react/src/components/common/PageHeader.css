@@ -133,6 +133,7 @@
   gap: var(--spacing-sm);
   flex-shrink: 0;
   min-height: var(--kl-header-action-size);
+  margin:3px 42px 0 0;
 }
 
 .kl-header-actions {

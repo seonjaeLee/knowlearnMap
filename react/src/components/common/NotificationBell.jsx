@@ -5,7 +5,7 @@ import { noticeApi } from '../../services/api';
 import KlTooltip from './KlTooltip';
 import './NotificationBell.css';
 
-function NotificationBell() {
+function NotificationBell({ tooltipPlacement = 'bottom', showLabel = false }) {
     const [unreadCount, setUnreadCount] = useState(0);
     const [unreadNotices, setUnreadNotices] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -95,34 +95,55 @@ function NotificationBell() {
 
     return (
         <div className="notification-bell-container" ref={dropdownRef}>
-            <KlTooltip
-                title="공지 알림"
-                placement="bottom"
-                enterDelay={0}
-                leaveDelay={0}
-                open={showTooltip}
-                triggerClassName="kl-icon-btn-tooltip-trigger"
-            >
+            {showLabel ? (
+                /* 확장 LNB: 아이콘+텍스트 전체 행이 클릭 영역 */
                 <button
                     type="button"
-                    className="notification-bell-btn"
-                    onMouseEnter={() => {
-                        if (!isDropdownOpen) setHovered(true);
-                    }}
+                    className="notification-bell-btn notification-bell-btn--labeled"
+                    onMouseEnter={() => { if (!isDropdownOpen) setHovered(true); }}
                     onMouseLeave={() => setHovered(false)}
                     onClick={handleBellClick}
                     aria-label="공지 알림"
                     aria-haspopup="true"
                     aria-expanded={isDropdownOpen}
                 >
-                    <Bell size={20} aria-hidden />
+                    <Bell size={14} aria-hidden />
                     {unreadCount > 0 && (
                         <span className="notification-badge">
                             {unreadCount > 99 ? '99+' : unreadCount}
                         </span>
                     )}
+                    <span className="notification-bell-label">공지 알림</span>
                 </button>
-            </KlTooltip>
+            ) : (
+                /* 접힘 LNB / 기타: 아이콘 전용, tooltip 표시 */
+                <KlTooltip
+                    title="공지 알림"
+                    placement={tooltipPlacement}
+                    enterDelay={0}
+                    leaveDelay={0}
+                    open={showTooltip}
+                    triggerClassName="lnb-tooltip-trigger"
+                >
+                    <button
+                        type="button"
+                        className="notification-bell-btn"
+                        onMouseEnter={() => { if (!isDropdownOpen) setHovered(true); }}
+                        onMouseLeave={() => setHovered(false)}
+                        onClick={handleBellClick}
+                        aria-label="공지 알림"
+                        aria-haspopup="true"
+                        aria-expanded={isDropdownOpen}
+                    >
+                        <Bell size={14} aria-hidden />
+                        {unreadCount > 0 && (
+                            <span className="notification-badge">
+                                {unreadCount > 99 ? '99+' : unreadCount}
+                            </span>
+                        )}
+                    </button>
+                </KlTooltip>
+            )}
 
             {isDropdownOpen && (
                 <div className="notification-dropdown">
