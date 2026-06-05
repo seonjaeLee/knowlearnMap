@@ -37,7 +37,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 48px;
+  height: 64px;
   margin: -14px -10px 4px;
   padding: 0 14px;
   border-bottom: 1px solid #334155;
@@ -46,19 +46,44 @@
 .lnb-logo-link {
   display: inline-flex;
   align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
   text-decoration: none;
 }
 
-.lnb-logo-img {
-  height: 26px;
-  object-fit: contain;
+.lnb-brand-mark {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  color: #5eb8ff;
 }
 
-.lnb-logo-collapsed {
-  font-size: 13px;
+.lnb-brand-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  min-width: 0;
+  font-family: var(--font-family);
+  font-size: 15px;
   font-weight: 800;
-  color: #e2e8f0;
-  letter-spacing: 0.02em;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lnb-brand-wordmark__knowlearn {
+  color: #f1f5f9;
+}
+
+.lnb-brand-wordmark__map {
+  color: #5eb8ff;
+}
+
+.lnb-sidebar.collapsed .lnb-logo-link {
+  justify-content: center;
+  gap: 0;
 }
 
 .lnb-nav {

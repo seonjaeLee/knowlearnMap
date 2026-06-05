@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Outlet, NavLink, useNavigate, Link, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   LogOut,
@@ -26,6 +26,7 @@ import NotificationBell from './NotificationBell';
 import NoticePopupModal from '../NoticePopupModal';
 import { noticeApi } from '../../services/api';
 import KlTooltip from './KlTooltip';
+import LnbBrandLogo from './LnbBrandLogo';
 import './MainLayout.css';
 
 /** LNB 접힘 시 아이콘만 보일 때 — 브라우저 title(~1s) 대신 즉시 표시 */
@@ -119,13 +120,7 @@ function MainLayout() {
       <aside className={`lnb-sidebar ${isLnbCollapsed ? 'collapsed' : ''}`}>
         {/* 로고 */}
         <div className="lnb-logo">
-          <Link to="/workspaces" className="lnb-logo-link">
-            {isLnbCollapsed ? (
-              <span className="lnb-logo-collapsed">KL</span>
-            ) : (
-              <img src="/knowlearn_logo_w.png" alt="KNOWLEARN MAP" className="lnb-logo-img" />
-            )}
-          </Link>
+          <LnbBrandLogo collapsed={isLnbCollapsed} />
         </div>
 
         <nav className="lnb-nav" aria-label="주요 메뉴">

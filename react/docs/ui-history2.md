@@ -694,3 +694,17 @@
 - 위 목록 jsx/css · `kl-subtabs.css` · `kl-buttons.css` · `PageHeader.css` · `DomainSelection.css`
 
 ---
+
+### 7) LNB 브랜드 로고 — 커스텀 SVG 심볼 + knowlearnMap 워드마크
+
+- **목적:** LNB 상단 로고를 PNG(`knowlearn_logo_w.png`)·접힘 `KL` 텍스트 대신 **브랜드 심볼 + 워드마크**로 통일. 펼침/접힘 상태별 표시 분리.
+- **심볼:** `LnbBrandLogo.jsx` 인라인 SVG(라이브러리 아이콘 아님) — 라운드 프레임 · 좌측 지식 그래프 노드 3개 · 우측 접힌 맵 형태 · 색 `#5eb8ff`(기존 로고 스카이 블루 톤)
+- **워드마크:** 펼침 시 `knowlearn`(밝은 회색) + `Map`(스카이 블루) · 접힘 시 심볼만
+- **비율 보정:** 로고 영역 높이 48px → **64px** · 심볼 28px → **24px** · 아이콘·텍스트 gap 10px — 아이콘이 텍스트 대비 과대·영역 협소해 보이던 문제 완화
+- **연결:** `MainLayout.jsx` — `LnbBrandLogo collapsed={isLnbCollapsed}` · `/workspaces` 링크 유지
+- **범위:** LNB만 변경. 로그인 등 다른 화면 PNG 로고는 유지
+
+#### 파일
+- `LnbBrandLogo.jsx`(신규), `MainLayout.jsx`, `MainLayout.css`
+
+---
