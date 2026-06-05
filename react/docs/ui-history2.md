@@ -614,3 +614,83 @@
 - **참고:** 목록 「사용안함」 체크 저장은 `workspaceApi.updateRole` — 로컬은 백엔드·로컬 mock 미완 시 UI만 확인
 
 ---
+
+## 2026-06-25
+
+### 1) GNB 제거 · LNB 다크 테마 · 로고 이관
+
+- **목적:** 상단 GNB와 LNB 이중 chrome 제거 — 네비·계정·서비스를 **LNB 단일 컬럼**으로 통합하고 Map 브랜드에 맞는 **다크 사이드바**로 정리
+- **레이아웃:** `main-layout` — `flex-direction: column` + `gnb-header` / `layout-body` 제거 → `flex-direction: row` + `lnb-sidebar` + `content-panel` 직결
+- **로고:** `gnb-left` → `lnb-logo` (상단 고정, 하단 `border-bottom`). 접힘 시 `KL` 텍스트(`lnb-logo-collapsed`), 펼침 시 `knowlearn_logo_w.png` (`lnb-logo-img`)
+- **LNB 색:** 배경 `#1e293b` · 구분선 `#334155` · 메뉴 텍스트 `#cbd5e1` · 아이콘 `#64748b` · hover `rgba(0,0,0,0.2)` · active `#2563eb`
+- **그룹 타이틀:** 11px uppercase · `#64748b` (`lnb-group-title`)
+- **삭제 CSS:** `.gnb-header`, `.gnb-left`, `.gnb-right`, `.service-info-btn`, `.logout-btn`, `.user-info` 등 GNB 전용 블록
+
+#### 파일
+- `MainLayout.jsx`, `MainLayout.css`
+
+---
+
+### 2) LNB 하단 사용자 패널 (`lnb-footer`)
+
+- **목적:** GNB 우측에 있던 알림·이용 서비스·계정·로그아웃을 LNB **하단 고정 패널**로 이관
+- **구성(수직):** 공지 알림 → 이용 서비스(grade badge) → 로그인 계정명(표시 전용) → 로그아웃 · 상단 `border-top: #334155`
+- **이용 서비스:** `lnb-item lnb-footer-service` + `grade-tag lnb-grade-tag` — 클릭 시 `UpgradeModal`
+- **계정:** `lnb-footer-user` — `pointer-events: none` · opacity 0.72
+- **로그아웃:** `lnb-footer-logout` — hover 빨간 톤(`rgba(239,68,68,0.15)`)
+- **접힘:** `wrapLnbTooltip` + `lnb-item` 패턴과 동일 아이콘 스택 · 접기 토글(`lnb-collapse-toggle`)은 패널 최하단
+
+#### 파일
+- `MainLayout.jsx`, `MainLayout.css`
+
+---
+
+### 3) 공지 알림 — LNB footer 통합 · 정렬·호버 보정
+
+- **목적:** `NotificationBell`을 GNB에서 LNB footer로 옮기고, **이용 서비스 행과 동일한 행 높이·정렬·호버·전체 너비 클릭 영역** 확보
+- **API:** `showLabel`, `tooltipPlacement` prop 추가
+  - **펼침:** `notification-bell-btn--labeled` — 아이콘(14px) + 「공지 알림」 라벨, `.lnb-item`과 동일 padding
+  - **접힘:** `lnb-tooltip-trigger` + 아이콘 전용 버튼(14px) — `kl-icon-btn-tooltip-trigger`(`width: auto`) 제거
+- **보정 이슈:**
+  - 이중 padding(`.lnb-footer-bell-row` + 버튼) → 행 wrapper padding 0, 버튼만 padding
+  - 접힘 tooltip 래퍼 `width: auto` → `lnb-tooltip-trigger` `width: 100%`
+  - `.lnb-footer-bell-row` `align-items: stretch` + `.notification-bell-container` `width: 100%` — hover 배경 좌우 꽉 참
+  - 접힘 hover: `rgba(0,0,0,0.2)` · 아이콘 `#94a3b8` (이용 서비스와 동일)
+- **드롭다운:** footer 기준 위쪽 열림 · 접힘 시 사이드바 오른쪽(`left: calc(100% + 8px)`)
+
+#### 파일
+- `NotificationBell.jsx`, `NotificationBell.css`, `MainLayout.css`
+
+---
+
+### 4) 콘텐츠 패널 좌우 패딩 통일
+
+- **목적:** 브레이크포인트별로 달랐던 `main-content` 좌우 padding을 **24px 고정**
+- **영향:** `MainLayout.css` 미디어쿼리 전 구간 `padding: 0 24px`
+
+---
+
+### 5) 홈 노트북 카드 UI 정리
+
+- **목적:** DomainSelection 카드 톤에 맞춰 그리드·카드·목록 행 시각 정리, 제목 인라인 편집 UX 개선
+- **그리드:** `minmax(280px)` → `minmax(260px, 1fr)` (도메인 선택과 동일)
+- **카드:** 고정 높이 200px 제거 · `border-radius: md` · 노트 색상 클래스(yellow/blue 등) 제거 · hover accent 테두리
+- **아이콘:** 이모지 48px → `notebook-icon-box` 36px accent 박스
+- **제목:** `notebook-title-edit-group` — 제목+연필 묶음 클릭 · `notebook-title-edit-row` 인라인 저장
+- **목록:** source 글자 14px · `notebook-source` 공통 스타일
+
+#### 파일
+- `Home.jsx`, `Home.css`, `App.css`
+
+---
+
+### 6) 목록·관리 화면 `kl-page--fill` 및 서브탭
+
+- **목적:** GNB 제거 후 세로 공간 활용 — 테이블 목록 화면에 `kl-page--fill` opt-in 확대
+- **적용 jsx:** `Home`, `NoticeList`, `Faq`, `QnaBoard`, `DomainManagement`, `AdminWorkspaceManagement`, `AdminMemberManagement`, `AdminConfigManagement`, `AdminUpgradeRequests`, `AdminAuditLog`, `AdminActionPage`, `AdminArangoManagement`, `SysopMemberManagement`, `PromptList` 등
+- **기타:** `kl-subtabs.css` 패턴 보강 · `PageHeader.css` 노트북 라우트 1줄 보정 · `DomainSelection.css` 카드 폭 기준 정리 · `Faq.css` 목록 보조 스타일
+
+#### 파일
+- 위 목록 jsx/css · `kl-subtabs.css` · `kl-buttons.css` · `PageHeader.css` · `DomainSelection.css`
+
+---
