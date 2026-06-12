@@ -1,0 +1,28 @@
+/**
+ * Map 브랜드 주색 (고객사별 교체 지점)
+ *
+ * 다른 고객사/테넌트: 이 파일을 복사해 `kl-tokens-brand-{site}.css` 로 두고
+ * `kl-global.css` 의 brand import 한 줄만 바꾼다.
+ * semantic 색·버튼·포커스는 `--kl-brand-*` 를 참조하므로 여기만 수정하면 된다.
+ *
+ * @see tokens/kl-tokens-theme-map.css — --color-accent 등 파생
+ */
+
+:root,
+[data-theme="light"] {
+  --kl-brand-primary: #5a57e6;
+  --kl-brand-primary-hover: #4845c4;
+  --kl-brand-primary-soft: #ededfc;
+  --kl-brand-primary-on-soft: #4338ca;
+  --kl-brand-wordmark: #5a57e6;
+  --kl-brand-wordmark-symbol: #5a57e6;
+}
+
+[data-theme="dark"] {
+  --kl-brand-primary: #7b78f5;
+  --kl-brand-primary-hover: #9593f8;
+  --kl-brand-primary-soft: rgba(90, 87, 230, 0.2);
+  --kl-brand-primary-on-soft: #c4c2fc;
+  --kl-brand-wordmark: #9593f8;
+  --kl-brand-wordmark-symbol: #9593f8;
+}

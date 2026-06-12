@@ -67,7 +67,9 @@ const EditorTab = ({
             required: v.required,
             defaultValue: v.defaultValue,
             description: v.description,
-            content: v.content || ''
+            content: v.content || '',
+            editable: v.editable ?? false,
+            label: v.label || ''
           };
         });
         setVariables(varsObj);
@@ -179,6 +181,8 @@ const EditorTab = ({
         defaultValue: variables[key]?.defaultValue || '',
         description: variables[key]?.description || '',
         content: variables[key]?.content || '',
+        editable: variables[key]?.editable ?? false,
+        label: variables[key]?.label || '',
       }));
 
       await updateVersion.mutateAsync({

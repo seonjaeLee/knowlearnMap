@@ -1,4 +1,5 @@
 import axiosClient from './axiosClient';
+import { isPromptMockEnabled } from '../../config/promptMock';
 import {
   mockPromptCategories,
   mockPromptPurposes,
@@ -9,8 +10,6 @@ import {
   deleteMockPrompt,
   isMockPromptCodeDuplicated,
 } from '../../data/promptMockData';
-
-const isPromptMockEnabled = import.meta.env.VITE_ENABLE_PROMPT_MOCK === 'true';
 
 const asApiResponse = (data) => ({ success: true, data });
 

@@ -12,6 +12,7 @@ import {
   THEME_MODES,
   applyDocumentTheme,
   isAuthRoutePath,
+  isThemeModeSelectable,
   readStoredThemeMode,
   resolveThemeFromMode,
 } from '../constants/theme';
@@ -30,7 +31,7 @@ export function ThemeProvider({ children }) {
   }, [isAuthRoute, themeMode]);
 
   const setThemeMode = useCallback((mode) => {
-    if (mode !== THEME_MODES.LIGHT && mode !== THEME_MODES.DARK && mode !== THEME_MODES.SYSTEM) {
+    if (!isThemeModeSelectable(mode)) {
       return;
     }
     setThemeModeState(mode);

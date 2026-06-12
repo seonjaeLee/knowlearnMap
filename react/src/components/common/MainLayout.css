@@ -180,7 +180,7 @@
 }
 
 .lnb-item.active {
-  background-color: #2563eb;
+  background-color: var(--kl-brand-primary);
   color: #ffffff;
 }
 

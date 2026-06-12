@@ -1,6 +1,6 @@
 /**
  * 프롬프트 관리 로컬 더미 데이터.
- * `VITE_ENABLE_PROMPT_MOCK=true` 이거나 API 실패 시 사용한다.
+ * `config/promptMock.js`(dev 기본 mock) · `VITE_ENABLE_PROMPT_MOCK=true` · API 실패 시 사용.
  */
 export const mockPromptCategories = ['SYSTEM', 'RAG', 'ANALYSIS', 'ETL', 'CHAT'];
 
@@ -31,6 +31,58 @@ const initialPromptRows = [
     versionCount: 3,
     isActive: true,
     updatedAt: new Date(now - 1000 * 60 * 60 * 3).toISOString(),
+  },
+  {
+    id: 6,
+    code: 'DEFAULT_CHUNK_FAST',
+    name: '고속 청킹',
+    description: '대용량 문서를 빠르게 분할할 때 사용하는 경량 청킹 프롬프트',
+    category: 'RAG',
+    purpose: 'CHUNK',
+    securityLevel: 'PUBLIC',
+    activeVersion: 'v2',
+    versionCount: 2,
+    isActive: true,
+    updatedAt: new Date(now - 1000 * 60 * 60 * 5).toISOString(),
+  },
+  {
+    id: 7,
+    code: 'DEFAULT_CHUNK_SEMANTIC',
+    name: '시맨틱 청킹',
+    description: '문단·제목 구조를 반영해 의미 단위로 청크 경계를 잡는 프롬프트',
+    category: 'RAG',
+    purpose: 'CHUNK',
+    securityLevel: 'INTERNAL',
+    activeVersion: 'v4',
+    versionCount: 6,
+    isActive: true,
+    updatedAt: new Date(now - 1000 * 60 * 45).toISOString(),
+  },
+  {
+    id: 8,
+    code: 'DEFAULT_CHUNK_TABLE',
+    name: '표·목록 청킹',
+    description: '표·불릿 목록이 포함된 문서에서 행·블록 단위 분할 규칙을 정의합니다.',
+    category: 'ETL',
+    purpose: 'CHUNK',
+    securityLevel: 'INTERNAL',
+    activeVersion: 'v1',
+    versionCount: 1,
+    isActive: true,
+    updatedAt: new Date(now - 1000 * 60 * 60 * 12).toISOString(),
+  },
+  {
+    id: 9,
+    code: 'DEFAULT_CHUNK_LEGACY',
+    name: '레거시 청킹 (비활성)',
+    description: '구버전 청킹 규칙 — 신규 워크스페이스에는 사용하지 않음',
+    category: 'RAG',
+    purpose: 'CHUNK',
+    securityLevel: 'PUBLIC',
+    activeVersion: 'v8',
+    versionCount: 8,
+    isActive: false,
+    updatedAt: new Date(now - 1000 * 60 * 60 * 72).toISOString(),
   },
   {
     id: 2,

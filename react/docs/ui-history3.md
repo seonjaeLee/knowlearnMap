@@ -94,3 +94,59 @@
 - `react/docs/ui-history3.md`(신규), `react/docs/README.md`
 
 ---
+
+### 8) 테마 — 라이트만 선택 가능 (임시)
+
+- **목적:** 다크·시스템 UI 준비 전까지 라이트 고정
+- **플래그:** `THEME_LIGHT_ONLY = true` (`constants/theme.js`)
+- **UI:** LNB 테마 토글 — 달·모니터 비활성(준비 중 툴팁), 태양만 활성
+- **FOUC:** `index.html` 항상 `light`
+
+#### 파일
+- `react/src/constants/theme.js`, `LnbThemeToggle.jsx`, `LnbThemeToggle.css`, `index.html`
+
+---
+
+### 9) react-dev → 프롬프트 관리 개발분 이관
+
+- **범위:** `react/src/prompt` diff 3파일만 (나머지 동일)
+- **내용:** `EditorTab` 변수 `editable`·`label` 저장 · `PromptEditTabs` 탭 라벨 `표시명 (key)` · `PromptList` (당시 헤더 actions 배치 — 이후 §11에서 툴바로 재정렬)
+
+#### 파일
+- `PromptEditTabs.jsx`, `EditorTab.jsx`, `PromptList.jsx`
+
+---
+
+### 10) 프롬프트 목록·상세 — CHUNK 더미·mock·버전 mock
+
+- **목록:** `promptMockData.js` CHUNK 행 추가 · `config/promptMock.js` — dev 기본 mock
+- **상세:** `promptVersionMockData.js` + `versionService.js` mock (CHUNK 시맨틱 등 Editor·버전 패널 확인용)
+- **도메인 mock:** `domainMockData.js` CHUNK 코드 목록 동기화
+
+#### 파일
+- `promptMockData.js`, `promptMock.js`, `promptVersionMockData.js`, `versionService.js`, `promptService.js`, `domainMockData.js`
+
+---
+
+### 11) 프롬프트 관리 목록 — 공통 목록 chrome 정리
+
+- **툴바:** 새로고침·생성 → `table-toolbar` 우측 (도메인·사용자 관리와 동일) · 헤더는 제목만
+- **표:** `useBasicTableColumnResize` (`km-prompt-list-columns-v2`) · 카테고리 축소·코드·설명 확대
+- **정렬:** 등급·버전 수 좌측 · `수` → **버전 수** (전체 버전 개수; **버전** 열은 활성 배포 버전)
+
+#### 파일
+- `PromptList.jsx`, `PromptList.css`
+
+---
+
+### 12) 브랜드 주색 `#5a57e6` · 고객사별 교체 구조
+
+- **SSOT:** `tokens/kl-tokens-brand-map.css` — `--kl-brand-primary` 등
+- **파생:** `kl-tokens-theme-map.css`의 `--color-accent*` · 어드민 `--admin-color-primary*` · LNB 활성·테마 토글·로고 워드마크
+- **MUI:** `brandTheme.js` + `MuiThemeBridge` — document CSS 변수 읽기
+- **가이드:** `kl-ui-guide.md` Part 2 §2.5 브랜드 주색 일괄 변경
+
+#### 파일
+- `kl-tokens-brand-map.css`(신규), `kl-global.css`, `kl-tokens-theme-map.css`, `admin-common.css`, `KlBrandLogo.css`, `MainLayout.css`, `LnbThemeToggle.css`, `MuiThemeBridge.jsx`, `brandTheme.js`, `kl-ui-guide.md`
+
+---

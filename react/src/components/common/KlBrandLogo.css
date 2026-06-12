@@ -12,7 +12,7 @@
   width: 24px;
   height: 24px;
   flex: 0 0 auto;
-  color: #5eb8ff;
+  color: var(--kl-brand-wordmark-symbol);
 }
 
 .kl-brand-wordmark {
@@ -34,7 +34,7 @@
 }
 
 .kl-brand-wordmark__map {
-  color: #5eb8ff;
+  color: var(--kl-brand-wordmark);
 }
 
 /* 로그인 카드 — 심볼 위 · 워드마크 아래 세로 정렬 */

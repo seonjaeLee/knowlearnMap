@@ -13,22 +13,9 @@ import KlIconButton from '../../../components/common/KlIconButton';
 import BasicTable from '../../../components/common/BasicTable';
 import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
 import { formatTableCellText, isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
+import { useBasicTableColumnResize } from '../../../hooks/useBasicTableColumnResize';
 import '../../../pages/admin/admin-common.css';
 import './PromptList.css';
-
-const PROMPT_TABLE_COLUMNS = [
-  { id: 'no', label: 'No', width: 48, align: 'center', ellipsis: false },
-  { id: 'category', label: '카테고리', width: 100, align: 'left' },
-  { id: 'purpose', label: '용도', width: 100, align: 'left' },
-  { id: 'code', label: '코드', width: 120, align: 'left' },
-  { id: 'name', label: '이름', width: 140, align: 'left' },
-  { id: 'description', label: '설명', width: 180, align: 'left' },
-  { id: 'securityLevel', label: '등급', width: 72, align: 'center', ellipsis: false },
-  { id: 'activeVersion', label: '버전', width: 64, align: 'center', ellipsis: false },
-  { id: 'versionCount', label: '수', width: 48, align: 'center', ellipsis: false },
-  { id: 'updatedAt', label: '수정일', width: 100, align: 'left' },
-  { id: 'actions', label: '관리', width: 92, align: 'center', ellipsis: false },
-];
 
 const PromptListContent = () => {
   const navigate = useNavigate();
@@ -61,6 +48,36 @@ const PromptListContent = () => {
   const { data, isLoading, refetch } = usePrompts(apiFilters);
   const deletePrompt = useDeletePrompt();
   const updatePrompt = useUpdatePrompt();
+
+  const promptTableColumnDefinitions = useMemo(
+    () => [
+      { id: 'no', label: 'No', defaultWidthPx: 48, minWidthPx: 44, align: 'center', ellipsis: false },
+      { id: 'category', label: '카테고리', defaultWidthPx: 80, minWidthPx: 72, align: 'left', ellipsis: false },
+      { id: 'purpose', label: '용도', defaultWidthPx: 108, minWidthPx: 88, align: 'left', ellipsis: false },
+      { id: 'code', label: '코드', defaultWidthPx: 200, minWidthPx: 140, align: 'left' },
+      { id: 'name', label: '이름', defaultWidthPx: 140, minWidthPx: 112, align: 'left' },
+      { id: 'description', label: '설명', defaultWidthPx: 300, minWidthPx: 180, align: 'left' },
+      { id: 'securityLevel', label: '등급', defaultWidthPx: 80, minWidthPx: 72, align: 'left', ellipsis: false },
+      { id: 'activeVersion', label: '버전', defaultWidthPx: 64, minWidthPx: 56, align: 'left', ellipsis: false },
+      { id: 'versionCount', label: '버전 수', defaultWidthPx: 72, minWidthPx: 64, align: 'left', ellipsis: false },
+      { id: 'updatedAt', label: '수정일', defaultWidthPx: 108, minWidthPx: 96, align: 'left' },
+      {
+        id: 'actions',
+        label: '관리',
+        defaultWidthPx: 92,
+        minWidthPx: 92,
+        align: 'center',
+        ellipsis: false,
+      },
+    ],
+    [],
+  );
+
+  const { columns: promptTableColumns, startResize: promptColumnStartResize } = useBasicTableColumnResize({
+    definitions: promptTableColumnDefinitions,
+    storageKey: 'km-prompt-list-columns-v2',
+    enabled: true,
+  });
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -174,7 +191,7 @@ const PromptListContent = () => {
           <TableCellBlank className="prompt-list-muted" />
         );
       case 'code':
-        return prompt.code;
+        return <span className="prompt-list-code-cell">{prompt.code}</span>;
       case 'name':
         return <span className="prompt-list-name-cell">{prompt.name}</span>;
       case 'description':
@@ -198,7 +215,7 @@ const PromptListContent = () => {
           </span>
         );
       case 'securityLevel':
-        return <span className={level.badge}>{level.label}</span>;
+        return <span className={`prompt-list-grade-badge ${level.badge}`}>{level.label}</span>;
       case 'activeVersion': {
         const activeVersion = prompt.activeVersion;
         return (
@@ -243,8 +260,6 @@ const PromptListContent = () => {
         <AdminPageHeader
           icon={FileText}
           title="프롬프트 관리"
-          count={prompts.length}
-          subtitle="시스템 프롬프트의 카테고리·용도·버전·보안 등급을 관리합니다."
         />
       </div>
 
@@ -324,9 +339,10 @@ const PromptListContent = () => {
           <div className="basic-table-shell">
             <BasicTable
               className="prompt-list-basic-table"
-              columns={PROMPT_TABLE_COLUMNS}
+              columns={promptTableColumns}
               data={prompts}
               renderCell={renderPromptCell}
+              onColumnResizeMouseDown={promptColumnStartResize}
               onRowClick={handleRowClick}
               rowAriaLabel={(row) => `${row.name || row.code} 상세`}
               emptyState={{ variant: hasActiveFilters ? 'search' : 'default' }}

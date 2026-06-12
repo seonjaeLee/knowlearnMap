@@ -46,7 +46,8 @@
 |------|------------|-------------------|
 | UI 키트 | `styles/` 에서 정의·수정 | Map과 동일 파일 공유 (vendor/패키지) |
 | 구조 토큰 | `kl-tokens-core.css` | 동일 |
-| 브랜드 색 | `kl-tokens-theme-map.css` | `kl-tokens-theme-*.css` 또는 `exp-style.css` 등 **한 파일** |
+| 브랜드 주색 | **`kl-tokens-brand-map.css`** (한 파일만 교체) | `kl-tokens-brand-{site}.css` 등 **brand 파일** |
+| semantic 색·그림자 | `kl-tokens-theme-map.css` | `kl-tokens-theme-*.css` (brand 참조 유지) |
 | 전역 진입 | **`styles/global.css`** | 동일 키트 + 자기 theme/overlay만 추가 |
 | `index.css` | 토큰·kl 본문 **금지** | 동일 |
 
@@ -75,7 +76,8 @@ import 순서 권장: variables → reset-common → layout → forms → button
 | 순서 | 파일 | 역할 |
 |------|------|------|
 | 1 | `kl-tokens-core.css` | spacing, radius, typography, transition, 컨트롤 치수 |
-| 1 | `kl-tokens-theme-map.css` | Map 브랜드 semantic 색·그림자 |
+| 1 | **`kl-tokens-brand-map.css`** | **브랜드 주색 SSOT** (`--kl-brand-primary` 등) — 고객사별 교체 지점 |
+| 1 | `kl-tokens-theme-map.css` | semantic 색·그림자 (`--color-accent` → brand 참조) |
 | 1 | `kl-variables.css` | `--kl-control-*` |
 | 2 | `kl-reset-common.css` | 리셋·`body`·말줄임 |
 | 3 | `kl-layout-page.css` | → `KlPage.css`, `TableArea.css` |
@@ -134,7 +136,7 @@ import 순서 권장: variables → reset-common → layout → forms → button
 ## Part 2 · Variables · 토큰
 
 프로젝트에서 **색·간격·비활성 상태** 등을 맞추기 위한 규칙입니다.  
-실제 값의 **단일 소스**는 `src/assets/styles/kl-tokens-core.css` · `kl-tokens-theme-map.css` · `kl-variables.css` 입니다. 이 문서는 **이름 규칙·언제 쓸지·예시**만 정리합니다.
+실제 값의 **단일 소스**는 `kl-tokens-core.css` · **`kl-tokens-brand-map.css`** · `kl-tokens-theme-map.css` · `kl-variables.css` 입니다. 이 문서는 **이름 규칙·언제 쓸지·예시**만 정리합니다.
 
 ---
 
@@ -164,12 +166,64 @@ import 순서 권장: variables → reset-common → layout → forms → button
 | `--font-*` | 글꼴·크기·굵기 | `--font-size-xs`, `--font-weight-medium` |
 | `--shadow-*` | 그림자 | `--shadow-small` |
 | `--transition-*` | 전환 | `--transition-fast` |
+| `--kl-brand-*` | **브랜드 주색** (버튼·링크·LNB 활성·로고 등) | `--kl-brand-primary`, `--kl-brand-wordmark` |
 
 새 변수 추가 시:
 
 1. **의미**가 겹치면 기존 이름 재사용, 아니면 위 패턴으로 이름을 짓는다.  
 2. 해당 토큰 파일(`kl-tokens-core.css` / `kl-tokens-theme-map.css`)에 주석 한 줄(한국어 가능).  
 3. 이 파일 표에 한 줄 추가(선택, 큰 변경만).
+
+---
+
+## 2.5 브랜드 주색 일괄 변경 (고객사·테넌트)
+
+**주색(CTA·accent)을 한 번에 바꿀 때**는 `#hex`를 페이지 CSS에 넣지 않고, **brand 토큰 파일만** 수정한다.
+
+### 단일 소스 (Map)
+
+| 파일 | 역할 |
+|------|------|
+| `src/assets/styles/tokens/kl-tokens-brand-map.css` | **여기만 수정** — `--kl-brand-primary` 등 |
+| `src/assets/styles/tokens/kl-tokens-theme-map.css` | `--color-accent` 등이 `--kl-brand-*` 참조 (직접 hex 금지) |
+| `src/constants/brandTheme.js` | MUI `primary` — 런타임에 CSS 변수 읽기 (파일 내 fallback만 동기 유지) |
+
+### Map 기본 변수 (라이트)
+
+| 변수 | 용도 | 예시 (현행) |
+|------|------|-------------|
+| `--kl-brand-primary` | 주 버튼·링크·포커스·LNB 활성 | `#5a57e6` |
+| `--kl-brand-primary-hover` | hover·눌림 | `#4845c4` |
+| `--kl-brand-primary-soft` | 선택 행·배지 배경 톤 | `#ededfc` |
+| `--kl-brand-primary-on-soft` | soft 배경 위 글자(어드민 배지 등) | `#4338ca` |
+| `--kl-brand-wordmark` | 로고 `Map` 텍스트 | primary와 동일 또는 별도 지정 |
+| `--kl-brand-wordmark-symbol` | 로고 심볼 SVG | primary와 동일 또는 별도 지정 |
+
+다크 모드 값은 동일 파일의 `[data-theme="dark"]` 블록에서 **밝은 톤**으로 정의한다.
+
+### 컴포넌트에서 쓸 이름
+
+- **신규·수정 CSS:** `var(--color-accent)`, `var(--color-accent-hover)`, `var(--color-accent-light)` 우선.
+- **어드민 페이지** (`admin-common.css` import): `var(--admin-color-primary)` — 내부적으로 brand 참조.
+- **로고:** `var(--kl-brand-wordmark)`, `var(--kl-brand-wordmark-symbol)` (`KlBrandLogo.css`).
+
+### 다른 고객사(사이트)로 바꿀 때
+
+1. `kl-tokens-brand-map.css`를 복사 → 예: `kl-tokens-brand-acme.css`
+2. `--kl-brand-primary` · hover · soft · wordmark 만 고객 팔레트에 맞게 수정
+3. `kl-global.css` import 한 줄 변경:
+
+```css
+@import './tokens/kl-tokens-brand-acme.css';
+/* @import './tokens/kl-tokens-brand-map.css'; */
+```
+
+4. `kl-tokens-theme-map.css`는 **수정하지 않는다** (semantic이 brand를 따라감).
+5. MUI는 `MuiThemeBridge`가 document 토큰을 읽으므로 **별도 hex 수정 불필요** (새로고침 후 반영).
+
+### 레거시 `#1a73e8` 등
+
+일부 모달·페이지 CSS에 예전 파란 hex가 남아 있을 수 있다. 손볼 때 `var(--color-accent)`로 치환한다. **일괄 치환은 brand 파일 변경과 별도** 작업이다.
 
 ---
 

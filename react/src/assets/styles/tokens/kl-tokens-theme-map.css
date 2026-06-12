@@ -19,10 +19,10 @@
   --color-text-muted: #5f6368;
   --color-grey6: #666666;
 
-  --color-accent: #1a73e8;
-  --color-accent-hover: #1557b0;
-  --color-accent-light: #e8f0fe;
-  --color-accent-muted: rgba(37, 99, 235, 0.08);
+  --color-accent: var(--kl-brand-primary);
+  --color-accent-hover: var(--kl-brand-primary-hover);
+  --color-accent-light: var(--kl-brand-primary-soft);
+  --color-accent-muted: color-mix(in srgb, var(--kl-brand-primary) 8%, transparent);
 
   --color-icon-danger: #dc2626;
   --color-icon-danger-emphasis: #b91c1c;
@@ -60,7 +60,7 @@
   /* 오로라 mesh 배경 (본문·로그인) — 카드/표는 --color-bg-secondary solid 유지 */
   --kl-aurora-base: #f3f5fb;
   --kl-aurora-blob-a: rgba(196, 181, 253, 0.55);
-  --kl-aurora-blob-b: rgba(94, 184, 255, 0.48);
+  --kl-aurora-blob-b: color-mix(in srgb, var(--kl-brand-primary) 38%, transparent);
   --kl-aurora-blob-c: rgba(165, 216, 255, 0.42);
   --kl-aurora-blob-d: rgba(224, 195, 252, 0.4);
   --kl-aurora-motion-blob: rgba(129, 180, 255, 0.35);
@@ -79,10 +79,10 @@
   --color-text-muted: #94a3b8;
   --color-grey6: #94a3b8;
 
-  --color-accent: #60a5fa;
-  --color-accent-hover: #93c5fd;
-  --color-accent-light: rgba(96, 165, 250, 0.15);
-  --color-accent-muted: rgba(96, 165, 250, 0.12);
+  --color-accent: var(--kl-brand-primary);
+  --color-accent-hover: var(--kl-brand-primary-hover);
+  --color-accent-light: var(--kl-brand-primary-soft);
+  --color-accent-muted: color-mix(in srgb, var(--kl-brand-primary) 12%, transparent);
 
   --color-icon-danger: #f87171;
   --color-icon-danger-emphasis: #ef4444;

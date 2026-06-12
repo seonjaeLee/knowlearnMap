@@ -100,7 +100,7 @@ const PromptEditTabs = memo(({
             {extractedVariables.map((varKey, index) => (
               <Tab
                 key={varKey}
-                label={varKey}
+                label={variables[varKey]?.label ? `${variables[varKey].label} (${varKey})` : varKey}
                 value={index + 1}
                 disabled={disabled}
                 sx={{
@@ -207,7 +207,10 @@ const PromptEditTabs = memo(({
       {/* 변수 탭들 - 각 변수별로 textarea */}
       {extractedVariables.map((varKey, index) => (
         activeTab === index + 1 && (
-          <Box key={varKey} sx={{
+          <React.Fragment key={varKey}>
+          {/* [임시/유보 2026-06-12] '고객(도메인) 편집 가능 슬롯 / 표시명(label)' 슬롯 설정 UI는
+              예전 변수 편집 방식으로 되돌리기 위해 숨김. 슬롯 기능 안정화 후 복구. */}
+          <Box sx={{
             mt: 2,
             mb: 0,
             border: showToolbar ? '1px solid' : 'none',
@@ -248,6 +251,7 @@ const PromptEditTabs = memo(({
               }}
             />
           </Box>
+          </React.Fragment>
         )
       ))}
     </Box>

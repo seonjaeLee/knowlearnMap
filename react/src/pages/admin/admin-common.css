@@ -9,10 +9,10 @@
 
 :root {
     /* === 색상 팔레트 === */
-    --admin-color-primary: #2563eb;
-    --admin-color-primary-hover: #1d4ed8;
-    --admin-color-primary-soft: #e3f2fd;
-    --admin-color-primary-on-soft: #1565c0;
+    --admin-color-primary: var(--kl-brand-primary);
+    --admin-color-primary-hover: var(--kl-brand-primary-hover);
+    --admin-color-primary-soft: var(--kl-brand-primary-soft);
+    --admin-color-primary-on-soft: var(--kl-brand-primary-on-soft);
 
     --admin-color-danger: #dc2626;
     --admin-color-danger-hover: #b91c1c;

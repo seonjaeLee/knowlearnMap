@@ -6,6 +6,7 @@
 
 /* 1. 토큰 */
 @import './tokens/kl-tokens-core.css';
+@import './tokens/kl-tokens-brand-map.css';
 @import './tokens/kl-tokens-theme-map.css';
 @import './tokens/kl-variables.css';
 

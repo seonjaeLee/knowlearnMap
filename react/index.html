@@ -11,17 +11,9 @@
     <script>
       (function () {
         try {
-          var auth = /^\\/(login|signup|verify-email|set-password|reset-password)(\\/|$)/.test(location.pathname);
-          if (auth) {
-            document.documentElement.setAttribute('data-theme', 'light');
-            document.documentElement.style.colorScheme = 'light';
-            return;
-          }
-          var m = localStorage.getItem('kl-theme-mode') || 'system';
-          var dark = m === 'dark' || (m === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          var resolved = dark ? 'dark' : 'light';
-          document.documentElement.setAttribute('data-theme', resolved);
-          document.documentElement.style.colorScheme = resolved;
+          /* THEME_LIGHT_ONLY — react/src/constants/theme.js 와 동기 */
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.style.colorScheme = 'light';
         } catch (e) {}
       })();
     </script>

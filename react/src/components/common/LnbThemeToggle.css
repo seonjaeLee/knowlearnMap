@@ -51,7 +51,21 @@
 
 .lnb-theme-toggle__btn.is-active {
   color: #f1f5f9;
-  background: rgba(37, 99, 235, 0.45);
+  background: color-mix(in srgb, var(--kl-brand-primary) 45%, transparent);
+}
+
+.lnb-theme-toggle__btn.is-disabled,
+.lnb-theme-toggle__btn:disabled {
+  color: #475569;
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.lnb-theme-toggle__btn.is-disabled:hover,
+.lnb-theme-toggle__btn:disabled:hover {
+  color: #475569;
+  background: transparent;
 }
 
 .lnb-theme-toggle--collapsed {
