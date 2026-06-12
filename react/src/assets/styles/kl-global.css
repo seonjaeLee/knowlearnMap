@@ -32,6 +32,7 @@
 @import './patterns/kl-infotxt-note.css';
 @import './patterns/kl-subtabs.css';
 @import './patterns/kl-split-panel.css';
+@import './patterns/kl-aurora-background.css';
 
 /* 6. 레거시 (이관 완료 후 제거) */
 @import './legacy/kl-legacy-modal.css';

@@ -40,7 +40,7 @@ const SetPassword = () => {
 
     if (!token) {
         return (
-            <div className="login-container">
+            <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
                 <div className="login-card">
                     <div className="error-message">Invalid Link (No Token)</div>
                 </div>
@@ -49,7 +49,7 @@ const SetPassword = () => {
     }
 
     return (
-        <div className="login-container">
+        <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
             <div className="login-card">
                 <h1>Set Password</h1>
                 {status && <div className="error-message">{status}</div>}

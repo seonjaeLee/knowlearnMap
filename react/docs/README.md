@@ -5,7 +5,8 @@
 | **[kl-ui-guide.md](./kl-ui-guide.md)** | **UI 설계·사용 가이드 전체** — 토큰, 폼, 버튼, 목록, 표, 툴팁, 이관 규칙. 구현·리뷰 시 **먼저 읽기**. |
 | **[modal-guide.md](./modal-guide.md)** | **모달 전용** — `BaseModal`, `useDialog`, `kl-modal-form`, **§9 공통 팝업 구성 체크리스트**, 마이그레이션. |
 | **인수인계 (모달 UI 이관)** | **`.cursor/rules/handoff-modal-ui-rollout.mdc`** · [`AGENTS.md`](../../AGENTS.md) — 전 메뉴·NotebookDetail 포함 BaseModal |
-| **[ui-history2.md](./ui-history2.md)** | 작업 **일기**(현행). 사용자·에이전트 협업 기록. **요청 시만** 갱신. |
+| **[ui-history3.md](./ui-history3.md)** | 작업 **일기**(현행). 사용자·에이전트 협업 기록. **요청 시만** 갱신. |
+| **[ui-history2.md](./ui-history2.md)** | 작업 일기 (2026-05-16~). |
 | **[ui-history.md](./ui-history.md)** | 작업 일기 **아카이브**. |
 
 ## 참고

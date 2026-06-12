@@ -55,7 +55,7 @@ const ResetPassword = () => {
 
     if (!token) {
         return (
-            <div className="login-container">
+            <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
                 <div className="login-card">
                     <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                         <img src="/knowlearn_logo.png" alt="KNOWLEARN MAP" style={{ height: '48px' }} />
@@ -70,7 +70,7 @@ const ResetPassword = () => {
     }
 
     return (
-        <div className="login-container">
+        <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
             <div className="login-card">
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                     <img src="/knowlearn_logo.png" alt="KNOWLEARN MAP" style={{ height: '48px' }} />

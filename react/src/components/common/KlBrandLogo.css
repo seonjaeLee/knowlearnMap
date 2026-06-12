@@ -34,7 +34,7 @@
 }
 
 .kl-brand-wordmark__map {
-  color: #11e2dc;
+  color: #5eb8ff;
 }
 
 /* 로그인 카드 — 심볼 위 · 워드마크 아래 세로 정렬 */
@@ -52,4 +52,8 @@
 .kl-brand-logo--login .kl-brand-wordmark {
   font-size: 20px;
   justify-content: center;
+}
+
+.kl-brand-logo--login .kl-brand-wordmark__knowlearn {
+  color: var(--color-text-primary);
 }

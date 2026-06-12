@@ -27,6 +27,7 @@ import NoticePopupModal from '../NoticePopupModal';
 import { noticeApi } from '../../services/api';
 import KlTooltip from './KlTooltip';
 import LnbBrandLogo from './KlBrandLogo';
+import LnbThemeToggle from './LnbThemeToggle';
 import './MainLayout.css';
 
 /** LNB 접힘 시 아이콘만 보일 때 — 브라우저 title(~1s) 대신 즉시 표시 */
@@ -325,6 +326,10 @@ function MainLayout() {
             </div>
           ))}
 
+          <div className="lnb-footer-theme-row">
+            <LnbThemeToggle collapsed={isLnbCollapsed} />
+          </div>
+
           {/* 로그아웃 */}
           {wrapLnbTooltip(isLnbCollapsed, '로그아웃', (
             <button
@@ -361,9 +366,7 @@ function MainLayout() {
       <div className="content-panel">
         <main
           className={
-            isNotebookShellRoute
-              ? 'main-content main-content--notebook'
-              : 'main-content'
+            isNotebookShellRoute ? 'main-content main-content--notebook' : 'main-content'
           }
         >
           <div className="main-content-scroll-inner">

@@ -2,11 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { CssBaseline } from '@mui/material'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
 import * as Sentry from '@sentry/react'
 import { AuthProvider } from './context/AuthContext'
 import { DialogProvider } from './context/DialogContext'
+import { ThemeProvider } from './context/ThemeContext'
+import MuiThemeBridge from './components/common/MuiThemeBridge'
 import axios from 'axios'
 import './assets/styles/kl-global.css'
 import App from './App.jsx'
@@ -43,30 +43,18 @@ const queryClient = new QueryClient({
   },
 })
 
-const theme = createTheme({
-  typography: {
-    fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif",
-  },
-  palette: {
-    primary: {
-      /* MUI 기본(#1976d2) 대신 `:root --color-accent`와 동일 — primary 버튼·네이티브 포커스 테두리 톤 통일 */
-      main: '#1a73e8',
-      dark: '#1557b0',
-    },
-  },
-})
-
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <DialogProvider>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-          </DialogProvider>
+        <ThemeProvider>
+          <MuiThemeBridge>
+            <DialogProvider>
+              <AuthProvider>
+                <App />
+              </AuthProvider>
+            </DialogProvider>
+          </MuiThemeBridge>
         </ThemeProvider>
       </QueryClientProvider>
     </BrowserRouter>

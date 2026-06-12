@@ -4,24 +4,29 @@
     align-items: center;
     flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
-    background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
-    color: white;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--color-text-primary);
 }
-/* .login-container img {
-    filter:brightness(6.8);
-  
-} */
+
+/* 키보드·작은 뷰포트에서만 세로 스크롤 허용 */
+@media (max-height: 520px) {
+    .login-container {
+        overflow-x: hidden;
+        overflow-y: auto;
+        align-items: flex-start;
+        padding: var(--spacing-md) 0;
+    }
+}
 
 .login-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
+    background: var(--color-bg-secondary);
     padding: 3rem;
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--color-border-subtle);
 }
 
 .login-logo-wrap {
@@ -44,6 +49,7 @@
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-semibold);
     letter-spacing: 2px;
+    color: var(--color-text-primary);
 }
 
 .form-group {
@@ -54,57 +60,55 @@
     display: block;
     margin-bottom: var(--spacing-sm);
     font-size: var(--font-size-base);
-    color: #a0a0b0;
+    color: var(--color-text-secondary);
 }
 
 .form-group input {
     width: 100%;
     padding: var(--spacing-sm);
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    color: white;
+    color: var(--color-text-primary);
     font-size: var(--font-size-lg);
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
 }
 
-/* 전역 kl-form-control hover·focus(흰 배경) — 다크 로그인 입력 유지 */
-.login-container .form-group input:hover:not(:disabled),
-.login-container .form-group input:focus,
-.login-container .form-group input:focus-visible {
-    background-color: rgba(0, 0, 0, 0.2) !important;
-    color: white !important;
+.login-container .form-group input:hover:not(:disabled) {
+    border-color: var(--color-border-hover);
 }
 
 .login-container .form-group input:focus,
 .login-container .form-group input:focus-visible {
-    border-color: #646cff;
+    border-color: var(--color-accent);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+    box-shadow: var(--shadow-focus-input);
 }
 
 .login-btn {
     width: 100%;
     padding: var(--spacing-md);
-    background: #646cff;
-    color: white;
+    background: var(--color-accent);
+    color: #ffffff;
     border: none;
     border-radius: var(--radius-md);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background 0.2s ease;
     margin-top: var(--spacing-md);
 }
 
 .login-btn:hover:not(:disabled) {
-    background: #535bf2;
+    background: var(--color-accent-hover);
 }
 
 .login-btn:disabled {
-    background: #666;
+    background: var(--btn-disabled-bg);
+    color: var(--btn-disabled-text);
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.85;
 }
 
 .login-footer {
@@ -118,7 +122,7 @@
 
 .login-footer a,
 .text-btn {
-    color: #a0a0b0;
+    color: var(--color-text-secondary);
     text-decoration: none;
     cursor: pointer;
     background: none;
@@ -129,19 +133,20 @@
 
 .login-footer a:hover,
 .text-btn:hover {
-    color: white;
+    color: var(--color-accent);
 }
 
 .divider {
-    color: #4a4a5a;
+    color: var(--color-border);
 }
 
 .error-message {
-    background: rgba(255, 87, 87, 0.1);
-    color: #ff5757;
+    background: color-mix(in srgb, var(--color-icon-danger) 12%, transparent);
+    color: var(--color-icon-danger-emphasis);
     padding: var(--spacing-sm);
     border-radius: var(--radius-md);
     margin-bottom: 20px;
+    border: 1px solid color-mix(in srgb, var(--color-icon-danger) 25%, transparent);
 }
 
 .error-reset-btn {
@@ -149,7 +154,7 @@
     width: 100%;
     margin-top: 10px;
     padding: var(--spacing-sm);
-    background: #646cff;
+    background: var(--color-accent);
     color: white;
     border: none;
     border-radius: var(--radius-sm);
@@ -157,7 +162,8 @@
 }
 
 .login-signup-link {
-    color: #646cff;
+    color: var(--color-accent);
+    font-weight: var(--font-weight-medium);
 }
 
 .options-group {
@@ -172,7 +178,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    color: #a0a0b0;
+    color: var(--color-text-secondary);
     font-size: var(--font-size-base);
     cursor: pointer;
 }

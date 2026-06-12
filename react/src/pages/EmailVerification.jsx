@@ -36,7 +36,7 @@ const EmailVerification = () => {
     }, [searchParams]);
 
     return (
-        <div className="login-container">
+        <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
             <div className="login-card">
                 <h1>Email Verification</h1>
                 <div className={`message ${error ? 'error-message' : 'success-message'}`}>

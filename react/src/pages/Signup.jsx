@@ -39,7 +39,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="login-container">
+        <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
             <div className="login-card">
                 <h1>SIGN UP</h1>
                 {error && <div className="error-message">{error}</div>}

@@ -5,8 +5,8 @@ alwaysApply: true
 
 # UI 히스토리 문서
 
-- **현행 기록:** `react/docs/ui-history2.md` — 사용자가 명시적으로 요청했을 때만 수정한다. (예: “히스토리에 적어줘”, “ui-history2에 남겨줘”)
-- **아카이브:** `react/docs/ui-history.md` — 분리 이전 누적분. 일반적으로 신규 항목은 **ui-history2**에 추가한다.
+- **현행 기록:** `react/docs/ui-history3.md` — 사용자가 명시적으로 요청했을 때만 수정한다. (예: “히스토리에 적어줘”, “ui-history3에 남겨줘”)
+- **이전:** `react/docs/ui-history2.md` (2026-05-16~), **아카이브:** `react/docs/ui-history.md`
 - **설계·가이드:** `react/docs/kl-ui-guide.md` — 히스토리와 **분리**. 가이드 작업 완료만으로 ui-history에 자동 기록하지 않는다.
 - UI·레이아웃·스타일 작업을 마쳤다고 해서 **에이전트가 임의로 항목을 추가하지 않는다.**
 - **remote 배포:** `ui-history*` 는 협업 일기용 — 배포·공유 범위에서 제외하는 것을 권장.
@@ -16,5 +16,5 @@ alwaysApply: true
 ## 단일 기준(충돌 시)
 
 - `react/docs/ui-history.md` 본문에 남아 있는 **「항상 기록」「ui-history-always」** 등 과거 문구는 **폐지된 안내**다. 에이전트·자동화는 **본 파일만** 따른다.
-- 항목 번호·날짜 섹션 형식 등 **작성 관례**는 `react/docs/ui-history2.md`(또는 아카이브 `ui-history.md`) 상단 블록을 본다.
+- 항목 번호·날짜 섹션 형식 등 **작성 관례**는 `react/docs/ui-history3.md`(또는 `ui-history2.md` · 아카이브 `ui-history.md`) 상단 블록을 본다.
 - 파일 안내: `react/docs/README.md`

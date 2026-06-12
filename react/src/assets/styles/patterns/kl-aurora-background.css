@@ -1,0 +1,65 @@
+/**
+ * 오로라 mesh 배경 — 라이트/다크 토큰 연동
+ * - .kl-aurora-bg: 정적 mesh (인증·로그인 화면)
+ * - .kl-aurora-bg--ambient: 로그인 등 — 초저속 drift (+ prefers-reduced-motion 시 정적)
+ */
+
+.kl-aurora-bg {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--kl-aurora-base);
+  background-image:
+    radial-gradient(ellipse 85% 70% at 8% 12%, var(--kl-aurora-blob-a), transparent 58%),
+    radial-gradient(ellipse 75% 60% at 92% 88%, var(--kl-aurora-blob-b), transparent 55%),
+    radial-gradient(ellipse 70% 55% at 5% 92%, var(--kl-aurora-blob-c), transparent 52%),
+    radial-gradient(ellipse 65% 50% at 88% 8%, var(--kl-aurora-blob-d), transparent 50%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-attachment: local;
+}
+
+/* 로그인 — ambient drift (약 120s). overflow:hidden 으로 가상 요소가 스크롤 유발하지 않음 */
+.kl-aurora-bg--ambient {
+  overflow: hidden;
+}
+
+.kl-aurora-bg--ambient::after {
+  content: '';
+  position: absolute;
+  inset: -25%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+  background:
+    radial-gradient(circle at 30% 40%, var(--kl-aurora-motion-blob), transparent 42%),
+    radial-gradient(circle at 70% 60%, var(--kl-aurora-blob-a), transparent 45%);
+  animation: kl-aurora-ambient-drift 120s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.kl-aurora-bg--ambient > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes kl-aurora-ambient-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(4%, -3%) scale(1.04);
+  }
+  66% {
+    transform: translate(-3%, 2%) scale(1.02);
+  }
+  100% {
+    transform: translate(2%, 4%) scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-aurora-bg--ambient::after {
+    animation: none;
+    opacity: 0.5;
+  }
+}
