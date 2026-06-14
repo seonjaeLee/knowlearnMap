@@ -86,6 +86,12 @@
     cursor: not-allowed;
 }
 
+.kl-toolbar-btn.is-copied {
+    color: #1aa85f;
+    background: color-mix(in srgb, #1aa85f 10%, transparent);
+    border-color: color-mix(in srgb, #1aa85f 30%, var(--color-border));
+}
+
 .kl-toolbar-btn > svg {
     flex-shrink: 0;
 }

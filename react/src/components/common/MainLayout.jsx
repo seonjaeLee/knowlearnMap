@@ -6,19 +6,20 @@ import {
   Layers,
   LayoutGrid,
   HelpCircle,
-  MessageSquareText,
+  MessageSquare,
   ChevronDown,
   ChevronsLeft,
   Bell,
-  SlidersHorizontal,
+  ListChecks,
   Sparkles,
   ShieldCheck,
   Users,
   Database,
-  Wrench,
-  Workflow,
+  Settings,
+  Waypoints,
   Bot,
-  FolderKanban,
+  Globe,
+  Boxes,
   CircleUser,
 } from 'lucide-react';
 import UpgradeModal from '../UpgradeModal';
@@ -50,7 +51,7 @@ function wrapLnbTooltip(collapsed, label, node) {
 }
 
 function MainLayout() {
-  const { user, isAdmin, isSysop, logout } = useAuth();
+  const { user, isAdmin, isSysop, isMaker, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
@@ -59,6 +60,7 @@ function MainLayout() {
   const [isLnbCollapsed, setIsLnbCollapsed] = useState(false);
   const [lnbOpenGroups, setLnbOpenGroups] = useState({
     workspace: true,
+    maker: true,
     admin: true,
     sysop: true,
     support: true,
@@ -97,13 +99,18 @@ function MainLayout() {
 
   const isAdminCenterActive = () => location.pathname === '/' || location.pathname.startsWith('/admin');
   const isSysopCenterActive = () => location.pathname.startsWith('/sysop');
+  const isMakerCenterActive = () => location.pathname.startsWith('/prompts');
   const isCustomerCenterActive = () => ['/notices', '/faq', '/qna'].includes(location.pathname);
 
   /** 노트북만 outlet 래퍼가 남은 세로 공간을 채움(:has 대신 경로로 지정해 어드민 등에서 flex:1 오적용 방지) */
   const isNotebookShellRoute = location.pathname.startsWith('/notebook/');
   /** 어드민·SYSOP 목록 — outlet이 남은 높이를 채워 표 shell 내부 스크롤 (assets/styles/kit/kl-basic-table.css) */
   const isAdminCenterOutletFill =
-    location.pathname.startsWith('/admin') || location.pathname.startsWith('/sysop');
+    location.pathname.startsWith('/admin')
+    || location.pathname.startsWith('/sysop')
+    || location.pathname.startsWith('/prompts');
+  /** 프롬프트 상세(/prompts/:code, /admin/prompts/:code) — 에디터가 뷰포트를 채워야 함 */
+  const isPromptDetailRoute = /^\/(admin\/)?prompts\/[^/]+/.test(location.pathname);
 
   const toggleLnbGroup = (groupKey) => {
     setLnbOpenGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }));
@@ -156,6 +163,30 @@ function MainLayout() {
               </div>
             </div>
 
+            {/* [임시/유보 2026-06-12] 프롬프트 관리 안정화까지만 ADMIN에도 노출. 안정화 후 isMaker 단독으로 원복. */}
+            {(isMaker || isAdmin) && (
+              <div className="lnb-group">
+                {!isLnbCollapsed && (
+                  <button type="button" className="lnb-group-toggle" onClick={() => toggleLnbGroup('maker')}>
+                    <span className="lnb-group-title">메이커센터</span>
+                    <ChevronDown size={14} className={`lnb-group-chevron ${lnbOpenGroups.maker ? 'is-open' : ''}`} />
+                  </button>
+                )}
+                <div className={`lnb-group-highlight ${isMakerCenterActive() ? 'active' : ''} ${isLnbCollapsed || lnbOpenGroups.maker ? 'is-open' : ''}`}>
+                  {wrapLnbTooltip(isLnbCollapsed, '프롬프트 관리', (
+                    <NavLink
+                      to="/prompts"
+                      className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`}
+                      aria-label="프롬프트 관리"
+                    >
+                      <Sparkles size={14} className="lnb-item-icon" />
+                      {!isLnbCollapsed && <span>프롬프트 관리</span>}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {isSysop && (
               <div className="lnb-group">
                 {!isLnbCollapsed && (
@@ -196,25 +227,19 @@ function MainLayout() {
                     ))}
                     {wrapLnbTooltip(isLnbCollapsed, '도메인 관리', (
                       <NavLink to="/admin/domains" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="도메인 관리">
-                        <FolderKanban size={14} className="lnb-item-icon" />
+                        <Globe size={14} className="lnb-item-icon" />
                         {!isLnbCollapsed && <span>도메인 관리</span>}
                       </NavLink>
                     ))}
                     {wrapLnbTooltip(isLnbCollapsed, '워크스페이스 관리', (
                       <NavLink to="/admin/workspaces" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="워크스페이스 관리">
-                        <Layers size={14} className="lnb-item-icon" />
+                        <Boxes size={14} className="lnb-item-icon" />
                         {!isLnbCollapsed && <span>워크스페이스 관리</span>}
-                      </NavLink>
-                    ))}
-                    {wrapLnbTooltip(isLnbCollapsed, '프롬프트 관리', (
-                      <NavLink to="/admin/prompts" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="프롬프트 관리">
-                        <Sparkles size={14} className="lnb-item-icon" />
-                        {!isLnbCollapsed && <span>프롬프트 관리</span>}
                       </NavLink>
                     ))}
                     {wrapLnbTooltip(isLnbCollapsed, '승인 관리', (
                       <NavLink to="/admin/upgrades" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="승인 관리">
-                        <SlidersHorizontal size={14} className="lnb-item-icon" />
+                        <ListChecks size={14} className="lnb-item-icon" />
                         {!isLnbCollapsed && <span>승인 관리</span>}
                       </NavLink>
                     ))}
@@ -232,13 +257,13 @@ function MainLayout() {
                     ))}
                     {wrapLnbTooltip(isLnbCollapsed, '시스템 설정', (
                       <NavLink to="/admin/config" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="시스템 설정">
-                        <Wrench size={14} className="lnb-item-icon" />
+                        <Settings size={14} className="lnb-item-icon" />
                         {!isLnbCollapsed && <span>시스템 설정</span>}
                       </NavLink>
                     ))}
                     {wrapLnbTooltip(isLnbCollapsed, '시멘틱', (
                       <NavLink to="/admin/semantic" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="시멘틱">
-                        <Workflow size={14} className="lnb-item-icon" />
+                        <Waypoints size={14} className="lnb-item-icon" />
                         {!isLnbCollapsed && <span>시멘틱</span>}
                       </NavLink>
                     ))}
@@ -274,7 +299,7 @@ function MainLayout() {
                   ))}
                   {wrapLnbTooltip(isLnbCollapsed, '1:1 문의', (
                     <NavLink to="/qna" className={({ isActive }) => `lnb-item ${isActive ? 'active' : ''}`} aria-label="1:1 문의">
-                      <MessageSquareText size={14} className="lnb-item-icon" />
+                      <MessageSquare size={14} className="lnb-item-icon" />
                       {!isLnbCollapsed && <span>1:1 문의</span>}
                     </NavLink>
                   ))}
@@ -365,9 +390,10 @@ function MainLayout() {
 
       <div className="content-panel">
         <main
-          className={
-            isNotebookShellRoute ? 'main-content main-content--notebook' : 'main-content'
-          }
+          className={[
+            isNotebookShellRoute ? 'main-content main-content--notebook' : 'main-content',
+            isPromptDetailRoute ? 'main-content--prompt-fill' : '',
+          ].filter(Boolean).join(' ')}
         >
           <div className="main-content-scroll-inner">
             <div

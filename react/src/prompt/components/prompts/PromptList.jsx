@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getPromptsBasePath } from '../../utils/promptRoutes';
 import { useAlert } from '../../../context/AlertContext';
 import { FileText, Plus, RotateCcw, Search } from 'lucide-react';
 import { Popover } from '@mui/material';
@@ -8,7 +9,7 @@ import { promptService } from '../../api/promptService';
 import { PROMPT_SECURITY_LEVELS } from '../../constants/securityLevels';
 import PromptFormDialog from './PromptFormDialog';
 import EditPromptDialog from './EditPromptDialog';
-import AdminPageHeader from '../../../components/admin/AdminPageHeader';
+import MakerPageHeader from '../../../components/admin/MakerPageHeader';
 import KlIconButton from '../../../components/common/KlIconButton';
 import BasicTable from '../../../components/common/BasicTable';
 import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
@@ -19,6 +20,8 @@ import './PromptList.css';
 
 const PromptListContent = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const promptsBasePath = getPromptsBasePath(location.pathname);
   const [filters, setFilters] = useState({
     search: '',
     activeFilter: 'true',
@@ -116,8 +119,8 @@ const PromptListContent = () => {
   const descOpen = Boolean(descAnchorEl);
 
   const handleRowClick = useCallback((_event, { row }) => {
-    navigate(`/prompts/${row.code}`);
-  }, [navigate]);
+    navigate(`${promptsBasePath}/${row.code}`);
+  }, [navigate, promptsBasePath]);
 
   const handleEditClick = useCallback((e, prompt) => {
     e.stopPropagation();
@@ -257,7 +260,7 @@ const PromptListContent = () => {
   return (
     <div className="kl-page kl-page--fill prompt-list-page">
       <div className="kl-main-sticky-head">
-        <AdminPageHeader
+        <MakerPageHeader
           icon={FileText}
           title="프롬프트 관리"
         />

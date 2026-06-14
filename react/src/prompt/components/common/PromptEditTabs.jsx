@@ -1,20 +1,37 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 import {
-  Box,
-  Tabs,
-  Tab,
-  TextField,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-import {
-  ContentCopy as CopyIcon,
-  ContentPaste as PasteIcon,
-  ClearAll as ClearIcon,
-  Fullscreen as FullscreenIcon,
-  FullscreenExit as FullscreenExitIcon,
-  CheckCircleOutline as CheckIcon,
-} from '@mui/icons-material';
+  AlignLeft,
+  Check,
+  CircleAlert,
+  CircleCheck,
+  Clipboard,
+  Copy,
+  Expand,
+  Maximize,
+  Minimize2,
+  ScanText,
+} from 'lucide-react';
+import KlTooltip from '../../../components/common/KlTooltip';
+import { useCopyFeedback } from '../../../hooks/useCopyFeedback';
+import './PromptEditTabs.css';
+
+const TOOLBAR_BTN = 'kl-toolbar-btn kl-toolbar-btn--icon-only';
+const ICON_SIZE = 16;
+const ICON_STROKE = 1.9;
+
+const PanelToolBtn = ({ tooltip, onClick, disabled, className = '', children }) => (
+  <KlTooltip title={tooltip} placement="top" enterDelay={0} leaveDelay={60} variant="icon">
+    <button
+      type="button"
+      className={`prompt-panel-tool-btn ${className}`.trim()}
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={tooltip}
+    >
+      {children}
+    </button>
+  </KlTooltip>
+);
 
 const PromptEditTabs = memo(({
   activeTab,
@@ -30,16 +47,23 @@ const PromptEditTabs = memo(({
   isExpanded = false,
   onToggleExpand,
   customHeight,
+  fillParent = false,
+  variant = 'default',
   children,
 }) => {
-  // 툴바 핸들러
+  const { copy, isCopied } = useCopyFeedback();
+  const isDetail = variant === 'detail';
+  const rootClass = [
+    'prompt-edit-tabs',
+    fillParent ? 'prompt-edit-tabs--fill' : '',
+    isDetail ? 'prompt-edit-tabs--detail' : 'prompt-edit-tabs--default',
+  ].filter(Boolean).join(' ');
+
   const handleCopy = () => {
-    if (activeTab === 0) {
-      navigator.clipboard.writeText(promptContent);
-    } else {
-      const varKey = extractedVariables[activeTab - 1];
-      navigator.clipboard.writeText(variables[varKey]?.content || '');
-    }
+    const text = activeTab === 0
+      ? promptContent
+      : (variables[extractedVariables[activeTab - 1]]?.content || '');
+    copy(text);
   };
 
   const handlePaste = async () => {
@@ -61,200 +85,246 @@ const PromptEditTabs = memo(({
     }
   };
 
-  return (
-    <Box id="prompt-edit-tabs-root" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Tabs와 툴바 버튼 */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'nowrap',
-          borderBottom: 1,
-          borderColor: 'divider',
-          overflow: 'hidden',
-        }}
-        id="tabs-toolbar-header"
+  const renderDetailPanelTools = () => (
+    <div className="prompt-panel__tools">
+      <PanelToolBtn
+        tooltip="변수 추출"
+        className="prompt-panel-tool-btn--extract"
+        onClick={onCheckVariables}
+        disabled={disabled || activeTab !== 0}
       >
-        {/* 탭과 변수 체크 버튼 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, flex: '1 1 auto', overflow: 'hidden' }} id="tabs-and-check-box">
-          <Tabs
-            value={activeTab}
-            onChange={(e, newValue) => onTabChange(newValue)}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{
-              minHeight: 40,
-              maxWidth: '100%',
-              '& .MuiTab-root': {
-                minHeight: 40,
-                minWidth: 'auto',
-                px: 1.5,
-                textTransform: 'none',
-                fontWeight: 500,
-                fontSize: '0.8rem',
-              }
-            }}
-          >
-            <Tab label="프롬프트 편집" disabled={disabled} />
-            {extractedVariables.map((varKey, index) => (
-              <Tab
-                key={varKey}
-                label={variables[varKey]?.label ? `${variables[varKey].label} (${varKey})` : varKey}
-                value={index + 1}
-                disabled={disabled}
-                sx={{
-                  color: !variables[varKey]?.content ? 'error.main' : undefined,
-                  '&.Mui-selected': {
-                    color: !variables[varKey]?.content ? 'error.main' : 'primary.main',
-                  }
-                }}
-              />
-            ))}
-          </Tabs>
-
-          {/* 변수 체크 버튼 (프롬프트 편집 탭에서만 표시) */}
-          {activeTab === 0 && (
-            <Tooltip title="변수 체크">
-              <IconButton
-                size="small"
-                onClick={onCheckVariables}
-                disabled={disabled}
-                sx={{ ml: 1 }}
-              >
-                <CheckIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+        <ScanText size={ICON_SIZE} strokeWidth={ICON_STROKE} />
+      </PanelToolBtn>
+      <span className="prompt-panel-tools-sep" aria-hidden />
+      <PanelToolBtn tooltip={isCopied() ? '복사됨' : '복사'} onClick={handleCopy} disabled={disabled} className={isCopied() ? 'is-copied' : ''}>
+        {isCopied() ? <Check size={ICON_SIZE} strokeWidth={ICON_STROKE} /> : <Copy size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
+      </PanelToolBtn>
+      <PanelToolBtn tooltip="붙여넣기" onClick={handlePaste} disabled={disabled}>
+        <Clipboard size={ICON_SIZE} strokeWidth={ICON_STROKE} />
+      </PanelToolBtn>
+      <PanelToolBtn tooltip="내용 지우기" onClick={handleClear} disabled={disabled}>
+        <AlignLeft size={ICON_SIZE} strokeWidth={ICON_STROKE} />
+      </PanelToolBtn>
+      {onToggleExpand && (
+        <PanelToolBtn
+          tooltip={isExpanded ? '축소' : '전체화면'}
+          onClick={onToggleExpand}
+          disabled={disabled}
+        >
+          {isExpanded ? (
+            <Minimize2 size={ICON_SIZE} strokeWidth={ICON_STROKE} />
+          ) : (
+            <Maximize size={ICON_SIZE} strokeWidth={ICON_STROKE} />
           )}
-        </Box>
-
-        {/* 툴바 버튼들 (optional) */}
-        {showToolbar && (
-          <Box sx={{ display: 'flex', gap: 0.5, pr: 1 }} id="toolbar-buttons-box">
-            <Tooltip title="복사">
-              <IconButton size="small" onClick={handleCopy} disabled={disabled}>
-                <CopyIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="붙여넣기">
-              <IconButton size="small" onClick={handlePaste} disabled={disabled}>
-                <PasteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="내용 지우기">
-              <IconButton size="small" onClick={handleClear} disabled={disabled}>
-                <ClearIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            {onToggleExpand && (
-              <Tooltip title={isExpanded ? "축소" : "확장"}>
-                <IconButton size="small" onClick={onToggleExpand} disabled={disabled}>
-                  {isExpanded ? <FullscreenExitIcon fontSize="small" /> : <FullscreenIcon fontSize="small" />}
-                </IconButton>
-              </Tooltip>
-            )}
-          </Box>
-        )}
-      </Box>
-
-      {/* 프롬프트 편집 탭 */}
-      {activeTab === 0 && (
-        <Box sx={{
-          mt: 2,
-          mb: 0,
-          border: showToolbar ? '1px solid' : 'none',
-          borderColor: 'divider',
-          borderRadius: showToolbar ? 1 : 0,
-          height: customHeight || (showToolbar ? (isExpanded ? 'calc(100vh - 350px)' : '450px') : 'auto'),
-          overflow: showToolbar ? 'hidden' : 'visible'
-        }} id="prompt-content-textarea-box">
-          <TextField
-            value={promptContent}
-            onChange={(e) => onPromptContentChange(e.target.value)}
-            fullWidth
-            multiline
-            disabled={disabled}
-            placeholder="프롬프트 내용을 입력하세요&#10;&#10;예시:&#10;You are a document chunking assistant.&#10;Split the following document into chunks based on the rule: {{rule}}.&#10;Language: {{lang}}.&#10;Max length per chunk: {{max_length}} characters."
-            variant={showToolbar ? "standard" : "outlined"}
-            minRows={showToolbar ? undefined : 20}
-            maxRows={showToolbar ? undefined : 25}
-            id="prompt-content-textarea"
-            InputProps={{
-              disableUnderline: showToolbar,
-            }}
-            sx={{
-              height: showToolbar ? '100%' : 'auto',
-              mb: showToolbar ? 0 : 2,
-              '& .MuiInputBase-root': {
-                bgcolor: 'background.paper',
-                fontFamily: 'monospace',
-                fontSize: showToolbar ? '0.875rem' : '14px',
-                p: showToolbar ? 1.5 : undefined,
-                height: showToolbar ? '100%' : 'auto',
-                alignItems: 'flex-start',
-                '& textarea': showToolbar ? {
-                  height: '100% !important',
-                  overflow: 'auto !important',
-                  resize: 'none',
-                } : {}
-              }
-            }}
-          />
-          {children && activeTab === 0 && <Box sx={{ mt: 2 }}>{children}</Box>}
-        </Box>
+        </PanelToolBtn>
       )}
+    </div>
+  );
 
-      {/* 변수 탭들 - 각 변수별로 textarea */}
-      {extractedVariables.map((varKey, index) => (
-        activeTab === index + 1 && (
-          <React.Fragment key={varKey}>
-          {/* [임시/유보 2026-06-12] '고객(도메인) 편집 가능 슬롯 / 표시명(label)' 슬롯 설정 UI는
-              예전 변수 편집 방식으로 되돌리기 위해 숨김. 슬롯 기능 안정화 후 복구. */}
-          <Box sx={{
-            mt: 2,
-            mb: 0,
-            border: showToolbar ? '1px solid' : 'none',
-            borderColor: 'divider',
-            borderRadius: showToolbar ? 1 : 0,
-            height: customHeight || (showToolbar ? (isExpanded ? 'calc(100vh - 350px)' : '450px') : 'auto'),
-            overflow: showToolbar ? 'hidden' : 'visible'
-          }} id={`variable-textarea-box-${varKey}`}>
-            <TextField
-              value={variables[varKey]?.content || ''}
-              onChange={(e) => onVariableUpdate(varKey, 'content', e.target.value)}
-              fullWidth
-              multiline
-              disabled={disabled}
-              placeholder={`${varKey} 변수의 내용을 입력하세요`}
-              variant={showToolbar ? "standard" : "outlined"}
-              minRows={showToolbar ? undefined : 20}
-              maxRows={showToolbar ? undefined : 25}
-              id={`variable-textarea-${varKey}`}
-              InputProps={{
-                disableUnderline: showToolbar,
-              }}
-              sx={{
-                height: showToolbar ? '100%' : 'auto',
-                '& .MuiInputBase-root': {
-                  bgcolor: 'background.paper',
-                  fontFamily: 'monospace',
-                  fontSize: showToolbar ? '0.875rem' : '14px',
-                  p: showToolbar ? 1.5 : undefined,
-                  height: showToolbar ? '100%' : 'auto',
-                  alignItems: 'flex-start',
-                  '& textarea': showToolbar ? {
-                    height: '100% !important',
-                    overflow: 'auto !important',
-                    resize: 'none',
-                  } : {}
-                }
-              }}
-            />
-          </Box>
-          </React.Fragment>
-        )
-      ))}
-    </Box>
+  const renderDefaultHeaderActions = () => (
+    <div className="prompt-edit-default-toolbar__actions" id="toolbar-buttons-box">
+      <KlTooltip title={isCopied() ? '복사됨' : '복사'} placement="top" enterDelay={0} leaveDelay={60} variant="icon">
+        <button type="button" className={`${TOOLBAR_BTN}${isCopied() ? ' is-copied' : ''}`} onClick={handleCopy} disabled={disabled} aria-label="복사">
+          {isCopied() ? <Check size={15} strokeWidth={1.75} /> : <Copy size={15} strokeWidth={1.75} />}
+        </button>
+      </KlTooltip>
+      <KlTooltip title="붙여넣기" placement="top" enterDelay={0} leaveDelay={60} variant="icon">
+        <button type="button" className={TOOLBAR_BTN} onClick={handlePaste} disabled={disabled} aria-label="붙여넣기">
+          <Clipboard size={15} strokeWidth={1.75} />
+        </button>
+      </KlTooltip>
+      <KlTooltip title="내용 지우기" placement="top" enterDelay={0} leaveDelay={60} variant="icon">
+        <button type="button" className={TOOLBAR_BTN} onClick={handleClear} disabled={disabled} aria-label="내용 지우기">
+          <AlignLeft size={15} strokeWidth={1.75} />
+        </button>
+      </KlTooltip>
+      {onToggleExpand && (
+        <KlTooltip title={isExpanded ? '축소' : '확장'} placement="top" enterDelay={0} leaveDelay={60} variant="icon">
+          <button type="button" className={TOOLBAR_BTN} onClick={onToggleExpand} disabled={disabled} aria-label={isExpanded ? '에디터 축소' : '에디터 확장'}>
+            {isExpanded ? <Minimize2 size={15} strokeWidth={1.75} /> : <Expand size={15} strokeWidth={1.75} />}
+          </button>
+        </KlTooltip>
+      )}
+    </div>
+  );
+
+  const paneStyle = !fillParent && customHeight ? { height: customHeight } : undefined;
+  const paneClassName = [
+    'prompt-edit-tabs__pane',
+    fillParent ? 'prompt-edit-tabs__pane--fill' : '',
+    !fillParent && (showToolbar || customHeight) ? 'prompt-edit-tabs__pane--fixed' : '',
+  ].filter(Boolean).join(' ');
+
+  const renderDefaultPane = (value, onChange, placeholder, id) => (
+    <div className={paneClassName} id={id} style={paneStyle}>
+      <textarea
+        id={`${id}-textarea`}
+        className={[
+          'prompt-edit-native-textarea',
+          fillParent ? 'prompt-edit-native-textarea--fill' : '',
+        ].filter(Boolean).join(' ')}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        placeholder={placeholder}
+        spellCheck={false}
+        rows={fillParent || showToolbar ? undefined : 20}
+      />
+    </div>
+  );
+
+  const renderVarBubbleIcon = (filled, selected) => {
+    if (selected) return <Check size={11} strokeWidth={2.5} aria-hidden />;
+    if (filled) return <CircleCheck size={11} strokeWidth={2} aria-hidden />;
+    return <CircleAlert size={11} strokeWidth={2} aria-hidden />;
+  };
+
+  const promptPlaceholder = showToolbar
+    ? '프롬프트 내용을 입력하세요\n\n예시:\nYou are a document chunking assistant.\nSplit the following document into chunks based on the rule: {{rule}}.\nLanguage: {{lang}}.\nMax length per chunk: {{max_length}} characters.'
+    : '프롬프트 내용을 입력하세요…';
+
+  const currentValue = activeTab === 0
+    ? promptContent
+    : (variables[extractedVariables[activeTab - 1]]?.content || '');
+
+  const currentOnChange = activeTab === 0
+    ? (e) => onPromptContentChange(e.target.value)
+    : (e) => onVariableUpdate(extractedVariables[activeTab - 1], 'content', e.target.value);
+
+  const currentPlaceholder = activeTab === 0
+    ? promptPlaceholder
+    : `${extractedVariables[activeTab - 1]} 변수의 내용을 입력하세요`;
+
+  if (isDetail) {
+    return (
+      <div id="prompt-edit-tabs-root" className={rootClass}>
+        <div className="prompt-panel">
+          <div className="prompt-panel__head">
+            <div className="editor-subtabs" role="tablist" aria-label="프롬프트·변수 편집">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 0}
+                className={`editor-subtab ${activeTab === 0 ? 'is-active' : ''}`}
+                disabled={disabled}
+                onClick={() => onTabChange(0)}
+              >
+                프롬프트 편집
+              </button>
+              {extractedVariables.length > 0 && (
+                <>
+                  <span className="var-sep" aria-hidden />
+                  <div className="var-bubbles">
+                    {extractedVariables.map((varKey, index) => {
+                      const tabIndex = index + 1;
+                      const filled = Boolean(variables[varKey]?.content);
+                      return (
+                        <button
+                          key={varKey}
+                          type="button"
+                          role="tab"
+                          aria-selected={activeTab === tabIndex}
+                          className={[
+                            'var-bubble',
+                            filled ? 'var-bubble--filled' : 'var-bubble--empty',
+                            activeTab === tabIndex ? 'is-selected' : '',
+                          ].filter(Boolean).join(' ')}
+                          disabled={disabled}
+                          onClick={() => onTabChange(tabIndex)}
+                        >
+                          <span className="var-bubble__mark">
+                            {renderVarBubbleIcon(filled, activeTab === tabIndex)}
+                          </span>
+                          {varKey}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+            {showToolbar ? renderDetailPanelTools() : null}
+          </div>
+          <div className="editor-body">
+            <div className="prompt-area-wrap">
+              <textarea
+                id="prompt-content-textarea-box-textarea"
+                className="prompt-area"
+                value={currentValue}
+                onChange={currentOnChange}
+                disabled={disabled}
+                placeholder={currentPlaceholder}
+                spellCheck={false}
+              />
+            </div>
+            {children}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div id="prompt-edit-tabs-root" className={rootClass}>
+      <div className="prompt-edit-default-toolbar" id="tabs-toolbar-header">
+        <div className="prompt-edit-default-toolbar__tabs" id="tabs-and-check-box" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 0}
+            className={`prompt-edit-default-tab ${activeTab === 0 ? 'is-active' : ''}`}
+            disabled={disabled}
+            onClick={() => onTabChange(0)}
+          >
+            프롬프트 편집
+          </button>
+          {extractedVariables.map((varKey, index) => {
+            const tabIndex = index + 1;
+            const isMissing = !variables[varKey]?.content;
+            return (
+              <button
+                key={varKey}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tabIndex}
+                className={[
+                  'prompt-edit-default-tab',
+                  activeTab === tabIndex ? 'is-active' : '',
+                  isMissing ? 'is-error' : '',
+                ].filter(Boolean).join(' ')}
+                disabled={disabled}
+                onClick={() => onTabChange(tabIndex)}
+              >
+                {variables[varKey]?.label ? `${variables[varKey].label} (${varKey})` : varKey}
+              </button>
+            );
+          })}
+        </div>
+        {showToolbar ? renderDefaultHeaderActions() : null}
+      </div>
+
+      <div className="prompt-edit-tabs__body">
+        {activeTab === 0 && renderDefaultPane(
+          promptContent,
+          (e) => onPromptContentChange(e.target.value),
+          promptPlaceholder,
+          'prompt-content-textarea-box',
+        )}
+
+        {extractedVariables.map((varKey, index) => (
+          activeTab === index + 1 && renderDefaultPane(
+            variables[varKey]?.content || '',
+            (e) => onVariableUpdate(varKey, 'content', e.target.value),
+            `${varKey} 변수의 내용을 입력하세요`,
+            `variable-textarea-box-${varKey}`,
+          )
+        ))}
+      </div>
+
+      {children && activeTab === 0 ? (
+        <div className="prompt-edit-tabs__children">{children}</div>
+      ) : null}
+    </div>
   );
 });
 

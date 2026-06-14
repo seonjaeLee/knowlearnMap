@@ -11,15 +11,59 @@
   background-color: var(--color-bg-primary);
 }
 
-/* ─── LNB 전체 다크 테마 ─── */
+/* ─── LNB 컬러 스킴 (data-lnb 속성으로 전환) ─── */
+
+/* dark — 기본값 (data-lnb 미설정 시) */
+:root {
+  --sb-bg:          #13161d;
+  --sb-bg-2:        #171b23;
+  --sb-border:      rgba(255,255,255,.07);
+  --sb-text:        #aab2c0;
+  --sb-text-strong: #f2f4f8;
+  --sb-muted:       #646e7e;
+  --sb-hover:       rgba(255,255,255,.05);
+  --sb-active:      color-mix(in srgb, #5a57e6 26%, #171b23);
+  --sb-active-text: #ffffff;
+  --sb-active-weight: 500;
+}
+
+/* indigo — 라벤더-그레이 (관리자 화면 권장) */
+[data-lnb="indigo"] {
+  --sb-bg:          #e7e7f7;
+  --sb-bg-2:        #dedef2;
+  --sb-border:      #d2d2ea;
+  --sb-text:        #4a4a73;
+  --sb-text-strong: #23234d;
+  --sb-muted:       #8888ad;
+  --sb-hover:       #dcdcf0;
+  --sb-active:      #ffffff;
+  --sb-active-text: var(--kl-brand-primary, #5a57e6);
+  --sb-active-weight: 700;
+}
+
+/* light — 라이트 테마 전용 */
+[data-lnb="light"][data-theme="light"] {
+  --sb-bg:          #ffffff;
+  --sb-bg-2:        #f3f5f8;
+  --sb-border:      #e6e9ef;
+  --sb-text:        #5b6472;
+  --sb-text-strong: #1a1f29;
+  --sb-muted:       #9099a8;
+  --sb-hover:       #f3f5f8;
+  --sb-active:      color-mix(in srgb, #5a57e6 12%, transparent);
+  --sb-active-text: var(--kl-brand-primary, #5a57e6);
+  --sb-active-weight: 600;
+}
+
+/* ─── LNB 사이드바 ─── */
 
 .lnb-sidebar {
-  width: 212px;
-  min-width: 212px;
+  width: 232px;
+  min-width: 232px;
   flex-shrink: 0;
   align-self: stretch;
-  background-color: #1e293b;
-  border-right: 1px solid #334155;
+  background-color: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
   padding: 14px 10px;
   overflow: visible;
   display: flex;
@@ -40,7 +84,7 @@
   height: 64px;
   margin: -14px -10px 4px;
   padding: 0 14px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--sb-border);
 }
 
 .lnb-logo-link {
@@ -68,7 +112,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #334155 transparent;
+  scrollbar-color: var(--sb-border) transparent;
 }
 
 .lnb-group {
@@ -76,7 +120,7 @@
   flex-direction: column;
   gap: 8px;
   padding-bottom: 4px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--sb-border);
 }
 
 .lnb-group:last-child {
@@ -92,12 +136,12 @@
   justify-content: space-between;
   padding: 8px;
   border-radius: 6px;
-  color: #94a3b8;
+  color: var(--sb-text);
   cursor: pointer;
 }
 
 .lnb-group-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--sb-hover);
 }
 
 .lnb-group-chevron {
@@ -114,7 +158,7 @@
 .lnb-group-title {
   font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--sb-muted);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -150,7 +194,7 @@
   gap: 8px;
   padding: 6px 8px 6px 10px;
   border-radius: 4px;
-  color: #cbd5e1;
+  color: var(--sb-text);
   font-size: 12px;
   font-weight: 500;
   text-decoration: none;
@@ -167,31 +211,37 @@
 
 .lnb-item-icon {
   flex: 0 0 auto;
-  color: #64748b;
+  color: var(--sb-muted);
 }
 
 .lnb-item:hover {
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #f1f5f9;
+  background-color: var(--sb-hover);
+  color: var(--sb-text-strong);
 }
 
 .lnb-item:hover .lnb-item-icon {
-  color: #94a3b8;
+  color: var(--sb-text);
 }
 
 .lnb-item.active {
-  background-color: var(--kl-brand-primary);
-  color: #ffffff;
+  background-color: var(--sb-active);
+  color: var(--sb-active-text);
+  font-weight: var(--sb-active-weight);
 }
 
 .lnb-item.active .lnb-item-icon {
-  color: #bfdbfe;
+  color: var(--sb-active-text);
+}
+
+/* indigo 스킴 활성 메뉴 — 흰 배경 위에 그림자 */
+[data-lnb="indigo"] .lnb-item.active {
+  box-shadow: 0 1px 3px rgba(35,35,77,.12);
 }
 
 .lnb-collapse-toggle {
-  border: 1px solid #334155;
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #64748b;
+  border: 1px solid var(--sb-border);
+  background-color: var(--sb-hover);
+  color: var(--sb-muted);
   border-radius: 8px;
   width: 30px;
   min-width: 30px;
@@ -208,8 +258,8 @@
 }
 
 .lnb-collapse-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.25);
-  color: #94a3b8;
+  background-color: var(--sb-hover);
+  color: var(--sb-text);
 }
 
 .lnb-sidebar.collapsed {
@@ -306,7 +356,7 @@
 .lnb-footer-theme-row {
   width: 100%;
   padding: 2px 0 4px;
-  border-top: 1px solid #334155;
+  border-top: 1px solid var(--sb-border);
   margin-top: 2px;
 }
 
@@ -334,7 +384,7 @@
   flex-direction: column;
   gap: 2px;
   padding: 8px 0 4px;
-  border-top: 1px solid #334155;
+  border-top: 1px solid var(--sb-border);
 }
 
 /* ── 공지 알림 행 — 패딩은 내부 버튼(.lnb-item과 동일)에만 적용 */
@@ -355,7 +405,7 @@
 .lnb-footer-row-label {
   font-size: 12px;
   font-weight: 500;
-  color: #cbd5e1;
+  color: var(--sb-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -363,7 +413,7 @@
 
 /* NotificationBell 아이콘 전용 (collapsed) — 다크 테마 */
 .lnb-footer-bell-row .notification-bell-btn:not(.notification-bell-btn--labeled) {
-  color: #64748b;
+  color: var(--sb-muted);
   border-radius: 4px;
   padding: 0;
   background: transparent;
@@ -373,31 +423,31 @@
 }
 
 .lnb-footer-bell-row .notification-bell-btn:not(.notification-bell-btn--labeled):hover {
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #f1f5f9;
+  background-color: var(--sb-hover);
+  color: var(--sb-text-strong);
 }
 
 .lnb-footer-bell-row .notification-bell-btn:not(.notification-bell-btn--labeled):hover > svg {
-  color: #94a3b8;
+  color: var(--sb-text);
 }
 
 /* NotificationBell 라벨 포함 버튼 (expanded) — 다크 테마 */
 .lnb-footer-bell-row .notification-bell-btn--labeled {
-  color: #cbd5e1;
+  color: var(--sb-text);
 }
 
 .lnb-footer-bell-row .notification-bell-btn--labeled:hover {
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #f1f5f9;
+  background-color: var(--sb-hover);
+  color: var(--sb-text-strong);
 }
 
 .lnb-footer-bell-row .notification-bell-btn--labeled > svg {
-  color: #64748b;
+  color: var(--sb-muted);
   flex-shrink: 0;
 }
 
 .lnb-footer-bell-row .notification-bell-btn--labeled:hover > svg {
-  color: #94a3b8;
+  color: var(--sb-text);
 }
 
 .lnb-footer-bell-row .notification-badge {
@@ -443,7 +493,7 @@
 .lnb-footer-username {
   font-size: 12px;
   font-weight: 500;
-  color: #cbd5e1;
+  color: var(--sb-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -541,6 +591,27 @@
   overflow-y: hidden;
 }
 
+/* 프롬프트 상세: 에디터가 뷰포트를 채우도록 외부 스크롤 제거, footer 숨김 */
+.main-layout .main-content--prompt-fill {
+  overflow-y: hidden;
+}
+.main-layout .main-content--prompt-fill .main-content-scroll-inner {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  gap: 0;
+}
+.main-layout .main-content--prompt-fill .site-footer {
+  display: none;
+}
+/* /admin/prompts/:code 경로: Admin.jsx의 kl-route-host 래퍼도 뷰포트 높이를 채워야 함
+   — .kl-page:not(.kl-page--fill) 규칙(특이도 0,4,0)을 이기려면 클래스 5개 필요 */
+.main-layout .main-content--prompt-fill .main-content-outlet-wrap > .kl-page.kl-route-host {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .main-layout .main-content--notebook .main-content-scroll-inner {
   flex: 1 1 auto;
   min-height: 0;
@@ -631,8 +702,8 @@
   }
 
   .lnb-sidebar {
-    width: 228px;
-    min-width: 228px;
+    width: 248px;
+    min-width: 248px;
   }
 }
 
@@ -648,8 +719,8 @@
   }
 
   .lnb-sidebar {
-    width: 196px;
-    min-width: 196px;
+    width: 212px;
+    min-width: 212px;
   }
 }
 

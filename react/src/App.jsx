@@ -2,6 +2,7 @@ import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
 import PrivateRoute from './components/PrivateRoute';
+import MakerRoute from './components/MakerRoute';
 import MainLayout from './components/common/MainLayout';
 import { AlertProvider, useAlert } from './context/AlertContext';
 import CustomAlert from './components/common/CustomAlert';
@@ -80,8 +81,11 @@ function App() {
                       <Route path="/notebook/:id" element={<NotebookDetail />} />
                       <Route path="/admin/*" element={<Admin />} />
                       <Route path="/sysop/*" element={<Sysop />} />
-                      <Route path="/prompts" element={<PromptList />} />
-                      <Route path="/prompts/:code" element={<PromptDetail />} />
+                      {/* 시스템 프롬프트 관리 — 제조사(MAKER) 전용. [임시/유보 2026-06-12] 안정화까지 ADMIN도 한시 허용(MakerRoute 내부). */}
+                      <Route element={<MakerRoute />}>
+                        <Route path="/prompts" element={<PromptList />} />
+                        <Route path="/prompts/:code" element={<PromptDetail />} />
+                      </Route>
                       <Route path="/notices" element={<NoticeList />} />
                       <Route path="/faq" element={<Faq />} />
                       <Route path="/qna" element={<QnaBoard />} />

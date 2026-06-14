@@ -110,6 +110,41 @@ const tablePromptBody = `Chunk tables and bullet lists separately.
 Table row batch size: {{row_batch}}.
 List item mode: {{list_mode}}.`;
 
+const schemaAnalysisPromptBody = `You are a document chunking assistant. Split the following document into chunks based on the rule: {{rule}}. Language: {{lang}}. Max length per chunk: {{max_length}} characters.`;
+
+const schemaAnalysisVariableSchema = [
+  {
+    key: 'rule',
+    label: '청킹 규칙',
+    type: 'string',
+    required: true,
+    editable: true,
+    defaultValue: 'semantic-paragraph',
+    description: '문맥·문단 단위 분할 규칙',
+    content: 'semantic-paragraph',
+  },
+  {
+    key: 'lang',
+    label: '출력 언어',
+    type: 'string',
+    required: true,
+    editable: false,
+    defaultValue: 'ko',
+    description: '청크 메타데이터 언어',
+    content: 'ko',
+  },
+  {
+    key: 'max_length',
+    label: '최대 길이',
+    type: 'string',
+    required: true,
+    editable: true,
+    defaultValue: '1200',
+    description: '청크당 최대 문자 수',
+    content: '1200',
+  },
+];
+
 const tableVariableSchema = [
   {
     key: 'row_batch',
@@ -226,6 +261,38 @@ const versionStoreByCode = {
       content: tablePromptBody,
       variableSchema: tableVariableSchema,
       updatedAt: new Date().toISOString(),
+    },
+  ]),
+  DEFAULT_SCHEMA_ANALYSIS: buildVersions('DEFAULT_SCHEMA_ANALYSIS', [
+    {
+      id: 801,
+      version: 3,
+      isActive: false,
+      status: 'draft',
+      notes: 'max_length 기본값 조정',
+      content: schemaAnalysisPromptBody,
+      variableSchema: schemaAnalysisVariableSchema,
+      updatedAt: new Date('2026-05-12T10:30:00').toISOString(),
+    },
+    {
+      id: 802,
+      version: 2,
+      isActive: true,
+      status: 'published',
+      notes: '스키마 요약 출력 형식 정리',
+      content: schemaAnalysisPromptBody,
+      variableSchema: schemaAnalysisVariableSchema,
+      updatedAt: new Date('2026-05-10T14:20:00').toISOString(),
+    },
+    {
+      id: 803,
+      version: 1,
+      isActive: false,
+      status: 'archived',
+      notes: '초기 스키마 분석 프롬프트',
+      content: schemaAnalysisPromptBody.replace('Max length per chunk', 'Max chunk size'),
+      variableSchema: schemaAnalysisVariableSchema.slice(0, 2),
+      updatedAt: new Date('2026-04-01T09:00:00').toISOString(),
     },
   ]),
 };

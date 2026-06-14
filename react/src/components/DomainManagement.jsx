@@ -10,8 +10,8 @@ import BaseModal from './common/modal/BaseModal';
 import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
 import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 import {
+    KL_MODAL_FORM_CHECK_CLASS,
     KL_MODAL_FORM_CONTROL_ROW_CLASS,
-    KL_MODAL_FORM_CONTROL_WARNING_CLASS,
     KL_MODAL_FORM_ELEMENT_ID,
     KL_MODAL_FORM_ERROR_BANNER_CLASS,
     KL_MODAL_FORM_FEEDBACK_CLASS,
@@ -24,11 +24,12 @@ import KlIconButton from './common/KlIconButton';
 import BasicTable from './common/BasicTable';
 import KlTableRowActions from './common/table/KlTableRowActions';
 import { formatTableCellText, isTableCellBlank } from './common/tableCellDisplay';
-import { mockDomains, mockDomainPromptDefaults, mockPromptCodesByPurpose } from '../data/domainMockData';
+import { mockDomains } from '../data/domainMockData';
 import './DomainManagement.css';
 
 const isDomainMockEnabled = import.meta.env.VITE_ENABLE_DOMAIN_MOCK === 'true';
-const PROMPT_PURPOSES = ['CHUNK', 'ONTOLOGY', 'CHAT_RESULT', 'CONTENT_ONTOLOGY', 'SCHEMA_ANALYSIS', 'INTER_TABLE_ANALYSIS', 'AQL_GENERATION', 'AQL_INTERPRETATION', 'AGGREGATION_STRATEGY'];
+const CHUNK_PROMPT_ON_VALUE = 'DEFAULT_CHUNK_PROMPT';
+const CHUNK_PROMPT_OFF_VALUE = 'NONE';
 
 function DomainManagement() {
     const { alert, confirm } = useDialog();
@@ -59,17 +60,6 @@ function DomainManagement() {
     const [checkMessage, setCheckMessage] = useState('');
     const [error, setError] = useState('');
 
-    // 용도별 프롬프트 코드 목록
-    const [chunkPromptCodes, setChunkPromptCodes] = useState([]);
-    const [ontologyPromptCodes, setOntologyPromptCodes] = useState([]);
-    const [chatPromptCodes, setChatPromptCodes] = useState([]);
-    const [contentOntologyPromptCodes, setContentOntologyPromptCodes] = useState([]);
-    const [schemaAnalysisPromptCodes, setSchemaAnalysisPromptCodes] = useState([]);
-    const [interTableAnalysisPromptCodes, setInterTableAnalysisPromptCodes] = useState([]);
-    const [aqlGenerationPromptCodes, setAqlGenerationPromptCodes] = useState([]);
-    const [aqlInterpretationPromptCodes, setAqlInterpretationPromptCodes] = useState([]);
-    const [aggregationStrategyPromptCodes, setAggregationStrategyPromptCodes] = useState([]);
-    const [, setPromptDefaults] = useState({});
     const [domainSearch, setDomainSearch] = useState('');
 
     const domainTableColumnDefinitions = useMemo(
@@ -130,67 +120,15 @@ function DomainManagement() {
 
     const fetchPromptDefaults = async () => {
         if (isDomainMockEnabled) {
-            setPromptDefaults(mockDomainPromptDefaults);
-            return mockDomainPromptDefaults;
+            return {};
         }
 
         try {
-            const data = await apiCall('/domains/prompt-defaults');
-            setPromptDefaults(data);
-            return data;
+            return await apiCall('/domains/prompt-defaults');
         } catch (err) {
             console.error('프롬프트 기본값 조회 실패:', err);
-            setPromptDefaults(mockDomainPromptDefaults);
         }
-        return mockDomainPromptDefaults;
-    };
-
-    const fetchPromptCodesByPurpose = async () => {
-        if (isDomainMockEnabled) {
-            setChunkPromptCodes(mockPromptCodesByPurpose.CHUNK || []);
-            setOntologyPromptCodes(mockPromptCodesByPurpose.ONTOLOGY || []);
-            setChatPromptCodes(mockPromptCodesByPurpose.CHAT_RESULT || []);
-            setContentOntologyPromptCodes(mockPromptCodesByPurpose.CONTENT_ONTOLOGY || []);
-            setSchemaAnalysisPromptCodes(mockPromptCodesByPurpose.SCHEMA_ANALYSIS || []);
-            setInterTableAnalysisPromptCodes(mockPromptCodesByPurpose.INTER_TABLE_ANALYSIS || []);
-            setAqlGenerationPromptCodes(mockPromptCodesByPurpose.AQL_GENERATION || []);
-            setAqlInterpretationPromptCodes(mockPromptCodesByPurpose.AQL_INTERPRETATION || []);
-            setAggregationStrategyPromptCodes(mockPromptCodesByPurpose.AGGREGATION_STRATEGY || []);
-            return;
-        }
-
-        try {
-            const results = await Promise.all(
-                PROMPT_PURPOSES.map((purpose) =>
-                    apiCall(`/v1/prompts?purpose=${encodeURIComponent(purpose)}&isActive=true&size=100`)
-                        .catch(() => ({ data: { content: [] } }))
-                )
-            );
-            const extractCodes = (res) => {
-                const content = res?.data?.content || res?.content || [];
-                return Array.isArray(content) ? content.map(p => p.code) : [];
-            };
-            setChunkPromptCodes(extractCodes(results[0]));
-            setOntologyPromptCodes(extractCodes(results[1]));
-            setChatPromptCodes(extractCodes(results[2]));
-            setContentOntologyPromptCodes(extractCodes(results[3]));
-            setSchemaAnalysisPromptCodes(extractCodes(results[4]));
-            setInterTableAnalysisPromptCodes(extractCodes(results[5]));
-            setAqlGenerationPromptCodes(extractCodes(results[6]));
-            setAqlInterpretationPromptCodes(extractCodes(results[7]));
-            setAggregationStrategyPromptCodes(extractCodes(results[8]));
-        } catch (err) {
-            console.error('프롬프트 코드 목록 조회 실패:', err);
-            setChunkPromptCodes(mockPromptCodesByPurpose.CHUNK || []);
-            setOntologyPromptCodes(mockPromptCodesByPurpose.ONTOLOGY || []);
-            setChatPromptCodes(mockPromptCodesByPurpose.CHAT_RESULT || []);
-            setContentOntologyPromptCodes(mockPromptCodesByPurpose.CONTENT_ONTOLOGY || []);
-            setSchemaAnalysisPromptCodes(mockPromptCodesByPurpose.SCHEMA_ANALYSIS || []);
-            setInterTableAnalysisPromptCodes(mockPromptCodesByPurpose.INTER_TABLE_ANALYSIS || []);
-            setAqlGenerationPromptCodes(mockPromptCodesByPurpose.AQL_GENERATION || []);
-            setAqlInterpretationPromptCodes(mockPromptCodesByPurpose.AQL_INTERPRETATION || []);
-            setAggregationStrategyPromptCodes(mockPromptCodesByPurpose.AGGREGATION_STRATEGY || []);
-        }
+        return {};
     };
 
     const handleOpenCreateModal = async () => {
@@ -213,7 +151,6 @@ function DomainManagement() {
         setCheckMessage('');
         setError('');
         setIsModalOpen(true);
-        fetchPromptCodesByPurpose();
     };
 
     const handleOpenEditModal = async (domain) => {
@@ -238,15 +175,12 @@ function DomainManagement() {
         setCheckMessage('');
         setError('');
         setIsModalOpen(true);
-        fetchPromptCodesByPurpose();
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
         if (name === 'arangoDbName') {
-            // Edit Mode: ArangoDB Name cannot be changed usually, but if UI allows, it must be validated.
-            // However, typical requirement is to lock DB name.
             if (isEditMode) return;
 
             // Validation: only lowercase letters, numbers, hyphens, underscores
@@ -275,9 +209,6 @@ function DomainManagement() {
             return;
         }
 
-        // Logic handled in frontend for existing domains list
-        // Note: For multi-user concurrent creation, backend check is source of truth.
-        // But here we check against loaded list.
         const exists = domains.some(d => d.arangoDbName === formData.arangoDbName);
         if (exists) {
             setCheckMessage('이미 사용 중인 이름입니다.');
@@ -311,7 +242,6 @@ function DomainManagement() {
     };
 
     const handleSubmit = async () => {
-        // Validation
         if (!formData.name) {
             setError('도메인명은 필수입니다.');
             return;
@@ -363,50 +293,15 @@ function DomainManagement() {
         }
     };
 
-    const handleSelectFieldChange = (fieldName) => (e) => {
-        const value = e?.target?.value ?? '';
+    // chunkPrompt 값 → 토글 ON/OFF 도출. 'NONE'이면 OFF, 그 외(빈값/null/코드)면 ON(시스템 기본=ON).
+    const isChunkingEnabled = formData.chunkPrompt !== CHUNK_PROMPT_OFF_VALUE;
+
+    const handleChunkingToggle = (e) => {
+        const enabled = e.target.checked;
         setFormData((prev) => ({
             ...prev,
-            [fieldName]: value,
+            chunkPrompt: enabled ? CHUNK_PROMPT_ON_VALUE : CHUNK_PROMPT_OFF_VALUE,
         }));
-    };
-
-    const promptSelectConfigs = [
-        { key: 'ontologyPrompt', label: '온톨로지 프롬프트', options: ontologyPromptCodes, helper: 'Chunk → LLM 온톨로지 추출' },
-        { key: 'chatResultPrompt', label: '채팅 프롬프트', options: chatPromptCodes, helper: 'Chat 응답 생성' },
-        {
-            key: 'contentOntologyPrompt',
-            label: 'CONTENT 온톨로지',
-            labelLines: ['CONTENT', '온톨로지'],
-            options: contentOntologyPromptCodes,
-            helper: '정형 Chunk → LLM 온톨로지',
-        },
-        { key: 'schemaAnalysisPrompt', label: '스키마 분석', options: schemaAnalysisPromptCodes, helper: 'CSV/DB 스키마 자동 분석' },
-        { key: 'interTableAnalysisPrompt', label: '테이블 간 관계 분석', options: interTableAnalysisPromptCodes, helper: '다건 테이블 간 FK/관계 분석' },
-        { key: 'aqlGenerationPrompt', label: 'AQL 생성', options: aqlGenerationPromptCodes, helper: '자연어 → AQL 쿼리 생성' },
-        { key: 'aqlInterpretationPrompt', label: 'AQL 결과 해석', options: aqlInterpretationPromptCodes, helper: 'AQL 쿼리 결과 자연어 해석' },
-        { key: 'aggregationStrategyPrompt', label: '집계 전략', options: aggregationStrategyPromptCodes, helper: '대규모 정형 데이터 집계 전략' },
-    ];
-
-    const renderPromptCodeSelect = (fieldKey, options, { ariaLabel, warnNone = false, id: selectId } = {}) => {
-        const value = formData[fieldKey] ?? '';
-        const warnClass = warnNone && value === 'NONE' ? KL_MODAL_FORM_CONTROL_WARNING_CLASS : '';
-        return (
-            <select
-                id={selectId}
-                value={value}
-                onChange={handleSelectFieldChange(fieldKey)}
-                className={warnClass || undefined}
-                aria-label={ariaLabel}
-            >
-                <option value="">-- 기본값 --</option>
-                {(options || []).map((code) => (
-                    <option key={code} value={code}>
-                        {code}
-                    </option>
-                ))}
-            </select>
-        );
     };
 
     const renderDomainCell = useCallback(({ column, row: domain }) => {
@@ -492,47 +387,43 @@ function DomainManagement() {
     return (
         <div className="kl-page kl-page--fill">
             <div className="kl-main-sticky-head">
-            <AdminPageHeader
-                title="도메인 관리"
-            />
-
-            
+                <AdminPageHeader title="도메인 관리" />
             </div>
 
             <div className="table-area">
-                    <div className="table-toolbar">
-                        <div className="toolbar-left">
-                            <span className="kl-table-toolbar-summary">
-                                총 <strong>{filteredDomains.length}</strong>건
-                            </span>
-                        </div>
-                        <div className="toolbar-right">
-                            <div className="search-area">
-                                <Search size={16} className="search-area-icon" aria-hidden />
-                                <input
-                                    type="text"
-                                    className="search-area-input"
-                                    placeholder="도메인 검색..."
-                                    value={domainSearch}
-                                    onChange={(e) => setDomainSearch(e.target.value)}
-                                    aria-label="도메인 검색"
-                                />
-                            </div>
-                            <KlIconButton
-                                tooltip="새로고침"
-                                ariaLabel="도메인 목록 새로고침"
-                                onClick={fetchDomains}
-                                buttonClassName="kl-btn gray-outline md icon-only"
-                                stopPropagation={false}
-                            >
-                                <RotateCcw size={16} aria-hidden />
-                            </KlIconButton>
-                            <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
-                                <Plus size={14} aria-hidden />
-                                새 도메인
-                            </button>
-                        </div>
+                <div className="table-toolbar">
+                    <div className="toolbar-left">
+                        <span className="kl-table-toolbar-summary">
+                            총 <strong>{filteredDomains.length}</strong>건
+                        </span>
                     </div>
+                    <div className="toolbar-right">
+                        <div className="search-area">
+                            <Search size={16} className="search-area-icon" aria-hidden />
+                            <input
+                                type="text"
+                                className="search-area-input"
+                                placeholder="도메인 검색..."
+                                value={domainSearch}
+                                onChange={(e) => setDomainSearch(e.target.value)}
+                                aria-label="도메인 검색"
+                            />
+                        </div>
+                        <KlIconButton
+                            tooltip="새로고침"
+                            ariaLabel="도메인 목록 새로고침"
+                            onClick={fetchDomains}
+                            buttonClassName="kl-btn gray-outline md icon-only"
+                            stopPropagation={false}
+                        >
+                            <RotateCcw size={16} aria-hidden />
+                        </KlIconButton>
+                        <button type="button" className="kl-btn primary-full md" onClick={handleOpenCreateModal}>
+                            <Plus size={14} aria-hidden />
+                            새 도메인
+                        </button>
+                    </div>
+                </div>
 
                 <div className="basic-table-shell">
                     <BasicTable
@@ -675,55 +566,26 @@ function DomainManagement() {
                     </div>
 
                     <div className="kl-modal-form-row kl-vert-start">
-                        <label className="kl-modal-form-row__label" htmlFor="domain-mgmt-chunk-prompt">
-                            청킹 프롬프트
+                        <label className="kl-modal-form-row__label" htmlFor="domain-mgmt-chunking">
+                            LLM 청킹
                         </label>
                         <div className="kl-modal-form-row__control">
-                            <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
-                                {renderPromptCodeSelect('chunkPrompt', chunkPromptCodes, {
-                                    id: 'domain-mgmt-chunk-prompt',
-                                    ariaLabel: '청킹 프롬프트',
-                                    warnNone: true,
-                                })}
-                                <button
-                                    type="button"
-                                    className={`kl-btn md ${formData.chunkPrompt === 'NONE' ? 'danger-outline' : 'gray-outline'}`}
-                                    onClick={() => setFormData((prev) => ({ ...prev, chunkPrompt: prev.chunkPrompt === 'NONE' ? '' : 'NONE' }))}
-                                >
-                                    NONE
-                                </button>
-                            </div>
-                            <p className={`kl-modal-form-helper${formData.chunkPrompt === 'NONE' ? ' kl-modal-form-helper--error' : ''}`}>
-                                {formData.chunkPrompt === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
+                            <label className={KL_MODAL_FORM_CHECK_CLASS} htmlFor="domain-mgmt-chunking">
+                                <input
+                                    id="domain-mgmt-chunking"
+                                    type="checkbox"
+                                    checked={isChunkingEnabled}
+                                    onChange={handleChunkingToggle}
+                                />
+                                <span>{isChunkingEnabled ? '사용함' : '사용 안 함'}</span>
+                            </label>
+                            <p className={`kl-modal-form-helper${isChunkingEnabled ? '' : ' kl-modal-form-helper--error'}`}>
+                                {isChunkingEnabled
+                                    ? 'PDF 문서를 LLM으로 청킹합니다.'
+                                    : 'LLM 청킹 비활성화 (페이지 단위로 처리)'}
                             </p>
                         </div>
                     </div>
-
-                    {promptSelectConfigs.map((item) => (
-                        <div key={item.key} className="kl-modal-form-row kl-vert-start">
-                            <label
-                                className={`kl-modal-form-row__label${item.labelLines ? ' kl-modal-form-row__label--stacked' : ''}`}
-                                htmlFor={`domain-mgmt-${item.key}`}
-                            >
-                                {item.labelLines ? (
-                                    item.labelLines.map((line) => (
-                                        <span key={line} className="kl-modal-form-row__label-line">
-                                            {line}
-                                        </span>
-                                    ))
-                                ) : (
-                                    item.label
-                                )}
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(item.key, item.options, {
-                                    id: `domain-mgmt-${item.key}`,
-                                    ariaLabel: item.label,
-                                })}
-                                <p className="kl-modal-form-helper">{item.helper}</p>
-                            </div>
-                        </div>
-                    ))}
 
                     {isEditMode ? (
                         <div className="kl-infotxt-note">

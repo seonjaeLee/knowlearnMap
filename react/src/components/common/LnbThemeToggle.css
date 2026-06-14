@@ -71,7 +71,8 @@
 .lnb-theme-toggle--collapsed {
   flex-direction: column;
   justify-content: center;
-  padding: 4px 0;
+  padding: 0;
+  width: 100%;
 }
 
 .lnb-theme-toggle--collapsed .lnb-theme-toggle__buttons {
@@ -79,9 +80,24 @@
   margin-left: 0;
   width: 100%;
   align-items: center;
+  background: transparent;
+  padding: 0;
+  gap: 0;
+}
+
+.lnb-theme-toggle--collapsed .lnb-theme-toggle__tooltip-wrap {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+/* collapsed: 비활성 버튼 숨김 — 활성 테마 아이콘 1개만 표시 */
+.lnb-theme-toggle--collapsed .lnb-theme-toggle__tooltip-wrap:has(.is-disabled) {
+  display: none;
 }
 
 .lnb-sidebar.collapsed .lnb-theme-toggle__btn {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
 }

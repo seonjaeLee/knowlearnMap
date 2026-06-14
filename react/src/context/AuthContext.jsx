@@ -184,6 +184,8 @@ export const AuthProvider = ({ children }) => {
         /** 플랫폼 전체 관리(어드민센터). SYSOP(도메인 운영자)는 제외 — SYSOP센터·isSysop 사용 */
         isAdmin: user?.role === 'ADMIN',
         isSysop: user?.role === 'SYSOP',
+        /** 제조사 전용(MAKER센터). 시스템 프롬프트 관리 권한. */
+        isMaker: user?.role === 'MAKER',
         sessionExpired,
         clearSessionExpired,
     };
