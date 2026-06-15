@@ -1,0 +1,313 @@
+/* 프롬프트 에디터 탭 — Skin.html .editor-subtabs / .var-bubble */
+
+.prompt-edit-tabs--detail {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.prompt-edit-tabs--detail > .prompt-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-subtabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.editor-subtab {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ps-text-3, #9099a8);
+  padding: 0 1px 2px;
+  position: relative;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  transition: color 0.12s;
+}
+
+.editor-subtab:hover:not(:disabled) {
+  color: var(--ps-text-1, #1a1f29);
+}
+
+.editor-subtab.is-active {
+  color: var(--ps-brand, #5a57e6);
+}
+
+.editor-subtab.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -16px;
+  height: 2px;
+  background: var(--ps-brand, #5a57e6);
+}
+
+.editor-subtab:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.var-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--ps-border, #e6e9ef);
+  flex-shrink: 0;
+}
+
+.var-bubbles {
+  flex: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 26px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 3px;
+  scrollbar-width: thin;
+}
+
+.var-bubbles::-webkit-scrollbar {
+  height: 5px;
+}
+
+.var-bubbles::-webkit-scrollbar-thumb {
+  background: var(--ps-border-strong, #d9dde5);
+  border-radius: 3px;
+}
+
+.var-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 23px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 11.5px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  transition: filter 0.12s, box-shadow 0.12s, background 0.12s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.var-bubble__mark {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+
+.var-bubble--empty {
+  background: color-mix(in srgb, var(--ps-danger, #e0483d) 11%, transparent);
+  color: var(--ps-danger, #e0483d);
+}
+
+.var-bubble--filled {
+  background: color-mix(in srgb, var(--ps-ok, #1aa85f) 12%, transparent);
+  color: var(--ps-ok, #1aa85f);
+}
+
+.var-bubble:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.var-bubble.is-selected {
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+.var-bubble.is-selected.var-bubble--empty {
+  background: color-mix(in srgb, var(--ps-danger, #e0483d) 17%, transparent);
+}
+
+.var-bubble.is-selected.var-bubble--filled {
+  background: color-mix(in srgb, var(--ps-ok, #1aa85f) 18%, transparent);
+}
+
+.var-bubble:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* --- default toolbar (모달) --- */
+.prompt-edit-tabs {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.prompt-edit-tabs--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+.prompt-edit-tabs__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.prompt-edit-default-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  min-height: 40px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.prompt-edit-default-toolbar__tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.prompt-edit-default-toolbar__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.prompt-edit-default-tab {
+  flex-shrink: 0;
+  margin: 0;
+  padding: var(--spacing-sm) var(--spacing-sm);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.prompt-edit-default-tab:hover:not(:disabled) {
+  color: var(--color-text-primary);
+}
+
+.prompt-edit-default-tab.is-active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.prompt-edit-default-tab.is-error {
+  color: var(--color-icon-danger);
+}
+
+.prompt-edit-default-tab.is-active.is-error {
+  color: var(--color-icon-danger);
+  border-bottom-color: var(--color-icon-danger);
+}
+
+.prompt-edit-default-tab:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.prompt-edit-default-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding-right: var(--spacing-xs);
+}
+
+.prompt-edit-toolbar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.prompt-edit-toolbar-icon:hover:not(:disabled) {
+  color: var(--color-text-secondary);
+}
+
+.prompt-edit-toolbar-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.prompt-edit-tabs__pane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.prompt-edit-tabs__pane--fixed {
+  margin-top: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+}
+
+.prompt-edit-native-textarea {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: var(--spacing-md);
+  border: none;
+  outline: none;
+  resize: none;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+}
+
+.prompt-edit-native-textarea--fill {
+  height: 100%;
+}
+
+.prompt-edit-native-textarea:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.prompt-edit-native-textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.prompt-edit-tabs__children {
+  margin-top: var(--spacing-md);
+}

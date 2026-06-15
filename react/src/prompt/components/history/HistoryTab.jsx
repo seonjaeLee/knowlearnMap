@@ -1,42 +1,38 @@
 import React, { useState } from 'react';
+import {
+  CheckCircle2,
+  Copy,
+  Eye,
+  Trash2,
+  XCircle,
+} from 'lucide-react';
 import { useAlert } from '../../../context/AlertContext';
-import {
-  Box,
-  Paper,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-  IconButton,
-  Rating,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  CircularProgress,
-  Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  ToggleButtonGroup,
-  ToggleButton,
-} from '@mui/material';
-import {
-  Visibility as VisibilityIcon,
-  Delete as DeleteIcon,
-  ContentCopy as ContentCopyIcon,
-  CheckCircle as SuccessIcon,
-  Error as ErrorIcon,
-} from '@mui/icons-material';
+import BaseModal from '../../../components/common/modal/BaseModal';
+import KlTooltip from '../../../components/common/KlTooltip';
 import { useSnapshots, useDeleteSnapshot } from '../../hooks/useSnapshots';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import './HistoryTab.css';
+
+const MODEL_OPTIONS = [
+  { value: '', label: '전체' },
+  { value: 'AISTUDIO', label: 'AISTUDIO' },
+  { value: 'OPENAI', label: 'OPENAI' },
+  { value: 'ANTHROPIC', label: 'ANTHROPIC' },
+];
+
+const getModelBadgeClass = (model) => {
+  switch (model) {
+    case 'AISTUDIO':
+      return 'prompt-history-model--aistudio';
+    case 'OPENAI':
+      return 'prompt-history-model--openai';
+    case 'ANTHROPIC':
+      return 'prompt-history-model--anthropic';
+    default:
+      return 'prompt-history-model--default';
+  }
+};
 
 const HistoryTab = ({ promptCode, versions }) => {
   const [versionFilter, setVersionFilter] = useState('');
@@ -44,15 +40,14 @@ const HistoryTab = ({ promptCode, versions }) => {
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [responseViewMode, setResponseViewMode] = useState('text');
-  const { showAlert } = useAlert();
+  const { showAlert, showConfirm } = useAlert();
 
-  const { data: snapshotsData, isLoading, error } = useSnapshots(promptCode, {
+  const { data: snapshotsData, isLoading } = useSnapshots(promptCode, {
     versionId: versionFilter || undefined,
     model: modelFilter || undefined,
   });
 
   const deleteSnapshot = useDeleteSnapshot();
-
   const snapshots = snapshotsData?.content || [];
 
   const handleDelete = async (snapshotId) => {
@@ -60,8 +55,8 @@ const HistoryTab = ({ promptCode, versions }) => {
     if (confirmed) {
       try {
         await deleteSnapshot.mutateAsync(snapshotId);
-      } catch (error) {
-        console.error('Failed to delete snapshot:', error);
+      } catch (err) {
+        console.error('Failed to delete snapshot:', err);
         showAlert('삭제에 실패했습니다.');
       }
     }
@@ -70,19 +65,6 @@ const HistoryTab = ({ promptCode, versions }) => {
   const handleViewDetail = (snapshot) => {
     setSelectedSnapshot(snapshot);
     setDetailDialogOpen(true);
-  };
-
-  const getModelColor = (model) => {
-    switch (model) {
-      case 'AISTUDIO':
-        return 'primary';
-      case 'OPENAI':
-        return 'success';
-      case 'ANTHROPIC':
-        return 'secondary';
-      default:
-        return 'default';
-    }
   };
 
   const formatTime = (datetime) => {
@@ -126,77 +108,69 @@ const HistoryTab = ({ promptCode, versions }) => {
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
-      </Box>
+      <div className="prompt-history-loading">
+        <span className="prompt-history-spinner" aria-hidden />
+        <span>테스트 이력을 불러오는 중...</span>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* 필터 영역 */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Box display="flex" gap={2} alignItems="center">
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>버전</InputLabel>
-            <Select
+    <div className="prompt-history">
+      <div className="table-area">
+        <div className="table-toolbar">
+          <div className="toolbar-left">
+            <span className="kl-table-toolbar-summary">
+              총 <strong>{snapshots.length}</strong>개의 테스트 이력
+            </span>
+          </div>
+          <div className="toolbar-right">
+            <select
+              className="toolbar-select"
               value={versionFilter}
               onChange={(e) => setVersionFilter(e.target.value)}
-              label="버전"
+              aria-label="버전 필터"
             >
-              <MenuItem value="">전체</MenuItem>
+              <option value="">전체 버전</option>
               {versions.map((v) => (
-                <MenuItem key={v.id} value={v.id}>
-                  v{v.version}
-                </MenuItem>
+                <option key={v.id} value={v.id}>v{v.version}</option>
               ))}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>모델</InputLabel>
-            <Select
+            </select>
+            <select
+              className="toolbar-select"
               value={modelFilter}
               onChange={(e) => setModelFilter(e.target.value)}
-              label="모델"
+              aria-label="모델 필터"
             >
-              <MenuItem value="">전체</MenuItem>
-              <MenuItem value="AISTUDIO">AISTUDIO</MenuItem>
-              <MenuItem value="OPENAI">OPENAI</MenuItem>
-              <MenuItem value="ANTHROPIC">ANTHROPIC</MenuItem>
-            </Select>
-          </FormControl>
+              {MODEL_OPTIONS.map((opt) => (
+                <option key={opt.value || 'all'} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-          <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
-            총 {snapshots.length}개의 테스트 이력
-          </Typography>
-        </Box>
-      </Paper>
-
-      {/* 테이블 */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ bgcolor: 'action.hover' }}>
-              <TableCell align="center">ID</TableCell>
-              <TableCell>테스트 이름</TableCell>
-              <TableCell align="center">버전</TableCell>
-              <TableCell align="center">모델</TableCell>
-              <TableCell align="center">만족도</TableCell>
-              <TableCell align="center">토큰</TableCell>
-              <TableCell align="center">응답시간</TableCell>
-              <TableCell align="center">상태</TableCell>
-              <TableCell align="center">실행시간</TableCell>
-              <TableCell align="center">관리</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+        <div className="basic-table-shell prompt-history-table-shell">
+        <table className="prompt-history-table">
+          <thead>
+            <tr>
+              <th className="prompt-history-table__col-center">ID</th>
+              <th>테스트 이름</th>
+              <th className="prompt-history-table__col-center">버전</th>
+              <th className="prompt-history-table__col-center">모델</th>
+              <th className="prompt-history-table__col-center">토큰</th>
+              <th className="prompt-history-table__col-center">응답시간</th>
+              <th className="prompt-history-table__col-center">상태</th>
+              <th className="prompt-history-table__col-center">실행시간</th>
+              <th className="prompt-history-table__col-center">관리</th>
+            </tr>
+          </thead>
+          <tbody>
             {snapshots.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={10} align="center" sx={{ py: 4 }}>
-                  <Typography color="text.secondary">테스트 이력이 없습니다.</Typography>
-                </TableCell>
-              </TableRow>
+              <tr>
+                <td colSpan={9} className="prompt-history-table__empty">
+                  테스트 이력이 없습니다.
+                </td>
+              </tr>
             ) : (
               snapshots.map((snapshot) => {
                 const llmConfig = typeof snapshot.llmConfig === 'string'
@@ -204,51 +178,41 @@ const HistoryTab = ({ promptCode, versions }) => {
                   : snapshot.llmConfig;
                 const model = llmConfig?.model || 'UNKNOWN';
                 const version = versions.find((v) => v.id === snapshot.versionId);
+                const success = snapshot.success !== false;
 
                 return (
-                  <TableRow key={snapshot.id} hover>
-                    <TableCell align="center">
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {snapshot.id}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {snapshot.testName || '테스트'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Chip label={`v${version?.version || '?'}`} size="small" />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Chip label={model} size="small" color={getModelColor(model)} />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Rating value={snapshot.satisfaction || 0} readOnly size="small" />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body2">
-                        {snapshot.tokensUsed || getTokensUsed(snapshot.response) || 0}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body2">
-                        {snapshot.latencyMs
-                          ? (snapshot.latencyMs / 1000).toFixed(1)
-                          : (getLatency(snapshot.response) / 1000).toFixed(1)}s
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        icon={snapshot.success !== false ? <SuccessIcon /> : <ErrorIcon />}
-                        label={snapshot.success !== false ? '성공' : '실패'}
-                        size="small"
-                        color={snapshot.success !== false ? 'success' : 'error'}
-                      />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Tooltip title={formatTime(snapshot.createdAt)}>
-                        <Typography variant="body2" color="text.secondary">
+                  <tr key={snapshot.id} className="prompt-history-table__row">
+                    <td className="prompt-history-table__col-center prompt-history-table__id">
+                      {snapshot.id}
+                    </td>
+                    <td className="prompt-history-table__name">
+                      {snapshot.testName || '테스트'}
+                    </td>
+                    <td className="prompt-history-table__col-center">
+                      <span className="prompt-history-version-pill">v{version?.version || '?'}</span>
+                    </td>
+                    <td className="prompt-history-table__col-center">
+                      <span className={`prompt-history-model ${getModelBadgeClass(model)}`}>
+                        {model}
+                      </span>
+                    </td>
+                    <td className="prompt-history-table__col-center">
+                      {snapshot.tokensUsed || getTokensUsed(snapshot.response) || 0}
+                    </td>
+                    <td className="prompt-history-table__col-center">
+                      {snapshot.latencyMs
+                        ? (snapshot.latencyMs / 1000).toFixed(1)
+                        : (getLatency(snapshot.response) / 1000).toFixed(1)}s
+                    </td>
+                    <td className="prompt-history-table__col-center">
+                      <span className={`prompt-history-status ${success ? 'is-success' : 'is-error'}`}>
+                        {success ? <CheckCircle2 size={14} aria-hidden /> : <XCircle size={14} aria-hidden />}
+                        {success ? '성공' : '실패'}
+                      </span>
+                    </td>
+                    <td className="prompt-history-table__col-center prompt-history-table__time">
+                      <KlTooltip title={formatTime(snapshot.createdAt)} placement="top">
+                        <span>
                           {snapshot.createdAt
                             ? new Date(snapshot.createdAt).toLocaleString('ko-KR', {
                               year: 'numeric',
@@ -257,151 +221,133 @@ const HistoryTab = ({ promptCode, versions }) => {
                               hour: '2-digit',
                               minute: '2-digit',
                               second: '2-digit',
-                              hour12: false
+                              hour12: false,
                             })
                             : '-'}
-                        </Typography>
-                      </Tooltip>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Box display="flex" gap={0.5} justifyContent="center">
-                        <Tooltip title="상세보기">
-                          <IconButton
-                            size="small"
+                        </span>
+                      </KlTooltip>
+                    </td>
+                    <td className="prompt-history-table__col-center">
+                      <div className="prompt-history-table__actions">
+                        <KlTooltip title="상세보기" placement="top" variant="icon">
+                          <button
+                            type="button"
+                            className="prompt-history-action-btn"
+                            aria-label="상세보기"
                             onClick={() => handleViewDetail(snapshot)}
                           >
-                            <VisibilityIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="삭제">
-                          <IconButton
-                            size="small"
-                            color="error"
+                            <Eye size={15} aria-hidden />
+                          </button>
+                        </KlTooltip>
+                        <KlTooltip title="삭제" placement="top" variant="icon">
+                          <button
+                            type="button"
+                            className="prompt-history-action-btn prompt-history-action-btn--danger"
+                            aria-label="삭제"
                             onClick={() => handleDelete(snapshot.id)}
                           >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
+                            <Trash2 size={15} aria-hidden />
+                          </button>
+                        </KlTooltip>
+                      </div>
+                    </td>
+                  </tr>
                 );
               })
             )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+        </div>{/* basic-table-shell */}
+      </div>{/* table-area */}
 
-      {/* 상세보기 다이얼로그 */}
-      <Dialog
+      <BaseModal
         open={detailDialogOpen}
         onClose={() => setDetailDialogOpen(false)}
+        title="테스트 스냅샷 상세"
         maxWidth="md"
         fullWidth
+        actions={(
+          <button type="button" className="kl-btn gray-outline md" onClick={() => setDetailDialogOpen(false)}>
+            닫기
+          </button>
+        )}
       >
-        <DialogTitle>테스트 스냅샷 상세</DialogTitle>
-        <DialogContent dividers>
-          {selectedSnapshot && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  테스트 이름
-                </Typography>
-                <Typography variant="body1">{selectedSnapshot.testName}</Typography>
-              </Box>
+        {selectedSnapshot && (
+          <div className="prompt-history-detail">
+            <div className="prompt-history-detail__block">
+              <h4 className="prompt-history-detail__label">테스트 이름</h4>
+              <p className="prompt-history-detail__value">{selectedSnapshot.testName}</p>
+            </div>
 
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    프롬프트 내용
-                  </Typography>
-                  <Tooltip title="복사">
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        navigator.clipboard.writeText(selectedSnapshot.content);
-                        showAlert('프롬프트 내용이 복사되었습니다.');
-                      }}
-                    >
-                      <ContentCopyIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-                <Paper sx={{ p: 2, bgcolor: 'grey.50', maxHeight: 200, overflow: 'auto' }}>
-                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                    {selectedSnapshot.content}
-                  </Typography>
-                </Paper>
-              </Box>
+            <div className="prompt-history-detail__block">
+              <div className="prompt-history-detail__head">
+                <h4 className="prompt-history-detail__label">프롬프트 내용</h4>
+                <button
+                  type="button"
+                  className="prompt-history-action-btn"
+                  aria-label="프롬프트 내용 복사"
+                  onClick={() => {
+                    navigator.clipboard.writeText(selectedSnapshot.content);
+                    showAlert('프롬프트 내용이 복사되었습니다.');
+                  }}
+                >
+                  <Copy size={15} aria-hidden />
+                </button>
+              </div>
+              <pre className="prompt-history-detail__code">{selectedSnapshot.content}</pre>
+            </div>
 
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    응답 결과
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <ToggleButtonGroup
-                      value={responseViewMode}
-                      exclusive
-                      onChange={(e, newMode) => {
-                        if (newMode !== null) {
-                          setResponseViewMode(newMode);
-                        }
-                      }}
-                      size="small"
-                    >
-                      <ToggleButton value="text">TEXT</ToggleButton>
-                      <ToggleButton value="json">JSON</ToggleButton>
-                    </ToggleButtonGroup>
-                    <Tooltip title="복사">
-                      <IconButton
-                        size="small"
-                        onClick={() => {
-                          const textToCopy = responseViewMode === 'json'
-                            ? JSON.stringify(selectedSnapshot.response, null, 2)
-                            : getResponseText(selectedSnapshot.response);
-                          navigator.clipboard.writeText(textToCopy);
-                          showAlert('응답 결과가 복사되었습니다.');
-                        }}
-                      >
-                        <ContentCopyIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </Box>
-                <Paper sx={{ p: 2, bgcolor: 'grey.50', maxHeight: 300, overflow: 'auto' }}>
-                  <Typography
-                    variant="body2"
-                    component="pre"
-                    sx={{
-                      whiteSpace: 'pre-wrap',
-                      fontFamily: responseViewMode === 'json' ? 'monospace' : 'inherit',
-                      m: 0,
+            <div className="prompt-history-detail__block">
+              <div className="prompt-history-detail__head">
+                <h4 className="prompt-history-detail__label">응답 결과</h4>
+                <div className="prompt-history-detail__toggle">
+                  <button
+                    type="button"
+                    className={`prompt-history-toggle-btn ${responseViewMode === 'text' ? 'is-active' : ''}`}
+                    onClick={() => setResponseViewMode('text')}
+                  >
+                    TEXT
+                  </button>
+                  <button
+                    type="button"
+                    className={`prompt-history-toggle-btn ${responseViewMode === 'json' ? 'is-active' : ''}`}
+                    onClick={() => setResponseViewMode('json')}
+                  >
+                    JSON
+                  </button>
+                  <button
+                    type="button"
+                    className="prompt-history-action-btn"
+                    aria-label="응답 결과 복사"
+                    onClick={() => {
+                      const textToCopy = responseViewMode === 'json'
+                        ? JSON.stringify(selectedSnapshot.response, null, 2)
+                        : getResponseText(selectedSnapshot.response);
+                      navigator.clipboard.writeText(textToCopy);
+                      showAlert('응답 결과가 복사되었습니다.');
                     }}
                   >
-                    {responseViewMode === 'json'
-                      ? JSON.stringify(selectedSnapshot.response, null, 2)
-                      : getResponseText(selectedSnapshot.response)}
-                  </Typography>
-                </Paper>
-              </Box>
+                    <Copy size={15} aria-hidden />
+                  </button>
+                </div>
+              </div>
+              <pre className="prompt-history-detail__code">
+                {responseViewMode === 'json'
+                  ? JSON.stringify(selectedSnapshot.response, null, 2)
+                  : getResponseText(selectedSnapshot.response)}
+              </pre>
+            </div>
 
-              {selectedSnapshot.notes && (
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    노트
-                  </Typography>
-                  <Typography variant="body2">{selectedSnapshot.notes}</Typography>
-                </Box>
-              )}
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDetailDialogOpen(false)}>닫기</Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+            {selectedSnapshot.notes && (
+              <div className="prompt-history-detail__block">
+                <h4 className="prompt-history-detail__label">노트</h4>
+                <p className="prompt-history-detail__value">{selectedSnapshot.notes}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </BaseModal>
+    </div>
   );
 };
 

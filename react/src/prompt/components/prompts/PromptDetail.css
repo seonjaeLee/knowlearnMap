@@ -322,11 +322,6 @@
 
 .prompt-detail-history-panel {
   overflow: auto;
-  padding: var(--spacing-sm);
-  background: var(--ps-surface);
-  border: 1px solid var(--ps-border);
-  border-radius: var(--ps-radius-lg);
-  box-shadow: var(--ps-shadow-card);
 }
 
 .prompt-editor-root.is-expanded {

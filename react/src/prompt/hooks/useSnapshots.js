@@ -1,22 +1,25 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axiosClient from '../api/axiosClient';
+import { getMockSnapshots } from '../../data/snapshotMockData';
 
 // 스냅샷 목록 조회
 export const useSnapshots = (code, params = {}) => {
   return useQuery({
     queryKey: ['snapshots', code, params],
     queryFn: async () => {
-      const response = await axiosClient.get(`/prompts/${code}/all-snapshots`, { params });
-
-      // axiosClient는 이미 response.data를 반환하므로
-      // response 자체가 { success, message, data } 형태
-      if (response && response.data) {
-        return response.data; // { content, totalElements, ... }
+      try {
+        const response = await axiosClient.get(`/prompts/${code}/all-snapshots`, { params });
+        if (response && response.data) {
+          return response.data;
+        }
+        return { content: [], totalElements: 0 };
+      } catch {
+        // API 미연결 환경 — 더미 데이터로 fallback
+        return getMockSnapshots(code, params);
       }
-
-      return { content: [], totalElements: 0 };
     },
     enabled: !!code,
+    retry: false,
   });
 };
 

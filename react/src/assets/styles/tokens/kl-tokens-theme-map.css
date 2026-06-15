@@ -57,6 +57,23 @@
 
   --color-required-asterisk: #ff0000;
 
+  /* 프롬프트 상세 — 버전·뱃지 상태 (목업 SSOT) */
+  --kl-prompt-badge-category: #3b82f6;
+  --kl-prompt-badge-active: #10b981;
+  --kl-prompt-badge-editing: #f59e0b;
+  --kl-prompt-badge-archived: #9ca3af;
+  --kl-prompt-row-editing-bg: #fffbeb;
+  --kl-prompt-row-editing-border: #f59e0b;
+  --kl-prompt-row-active-bg: #ecfdf5;
+  --kl-prompt-row-active-border: #10b981;
+  --kl-prompt-var-rule-border: #fecaca;
+  --kl-prompt-var-rule-bg: #fef2f2;
+  --kl-prompt-var-rule-dot: #ef4444;
+  --kl-prompt-var-lang-border: #a7f3d0;
+  --kl-prompt-var-lang-bg: #ecfdf5;
+  --kl-prompt-var-lang-dot: #10b981;
+  --kl-prompt-editor-border: #e8eaf0;
+
   /* 오로라 mesh 배경 (본문·로그인) — 카드/표는 --color-bg-secondary solid 유지 */
   --kl-aurora-base: #f3f5fb;
   --kl-aurora-blob-a: rgba(196, 181, 253, 0.55);
@@ -117,4 +134,20 @@
   --kl-aurora-blob-c: rgba(56, 189, 248, 0.1);
   --kl-aurora-blob-d: rgba(167, 139, 250, 0.1);
   --kl-aurora-motion-blob: rgba(94, 184, 255, 0.12);
+
+  --kl-prompt-badge-category: #60a5fa;
+  --kl-prompt-badge-active: #34d399;
+  --kl-prompt-badge-editing: #fbbf24;
+  --kl-prompt-badge-archived: #94a3b8;
+  --kl-prompt-row-editing-bg: rgba(245, 158, 11, 0.12);
+  --kl-prompt-row-editing-border: #fbbf24;
+  --kl-prompt-row-active-bg: rgba(16, 185, 129, 0.12);
+  --kl-prompt-row-active-border: #34d399;
+  --kl-prompt-var-rule-border: rgba(248, 113, 113, 0.45);
+  --kl-prompt-var-rule-bg: rgba(239, 68, 68, 0.12);
+  --kl-prompt-var-rule-dot: #f87171;
+  --kl-prompt-var-lang-border: rgba(52, 211, 153, 0.45);
+  --kl-prompt-var-lang-bg: rgba(16, 185, 129, 0.12);
+  --kl-prompt-var-lang-dot: #34d399;
+  --kl-prompt-editor-border: #334155;
 }

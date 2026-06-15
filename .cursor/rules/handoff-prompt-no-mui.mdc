@@ -1,0 +1,55 @@
+---
+description: 프롬프트 관리 UI — MUI 제거·목업 SSOT·컨펌 후 구현. 상세·에디터 작업 시 먼저 읽는다.
+alwaysApply: false
+---
+
+# 프롬프트 관리 — MUI 제거 + 목업 SSOT (2026-06~)
+
+> **새 채팅·프롬프트 UI 작업 시 본 규칙과 아래 문서를 먼저 읽는다.**
+
+## 0. 진행 순서 (최우선 — 반복 실수 방지)
+
+`.cursor/rules/workflow-confirm-before-implement.mdc` 와 동일. **이 사용자·이 작업에서 특히 엄격히 적용.**
+
+1. 목업 PNG·사용자 스크린샷 = **디자인 SSOT** (`react-dev/`·MUI 레거아웃 아님)
+2. **디자인 제공 화면 = 목업과 동일** — 임의 배경·아이콘·버튼 추가 금지 (`.cursor/rules/design-mockup-fidelity.mdc`)
+3. **코드 패치 전** — 변경 파일·요약·**하지 않을 것**을 공유
+3. **「진행해」「컨펌」「적용해」** 받은 뒤에만 구현
+4. 목업에 **없는 UI 추가 금지** (예: 상단 코드 복사 버튼, **툴바 배경**)
+5. **기존 기능·핸들러 제거 금지** — 붙여넣기·변수체크·탭 전환(프롬프트↔변수) 등. **스타일·마크업만** 변경
+6. 완료 전 「맞췄다」 단정 금지 — 항목별 대조
+
+**상세 스펙·과거 실수 표:** `react/docs/mockup-checklist-prompt-management-redesign.md` **§0 · §2**
+
+## 1. MUI 제거
+
+`react/src/prompt/**` — `@mui/material` · `@mui/icons-material` **신규 import 금지.**
+
+| 영역 | 사용 |
+|------|------|
+| 버튼 | `kl-btn` + variant |
+| 아이콘·툴팁 | `KlIconButton` / `KlTooltip` + `lucide-react` |
+| 입력 | 네이티브 + KL CSS |
+| 표 | `BasicTable` 또는 native `<table>` |
+| 레이아웃 | div flex + `kl-*` — **MUI Box/Stack/sx 금지** |
+
+## 2. 상단 메타 카드 (확정)
+
+- 뒤로가기: 테두리 박스 + chevron (`PromptDetail.css`)
+- 코드: **테두리 박스**, **복사 버튼 없음**
+- 뱃지: **테두리** + **점만 색** + 텍스트 `--color-text-secondary`
+
+## 3. 범위·잔여 MUI
+
+- 우선: `PromptDetail` · `EditorTab` · `PromptEditTabs` · `VersionHistoryPanel` · `PromptList`
+- 잔여: `HistoryTab.jsx`, `TestTab.jsx`, `PromptList.jsx` Popover — grep `@mui/` in `react/src/prompt`
+
+## 4. 금지
+
+- Tailwind · 목업 임의 해석 · 컨펌 없는 토큰 수정 · `ui-history*` 자동 기록
+
+## 5. 참조
+
+- `react/docs/mockup-checklist-prompt-management-redesign.md`
+- `react/docs/mockup-guide.md` §10
+- `AGENTS.md` — 프롬프트 관리 진행 중

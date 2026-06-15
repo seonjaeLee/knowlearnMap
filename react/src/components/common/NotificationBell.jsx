@@ -103,7 +103,7 @@ function NotificationBell({ tooltipPlacement = 'bottom', showLabel = false }) {
                     onMouseEnter={() => { if (!isDropdownOpen) setHovered(true); }}
                     onMouseLeave={() => setHovered(false)}
                     onClick={handleBellClick}
-                    aria-label="공지 알림"
+                    aria-label="알림"
                     aria-haspopup="true"
                     aria-expanded={isDropdownOpen}
                 >
@@ -113,12 +113,12 @@ function NotificationBell({ tooltipPlacement = 'bottom', showLabel = false }) {
                             {unreadCount > 99 ? '99+' : unreadCount}
                         </span>
                     )}
-                    <span className="notification-bell-label">공지 알림</span>
+                    <span className="notification-bell-label">알림</span>
                 </button>
             ) : (
                 /* 접힘 LNB / 기타: 아이콘 전용, tooltip 표시 */
                 <KlTooltip
-                    title="공지 알림"
+                    title="알림"
                     placement={tooltipPlacement}
                     enterDelay={0}
                     leaveDelay={0}
@@ -131,7 +131,7 @@ function NotificationBell({ tooltipPlacement = 'bottom', showLabel = false }) {
                         onMouseEnter={() => { if (!isDropdownOpen) setHovered(true); }}
                         onMouseLeave={() => setHovered(false)}
                         onClick={handleBellClick}
-                        aria-label="공지 알림"
+                        aria-label="알림"
                         aria-haspopup="true"
                         aria-expanded={isDropdownOpen}
                     >

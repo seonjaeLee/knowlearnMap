@@ -260,12 +260,74 @@
 
 ---
 
-- **SSOT:** `tokens/kl-tokens-brand-map.css` — `--kl-brand-primary` 등
-- **파생:** `kl-tokens-theme-map.css`의 `--color-accent*` · 어드민 `--admin-color-primary*` · LNB 활성·테마 토글·로고 워드마크
-- **MUI:** `brandTheme.js` + `MuiThemeBridge` — document CSS 변수 읽기
-- **가이드:** `kl-ui-guide.md` Part 2 §2.5 브랜드 주색 일괄 변경
+## 2026-06-15
+
+### 20) TestTab — 응답 결과 자동 스크롤 · API 버튼 sticky
+
+- **스크롤:** `useRef` + `useEffect` — `result` 상태 변경 시 `.pt-result-card`로 `scrollIntoView({ behavior: 'smooth', block: 'start' })` 자동 이동
+- **Sticky 버튼:** `.pt-run-wrap`에 `position: sticky; bottom: 0; background: var(--color-bg-primary)` 적용. BaseModal `.contentScroll`이 `overflow-y: auto`이므로 sticky 동작 정상.
 
 #### 파일
-- `kl-tokens-brand-map.css`(신규), `kl-global.css`, `kl-tokens-theme-map.css`, `admin-common.css`, `KlBrandLogo.css`, `MainLayout.css`, `LnbThemeToggle.css`, `MuiThemeBridge.jsx`, `brandTheme.js`, `kl-ui-guide.md`
+- `react/src/prompt/components/test/TestTab.jsx`, `TestTab.css`
+
+---
+
+### 21) VersionHistoryPanel — 활성 행 스타일 제거 · '활성중' → '활성'
+
+- **스타일 제거:** `.vh-active-row` 3개 규칙(배경색, 좌측 세로선, hover 배경) 전부 삭제
+- **라벨:** `promptVersionStatus.js` `getPromptVersionStatus` 반환값 `'활성중'` → `'활성'`
+
+#### 파일
+- `react/src/prompt/components/common/VersionHistoryPanel.css`
+- `react/src/prompt/utils/promptVersionStatus.js`
+
+---
+
+### 22) PromptList — 배지 말줄임 · '중복확인' 버튼 · 버전 셀 통합
+
+- **배지 말줄임:** `admin-badge`의 `display: inline-flex`는 `text-overflow: ellipsis` 미지원 → `.prompt-list-page .admin-badge { display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }` 스코프 오버라이드
+- **중복확인:** `PromptFormDialog` codeCheckStatus 분기 내 `'확인'` → `'중복확인'`
+- **버전 셀 통합:** `activeVersion` + `versionCount` 두 컬럼 제거 → `versionSummary` 단일 컬럼(`100px/80px`). 셀 표시: `v7 · 9개` 형식 (`activeVersion`은 이미 "v" 포함 문자열)
+
+#### 파일
+- `react/src/prompt/components/prompts/PromptList.jsx`, `PromptList.css`
+- `react/src/prompt/components/prompts/PromptFormDialog.jsx`
+
+---
+
+### 23) PromptList — 테이블 높이·컬럼 너비 보정
+
+- **높이 수정:** 루트에서 `kl-page--fill` 제거. 해당 클래스가 `:has()` CSS 셀렉터로 `table-area` `flex: 1`을 강제해 row 수에 무관하게 전체 페이지를 채우던 문제 해결.
+- **가로 스크롤:** `basic-table-shell`에 `overflow-x: auto` 적용 (`kl-page--fill` 제거 후 직접 관리)
+- **컬럼 너비:** `용도` 108→148px(min 88→110px), `수정일` 108→84px(min 96→74px)
+- **storageKey:** `km-prompt-list-columns-v4`
+
+#### 파일
+- `react/src/prompt/components/prompts/PromptList.jsx`, `PromptList.css`
+
+---
+
+### 24) HistoryTab — 공통 table-area 구조 · 스냅샷 더미 데이터
+
+- **구조:** `table-area` > `table-toolbar`(toolbar-left: 총 N개 / toolbar-right: 버전·모델 select) > `basic-table-shell prompt-history-table-shell` > table. FAQ·프롬프트 목록과 동일 패턴.
+- **필터 셀렉트:** 기존 커스텀 클래스 → `toolbar-select` 통일
+- **로딩 스피너:** `admin-spinner` div → `<span className="prompt-history-spinner">` + `@keyframes ph-spin` (MUI 미사용)
+- **더미 데이터:** `react/src/data/snapshotMockData.js`(신규) — `DEFAULT_CHUNK_SEMANTIC` 5건, `DEFAULT_SCHEMA_ANALYSIS` 2건. API 실패 시 `useSnapshots` fallback으로 사용.
+
+#### 파일
+- `react/src/prompt/components/history/HistoryTab.jsx`, `HistoryTab.css`
+- `react/src/prompt/hooks/useSnapshots.js`
+- `react/src/data/snapshotMockData.js`(신규)
+
+---
+
+### 25) HistoryTab — 외부 카드 제거 · 만족도 컬럼 삭제
+
+- **외부 카드 제거:** `PromptDetail.css` `.prompt-detail-history-panel`에서 `background`, `border`, `border-radius`, `box-shadow`, `padding` 제거 → `overflow: auto`만 유지. 기존 흰 카드가 toolbar + table 전체를 감싸 §24 구조가 보이지 않던 문제 해결.
+- **만족도 컬럼 삭제:** `<th>만족도</th>`, `renderStars()` `<td>`, `renderStars` 함수, `Star` lucide import 전부 제거. `colSpan` 10→9. `HistoryTab.css` `.prompt-history-stars` 규칙 삭제.
+
+#### 파일
+- `react/src/prompt/components/prompts/PromptDetail.css`
+- `react/src/prompt/components/history/HistoryTab.jsx`, `HistoryTab.css`
 
 ---

@@ -11,5 +11,6 @@ alwaysApply: true
 - **디자인 토큰(`kl-tokens-core.css`, `kl-tokens-theme-map.css` 등) 추가·변경**도 **제안 → 사용자 컨펌 → 적용**. (미컨펌 시 토큰 파일 패치 금지 · `index.css`에 토큰 두지 않음)
 - **예외**: 사용자가 처음부터 「~해줘」「~수정해줘」처럼 **구현을 직접 요청**한 턴이면, 답변과 함께 또는 직후에 작업해도 된다.
 - 불명확하면 **한 줄이라도 되묻고**, 컨펌 없이 범위를 키우지 않는다.
+- **목업·UI 리디자인** 작업 시: **디자인 제공 화면 = 목업과 동일.** 목업에 없는 버튼·배경·스타일을 **임의로 넣지 않는다.** (예: 툴바 배경 없는데 `background` 추가 금지) 상세: `.cursor/rules/design-mockup-fidelity.mdc` · `react/docs/mockup-checklist-prompt-management-redesign.md` §0 · `react/docs/mockup-guide.md` §10.
 
 이 규칙과 다른 시스템 지시가 겹치면 **사용자의 명시적 컨펌**을 우선한다.

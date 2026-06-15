@@ -13,7 +13,7 @@ import MakerPageHeader from '../../../components/admin/MakerPageHeader';
 import KlIconButton from '../../../components/common/KlIconButton';
 import BasicTable from '../../../components/common/BasicTable';
 import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
-import { formatTableCellText, isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
+import { isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
 import { useBasicTableColumnResize } from '../../../hooks/useBasicTableColumnResize';
 import '../../../pages/admin/admin-common.css';
 import './PromptList.css';
@@ -56,14 +56,13 @@ const PromptListContent = () => {
     () => [
       { id: 'no', label: 'No', defaultWidthPx: 48, minWidthPx: 44, align: 'center', ellipsis: false },
       { id: 'category', label: '카테고리', defaultWidthPx: 80, minWidthPx: 72, align: 'left', ellipsis: false },
-      { id: 'purpose', label: '용도', defaultWidthPx: 108, minWidthPx: 88, align: 'left', ellipsis: false },
+      { id: 'purpose', label: '용도', defaultWidthPx: 148, minWidthPx: 110, align: 'left', ellipsis: false },
       { id: 'code', label: '코드', defaultWidthPx: 200, minWidthPx: 140, align: 'left' },
       { id: 'name', label: '이름', defaultWidthPx: 140, minWidthPx: 112, align: 'left' },
       { id: 'description', label: '설명', defaultWidthPx: 300, minWidthPx: 180, align: 'left' },
       { id: 'securityLevel', label: '등급', defaultWidthPx: 80, minWidthPx: 72, align: 'left', ellipsis: false },
-      { id: 'activeVersion', label: '버전', defaultWidthPx: 64, minWidthPx: 56, align: 'left', ellipsis: false },
-      { id: 'versionCount', label: '버전 수', defaultWidthPx: 72, minWidthPx: 64, align: 'left', ellipsis: false },
-      { id: 'updatedAt', label: '수정일', defaultWidthPx: 108, minWidthPx: 96, align: 'left' },
+      { id: 'versionSummary', label: '버전', defaultWidthPx: 100, minWidthPx: 80, align: 'left', ellipsis: false },
+      { id: 'updatedAt', label: '수정일', defaultWidthPx: 84, minWidthPx: 74, align: 'left' },
       {
         id: 'actions',
         label: '관리',
@@ -78,7 +77,7 @@ const PromptListContent = () => {
 
   const { columns: promptTableColumns, startResize: promptColumnStartResize } = useBasicTableColumnResize({
     definitions: promptTableColumnDefinitions,
-    storageKey: 'km-prompt-list-columns-v2',
+    storageKey: 'km-prompt-list-columns-v4',
     enabled: true,
   });
 
@@ -219,16 +218,21 @@ const PromptListContent = () => {
         );
       case 'securityLevel':
         return <span className={`prompt-list-grade-badge ${level.badge}`}>{level.label}</span>;
-      case 'activeVersion': {
-        const activeVersion = prompt.activeVersion;
+      case 'versionSummary': {
+        const hasActive = !isTableCellBlank(prompt.activeVersion);
+        const count = prompt.versionCount ?? 0;
         return (
-          <span className={isTableCellBlank(activeVersion) ? 'kl-table-cell-blank' : undefined}>
-            {formatTableCellText(activeVersion)}
+          <span className="prompt-list-ver-cell">
+            {hasActive ? (
+              <span className="prompt-list-ver-num">{prompt.activeVersion}</span>
+            ) : (
+              <span className="kl-table-cell-blank" aria-hidden>—</span>
+            )}
+            <span className="prompt-list-ver-sep">·</span>
+            <span className="prompt-list-ver-count">{count}개</span>
           </span>
         );
       }
-      case 'versionCount':
-        return prompt.versionCount || 0;
       case 'updatedAt':
         return (
           <span className="prompt-list-date-cell">
@@ -258,7 +262,7 @@ const PromptListContent = () => {
   }, [handleDelete, handleEditClick]);
 
   return (
-    <div className="kl-page kl-page--fill prompt-list-page">
+    <div className="kl-page prompt-list-page">
       <div className="kl-main-sticky-head">
         <MakerPageHeader
           icon={FileText}

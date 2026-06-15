@@ -1,0 +1,251 @@
+/* 프롬프트 상세 — History 탭 (MUI 없음 · KL 패턴) */
+
+.prompt-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-height: 0;
+}
+
+.prompt-history-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  min-height: 280px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.prompt-history-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: ph-spin 0.7s linear infinite;
+}
+
+@keyframes ph-spin {
+  to { transform: rotate(360deg); }
+}
+
+.prompt-history-table-shell {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prompt-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.prompt-history-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
+  white-space: nowrap;
+}
+
+.prompt-history-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  vertical-align: middle;
+  color: var(--color-text-primary);
+}
+
+.prompt-history-table__col-center {
+  text-align: center;
+}
+
+.prompt-history-table__row:hover {
+  background: var(--color-bg-hover);
+}
+
+.prompt-history-table__id,
+.prompt-history-table__name {
+  font-weight: var(--font-weight-medium);
+}
+
+.prompt-history-table__time {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.prompt-history-table__empty {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-tertiary);
+}
+
+.prompt-history-version-pill {
+  display: inline-flex;
+  padding: 2px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  background: var(--color-bg-secondary);
+}
+
+.prompt-history-model {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+}
+
+.prompt-history-model--aistudio {
+  border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+}
+
+.prompt-history-model--openai {
+  border-color: color-mix(in srgb, var(--color-icon-success) 35%, var(--color-border));
+  color: var(--color-icon-success-emphasis);
+  background: color-mix(in srgb, var(--color-icon-success) 10%, var(--color-bg-secondary));
+}
+
+.prompt-history-model--anthropic {
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.prompt-history-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.prompt-history-status.is-success {
+  color: var(--color-icon-success-emphasis);
+}
+
+.prompt-history-status.is-error {
+  color: var(--color-icon-danger);
+}
+
+.prompt-history-table__actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.prompt-history-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+}
+
+.prompt-history-action-btn:hover {
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+}
+
+.prompt-history-action-btn--danger {
+  color: var(--color-icon-danger);
+}
+
+.prompt-history-action-btn--danger:hover {
+  background: color-mix(in srgb, var(--color-icon-danger) 12%, transparent);
+}
+
+.prompt-history-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.prompt-history-detail__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.prompt-history-detail__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.prompt-history-detail__label {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.prompt-history-detail__value {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.prompt-history-detail__code {
+  margin: 0;
+  max-height: 200px;
+  overflow: auto;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.prompt-history-detail__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.prompt-history-toggle-btn {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.prompt-history-toggle-btn.is-active {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+}
+
+.prompt-history-toggle-btn + .prompt-history-toggle-btn {
+  margin-left: 0;
+}

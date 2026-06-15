@@ -437,7 +437,7 @@ const PromptFormDialog = ({ open, onClose, initialData = null, mode = 'create' }
                   onClick={handleCheckCode}
                   disabled={!formData.code.trim() || isCodeLocked || Boolean(initialData)}
                 >
-                  {codeCheckStatus === 'checking' ? '...' : codeCheckStatus === 'available' ? '✓' : '확인'}
+                  {codeCheckStatus === 'checking' ? '...' : codeCheckStatus === 'available' ? '✓' : '중복확인'}
                 </button>
               ) : null}
             </div>

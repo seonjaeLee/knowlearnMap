@@ -1,0 +1,316 @@
+/* 버전 히스토리 — Skin.html .vh-col / .vh-panel / .vh-table */
+
+.vh-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vh-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 0 2px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.vh-head__title {
+  margin: 0;
+  flex: 1 1 auto;
+  /* flex shrink로 타이틀이 0까지 줄어드는 것 방지 */
+  min-width: min-content;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.vh-head__toggle {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.vh-head__name {
+  color: var(--ps-brand, #5a57e6);
+  font-weight: 800;
+}
+
+.vh-head__sub {
+  color: var(--ps-text-3, #9099a8);
+  font-weight: 600;
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+.vhc-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  color: var(--ps-text-3, #9099a8);
+  border: 1px solid var(--ps-border, #e6e9ef);
+  background: var(--ps-surface, #fff);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  padding: 0;
+}
+
+.vhc-btn:hover {
+  color: var(--ps-brand, #5a57e6);
+  border-color: var(--ps-brand, #5a57e6);
+}
+
+.vhc-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+
+.vh-col.is-collapsed .vhc-btn svg {
+  transform: rotate(180deg);
+}
+
+.vh-panel {
+  background: var(--ps-surface, #fff);
+  border: 1px solid var(--ps-border, #e6e9ef);
+  border-radius: var(--ps-radius-lg, 16px);
+  box-shadow: var(--ps-shadow-card, 0 1px 2px rgba(16, 20, 30, 0.04), 0 4px 16px rgba(16, 20, 30, 0.05));
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+.vh-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.vh-scroll::-webkit-scrollbar {
+  height: 7px;
+  width: 7px;
+}
+
+.vh-scroll::-webkit-scrollbar-thumb {
+  background: var(--ps-border-strong, #d9dde5);
+  border-radius: 4px;
+}
+
+.vh-col.is-collapsed .vh-scroll {
+  overflow-x: auto;
+}
+
+.vh-col.is-collapsed .vh-panel {
+  width: 100%;
+}
+
+/* Skin: 접힘 시 테이블 최소 너비 → 가로 스크롤, 컬럼 압축 방지 */
+.vh-col.is-collapsed .vh-table {
+  width: auto;
+  min-width: 340px;
+  table-layout: auto;
+}
+
+.vh-col.is-collapsed .vh-table th,
+.vh-col.is-collapsed .vh-table td {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.vh-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 0;
+}
+
+.vh-table th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--ps-th, #7b8493);
+  text-transform: uppercase;
+  text-align: left;
+  padding: 11px 16px;
+  background: var(--ps-surface-2, #f3f5f8);
+  border-bottom: 1px solid var(--ps-border, #e6e9ef);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.vh-table th.vh-table__col-center {
+  text-align: center;
+}
+
+.vh-table__col-active {
+  width: 52px;
+  min-width: 52px;
+  max-width: 52px;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.vh-table__col-actions {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  padding-left: 6px !important;
+  padding-right: 10px !important;
+}
+
+.vh-table td {
+  padding: 0 16px;
+  height: 48px;
+  font-size: 12.5px;
+  color: var(--ps-text-2, #5b6472);
+  border-bottom: 1px solid var(--ps-border, #e6e9ef);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.vh-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.vh-table tbody tr {
+  cursor: pointer;
+}
+
+.vh-table tbody tr:hover td {
+  background: var(--ps-surface-hover, #f7f8fb);
+}
+
+.vh-table tbody tr.vh-editing td {
+  background: color-mix(in srgb, var(--ps-warn, #dd8a16) 8%, transparent);
+}
+
+.vh-table tbody tr.vh-editing td:first-child {
+  box-shadow: inset 3px 0 0 var(--ps-warn, #dd8a16);
+}
+
+.vh-table tbody tr.vh-editing:hover td {
+  background: color-mix(in srgb, var(--ps-warn, #dd8a16) 13%, transparent);
+}
+
+
+.vh-vercell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vh-ver {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--ps-text-1, #1a1f29);
+}
+
+.vh-copy {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ps-text-3, #9099a8);
+  cursor: pointer;
+  transition: color 0.12s, background 0.12s;
+}
+
+.vh-copy:hover {
+  color: var(--ps-brand, #5a57e6);
+  background: var(--ps-brand-soft, color-mix(in srgb, #5a57e6 12%, transparent));
+}
+
+.vh-table .prompt-skin-tag {
+  height: 23px;
+  padding: 0 8px 0 7px;
+}
+
+.vh-radio {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.7px solid var(--ps-border-strong, #d9dde5);
+  cursor: default;
+  display: inline-grid;
+  place-items: center;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+  background: var(--ps-surface, #fff);
+}
+
+.vh-radio.is-checked {
+  border-color: var(--ps-ok, #1aa85f);
+}
+
+.vh-radio.is-checked::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ps-ok, #1aa85f);
+}
+
+.vh-del {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ps-danger, #e0483d);
+  cursor: pointer;
+}
+
+.vh-del:hover {
+  background: color-mix(in srgb, var(--ps-danger, #e0483d) 10%, transparent);
+}
+
+.vh-table__empty {
+  padding: 54px 16px;
+  text-align: center;
+  color: var(--ps-text-3, #9099a8);
+  font-size: 13.5px;
+}
+
+.vh-table__col-center {
+  text-align: center;
+}
+
+.vh-table__col-active {
+  width: 52px;
+  min-width: 52px;
+  max-width: 52px;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.vh-table__col-actions {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  padding-left: 6px !important;
+  padding-right: 10px !important;
+}

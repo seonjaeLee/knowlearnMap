@@ -232,11 +232,16 @@
   max-height: 320px;
 }
 
-/* ---- 실행 버튼 ---- */
+/* ---- 실행 버튼 (sticky) ---- */
 .pt-run-wrap {
+  position: sticky;
+  bottom: 0;
   display: flex;
   justify-content: flex-end;
-  padding: 4px 0 2px;
+  padding: 10px 0 4px;
+  background: var(--color-bg-primary, #fff);
+  border-top: 1px solid #e6e9ef;
+  z-index: 1;
 }
 
 .pt-run-btn {

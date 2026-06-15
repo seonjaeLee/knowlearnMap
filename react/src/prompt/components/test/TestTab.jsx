@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Check, Copy, Play, Save } from 'lucide-react';
 import { useAlert } from '../../../context/AlertContext';
 import { configApi } from '../../../services/api';
@@ -34,6 +34,7 @@ const TestTab = ({
   const [llmModels, setLlmModels]             = useState(LLM_MODELS_DEFAULT);
   const { copy, isCopied } = useCopyFeedback();
   const { showAlert } = useAlert();
+  const resultRef = useRef(null);
 
   useEffect(() => {
     configApi.getLlmModels()
@@ -141,6 +142,12 @@ const TestTab = ({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (result && resultRef.current) {
+      resultRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [result]);
 
   const resultJson = result ? JSON.stringify(result, null, 2) : '';
   const resultText = result?.response?.text || result?.error || '';
@@ -257,7 +264,7 @@ const TestTab = ({
 
       {/* 응답 결과 */}
       {result && (
-        <div className="pt-result-card">
+        <div ref={resultRef} className="pt-result-card">
           <div className="pt-panel-header">
             <span className="pt-panel-label">응답 결과</span>
             <button

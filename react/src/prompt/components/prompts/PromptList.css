@@ -10,6 +10,8 @@
 
 .prompt-list-page .basic-table-shell {
   min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .prompt-list-basic-table {
@@ -47,10 +49,42 @@
   font-weight: var(--font-weight-medium);
 }
 
+.prompt-list-ver-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.prompt-list-ver-num {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.prompt-list-ver-sep {
+  color: var(--color-text-tertiary, #9ca3af);
+  font-size: var(--font-size-xs, 11px);
+}
+
+.prompt-list-ver-count {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
 .prompt-list-date-cell {
   color: var(--admin-text-secondary);
   font-size: var(--font-size-sm);
   white-space: nowrap;
+}
+
+/* 좁아진 열에서 badge 텍스트 말줄임 처리 — inline-flex는 text-overflow 불가, inline-block으로 재정의 */
+.prompt-list-page .admin-badge {
+  max-width: 100%;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
 .prompt-list-desc-popover {
