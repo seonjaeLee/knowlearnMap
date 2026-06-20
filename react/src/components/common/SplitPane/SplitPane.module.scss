@@ -20,6 +20,10 @@
   flex-shrink: 0;
 }
 
+.leftPaneCollapsedFit {
+  overflow: visible;
+}
+
 .rightPane {
   flex: 1;
   min-width: 0;

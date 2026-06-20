@@ -26,13 +26,17 @@
 @import './kit/kl-form-readonly.css';
 @import './kit/kl-modal-form.css';
 @import './kit/kl-buttons.css';
+@import './kit/kl-badge.css';
 @import './kit/kl-basic-table.css';
 
 /* 5. 패턴 */
 @import './patterns/kl-scrollbar-thin.css';
 @import './patterns/kl-infotxt-note.css';
 @import './patterns/kl-subtabs.css';
+@import './patterns/kl-tab-bar.css';
 @import './patterns/kl-split-panel.css';
+@import './patterns/kl-table-row-detail.css';
+@import './patterns/kl-modal-close.css';
 @import './patterns/kl-aurora-background.css';
 
 /* 6. 레거시 (이관 완료 후 제거) */

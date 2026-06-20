@@ -34,14 +34,23 @@
   border-bottom: 1px solid var(--color-border-subtle) !important;
 }
 
+/* 업무 Form 팝업만 — 헤더 흰색 (alert/confirm은 Paper `--color-bg-primary` 유지) */
+.dialogPaperForm .header {
+  background-color: #fff !important;
+}
+
 .headerCenter {
   justify-content: center !important;
 }
 
 .headerFilled {
-  background-color: var(--color-bg-subtle) !important;
+  background-color: transparent !important;
   border-bottom: 1px solid var(--color-border-subtle) !important;
   padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) var(--spacing-lg) !important;
+}
+
+.dialogPaperForm .headerFilled {
+  background-color: #fff !important;
 }
 
 .headerFilled + .contentShell .contentScroll {
@@ -150,10 +159,11 @@
 
 .actions :global(.MuiButton-contained) {
   min-width: 150px !important;
-  background-color: var(--color-accent) !important;
-  border: 1px solid var(--color-accent) !important;
+  background: var(--kl-brand-primary-grad) !important;
+  border: 1px solid transparent !important;
   color: #ffffff !important;
   box-shadow: none !important;
+  transition: filter var(--transition-fast) !important;
 }
 
 /* Form 하단 kl-btn — MUI contained 와 동일 min-width (modal-guide §2.1) */
@@ -162,14 +172,16 @@
 }
 
 .actions :global(.MuiButton-contained:hover) {
-  background-color: var(--color-accent-hover) !important;
-  border-color: var(--color-accent-hover) !important;
+  background: var(--kl-brand-primary-grad) !important;
+  border-color: transparent !important;
+  filter: brightness(1.07);
   box-shadow: none !important;
 }
 
 .actions :global(.MuiButton-contained:active) {
-  background-color: var(--color-accent-hover) !important;
-  border-color: var(--color-accent-hover) !important;
+  background: var(--kl-brand-primary-grad) !important;
+  border-color: transparent !important;
+  filter: brightness(1.05);
   box-shadow: none !important;
 }
 
@@ -189,13 +201,13 @@
 .dialogPaper :global(.MuiButton-outlinedPrimary:hover) {
   border-color: var(--color-accent-hover) !important;
   color: var(--color-accent-hover) !important;
-  background-color: #f0f7ff !important;
+  background-color: var(--color-accent-light) !important;
 }
 
 .dialogPaper :global(.MuiButton-outlinedPrimary:active) {
   border-color: var(--color-accent-hover) !important;
   color: var(--color-accent-hover) !important;
-  background-color: #e8f0fe !important;
+  background-color: var(--color-accent-light) !important;
 }
 
 .dialogPaper :global(.MuiButton-outlinedPrimary.Mui-disabled) {
@@ -205,27 +217,27 @@
 }
 
 .actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):not(.cs-detail-list-move-btn):not(.outlinedPrimary-sm)) {
-  border-color: #6b7280 !important;
-  color: #6b7280 !important;
-  background-color: #f3f4f6 !important;
+  border-color: var(--color-text-secondary) !important;
+  color: var(--color-text-secondary) !important;
+  background-color: var(--color-bg-hover) !important;
 }
 
 .actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):not(.cs-detail-list-move-btn):not(.outlinedPrimary-sm):hover) {
-  border-color: #4b5563 !important;
-  color: #4b5563 !important;
-  background-color: #f9fafb !important;
+  border-color: var(--color-text-primary) !important;
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-bg-hover) !important;
 }
 
 .actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):not(.cs-detail-list-move-btn):not(.outlinedPrimary-sm):active) {
-  border-color: #4b5563 !important;
-  color: #4b5563 !important;
-  background-color: #f3f4f6 !important;
+  border-color: var(--color-text-primary) !important;
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-bg-hover) !important;
 }
 
 .actions :global(.MuiButton-outlined:not(.persona-list-move-btn):not(.persona-delete-btn):not(.cs-detail-list-move-btn):not(.outlinedPrimary-sm).Mui-disabled) {
   border-color: var(--btn-disabled-bg) !important;
   color: var(--btn-disabled-text) !important;
-  background-color: #f3f4f6 !important;
+  background-color: var(--color-bg-hover) !important;
 }
 
 .actions :global(.MuiButton-outlined.persona-delete-btn) {

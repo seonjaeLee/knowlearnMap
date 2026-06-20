@@ -166,8 +166,9 @@
 }
 
 .notebooks-container.grid {
-  /* DomainSelection 카드와 동일한 기본 폭 */
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  /* DomainSelection 카드와 동일한 기본 폭 — 카드 디자인 SSOT: react/docs/workspace-card.md */
+  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 18px;
 }
 
 .notebooks-container.list {
@@ -320,12 +321,14 @@
   }
 }
 
-/* Notebook Cards */
+/* Notebook Cards — 카드 디자인 SSOT: react/docs/workspace-card.md */
 .notebook-card {
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 158px;
+  box-shadow: var(--shadow-card);
   transition: border-color var(--transition-fast),
     box-shadow var(--transition-fast),
     transform var(--transition-fast);
@@ -345,13 +348,19 @@
 
 .notebook-card:hover {
   border-color: var(--color-accent);
-  box-shadow: var(--shadow-small);
-  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(20, 28, 46, 0.14);
+  transform: translateY(-2px);
+}
+
+[data-theme='dark'] .notebook-card:hover {
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
 }
 
 /* Create Card */
 .create-card {
-  border: 2px dashed var(--color-border);
+  border: 1.6px dashed var(--color-border-strong);
+  border-radius: 14px;
+  min-height: 158px;
   background-color: transparent;
   display: flex;
   align-items: center;
@@ -368,18 +377,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: 12px;
   color: var(--color-text-secondary);
 }
 
 .create-icon {
   color: var(--color-text-tertiary);
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast);
 }
 
 .create-card:hover .create-icon {
   color: var(--color-accent);
-  transform: scale(1.1);
 }
 
 .create-text {
@@ -396,7 +404,8 @@
 .card-header {
   display: flex;
   align-items: flex-start;
-  margin-bottom: var(--spacing-md);
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
 .notebook-icon {
@@ -409,9 +418,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   background: var(--color-accent-light);
   color: var(--color-accent);
 }
@@ -420,27 +429,22 @@
   position: relative;
 }
 
-/* 그리드 뷰: more(⋯)을 카드 우측 패딩선에 맞춤 */
-.notebooks-container.grid .notebook-card:not(.create-card) .more-btn-container {
-  margin-right: calc(-1 * var(--spacing-md));
-}
-
-/* 워크스페이스/리스트 ⋮ — 노트북 좌측 .menu-trigger(문서 행)와 효과 분리: 여기는 호버 시 연한 원형 배경 */
+/* 워크스페이스 ⋮ — 노트북 좌측 .menu-trigger(문서 행)와 효과 분리: 여기는 호버 시 연한 배경 */
 .more-btn {
-  width: var(--spacing-xl);
-  height: var(--spacing-xl);
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 7px;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   transition: all var(--transition-fast);
 }
 
 .more-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-input);
   color: var(--color-text-primary);
 }
 
@@ -497,9 +501,9 @@
 
 .notebook-source {
   margin-top: var(--spacing-xs);
-  color: var(--color-text-secondary);
-  font-size: 14px;
-  font-weight: var(--font-weight-normal);
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
 }
 
 .popup-menu .menu-item {
@@ -560,7 +564,7 @@
 
 .notebook-title {
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
+  font-weight: 700;
   color: var(--color-text-primary);
   margin-bottom: 0;
   line-height: 1.4;
@@ -658,7 +662,7 @@
   background: transparent;
   color: var(--color-text-primary);
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
+  font-weight: 700;
   font-family: inherit;
   outline: none;
   padding: 0 0 2px;

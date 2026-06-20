@@ -14,18 +14,23 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import KlPopover from '../../components/common/KlPopover';
+import { basicTableActionsColumnDef } from '../../components/common/table/basicTableActionsColumn';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlIconButton from '../../components/common/KlIconButton';
+import KlBadge from '../../components/common/KlBadge';
+import { GradeTierText } from '../../components/common/MemberTableCells';
+import { getUpgradeStatusTone } from '../../components/common/klBadgeToneMaps';
+import { getUpgradeTypeGradeDisplay } from '../../components/common/klMemberBadgeTones';
 import { listTableEmptyState } from '../../config/supportMock';
 import { mockUpgradeRequests } from '../../data/upgradeRequestMockData';
+import { formatKlDateCell } from '../../utils/formatKlDate';
 import './admin-common.css';
 import './AdminUpgradeRequests.css';
 
 const isUpgradeMockEnabled = import.meta.env.VITE_ENABLE_UPGRADE_MOCK === 'true';
 
 function formatUpgradeDate(dateString) {
-    if (isTableCellBlank(dateString)) return formatTableCellText(dateString);
-    return new Date(dateString).toLocaleDateString('ko-KR');
+    return formatKlDateCell(dateString);
 }
 
 function AdminUpgradeRequests() {
@@ -50,14 +55,7 @@ function AdminUpgradeRequests() {
             { id: 'phone', label: '전화번호', defaultWidthPx: 120, minWidthPx: 104, align: 'left' },
             { id: 'type', label: '유형', defaultWidthPx: 104, minWidthPx: 96, align: 'left', ellipsis: false },
             { id: 'status', label: '상태', defaultWidthPx: 180, minWidthPx: 140, align: 'left', ellipsis: false },
-            {
-                id: 'actions',
-                label: <span className="admin-upgrade-actions-head">관리</span>,
-                defaultWidthPx: 120,
-                minWidthPx: 120,
-                align: 'right',
-                ellipsis: false,
-            },
+            basicTableActionsColumnDef({ buttonCount: 2 }),
         ],
         []
     );
@@ -215,34 +213,31 @@ function AdminUpgradeRequests() {
                         </span>
                     );
                 }
-                case 'type':
-                    return (
-                        <span
-                            className={`admin-upgrade-type-badge ${
-                                req.type === 'MAX_CONSULTATION' ? 'is-max' : 'is-pro'
-                            }`}
-                        >
-                            {req.type === 'PRO_UPGRADE' ? 'Pro 신청' : 'Max 상담'}
-                        </span>
-                    );
+                case 'type': {
+                    const { tier, label } = getUpgradeTypeGradeDisplay(req.type);
+                    return <GradeTierText tier={tier}>{label}</GradeTierText>;
+                }
                 case 'status': {
                     const status = req.status;
-                    const statusKey = String(status || '').toLowerCase();
                     const reasonOpen =
                         rejectReasonPopover &&
                         rejectReasonPopover.requestId === req.id;
                     return (
                         <div className="admin-upgrade-status-cell">
                             <div className="admin-upgrade-status-row">
-                                <span
-                                    className={
-                                        isTableCellBlank(status)
-                                            ? 'kl-table-cell-blank'
-                                            : `admin-upgrade-status status-${statusKey}`
-                                    }
-                                >
-                                    {formatTableCellText(status)}
-                                </span>
+                                {isTableCellBlank(status) ? (
+                                    <span className="kl-table-cell-blank">
+                                        {formatTableCellText(status)}
+                                    </span>
+                                ) : (
+                                    <KlBadge
+                                        tone={getUpgradeStatusTone(status)}
+                                        variant="inline"
+                                        title={String(status)}
+                                    >
+                                        {formatTableCellText(status)}
+                                    </KlBadge>
+                                )}
                                 {status === 'REJECTED' && (
                                     <KlIconButton
                                         ariaLabel={`${req.email} 사유 보기`}
@@ -334,7 +329,6 @@ function AdminUpgradeRequests() {
 
                 <div className="basic-table-shell">
                     <BasicTable
-                        className="admin-upgrade-basic-table"
                         columns={upgradeTableColumns}
                         data={loading ? [] : requests}
                         renderCell={renderUpgradeCell}

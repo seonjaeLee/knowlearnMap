@@ -14,6 +14,7 @@ import { mockFaqs } from '../data/supportMockData';
 import { faqApi } from '../services/api';
 import { normalizeSupportListPayload } from '../utils/supportListResponse';
 import { isSupportCenterAdmin } from '../utils/supportCenterAdmin';
+import { formatKlDateCell as formatDate } from '../utils/formatKlDate';
 import { SUPPORT_ADMIN_ACTIONS_COLUMN } from './supportCenterColumns';
 import './Faq.css';
 import './SupportCenter.css';
@@ -25,11 +26,6 @@ const FAQ_BASE_COLUMNS = [
   { id: 'createdAt', label: '작성일', width: 120, align: 'left' },
   { id: 'viewCount', label: '조회수', width: 88, align: 'center', ellipsis: false },
 ];
-
-function formatDate(value) {
-  if (isTableCellBlank(value)) return formatTableCellText(value);
-  return new Date(value).toLocaleDateString('ko-KR');
-}
 
 function sortFaqsForList(items) {
   return [...items].sort((a, b) => {
@@ -209,7 +205,7 @@ function Faq() {
         const category = row.category;
         return isTableCellBlank(category)
           ? <span className="kl-table-cell-blank">{formatTableCellText(category)}</span>
-          : <span className="faq-category-badge">{category}</span>;
+          : <span className="kl-table-category-text">{category}</span>;
       }
       case 'author': {
         const author = row.authorEmail?.split('@')[0] || row.createdBy;
@@ -311,7 +307,6 @@ function Faq() {
         </div>
         <div className="basic-table-shell">
           <BasicTable
-            className="support-basic-table"
             columns={faqColumns}
             data={loading ? [] : filteredFaqs}
             renderCell={renderFaqCell}

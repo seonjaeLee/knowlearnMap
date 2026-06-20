@@ -1,5 +1,5 @@
 import React, {
-  forwardRef, useEffect, useImperativeHandle, useState,
+  forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Save } from 'lucide-react';
@@ -38,6 +38,19 @@ const EditorTab = forwardRef(({
   const [isExpanded, setIsExpanded] = useState(false);
   const [versionPanelExpanded, setVersionPanelExpanded] = useState(true);
   const [testOpen, setTestOpen] = useState(false);
+  const [testRunState, setTestRunState] = useState({ loading: false, disabled: true });
+  const testTabRef = useRef(null);
+
+  const handleTestRunStateChange = useCallback((next) => {
+    setTestRunState((prev) => (
+      prev.loading === next.loading && prev.disabled === next.disabled ? prev : next
+    ));
+  }, []);
+
+  const closeTestModal = useCallback(() => {
+    setTestOpen(false);
+    setTestRunState({ loading: false, disabled: true });
+  }, []);
 
   const navigate = useNavigate();
   const { showAlert, showConfirm } = useAlert();
@@ -409,12 +422,14 @@ const EditorTab = forwardRef(({
         left={leftPanel}
         right={rightPanel}
         leftCollapsed={!versionPanelExpanded}
-        defaultLeftPercent={30}
-        minLeftPercent={28}
-        maxLeftPercent={48}
+        defaultLeftPercent={28}
+        minLeftPercent={24}
+        maxLeftPercent={38}
+        minLeftWidthPx={416}
+        maxLeftWidthPx={432}
         collapsedLeftWidthPx={300}
         minCollapsedLeftWidthPx={260}
-        percentStorageKey="km-prompt-detail-split-v1"
+        percentStorageKey="km-prompt-detail-split-v2"
         onResizeStart={() => {
           if (!versionPanelExpanded) setVersionPanelExpanded(true);
         }}
@@ -433,20 +448,42 @@ const EditorTab = forwardRef(({
         mode="edit"
       />
 
-      <BaseModal
-        open={testOpen}
-        onClose={() => setTestOpen(false)}
-        title="프롬프트 테스트"
-        maxWidth="lg"
-        fullWidth
-      >
-        <TestTab
-          promptCode={promptCode}
-          versions={versions}
-          variableSets={[]}
-          variableSchemas={variableSchemas}
-        />
-      </BaseModal>
+      {testOpen ? (
+        <BaseModal
+          open={testOpen}
+          onClose={closeTestModal}
+          title="프롬프트 테스트"
+          maxWidth="lg"
+          fullWidth
+          actions={(
+            <div className="kl-modal-actions-split">
+              <div className="kl-modal-actions-split__left" aria-hidden="true" />
+              <div className="kl-modal-actions-split__right">
+                <button
+                  type="button"
+                  className="kl-btn primary-full md"
+                  onClick={() => testTabRef.current?.runTest()}
+                  disabled={testRunState.loading || testRunState.disabled}
+                >
+                  {testRunState.loading
+                    ? <span className="spinner pt-spinner" aria-hidden />
+                    : <Play size={15} aria-hidden />}
+                  {testRunState.loading ? '실행 중...' : 'API 호출 테스트'}
+                </button>
+              </div>
+            </div>
+          )}
+        >
+          <TestTab
+            ref={testTabRef}
+            hideRunButton
+            onRunStateChange={handleTestRunStateChange}
+            promptCode={promptCode}
+            versions={versions}
+            variableSchemas={variableSchemas}
+          />
+        </BaseModal>
+      ) : null}
     </div>
   );
 });

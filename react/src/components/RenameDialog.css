@@ -58,7 +58,7 @@
 }
 
 .cancel-btn {
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
     color: #666;
 }
 
@@ -67,10 +67,13 @@
 }
 
 .confirm-btn {
-    background: #2196f3;
-    color: white;
+    background: var(--kl-brand-primary-grad);
+    color: #fff;
+    border: none;
+    box-shadow: none;
 }
 
-.confirm-btn:hover {
-    background: #1976d2;
+.confirm-btn:hover:not(:disabled) {
+    background: var(--kl-brand-primary-grad);
+    filter: brightness(1.07);
 }

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Pen, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus, Info, RotateCcw, Files } from 'lucide-react';
+import { Pen, Trash2, Share2, FileText, Check, Users, Globe, Loader2, Plus, Info, RotateCcw } from 'lucide-react';
+import { getWorkspaceIcon } from '../config/workspaceIconKeywords';
 import { workspaceApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
@@ -8,11 +9,14 @@ import { useDialog } from '../hooks/useDialog';
 import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
 import KlIconButton from '../components/common/KlIconButton';
+import KlBadge from '../components/common/KlBadge';
+import { getWorkspaceShareBadgeProps } from '../components/common/klBadgeToneMaps';
 import BasicTable from '../components/common/BasicTable';
 import { listTableEmptyState } from '../config/supportMock';
 import KlTableRowActions from '../components/common/table/KlTableRowActions';
 import KlTooltip from '../components/common/KlTooltip';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
+import { formatKlDateCell } from '../utils/formatKlDate';
 import BaseModal from '../components/common/modal/BaseModal';
 import {
     homePromptModalPaperClassName,
@@ -20,19 +24,12 @@ import {
     homeRenameModalPaperSx,
 } from '../components/common/modal/klModalPaper';
 import {
-    KL_MODAL_FORM_CONTROL_ROW_CLASS,
-    KL_MODAL_FORM_CONTROL_WARNING_CLASS,
+    KL_MODAL_FORM_CHECK_CLASS,
     KL_MODAL_FORM_ELEMENT_ID,
     KL_MODAL_FORM_STACK_CLASS,
     klModalFormContentClassName,
 } from '../components/common/modal/klModalForm';
 import './Home.css';
-
-/**
- * API에서 가져온 프롬프트 코드가 적을 때도 셀렉트 목록·열기 목록을 확인할 수 있도록 샘플 코드를 보강합니다.
- * 저장 시 서버에 존재하지 않는 코드를 넣으면 오류가 날 수 있으니 UI 검증용 옵션 선택은 피해 주세요.
- */
-const PROMPT_SELECT_UI_SAMPLES = ['SAMPLE_PROMPT_ALPHA', 'SAMPLE_PROMPT_BETA', 'SAMPLE_PROMPT_GAMMA'];
 
 /** 로컬 UI 검증 — INDIVIDUAL 뱃지 미리보기 (DEV만, shareType·API 변경 없음) */
 const DEV_SHARE_BADGE_PREVIEW_INDIVIDUAL = import.meta.env.DEV;
@@ -63,11 +60,9 @@ function resolveWorkspaceShareBadgeType(
     return null;
 }
 
-function mergePromptCodesForSelectUi(apiCodes) {
-    const base = Array.isArray(apiCodes) ? [...apiCodes] : [];
-    if (base.length >= 3) return base;
-    return Array.from(new Set([...base, ...PROMPT_SELECT_UI_SAMPLES]));
-}
+/** LLM 청킹 토글 ON/OFF ↔ chunkPrompt 포인터 매핑 */
+const CHUNK_PROMPT_ON_VALUE = 'DEFAULT_CHUNK_PROMPT';
+const CHUNK_PROMPT_OFF_VALUE = 'NONE';
 
 const WORKSPACE_LIST_COLUMNS = [
     { id: 'title', label: '제목', width: '30%', align: 'left' },
@@ -75,15 +70,12 @@ const WORKSPACE_LIST_COLUMNS = [
     { id: 'source', label: '소스(개수)', width: 96, align: 'left', ellipsis: false },
     { id: 'createdAt', label: '소스생성일', width: 120, align: 'left' },
     { id: 'role', label: '역할', width: 88, align: 'left' },
-    { id: '_actions', label: '관리', width: 156, align: 'right', ellipsis: false },
+    { id: '_actions', label: '관리', width: 156, actionsButtonCount: 4, ellipsis: false },
 ];
 
 function formatWorkspaceCreatedAt(notebook) {
     const raw = notebook.createdAt || notebook.updatedAt || notebook.date;
-    if (isTableCellBlank(raw)) return formatTableCellText(raw);
-    const t = new Date(raw).getTime();
-    if (!Number.isFinite(t)) return formatTableCellText(raw);
-    return new Date(raw).toLocaleDateString('ko-KR');
+    return formatKlDateCell(raw);
 }
 
 function Home() {
@@ -121,16 +113,6 @@ function Home() {
     const [aqlGenerationPromptValue, setAqlGenerationPromptValue] = useState('');
     const [aqlInterpretationPromptValue, setAqlInterpretationPromptValue] = useState('');
     const [aggregationStrategyPromptValue, setAggregationStrategyPromptValue] = useState('');
-    // 용도별 프롬프트 코드 목록
-    const [chunkPromptCodes, setChunkPromptCodes] = useState([]);
-    const [ontologyPromptCodes, setOntologyPromptCodes] = useState([]);
-    const [chatPromptCodes, setChatPromptCodes] = useState([]);
-    const [contentOntologyPromptCodes, setContentOntologyPromptCodes] = useState([]);
-    const [schemaAnalysisPromptCodes, setSchemaAnalysisPromptCodes] = useState([]);
-    const [interTableAnalysisPromptCodes, setInterTableAnalysisPromptCodes] = useState([]);
-    const [aqlGenerationPromptCodes, setAqlGenerationPromptCodes] = useState([]);
-    const [aqlInterpretationPromptCodes, setAqlInterpretationPromptCodes] = useState([]);
-    const [aggregationStrategyPromptCodes, setAggregationStrategyPromptCodes] = useState([]);
 
     // 삭제 로딩
     const [deletingId, setDeletingId] = useState(null);
@@ -297,33 +279,6 @@ function Home() {
         ));
     };
 
-    const fetchPromptCodesByPurpose = async () => {
-        try {
-            const purposes = ['CHUNK', 'ONTOLOGY', 'CHAT_RESULT', 'CONTENT_ONTOLOGY', 'SCHEMA_ANALYSIS', 'INTER_TABLE_ANALYSIS', 'AQL_GENERATION', 'AQL_INTERPRETATION', 'AGGREGATION_STRATEGY'];
-            const results = await Promise.all(
-                purposes.map(purpose =>
-                    fetch(`/api/v1/prompts?purpose=${encodeURIComponent(purpose)}&isActive=true&size=100`, { credentials: 'include' })
-                        .then(r => r.ok ? r.json() : { data: { content: [] } })
-                )
-            );
-            const extractCodes = (res) => {
-                const content = res?.data?.content || res?.content || [];
-                return Array.isArray(content) ? content.map(p => p.code) : [];
-            };
-            setChunkPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[0])));
-            setOntologyPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[1])));
-            setChatPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[2])));
-            setContentOntologyPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[3])));
-            setSchemaAnalysisPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[4])));
-            setInterTableAnalysisPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[5])));
-            setAqlGenerationPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[6])));
-            setAqlInterpretationPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[7])));
-            setAggregationStrategyPromptCodes(mergePromptCodesForSelectUi(extractCodes(results[8])));
-        } catch (err) {
-            console.error('프롬프트 코드 목록 조회 실패:', err);
-        }
-    };
-
     const openWorkspaceEditModal = useCallback((notebook) => {
         if (!notebook) return;
         setPromptNotebook(notebook);
@@ -338,10 +293,7 @@ function Home() {
         setAqlInterpretationPromptValue(notebook.aqlInterpretationPrompt || '');
         setAggregationStrategyPromptValue(notebook.aggregationStrategyPrompt || '');
         setPromptModalOpen(true);
-        if (isAdmin) {
-            fetchPromptCodesByPurpose();
-        }
-    }, [isAdmin]);
+    }, []);
 
     const handleOpenPromptModal = (e, notebookId) => {
         e.stopPropagation();
@@ -406,23 +358,6 @@ function Home() {
         }
     };
 
-    const renderPromptCodeSelect = (id, value, onChange, codes, { warnNone = false } = {}) => (
-        <select
-            id={id}
-            value={value ?? ''}
-            onChange={onChange}
-            className={warnNone && value === 'NONE' ? KL_MODAL_FORM_CONTROL_WARNING_CLASS : undefined}
-        >
-            <option value="">-- 기본값 --</option>
-            {warnNone ? <option value="NONE">NONE</option> : null}
-            {(codes || []).map((code) => (
-                <option key={code} value={code}>
-                    {code}
-                </option>
-            ))}
-        </select>
-    );
-
     const handleResetPromptToDefault = () => {
         const defChunk = promptNotebook?.defaultChunkPrompt || '';
         const defOntology = promptNotebook?.defaultOntologyPrompt || '';
@@ -457,6 +392,13 @@ function Home() {
         }, 0);
 
         showAlert('기본값으로 초기화되었습니다.');
+    };
+
+    // chunkPrompt 포인터 → LLM 청킹 토글 ON/OFF. 'NONE'이면 OFF, 그 외(빈값/코드)면 ON(시스템 기본=ON).
+    const isChunkingEnabled = chunkPromptValue !== CHUNK_PROMPT_OFF_VALUE;
+
+    const handleChunkingToggle = (e) => {
+        setChunkPromptValue(e.target.checked ? CHUNK_PROMPT_ON_VALUE : CHUNK_PROMPT_OFF_VALUE);
     };
 
     const handleRename = (e, notebookId) => {
@@ -632,7 +574,7 @@ function Home() {
         const Icon = badgeType === 'ALL' ? Globe : Users;
         return (
             <span className={className}>
-                <Icon size={12} aria-hidden />
+                <Icon size={13} aria-hidden />
                 <span>{label}</span>
             </span>
         );
@@ -642,7 +584,7 @@ function Home() {
         switch (column.id) {
             case 'title':
                 return (
-                    <span className="home-workspace-list-name">
+                    <span className="home-workspace-list-name kl-table-category-text">
                         {notebook.name || notebook.title || 'Untitled'}
                     </span>
                 );
@@ -653,10 +595,11 @@ function Home() {
                     { devForceIndividualOnPreviewCard: devShareBadgeAllAllPreview },
                 );
                 if (shareType === 'ALL' || shareType === 'INDIVIDUAL') {
+                    const { label, tone } = getWorkspaceShareBadgeProps(shareType);
                     return (
-                        <span className={`workspace-mgmt-share-badge share-${shareType.toLowerCase()}`}>
-                            {shareType === 'ALL' ? '전체' : '개별'}
-                        </span>
+                        <KlBadge tone={tone} variant="compact">
+                            {label}
+                        </KlBadge>
                     );
                 }
                 return <span className="kl-table-cell-blank">—</span>;
@@ -840,7 +783,6 @@ function Home() {
             {viewMode === 'list' && (
                 <div className="basic-table-shell home-workspace-list-shell">
                     <BasicTable
-                        className="home-workspace-basic-table"
                         columns={WORKSPACE_LIST_COLUMNS}
                         data={loading || error ? [] : sortedNotebooks}
                         renderCell={renderWorkspaceListCell}
@@ -900,7 +842,9 @@ function Home() {
                         </div>
                     </div>
 
-                    {sortedNotebooks.map((notebook) => (
+                    {sortedNotebooks.map((notebook) => {
+                        const WorkspaceIcon = getWorkspaceIcon(notebook.name || notebook.title);
+                        return (
                         <div
                             key={notebook.id}
                             className={`notebook-card${
@@ -921,7 +865,7 @@ function Home() {
                             <div className="card-header">
                                 <div className="notebook-icon">
                                     <span className="notebook-icon-box">
-                                        <Files size={18} aria-hidden />
+                                        <WorkspaceIcon size={20} aria-hidden />
                                     </span>
                                 </div>
                                 <div className="card-header-right">
@@ -1042,7 +986,8 @@ function Home() {
                                 <p className="notebook-source">소스 {notebook.documentCount || 0}개</p>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
@@ -1173,152 +1118,23 @@ function Home() {
 
                         <div className="kl-modal-form-row kl-vert-start">
                             <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-chunk">
-                                청킹 프롬프트
+                                LLM 청킹
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <div className={KL_MODAL_FORM_CONTROL_ROW_CLASS}>
-                                    {renderPromptCodeSelect(
-                                        'workspace-prompt-chunk',
-                                        chunkPromptValue,
-                                        (e) => setChunkPromptValue(e.target.value),
-                                        chunkPromptCodes,
-                                        { warnNone: true },
-                                    )}
-                                    <button
-                                        type="button"
-                                        className={`kl-btn md ${chunkPromptValue === 'NONE' ? 'danger-outline' : 'gray-outline'}`}
-                                        onClick={() => setChunkPromptValue(chunkPromptValue === 'NONE' ? '' : 'NONE')}
-                                    >
-                                        NONE
-                                    </button>
-                                </div>
-                                <p className={`kl-modal-form-helper${chunkPromptValue === 'NONE' ? ' kl-modal-form-helper--error' : ''}`}>
-                                    {chunkPromptValue === 'NONE' ? 'LLM 청킹 비활성화' : 'LLM 청킹 프롬프트'}
+                                <label className={KL_MODAL_FORM_CHECK_CLASS} htmlFor="workspace-prompt-chunk">
+                                    <input
+                                        id="workspace-prompt-chunk"
+                                        type="checkbox"
+                                        checked={isChunkingEnabled}
+                                        onChange={handleChunkingToggle}
+                                    />
+                                    <span>{isChunkingEnabled ? '사용함' : '사용 안 함'}</span>
+                                </label>
+                                <p className={`kl-modal-form-helper${isChunkingEnabled ? '' : ' kl-modal-form-helper--error'}`}>
+                                    {isChunkingEnabled
+                                        ? 'PDF 문서를 LLM으로 청킹합니다.'
+                                        : 'LLM 청킹 비활성화 (페이지 단위로 처리)'}
                                 </p>
-                            </div>
-                        </div>
-
-                        <div className="kl-modal-form-row kl-vert-start">
-                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-ontology">
-                                온톨로지 프롬프트
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(
-                                    'workspace-prompt-ontology',
-                                    ontologyPromptValue,
-                                    (e) => setOntologyPromptValue(e.target.value),
-                                    ontologyPromptCodes,
-                                )}
-                                <p className="kl-modal-form-helper">Chunk → LLM 온톨로지 추출</p>
-                            </div>
-                        </div>
-
-                        <div className="kl-modal-form-row kl-vert-start">
-                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-chat">
-                                채팅 프롬프트
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(
-                                    'workspace-prompt-chat',
-                                    chatResultPromptValue,
-                                    (e) => setChatResultPromptValue(e.target.value),
-                                    chatPromptCodes,
-                                )}
-                                <p className="kl-modal-form-helper">Chat 응답 생성</p>
-                            </div>
-                        </div>
-
-                        <div className="kl-modal-form-row kl-vert-start">
-                            <label
-                                className="kl-modal-form-row__label kl-modal-form-row__label--stacked"
-                                htmlFor="workspace-prompt-content-ontology"
-                            >
-                                <span className="kl-modal-form-row__label-line">CONTENT</span>
-                                <span className="kl-modal-form-row__label-line">온톨로지</span>
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(
-                                    'workspace-prompt-content-ontology',
-                                    contentOntologyPromptValue,
-                                    (e) => setContentOntologyPromptValue(e.target.value),
-                                    contentOntologyPromptCodes,
-                                )}
-                                <p className="kl-modal-form-helper">정형 Chunk → LLM 온톨로지</p>
-                            </div>
-                        </div>
-
-                        <div className="kl-modal-form-row kl-vert-start">
-                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-schema">
-                                스키마 분석
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(
-                                    'workspace-prompt-schema',
-                                    schemaAnalysisPromptValue,
-                                    (e) => setSchemaAnalysisPromptValue(e.target.value),
-                                    schemaAnalysisPromptCodes,
-                                )}
-                                <p className="kl-modal-form-helper">CSV/DB 스키마 자동 분석</p>
-                            </div>
-                        </div>
-
-                        <div className="kl-modal-form-row kl-vert-start">
-                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-inter-table">
-                                테이블 간 관계
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(
-                                    'workspace-prompt-inter-table',
-                                    interTableAnalysisPromptValue,
-                                    (e) => setInterTableAnalysisPromptValue(e.target.value),
-                                    interTableAnalysisPromptCodes,
-                                )}
-                                <p className="kl-modal-form-helper">다건 테이블 간 FK/관계 분석</p>
-                            </div>
-                        </div>
-
-                        <div className="kl-modal-form-row kl-vert-start">
-                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-aql-gen">
-                                AQL 생성
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(
-                                    'workspace-prompt-aql-gen',
-                                    aqlGenerationPromptValue,
-                                    (e) => setAqlGenerationPromptValue(e.target.value),
-                                    aqlGenerationPromptCodes,
-                                )}
-                                <p className="kl-modal-form-helper">자연어 → AQL 쿼리 생성</p>
-                            </div>
-                        </div>
-
-                        <div className="kl-modal-form-row kl-vert-start">
-                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-aql-interpret">
-                                AQL 결과 해석
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(
-                                    'workspace-prompt-aql-interpret',
-                                    aqlInterpretationPromptValue,
-                                    (e) => setAqlInterpretationPromptValue(e.target.value),
-                                    aqlInterpretationPromptCodes,
-                                )}
-                                <p className="kl-modal-form-helper">AQL 쿼리 결과 자연어 해석</p>
-                            </div>
-                        </div>
-
-                        <div className="kl-modal-form-row kl-vert-start">
-                            <label className="kl-modal-form-row__label" htmlFor="workspace-prompt-aggregation">
-                                집계 전략
-                            </label>
-                            <div className="kl-modal-form-row__control">
-                                {renderPromptCodeSelect(
-                                    'workspace-prompt-aggregation',
-                                    aggregationStrategyPromptValue,
-                                    (e) => setAggregationStrategyPromptValue(e.target.value),
-                                    aggregationStrategyPromptCodes,
-                                )}
-                                <p className="kl-modal-form-helper">대규모 정형 데이터 집계 전략</p>
                             </div>
                         </div>
 

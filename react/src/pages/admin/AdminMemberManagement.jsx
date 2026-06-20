@@ -9,10 +9,15 @@ import {
 } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
+import {
+    basicTableActionsColumnDef,
+    basicTableActionsColumnMinWidthPx,
+} from '../../components/common/table/basicTableActionsColumn';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlIconButton from '../../components/common/KlIconButton';
 import { listTableEmptyState } from '../../config/supportMock';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
+import { formatKlDateTimeCell } from '../../utils/formatKlDate';
 import BaseModal from '../../components/common/modal/BaseModal';
 import { klFormModalPaperSx } from '../../components/common/modal/klModalPaper';
 import {
@@ -26,6 +31,11 @@ import {
 } from '../../components/common/modal/klModalForm';
 import { mockAdminMembers } from '../../data/memberMockData';
 import { mockDomains } from '../../data/domainMockData';
+import {
+    MemberTableGrade,
+    MemberTableRole,
+    MemberTableStatus,
+} from '../../components/common/MemberTableCells';
 import './admin-common.css';
 import './AdminMemberManagement.css';
 
@@ -42,27 +52,6 @@ const LOCK_FAILURE_THRESHOLD = 5;
 
 /** `false`: `BasicTableFooter` 전체를 렌더하지 않음(요약·페이지네이션 DOM 모두 없음). `true`일 때는 기존처럼 좌측 요약 + 가운데 페이지네이션. 요약은 추후 상단으로 옮길 예정이어도 소스는 여기 유지. */
 const SHOW_MEMBER_TABLE_FOOTER = false;
-
-const ROLE_BADGE = {
-    ADMIN: 'admin-badge admin-badge-primary',
-    SYSOP: 'admin-badge admin-badge-warn',
-    USER: 'admin-badge admin-badge-neutral',
-};
-
-const GRADE_BADGE = {
-    ADMIN: 'admin-badge admin-badge-primary',
-    SPECIAL: 'admin-badge admin-badge-warn',
-    MAX: 'admin-badge admin-badge-danger',
-    PRO: 'admin-badge admin-badge-success',
-    FREE: 'admin-badge admin-badge-neutral',
-};
-
-const STATUS_BADGE = {
-    ACTIVE: 'admin-badge admin-badge-success',
-    VERIFYING_EMAIL: 'admin-badge admin-badge-warn',
-    WAITING_APPROVAL: 'admin-badge admin-badge-warn',
-    APPROVED_WAITING_PASSWORD: 'admin-badge admin-badge-info',
-};
 
 function AdminMemberManagement() {
     const [members, setMembers] = useState([]);
@@ -100,27 +89,24 @@ function AdminMemberManagement() {
             { id: 'email', label: '이메일', defaultWidthPx: 220, minWidthPx: 180, align: 'left' },
             { id: 'role', label: '권한', defaultWidthPx: 88, minWidthPx: 80, align: 'left' },
             { id: 'grade', label: '등급', defaultWidthPx: 88, minWidthPx: 80, align: 'left' },
-            { id: 'status', label: '상태', defaultWidthPx: 140, minWidthPx: 120, align: 'left' },
+            { id: 'status', label: '상태', defaultWidthPx: 170, minWidthPx: 150, align: 'left' },
             { id: 'domain', label: '도메인', defaultWidthPx: 120, minWidthPx: 96, align: 'left' },
             { id: 'failed', label: '실패', defaultWidthPx: 52, minWidthPx: 48, align: 'left' },
             { id: 'locked', label: '잠금일시', defaultWidthPx: 144, minWidthPx: 120, align: 'left' },
-            { id: 'lastLogin', label: '최근로그인', defaultWidthPx: 150, minWidthPx: 104, align: 'left' },
+            { id: 'lastLogin', label: '최근로그인', defaultWidthPx: 160, minWidthPx: 110, align: 'left' },
             { id: 'created', label: '가입일', defaultWidthPx: 150, minWidthPx: 104, align: 'left' },
-            {
+            basicTableActionsColumnDef({
                 id: 'actions',
-                label: <span className="member-mgmt-actions-head">관리</span>,
-                defaultWidthPx: 140,
-                minWidthPx: 140,
-                align: 'right',
-                ellipsis: false,
-            },
+                buttonCount: 5,
+                defaultWidthPx: basicTableActionsColumnMinWidthPx(5),
+            }),
         );
         return cols;
     }, []);
 
     const { columns: memberTableColumns, startResize: memberColumnStartResize } = useBasicTableColumnResize({
         definitions: memberTableColumnDefinitions,
-        storageKey: 'km-admin-member-mgmt-columns-v1',
+        storageKey: 'km-admin-member-mgmt-columns-v3',
         enabled: true,
     });
 
@@ -223,13 +209,7 @@ function AdminMemberManagement() {
     const rangeStart = filteredMembers.length === 0 ? 0 : page * PAGE_SIZE + 1;
     const rangeEnd = filteredMembers.length === 0 ? 0 : Math.min((page + 1) * PAGE_SIZE, filteredMembers.length);
 
-    const formatDate = useCallback((dateString) => {
-        if (isTableCellBlank(dateString)) return formatTableCellText(dateString);
-        return new Date(dateString).toLocaleDateString('ko-KR', {
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit',
-        });
-    }, []);
+    const formatDate = useCallback((dateString) => formatKlDateTimeCell(dateString), []);
 
     const deleteUsesLocalState = isMemberMockEnabled || adminListSource === 'mock';
 
@@ -531,28 +511,11 @@ function AdminMemberManagement() {
             case 'email':
                 return <span className="admin-member-email">{member.email}</span>;
             case 'role':
-                return (
-                    <span className={ROLE_BADGE[member.role] || 'admin-badge admin-badge-neutral'}>
-                        {member.role}
-                    </span>
-                );
+                return <MemberTableRole role={member.role} />;
             case 'grade':
-                return (
-                    <span className={GRADE_BADGE[member.grade] || 'admin-badge admin-badge-neutral'}>
-                        {member.grade}
-                    </span>
-                );
+                return <MemberTableGrade grade={member.grade} />;
             case 'status':
-                return (
-                    <div className="member-mgmt-status-cell">
-                        <span
-                            className={STATUS_BADGE[member.status] || 'admin-badge admin-badge-neutral'}
-                            title={member.status}
-                        >
-                            {member.status}
-                        </span>
-                    </div>
-                );
+                return <MemberTableStatus status={member.status} />;
             case 'domain': {
                 const domain = member.domain;
                 return (
@@ -719,7 +682,6 @@ function AdminMemberManagement() {
                     </div>
                     <div className="basic-table-shell">
                         <BasicTable
-                            className="member-mgmt-basic-table"
                             columns={headerColumns}
                             data={loading ? [] : tableMemberRows}
                             renderCell={renderMemberCell}

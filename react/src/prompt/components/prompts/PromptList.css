@@ -14,9 +14,6 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.prompt-list-basic-table {
-  min-width: 1280px;
-}
 
 .prompt-list-code-cell,
 .prompt-list-desc-cell {
@@ -30,11 +27,6 @@
 
 .prompt-list-desc-cell {
   color: var(--color-text-secondary);
-}
-
-.prompt-list-grade-badge {
-  display: inline-flex;
-  justify-content: flex-start;
 }
 
 .prompt-list-desc-cell--interactive {
@@ -77,14 +69,12 @@
   white-space: nowrap;
 }
 
-/* 좁아진 열에서 badge 텍스트 말줄임 처리 — inline-flex는 text-overflow 불가, inline-block으로 재정의 */
-.prompt-list-page .admin-badge {
+/* 좁아진 열에서 badge 텍스트 말줄임 — flex 유지, 셀 전체 overflow */
+.prompt-list-page .kl-badge {
   max-width: 100%;
-  display: inline-block;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
 }
 
 .prompt-list-desc-popover {

@@ -8,19 +8,22 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import KlPopover from '../../components/common/KlPopover';
+import { basicTableActionsColumnDef } from '../../components/common/table/basicTableActionsColumn';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlIconButton from '../../components/common/KlIconButton';
+import KlBadge from '../../components/common/KlBadge';
+import { getWorkspaceShareBadgeProps } from '../../components/common/klBadgeToneMaps';
 import { listTableEmptyState } from '../../config/supportMock';
 import KlTooltip from '../../components/common/KlTooltip';
 import { mockAdminWorkspaces } from '../../data/workspaceMockData';
+import { formatKlDateCell } from '../../utils/formatKlDate';
 import './admin-common.css';
 import './AdminWorkspaceManagement.css';
 
 const isWorkspaceMockEnabled = import.meta.env.VITE_ENABLE_WORKSPACE_MOCK === 'true';
 
 function formatWorkspaceDate(dateString) {
-    if (isTableCellBlank(dateString)) return formatTableCellText(dateString);
-    return new Date(dateString).toLocaleDateString('ko-KR');
+    return formatKlDateCell(dateString);
 }
 
 function workspacePromptTagDefs(ws) {
@@ -62,14 +65,7 @@ function AdminWorkspaceManagement() {
             { id: '_share', label: '공유', defaultWidthPx: 88, minWidthPx: 88, align: 'left', ellipsis: false },
             { id: '_prompts', label: '프롬프트', defaultWidthPx: 140, minWidthPx: 120, align: 'left', ellipsis: false },
             { id: '_created', label: '생성일', defaultWidthPx: 110, minWidthPx: 100, align: 'left' },
-            {
-                id: '_actions',
-                label: <span className="workspace-mgmt-actions-head">관리</span>,
-                defaultWidthPx: 120,
-                minWidthPx: 120,
-                align: 'right',
-                ellipsis: false,
-            },
+            basicTableActionsColumnDef({ id: '_actions', buttonCount: 2 }),
         ],
         []
     );
@@ -154,7 +150,7 @@ function AdminWorkspaceManagement() {
             switch (column.id) {
                 case 'name':
                     return (
-                        <span className="workspace-mgmt-name-text">{ws.name}</span>
+                        <span className="workspace-mgmt-name-text kl-table-category-text">{ws.name}</span>
                     );
                 case 'domainName': {
                     const domainName = ws.domainName;
@@ -180,12 +176,14 @@ function AdminWorkspaceManagement() {
                 }
                 case 'documentCount':
                     return <span className="workspace-mgmt-muted">{ws.documentCount ?? 0}</span>;
-                case '_share':
+                case '_share': {
+                    const { label, tone } = getWorkspaceShareBadgeProps(ws.shareType);
                     return (
-                        <span className={`workspace-mgmt-share-badge share-${(ws.shareType || 'NONE').toLowerCase()}`}>
-                            {ws.shareType === 'ALL' ? '전체' : ws.shareType === 'INDIVIDUAL' ? '개별' : 'OFF'}
-                        </span>
+                        <KlBadge tone={tone} variant="compact">
+                            {label}
+                        </KlBadge>
                     );
+                }
                 case '_prompts': {
                     const popoverOpen = Boolean(
                         promptPopover && promptPopover.workspace && promptPopover.workspace.id === ws.id
@@ -299,7 +297,6 @@ function AdminWorkspaceManagement() {
                 </div>
                 <div className="basic-table-shell">
                     <BasicTable
-                        className="workspace-mgmt-basic-table"
                         columns={workspaceTableColumns}
                         data={loading ? [] : filteredWorkspaces}
                         renderCell={renderWorkspaceCell}

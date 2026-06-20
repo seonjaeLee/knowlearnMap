@@ -331,3 +331,165 @@
 - `react/src/prompt/components/history/HistoryTab.jsx`, `HistoryTab.css`
 
 ---
+
+## 2026-06-17
+
+### 1) KlTabBar — 1·2단계 이관 (프롬프트·어드민)
+
+- **목적:** 레거시 탭 마크업을 `KlTabBar` SSOT로 통일. **3단계**(Notebook·모달 등)는 범위 제외.
+- **KlTabBar:** `variant` — `page` / `compact` / `panel` / `subtle` · `scrollTail`(mask 페이드 + 좌우 ◀▶) · `useKlTabIndicator` 슬라이딩 indicator
+- **1단계:** `PromptDetail.jsx`(Editor|History) · `PromptEditTabs.jsx`(프롬프트 편집|변수, `variant="panel"`)
+- **2단계:** `AdminSemanticPage.jsx` · `AdminActionPage.jsx` (`variant="subtle"`)
+- **에디터 헤더 정렬:** `PromptEditor.css` — `min-height: 48px` · ①프롬프트 편집 / ②변수 pill / ③우측 아이콘 center-line 통일 · tools 구분선 제거
+
+#### 파일
+- `react/src/components/common/KlTabBar.jsx`, `useKlTabIndicator.js`, `useKlHorizontalScroll.js`
+- `react/src/assets/styles/kit/kl-tab-bar.css`
+- `react/src/prompt/components/prompts/PromptDetail.jsx`, `PromptEditTabs.jsx`, `PromptEditor.css`
+- `react/src/pages/admin/AdminSemanticPage.jsx`, `AdminActionPage.jsx`
+
+---
+
+### 2) KlBadge · admin-badge 이관 · 뱃지 토큰
+
+- **토큰:** `kl-tokens-theme-map.css` — `--color-badge-bg` `#f7f6fa` · `--color-badge-border` `#e3e3e3`
+- **키트:** `kl-badge.css` · `KlBadge.jsx` · `klBadgeToneMaps.js` / `klMemberBadgeTones.js`
+- **이관:** `OrgMembers.jsx` · `AdminAuditLog.jsx` — `admin-badge` → `KlBadge` · `admin-common.css` 레거시 `.admin-badge` 삭제
+- **규칙:** 프롬프트 목록 등 말줄임은 `.kl-badge` 스코프 오버라이드 유지 (`PromptList.css`)
+
+#### 파일
+- `react/src/assets/styles/kit/kl-badge.css`, `tokens/kl-tokens-theme-map.css`, `kl-global.css`
+- `react/src/components/common/KlBadge.jsx`, `MemberTableCells.jsx`
+
+---
+
+### 3) 프롬프트 상세 Editor — SplitPane 좌측(버전 히스토리) 너비·접기 **재발 방지**
+
+- **목적:** 로딩 직후 좌측이 화면 **반쪽(50%)처럼** 넓어 테이블 오른쪽에 빈 공간이 생기던 문제 수정. 접기(`<<`) UX는 **기존 Skin 동작 유지**.
+
+#### 펼침(기본) — 콘텐츠 너비에 맞춤
+- **반반 split 아님.** 좌측은 버전 테이블 정보만 보일 정도로 좁게.
+- **`SplitPane` + `useSplitPaneResize`:** `minLeftWidthPx={480}` · `maxLeftWidthPx={500}` → `clamp(480px, leftPercent%, 500px)`
+- **`defaultLeftPercent={28}`** · `minLeftPercent={24}` · `maxLeftPercent={38}`
+- **`percentStorageKey`:** `km-prompt-detail-split-v2` (v1에 저장된 넓은 % 초기화)
+- **신규 hook props:** `minLeftWidthPx` / `maxLeftWidthPx` (펼침 clamp) · `collapsedFitContent` (옵션 — **본 화면 미사용**, 아래 참고)
+
+#### 접기(`<<`) — **테이블 유지 (필수)**
+- **의미:** `VersionHistoryPanel` `collapsed` + `SplitPane` `leftCollapsed` = 좌측 **패널 너비만** 줄임. **테이블을 숨기는 것이 아님.**
+- **`collapsedLeftWidthPx={300}`** · `minCollapsedLeftWidthPx={260}` (기존값 유지)
+- **CSS (`VersionHistoryPanel.css`):** 접힘 시 `.vh-table { min-width: 340px }` + `.vh-scroll { overflow-x: auto }` → **좁은 패널 안에서 테이블 가로 스크롤**
+- **펼침 시 테이블:** `min-width: 440px` 유지
+
+#### ⛔ 잘못했던 시도 (재발 금지)
+| 요청 | 잘못한 구현 | 올바른 방향 |
+|------|-------------|-------------|
+| 「접었을 때 제목이 가려지지 않게」 | `.vh-col.is-collapsed .vh-panel { display: none }` 로 **테이블 전체 제거** | 테이블 **유지**. 제목 가림은 `vh-head` overflow·`collapsedLeftWidthPx`·SplitPane `overflow` 등으로만 조정 |
+| 「제목만 남기고 접기」 | `collapsedFitContent` + 좌측 `width: auto` | **`collapsedFitContent` 프롬프트 버전 패널에 적용 금지** — 테이블 접힘 UX와 충돌 |
+
+- **제목 가림 이슈:** 아직 별도 미세조정 여지 있음. **테이블 숨김으로 해결하지 않는다.**
+
+#### 파일
+- `react/src/prompt/components/editor/EditorTab.jsx`
+- `react/src/prompt/components/common/VersionHistoryPanel.jsx`, `VersionHistoryPanel.css`
+- `react/src/prompt/components/prompts/PromptDetail.css`
+- `react/src/hooks/useSplitPaneResize.js`
+- `react/src/components/common/SplitPane/SplitPane.jsx`, `SplitPane.module.scss`
+
+---
+
+### 4) EditorTab — 흰 화면·테스트 모달
+
+- **흰 화면:** `EditorTab.jsx:264` `useImperativeHandle is not defined` — `forwardRef` 테스트 모달 연동 시 **`useImperativeHandle` React import 필수**. 누락 시 `<EditorTab>` 전체 크래시.
+- **테스트 팝업:** `BaseModal` **`actions`** prop으로 「실행 TEST RUN」·「닫기」 푸터 이동 (`modal-guide` 패턴). `TestTab` `hideRunButton` · `testOpen`일 때만 마운트.
+- **회색 라인:** `.pt-run-wrap` **`border-top` 제거** — 푸터와 본문 사이 얇은 구분선 원인.
+
+#### 파일
+- `react/src/prompt/components/editor/EditorTab.jsx`
+- `react/src/prompt/components/test/TestTab.jsx`, `TestTab.css`
+
+---
+
+## 2026-06-19
+
+### 1) 테마 — 라이트·다크 2-way 재개 · 인증 화면 포함
+
+- **목적:** `THEME_LIGHT_ONLY` 임시 고정 해제. 본문·인증 화면 모두 `data-theme` 토큰 전환.
+- **LNB 토글:** Sun / Moon 2버튼 (시스템·Monitor UI 제거). 접힘 시 현재 모드 아이콘 단일 버튼으로 토글.
+- **FOUC:** `index.html` — `localStorage kl-theme-mode` 읽어 `light` | `dark` 적용.
+- **토큰:** `kl-tokens-theme-map.css` · `MuiThemeBridge` — 다크 semantic 보강.
+
+#### 파일
+- `react/src/constants/theme.js`, `react/src/context/ThemeContext.jsx`, `react/index.html`
+- `react/src/components/common/LnbThemeToggle.jsx`, `LnbThemeToggle.css`
+- `react/src/assets/styles/tokens/kl-tokens-theme-map.css`, `MuiThemeBridge.jsx`
+
+---
+
+### 2) 브랜드 심볼 — knowlearnMap SVG · LNB·로그인 통일
+
+- **자산:** `knowlearnMap.svg` · `knowlearnMap-dark.svg` (인라인 `KlBrandMark` SVG 제거)
+- **KlBrandLogo:** 라이트/다크 `<img>` 전환 · LNB·로그인 동일 SSOT
+- **정리:** `public/knowlearn_logo*.png` · `react.svg` 삭제 · `LoginModal` · `Login_.jsx` 제거
+
+#### 파일
+- `react/src/assets/knowlearnMap.svg`, `knowlearnMap-dark.svg`
+- `react/src/components/common/KlBrandLogo.jsx`, `KlBrandLogo.css`
+- `react/src/pages/Login.jsx`, `Login.css` 및 인증 jsx
+
+---
+
+### 3) BasicTable — MUI 제거 · 스크롤 페이드 · 관리열·컨트롤열
+
+- **마크업:** MUI `Table*` → 네이티브 `<table>` + `BasicTable.module.scss`
+- **가로 스크롤:** `useBasicTableScrollFade` · `kl-basic-table.css` mask 페이드(`fade-l`/`fade-r`) · 셸 `padding: 12px` · 테두리 `#c6ccd7`
+- **관리열:** `basicTableActionsColumn.js` — 버튼 수 기준 최소 너비 · `KlTableRowActions` 정렬
+- **컨트롤열:** `KlTableCellControl` · checkbox/radio 열 정의 헬퍼
+- **행 상세:** `BasicTableRowDetail` + `kl-table-row-detail.css` (↳ recessed 트레이)
+
+#### 파일
+- `react/src/components/common/BasicTable.jsx`, `BasicTable.module.scss`
+- `react/src/hooks/useBasicTableScrollFade.js`
+- `react/src/assets/styles/kit/kl-basic-table.css`, `patterns/kl-table-row-detail.css`
+- `react/src/components/common/table/*`, `BasicTableRowDetail.jsx`
+
+---
+
+### 4) KlModalClose · Promo shell — UpgradeModal · modal-guide
+
+- **KlModalClose:** lucide `X` 18px · `kl-modal-close.css` SSOT
+- **UpgradeModal:** Promo shell — `KlModalClose` · step 슬라이드(plans ↔ form) · `ChevronLeft` 뒤로
+- **문서:** `modal-guide.md` §2.3 Work vs Promo shell · 닫기 affordance 표
+
+#### 파일
+- `react/src/components/common/KlModalClose.jsx`
+- `react/src/assets/styles/patterns/kl-modal-close.css`
+- `react/src/components/UpgradeModal.jsx`, `UpgradeModal.css`
+- `react/docs/modal-guide.md`
+
+---
+
+### 5) KlBadge · 날짜 포맷 · 멤버·어드민 테이블 이관
+
+- **KlBadge 확장:** `OrgMembers` · `AdminMemberManagement` · `SysopMemberManagement` · `AdminUpgradeRequests` · `AdminWorkspaceManagement` · `AdminArangoManagement` 등 — `admin-badge` → `KlBadge` + `MemberTableCells` / `klMemberBadgeTones`
+- **날짜 SSOT:** `formatKlDate.js` — FAQ·공지·QnA 모달 · 목록 · 멤버 테이블 일괄 적용
+
+#### 파일
+- `react/src/utils/formatKlDate.js`
+- `react/src/components/common/MemberTableCells.jsx`, `klMemberBadgeTones.js`
+- `react/src/pages/OrgMembers.jsx`, `react/src/pages/admin/AdminMemberManagement.jsx` 등
+
+---
+
+### 6) Home · DomainSelection · 다크 토큰 정리
+
+- **워크스페이스 아이콘:** `workspaceIconKeywords.js` — 이름 키워드 → lucide 아이콘 자동 매칭 (그리드 보기). 문서 `workspace-icon-keywords.md`
+- **DomainSelection:** 카드 헤드·본문 분리 · 비현재 도메인 `ArrowRight` · 메타 `Layers` 아이콘
+- **다크 대응:** KnowledgeMapView·모달·어드민·서포트 페이지 CSS — 하드코드 `#fafafa` 등 → `var(--color-*)` 치환
+
+#### 파일
+- `react/src/config/workspaceIconKeywords.js`, `react/src/pages/Home.jsx`, `Home.css`
+- `react/src/pages/DomainSelection.jsx`, `DomainSelection.css`
+- `react/docs/workspace-icon-keywords.md`
+
+---
+

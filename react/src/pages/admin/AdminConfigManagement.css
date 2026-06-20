@@ -14,23 +14,12 @@
   font-size: var(--font-size-base);
 }
 
-.config-mgmt-actions-head {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-  min-width: 0;
-}
-
 /* 표 영역 — 공통 TableArea.css; 카드 라운드만 이 화면에서 조정 */
 /* 이전 config-mgmt-table-card와 동일 — radius-md */
 .kl-page .table-area:has(> .table-toolbar) > .basic-table-shell {
   border-radius: var(--radius-md);
 }
 
-.config-mgmt-basic-table {
-  min-width: 1060px;
-}
 
 /* 툴바 카테고리 필터 — 라벨은 화면에 숨김(접근성 유지) */
 .config-mgmt-visually-hidden {
@@ -174,10 +163,14 @@
 .config-mgmt-type-badge {
   display: inline-flex;
   align-items: center;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-lg);
+  justify-content: center;
+  height: 26px;
+  padding: 0 var(--spacing-sm);
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  box-sizing: border-box;
 }
 
 .config-mgmt-type-badge--numeric {

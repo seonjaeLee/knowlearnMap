@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAlert } from '../context/AlertContext';
+import knowlearnMapSymbol from '../assets/knowlearnMap.svg';
+import knowlearnMapSymbolDark from '../assets/knowlearnMap-dark.svg';
 import './Login.css';
 import { API_URL } from '../config/api';
 
@@ -53,57 +55,91 @@ const ResetPassword = () => {
         }
     };
 
+    const renderLogo = () => (
+        <div className="login-logo login-logo--row">
+            <img
+                className="login-logo__symbol login-logo__symbol--light"
+                src={knowlearnMapSymbol}
+                alt=""
+                aria-hidden
+            />
+            <img
+                className="login-logo__symbol login-logo__symbol--dark"
+                src={knowlearnMapSymbolDark}
+                alt=""
+                aria-hidden
+            />
+            <div className="login-wordmark">
+                knowlearn
+                <span className="login-wordmark__map">Map</span>
+            </div>
+        </div>
+    );
+
     if (!token) {
         return (
-            <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
-                <div className="login-card">
-                    <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                        <img src="/knowlearn_logo.png" alt="KNOWLEARN MAP" style={{ height: '48px' }} />
+            <div className="login-page kl-aurora-bg kl-aurora-bg--ambient">
+                <div className="login-container">
+                    <div className="login-card">
+                        {renderLogo()}
+                        <h1 className="login-title">비밀번호 재설정</h1>
+                        <div className="error-message">유효하지 않은 링크입니다. (토큰 없음)</div>
+                        <button
+                            type="button"
+                            className="login-btn kl-btn primary-full lg"
+                            onClick={() => navigate('/login')}
+                        >
+                            로그인 페이지로 이동
+                        </button>
                     </div>
-                    <div className="error-message">유효하지 않은 링크입니다. (토큰 없음)</div>
-                    <button className="login-btn" onClick={() => navigate('/login')}>
-                        로그인 페이지로 이동
-                    </button>
                 </div>
+                <p className="login-page-copyright">© 2025 KNOWLEARN MAP. All rights reserved.</p>
             </div>
         );
     }
 
     return (
-        <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
-            <div className="login-card">
-                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                    <img src="/knowlearn_logo.png" alt="KNOWLEARN MAP" style={{ height: '48px' }} />
+        <div className="login-page kl-aurora-bg kl-aurora-bg--ambient">
+            <div className="login-container">
+                <div className="login-card">
+                    {renderLogo()}
+                    <h1 className="login-title">비밀번호 재설정</h1>
+                    {status && <div className="error-message">{status}</div>}
+                    <form onSubmit={handleSubmit}>
+                        <div className="login-field">
+                            <label htmlFor="reset-password-new">새 비밀번호</label>
+                            <input
+                                id="reset-password-new"
+                                className="login-inp"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="6자 이상 입력"
+                                autoComplete="new-password"
+                                required
+                                autoFocus
+                            />
+                        </div>
+                        <div className="login-field">
+                            <label htmlFor="reset-password-confirm">비밀번호 확인</label>
+                            <input
+                                id="reset-password-confirm"
+                                className="login-inp"
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="비밀번호 재입력"
+                                autoComplete="new-password"
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="login-btn kl-btn primary-full lg" disabled={loading}>
+                            {loading ? '변경 중...' : '비밀번호 변경'}
+                        </button>
+                    </form>
                 </div>
-                <h1>비밀번호 재설정</h1>
-                {status && <div className="error-message">{status}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>새 비밀번호</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="6자 이상 입력"
-                            required
-                            autoFocus
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>비밀번호 확인</label>
-                        <input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="비밀번호 재입력"
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="login-btn" disabled={loading}>
-                        {loading ? '변경 중...' : '비밀번호 변경'}
-                    </button>
-                </form>
             </div>
+            <p className="login-page-copyright">© 2025 KNOWLEARN MAP. All rights reserved.</p>
         </div>
     );
 };

@@ -1,0 +1,108 @@
+/**
+ * KL 상태·메타 뱃지 — 프롬프트 상세 `.prompt-skin-tag` SSOT
+ * - 테두리 pill · 26px · 6px dot만 시맨틱 색 · 텍스트 `--color-text-secondary`
+ * - `@see` react/docs/mockup-checklist-prompt-management-redesign.md §2.2
+ */
+
+:root {
+  --kl-badge-bg: var(--color-badge-bg);
+  --kl-badge-border: var(--color-badge-border);
+  --kl-badge-dot-neutral: var(--color-text-tertiary);
+  --kl-badge-dot-info: var(--color-accent);
+  --kl-badge-dot-ok: var(--color-icon-success);
+  --kl-badge-dot-warn: #f59e0b;
+  --kl-badge-dot-danger: var(--color-icon-danger);
+}
+
+[data-theme='dark'] {
+  --kl-badge-dot-warn: #fbbf24;
+}
+
+.kl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  max-width: 100%;
+  padding: 0 10px 0 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--kl-badge-border);
+  background: var(--kl-badge-bg);
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.kl-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--kl-badge-dot-neutral);
+}
+
+.kl-badge--info .kl-badge__dot {
+  background: var(--kl-badge-dot-info);
+}
+
+.kl-badge--ok .kl-badge__dot {
+  background: var(--kl-badge-dot-ok);
+}
+
+.kl-badge--warn .kl-badge__dot {
+  background: var(--kl-badge-dot-warn);
+}
+
+.kl-badge--danger .kl-badge__dot {
+  background: var(--kl-badge-dot-danger);
+}
+
+.kl-badge--neutral .kl-badge__dot {
+  background: var(--kl-badge-dot-neutral);
+}
+
+/* 짧은 enum — 테이블 데코용 (권한·등급 등) */
+.kl-badge--compact {
+  gap: 4px;
+  height: 22px;
+  padding: 0 6px 0 5px;
+  font-size: 11px;
+}
+
+.kl-badge--compact .kl-badge__dot {
+  width: 5px;
+  height: 5px;
+}
+
+/* 긴 코드·문자열 — dot + 본문 텍스트 (테두리·배경 없음) */
+.kl-badge--inline {
+  gap: 6px;
+  height: auto;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  letter-spacing: normal;
+}
+
+.kl-badge--inline .kl-badge__dot {
+  width: 5px;
+  height: 5px;
+}
+
+.kl-badge--inline .kl-badge__text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

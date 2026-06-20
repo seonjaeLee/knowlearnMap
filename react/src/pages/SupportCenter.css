@@ -12,17 +12,7 @@
 }
 
 /* 관리 열 — BasicTable.global.css 아이콘 버튼 */
-.support-basic-table .kl-table-actions {
-    justify-content: flex-end;
-}
 
-.support-basic-table {
-    min-width: 820px;
-}
-
-.support-qna-table {
-    min-width: 980px;
-}
 
 .support-empty {
     text-align: center;
@@ -47,8 +37,7 @@
     color: var(--color-text-primary);
 }
 
-.support-badge,
-.support-status {
+.support-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -67,6 +56,13 @@
     color: var(--color-text-secondary);
 }
 
+/* 1:1 문의 제목 — 답변 N (dot 없음, 녹색 틴트 pill) */
+.support-badge--answer {
+    background: color-mix(in srgb, var(--color-icon-success) 14%, var(--color-bg-secondary));
+    color: var(--color-icon-success-emphasis);
+    border: 1px solid color-mix(in srgb, var(--color-icon-success) 22%, var(--color-border-subtle));
+}
+
 .support-badge--new {
     background: var(--color-accent);
     color: #fff;
@@ -75,16 +71,6 @@
 .support-badge--danger {
     background: color-mix(in srgb, var(--color-icon-danger) 12%, white);
     color: var(--color-icon-danger);
-}
-
-.support-status.is-answered {
-    background: color-mix(in srgb, var(--color-icon-success) 12%, white);
-    color: var(--color-icon-success-emphasis);
-}
-
-.support-status.is-waiting {
-    background: color-mix(in srgb, var(--color-accent) 12%, white);
-    color: var(--color-accent);
 }
 
 .support-row-pinned td,

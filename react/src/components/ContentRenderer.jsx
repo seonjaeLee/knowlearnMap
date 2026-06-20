@@ -127,7 +127,7 @@ function renderMarkdownTable(markdown) {
             overflow: 'hidden'
         }}>
             <thead>
-                <tr style={{ background: '#f5f5f5' }}>
+                <tr style={{ background: 'var(--color-bg-hover)' }}>
                     {headers.map((h, i) => (
                         <th key={i} style={{
                             padding: '8px 12px',
@@ -144,7 +144,7 @@ function renderMarkdownTable(markdown) {
             </thead>
             <tbody>
                 {dataRows.map((row, ri) => (
-                    <tr key={ri} style={{ background: ri % 2 === 0 ? '#fff' : '#fafafa' }}>
+                    <tr key={ri} style={{ background: ri % 2 === 0 ? 'var(--color-bg-secondary)' : 'var(--color-bg-hover)' }}>
                         {row.map((cell, ci) => (
                             <td key={ci} style={{
                                 padding: '6px 12px',

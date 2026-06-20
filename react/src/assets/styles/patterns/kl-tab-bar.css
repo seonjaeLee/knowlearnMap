@@ -1,0 +1,470 @@
+/**
+ * KlTabBar — 페이지·패널 2차 탭 (회색 베이스 라인 + accent 슬라이딩 indicator)
+ * @see components/common/KlTabBar.jsx
+ */
+
+.kl-tab-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  flex-shrink: 0;
+  min-width: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+}
+
+.kl-tab-bar__scroll {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.kl-tab-bar__scroll--enabled {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.kl-tab-bar__scroll--enabled::-webkit-scrollbar {
+  display: none;
+}
+
+.kl-tab-bar__list {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: nowrap;
+  gap: 0;
+  min-width: min-content;
+  min-height: 100%;
+}
+
+.kl-tab-bar__tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  margin: 0;
+  border: none;
+  border-bottom: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.kl-tab-bar__tab:hover:not(:disabled) {
+  color: var(--color-text-primary);
+}
+
+.kl-tab-bar__tab.is-active {
+  color: var(--color-accent);
+}
+
+.kl-tab-bar__tab:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.kl-tab-bar__tab > svg {
+  flex-shrink: 0;
+  color: inherit;
+  stroke: currentColor;
+}
+
+.kl-tab-bar__indicator {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 1px 1px 0 0;
+  pointer-events: none;
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.12s ease;
+  will-change: transform, width;
+}
+
+.kl-tab-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  align-self: flex-end;
+  padding-bottom: 6px;
+  padding-inline: var(--spacing-sm) var(--spacing-md);
+}
+
+.kl-tab-bar__actions .kl-btn {
+  height: var(--kl-control-height);
+}
+
+/* scroll-tail — 고정 탭 + 변수 pill 가로 스크롤 */
+.kl-tab-bar--scroll-tail {
+  border-bottom: none;
+  align-items: stretch;
+}
+
+.kl-tab-bar__body {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.kl-tab-bar__track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+}
+
+.kl-tab-bar__pinned {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0;
+}
+
+.kl-tab-bar__tail {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 4px;
+}
+
+/* 좌우 스크롤 페이드 — BasicTable scroll-wrap 과 동일 mask 방식 */
+.kl-tab-bar__tail .kl-tab-bar__scroll {
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  transition: -webkit-mask-image 0.22s ease, mask-image 0.22s ease;
+}
+
+.kl-tab-bar__tail .kl-tab-bar__scroll.fade-r {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - 80px),
+    rgba(0, 0, 0, 0.97) calc(100% - 68px),
+    rgba(0, 0, 0, 0.88) calc(100% - 56px),
+    rgba(0, 0, 0, 0.72) calc(100% - 44px),
+    rgba(0, 0, 0, 0.52) calc(100% - 32px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.12) calc(100% - 10px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - 80px),
+    rgba(0, 0, 0, 0.97) calc(100% - 68px),
+    rgba(0, 0, 0, 0.88) calc(100% - 56px),
+    rgba(0, 0, 0, 0.72) calc(100% - 44px),
+    rgba(0, 0, 0, 0.52) calc(100% - 32px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.12) calc(100% - 10px),
+    transparent 100%
+  );
+}
+
+.kl-tab-bar__tail .kl-tab-bar__scroll.fade-l {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 10px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.52) 32px,
+    rgba(0, 0, 0, 0.72) 44px,
+    rgba(0, 0, 0, 0.88) 56px,
+    rgba(0, 0, 0, 0.97) 68px,
+    #000 80px,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 10px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.52) 32px,
+    rgba(0, 0, 0, 0.72) 44px,
+    rgba(0, 0, 0, 0.88) 56px,
+    rgba(0, 0, 0, 0.97) 68px,
+    #000 80px,
+    #000 100%
+  );
+}
+
+.kl-tab-bar__tail .kl-tab-bar__scroll.fade-l.fade-r {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 10px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.52) 32px,
+    rgba(0, 0, 0, 0.72) 44px,
+    rgba(0, 0, 0, 0.88) 56px,
+    rgba(0, 0, 0, 0.97) 68px,
+    #000 80px,
+    #000 calc(100% - 80px),
+    rgba(0, 0, 0, 0.97) calc(100% - 68px),
+    rgba(0, 0, 0, 0.88) calc(100% - 56px),
+    rgba(0, 0, 0, 0.72) calc(100% - 44px),
+    rgba(0, 0, 0, 0.52) calc(100% - 32px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.12) calc(100% - 10px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 10px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.52) 32px,
+    rgba(0, 0, 0, 0.72) 44px,
+    rgba(0, 0, 0, 0.88) 56px,
+    rgba(0, 0, 0, 0.97) 68px,
+    #000 80px,
+    #000 calc(100% - 80px),
+    rgba(0, 0, 0, 0.97) calc(100% - 68px),
+    rgba(0, 0, 0, 0.88) calc(100% - 56px),
+    rgba(0, 0, 0, 0.72) calc(100% - 44px),
+    rgba(0, 0, 0, 0.52) calc(100% - 32px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.12) calc(100% - 10px),
+    transparent 100%
+  );
+}
+
+.kl-tab-bar__list--tail {
+  align-items: center;
+  gap: 7px;
+  min-height: 23px;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tail {
+  align-items: center;
+  min-height: 23px;
+}
+
+.kl-tab-bar__scroll-btn {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--ps-surface-2, var(--color-bg-subtle));
+  color: var(--ps-text-3, var(--color-text-secondary));
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.kl-tab-bar__scroll-btn:hover {
+  background: var(--ps-border, var(--color-border));
+  color: var(--ps-text-1, var(--color-text-primary));
+}
+
+.kl-tab-bar--scroll-tail .kl-tab-bar__indicator {
+  bottom: 0;
+}
+
+/* ---- variant: subtle (구 kl-subtabs) ---- */
+.kl-tab-bar--subtle {
+  padding: 0 var(--spacing-md);
+  background: transparent;
+  border-bottom-color: var(--color-border);
+}
+
+.kl-tab-bar--subtle .kl-tab-bar__tab {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.kl-tab-bar--subtle .kl-tab-bar__tab.is-active {
+  font-weight: var(--font-weight-medium);
+}
+
+/* ---- variant: page (프롬프트 상세 Editor/History) ---- */
+.kl-tab-bar--page {
+  gap: 26px;
+  margin-bottom: 20px;
+  border-bottom-color: var(--ps-border, var(--color-border));
+  background: transparent;
+}
+
+.kl-tab-bar--page .kl-tab-bar__list {
+  gap: 26px;
+}
+
+.kl-tab-bar--page .kl-tab-bar__tab {
+  padding: 0 2px 12px;
+  font-size: 14.5px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--ps-text-3, var(--color-text-secondary));
+}
+
+.kl-tab-bar--page .kl-tab-bar__tab:hover:not(:disabled) {
+  color: var(--ps-text-1, var(--color-text-primary));
+}
+
+.kl-tab-bar--page .kl-tab-bar__tab.is-active {
+  color: var(--ps-brand, var(--color-accent));
+}
+
+.kl-tab-bar--page .kl-tab-bar__indicator {
+  background: var(--ps-brand, var(--color-accent));
+}
+
+.kl-tab-bar--page .kl-tab-bar__actions {
+  padding-bottom: 6px;
+}
+
+/* ---- variant: compact (PromptEditTabs default 툴바) ---- */
+.kl-tab-bar--compact {
+  border-bottom-color: var(--color-border-subtle);
+}
+
+.kl-tab-bar--compact .kl-tab-bar__list {
+  gap: var(--spacing-xs);
+}
+
+.kl-tab-bar--compact .kl-tab-bar__tab {
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+}
+
+.kl-tab-bar--compact .kl-tab-bar__tab--error:not(.is-active) {
+  color: var(--color-icon-danger);
+}
+
+.kl-tab-bar--compact .kl-tab-bar__tab--error.is-active {
+  color: var(--color-icon-danger);
+}
+
+.kl-tab-bar--compact .kl-tab-bar__tab--error.is-active ~ .kl-tab-bar__indicator,
+.kl-tab-bar--compact:has(.kl-tab-bar__tab--error.is-active) .kl-tab-bar__indicator {
+  background: var(--color-icon-danger);
+}
+
+.kl-tab-bar--compact .kl-tab-bar__actions {
+  padding-bottom: var(--spacing-sm);
+}
+
+/* ---- variant: panel (PromptEditTabs detail · prompt-panel head) ---- */
+.kl-tab-bar--panel {
+  border-bottom: none;
+  background: transparent;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__track {
+  align-items: center;
+  gap: 10px;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__pinned {
+  align-items: center;
+  gap: 10px;
+  min-height: 23px;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__list {
+  align-items: center;
+  gap: 10px;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab {
+  padding: 0 2px;
+  font-size: 13.5px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--ps-text-3, var(--color-text-secondary));
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab:hover:not(:disabled) {
+  color: var(--ps-text-1, var(--color-text-primary));
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab.is-active {
+  color: var(--ps-brand, var(--color-accent));
+}
+
+.kl-tab-bar--panel .kl-tab-bar__indicator {
+  background: var(--ps-brand, var(--color-accent));
+}
+
+/* bubble 탭 — pill 스타일, indicator는 슬라이딩 유지 */
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble {
+  gap: 4px;
+  height: 23px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: var(--font-weight-bold);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  transition: filter 0.12s, box-shadow 0.12s, background 0.12s, color 0.12s;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble-empty {
+  background: color-mix(in srgb, var(--ps-danger, #e0483d) 11%, transparent);
+  color: var(--ps-danger, #e0483d);
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble-filled {
+  background: color-mix(in srgb, var(--ps-ok, #1aa85f) 11%, transparent);
+  color: var(--ps-ok, #1aa85f);
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble.is-active {
+  color: inherit;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble-empty.is-active {
+  color: var(--ps-danger, #e0483d);
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble-filled.is-active {
+  color: var(--ps-ok, #1aa85f);
+}
+
+.kl-tab-bar--panel:has(.kl-tab-bar__tab--bubble.is-active) .kl-tab-bar__indicator {
+  opacity: 0;
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble-empty.is-active {
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ps-danger, #e0483d) 35%, transparent);
+  background: color-mix(in srgb, var(--ps-danger, #e0483d) 17%, transparent);
+}
+
+.kl-tab-bar--panel .kl-tab-bar__tab--bubble-filled.is-active {
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ps-ok, #1aa85f) 35%, transparent);
+  background: color-mix(in srgb, var(--ps-ok, #1aa85f) 18%, transparent);
+}
+
+.kl-tab-bar__tab-bubble-mark {
+  display: inline-flex;
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}

@@ -81,7 +81,7 @@
 /* 노트북 상세 임베드 툴바: 한 줄 유지 (가로 스크롤은 .kg-body-hscroll 담당) */
 .kg-toolbar {
     flex-shrink: 0;
-    background-color: #f8f9fa;
+    background-color: var(--color-bg-hover);
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -171,7 +171,7 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    background: #f8f9fa;
+    background: var(--color-bg-hover);
     padding: 8px;
     border-radius: 4px;
     border: 1px solid #e0e0e0;
@@ -266,7 +266,7 @@
 }
 
 .kg-btn.secondary:hover {
-    background: #f8f9fa;
+    background: var(--color-bg-hover);
     border-color: #dadce0;
 }
 
@@ -296,7 +296,7 @@
 }
 
 .kg-suggestions li:hover {
-    background: #f1f3f4;
+    background: var(--color-bg-hover);
 }
 
 /* Document Filter Dropdown (Custom styles for the manual implementation inside modal) */

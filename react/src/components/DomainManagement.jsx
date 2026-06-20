@@ -22,8 +22,10 @@ import {
 } from './common/modal/klModalForm';
 import KlIconButton from './common/KlIconButton';
 import BasicTable from './common/BasicTable';
+import { basicTableActionsColumnDef } from './common/table/basicTableActionsColumn';
 import KlTableRowActions from './common/table/KlTableRowActions';
 import { formatTableCellText, isTableCellBlank } from './common/tableCellDisplay';
+import { formatKlDate } from '../utils/formatKlDate';
 import { mockDomains } from '../data/domainMockData';
 import './DomainManagement.css';
 
@@ -69,14 +71,7 @@ function DomainManagement() {
             { id: '_workspaces', label: '워크스페이스', defaultWidthPx: 240, minWidthPx: 208, align: 'left', ellipsis: false },
             { id: '_created', label: '생성일', defaultWidthPx: 112, minWidthPx: 112, align: 'left' },
             { id: 'arangoDbName', label: 'ArangoDB', defaultWidthPx: 104, minWidthPx: 104, align: 'left' },
-            {
-                id: 'actions',
-                label: <span className="domain-mgmt-actions-head">관리</span>,
-                defaultWidthPx: 120,
-                minWidthPx: 120,
-                align: 'right',
-                ellipsis: false,
-            },
+            basicTableActionsColumnDef({ buttonCount: 2 }),
         ],
         []
     );
@@ -348,7 +343,7 @@ function DomainManagement() {
             case '_created':
                 return (
                     <span className="domain-mgmt-date-text">
-                        {new Date(domain.createdDatetime || domain.createdAt).toLocaleDateString()}
+                        {formatKlDate(domain.createdDatetime || domain.createdAt)}
                     </span>
                 );
             case 'arangoDbName':
@@ -427,7 +422,6 @@ function DomainManagement() {
 
                 <div className="basic-table-shell">
                     <BasicTable
-                        className="domain-mgmt-basic-table"
                         columns={domainTableColumns}
                         data={filteredDomains}
                         renderCell={renderDomainCell}

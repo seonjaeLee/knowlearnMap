@@ -6,6 +6,7 @@
 | **[modal-guide.md](./modal-guide.md)** | **모달 전용** — `BaseModal`, `useDialog`, `kl-modal-form`, **§9 공통 팝업 구성 체크리스트**, 마이그레이션. |
 | **[mockup-checklist-prompt-management-redesign.md](./mockup-checklist-prompt-management-redesign.md)** | **프롬프트 관리 리디자인 SSOT** — §0 컨펌 후 구현 · 목업 스펙 · 금지 사항(복사 버튼·뱃지 색 등). **프롬프트 UI 작업 시 필수.** |
 | **[mockup-guide.md](./mockup-guide.md)** | 목업 작성 가이드 · **§10 구현 담당(에이전트) 필수 순서** |
+| **[workspace-icon-keywords.md](./workspace-icon-keywords.md)** | 워크스페이스 그리드 카드 — 이름 키워드 → 아이콘 자동 매칭. 매핑 파일 위치 · 카테고리 추가법. |
 | **인수인계 (모달 UI 이관)** | **`.cursor/rules/handoff-modal-ui-rollout.mdc`** · [`AGENTS.md`](../../AGENTS.md) — 전 메뉴·NotebookDetail 포함 BaseModal |
 | **인수인계 (프롬프트 MUI 제거)** | **`.cursor/rules/handoff-prompt-no-mui.mdc`** · 위 mockup-checklist §0 |
 | **[ui-history3.md](./ui-history3.md)** | 작업 **일기**(현행). 사용자·에이전트 협업 기록. **요청 시만** 갱신. |

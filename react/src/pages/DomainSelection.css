@@ -20,20 +20,23 @@
 
 .domain-card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+    gap: 18px;
 }
 
+/* 카드 디자인 SSOT: react/docs/domain-card.md (워크스페이스 카드와 가로폭·세로폭 통일) */
 .domain-card {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: 10px;
     text-align: left;
     width: 100%;
-    padding: var(--spacing-lg);
+    padding: 18px;
+    min-height: 158px;
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
     cursor: pointer;
     transition: border-color var(--transition-fast),
         box-shadow var(--transition-fast),
@@ -42,8 +45,12 @@
 
 .domain-card:hover {
     border-color: var(--color-accent);
-    box-shadow: var(--shadow-small);
-    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(20, 28, 46, 0.14);
+    transform: translateY(-2px);
+}
+
+[data-theme='dark'] .domain-card:hover {
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
 }
 
 .domain-card--current {
@@ -51,57 +58,116 @@
     background: var(--color-accent-light);
 }
 
+/* 카드 배경이 이미 브랜드 틴트라 아이콘 박스는 흰색으로 대비를 유지 */
+.domain-card--current .domain-card-icon {
+    background: var(--color-bg-secondary);
+}
+
+.domain-card--current .domain-card-meta {
+    border-top-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+
 .domain-card-head {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: var(--spacing-xs);
 }
 
 .domain-card-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-sm);
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
     background: var(--color-accent-light);
     color: var(--color-accent);
+    flex-shrink: 0;
+}
+
+/* 호버 시에만 등장하는 이동 화살표 (현재 도메인이 아닐 때만 렌더) */
+.domain-card-go {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--color-text-tertiary);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity var(--transition-fast),
+        transform var(--transition-fast),
+        background-color var(--transition-fast),
+        color var(--transition-fast);
+}
+
+.domain-card:hover .domain-card-go {
+    opacity: 1;
+    transform: none;
+    color: var(--color-accent);
+    background: var(--color-accent-light);
 }
 
 .domain-card-current-badge {
     display: inline-flex;
     align-items: center;
-    gap: calc(var(--spacing-xs) / 2);
-    background: var(--color-accent);
-    color: var(--control-pill-active-text);
+    gap: 4px;
+    flex-shrink: 0;
+    height: 26px;
+    padding: 0 11px 0 9px;
     border-radius: 999px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+    background: var(--color-accent-gradient);
+    color: var(--control-pill-active-text);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: 0 2px 6px rgba(98, 80, 230, 0.32);
+}
+
+.domain-card-body {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .domain-card-name {
-    font-weight: var(--font-weight-semibold);
+    font-weight: 700;
+    letter-spacing: -0.01em;
     color: var(--color-text-primary);
-    font-size: var(--font-size-lg);
+    font-size: 17px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .domain-card-desc {
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .domain-card-meta {
-    margin-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    font-size: 12.5px;
+    font-weight: var(--font-weight-semibold);
+}
+
+.domain-card-meta svg {
+    width: 14px;
+    height: 14px;
     color: var(--color-text-tertiary);
-    font-size: var(--font-size-xs);
+    flex-shrink: 0;
 }
 
 .domain-empty {

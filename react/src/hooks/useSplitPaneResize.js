@@ -43,6 +43,9 @@ export function saveSplitPanePercent(storageKey, percent) {
  * @param {number} [options.maxLeftPercent]
  * @param {number} [options.collapsedLeftWidthPx]
  * @param {number} [options.minCollapsedLeftWidthPx]
+ * @param {boolean} [options.collapsedFitContent] 접힘 시 좌측 너비를 콘텐츠(제목 등)에 맞춤
+ * @param {number} [options.minLeftWidthPx] 펼침 시 좌측 최소 px (clamp 하한)
+ * @param {number} [options.maxLeftWidthPx] 펼침 시 좌측 최대 px (clamp 상한)
  * @param {string} [options.percentStorageKey] localStorage에 % 저장
  * @param {() => void} [options.onResizeStart] 드래그 시작 직전 (접힘 해제 등)
  */
@@ -54,6 +57,9 @@ export function useSplitPaneResize({
   maxLeftPercent = 60,
   collapsedLeftWidthPx = 300,
   minCollapsedLeftWidthPx = 250,
+  collapsedFitContent = false,
+  minLeftWidthPx,
+  maxLeftWidthPx,
   percentStorageKey,
   onResizeStart,
 }) {
@@ -72,17 +78,38 @@ export function useSplitPaneResize({
 
   const effectiveCollapsed = leftCollapsed && !isResizing;
 
-  const leftPaneStyle = effectiveCollapsed
-    ? {
-      flex: `0 0 ${collapsedLeftWidthPx}px`,
-      maxWidth: `${collapsedLeftWidthPx}px`,
-      minWidth: `${minCollapsedLeftWidthPx}px`,
+  const buildExpandedLeftStyle = () => {
+    if (minLeftWidthPx != null || maxLeftWidthPx != null) {
+      const lo = minLeftWidthPx != null ? `${minLeftWidthPx}px` : '0px';
+      const hi = maxLeftWidthPx != null ? `${maxLeftWidthPx}px` : `${leftPercent}%`;
+      const basis = `clamp(${lo}, ${leftPercent}%, ${hi})`;
+      return {
+        flex: `0 0 ${basis}`,
+        maxWidth: basis,
+        minWidth: 0,
+      };
     }
-    : {
+    return {
       flex: `0 0 ${leftPercent}%`,
       maxWidth: `${leftPercent}%`,
       minWidth: 0,
     };
+  };
+
+  const leftPaneStyle = effectiveCollapsed
+    ? (collapsedFitContent
+      ? {
+        flex: '0 0 auto',
+        width: 'auto',
+        maxWidth: 'none',
+        minWidth: 0,
+      }
+      : {
+        flex: `0 0 ${collapsedLeftWidthPx}px`,
+        maxWidth: `${collapsedLeftWidthPx}px`,
+        minWidth: `${minCollapsedLeftWidthPx}px`,
+      })
+    : buildExpandedLeftStyle();
 
   const handleResizerPointerDown = useCallback((event) => {
     if (event.button !== 0) return;
@@ -132,6 +159,8 @@ export function useSplitPaneResize({
     setLeftPercent,
     leftPaneStyle,
     isResizing,
+    effectiveCollapsed,
+    collapsedFitContent,
     handleResizerPointerDown,
   };
 }

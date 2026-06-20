@@ -1,16 +1,9 @@
 import { Pin, MessageCircle, Eye, User, Clock } from 'lucide-react';
+import { formatKlDate } from '../utils/formatKlDate';
 import './QnaQuestionCard.css';
 
 function QnaQuestionCard({ question, onClick, isAdmin, onTogglePin }) {
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-        });
-    };
+    const formatDate = (dateString) => formatKlDate(dateString, { fallback: '' });
 
     const getStatusBadge = () => {
         if (question.status === 'ANSWERED') {

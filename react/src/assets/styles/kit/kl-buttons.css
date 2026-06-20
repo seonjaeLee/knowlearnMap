@@ -263,10 +263,14 @@
 .kl-table-actions {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: var(--spacing-xs);
     width: 100%;
     min-width: 0;
+}
+
+.kl-table-actions > :where(button, a) {
+    flex-shrink: 0;
 }
 
 .kl-table-icon-btn {
@@ -419,16 +423,31 @@
 }
 
 .kl-btn--primary,
-.admin-btn-primary {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
+.admin-btn-primary,
+.kl-btn.primary-full,
+.confirm-btn {
+    background: var(--kl-brand-primary-grad);
+    border-color: transparent;
     color: #fff;
+    box-shadow: none;
+    transition: filter var(--transition-fast), transform 0.1s, border-color var(--transition-fast);
 }
 
-.kl-btn--primary:hover,
-.admin-btn-primary:hover {
-    background: var(--color-accent-hover);
-    border-color: var(--color-accent-hover);
+.kl-btn--primary:hover:not(:disabled),
+.admin-btn-primary:hover:not(:disabled),
+.kl-btn.primary-full:hover:not(:disabled),
+.confirm-btn:hover:not(:disabled) {
+    background: var(--kl-brand-primary-grad);
+    border-color: transparent;
+    filter: brightness(1.07);
+}
+
+.kl-btn--primary:disabled,
+.admin-btn-primary:disabled,
+.kl-btn.primary-full:disabled,
+.confirm-btn:disabled {
+    box-shadow: none;
+    filter: none;
 }
 
 .kl-btn--secondary,
@@ -547,9 +566,9 @@
     min-width: 56px;
     height: var(--kl-control-height);
     padding: 0 var(--spacing-md);
-    border: 1px solid var(--color-accent);
+    border: 1px solid transparent;
     border-radius: var(--radius-sm);
-    background: var(--color-accent);
+    background: var(--kl-brand-primary-grad);
     color: #fff;
     font-family: var(--font-family);
     font-size: var(--font-size-sm);
@@ -557,12 +576,13 @@
     line-height: 1;
     cursor: pointer;
     white-space: nowrap;
-    transition: background var(--transition-fast), border-color var(--transition-fast);
+    transition: filter var(--transition-fast), transform 0.1s;
 }
 
 .kl-btn-primary-sm:hover:not(:disabled) {
-    background: var(--color-accent-hover);
-    border-color: var(--color-accent-hover);
+    background: var(--kl-brand-primary-grad);
+    border-color: transparent;
+    filter: brightness(1.07);
 }
 
 .kl-btn-primary-sm:active:not(:disabled) {
@@ -710,17 +730,6 @@
     border-color: var(--color-border-hover);
 }
 
-.kl-btn.primary-full {
-    border: 1px solid var(--color-accent);
-    background: var(--color-accent);
-    color: #fff;
-}
-
-.kl-btn.primary-full:hover:not(:disabled) {
-    background: var(--color-accent-hover);
-    border-color: var(--color-accent-hover);
-}
-
 .kl-btn.primary-outline {
     border: 1px solid var(--color-accent);
     background: var(--color-bg-secondary);
@@ -731,6 +740,45 @@
     border-color: var(--color-accent-hover);
     color: var(--color-accent-hover);
     background: color-mix(in srgb, var(--color-accent) 8%, var(--color-bg-secondary));
+}
+
+/* ============================================================
+ * 큰 CTA 버튼 — 로그인·요금제 등 풀와이드 강조 액션 공통 크기
+ * 사용: <button class="kl-btn primary-full lg">…</button>
+ *       <button class="kl-btn primary-outline lg">…</button> (hover 시 primary-full과 동일하게 채워짐)
+ * ============================================================ */
+.kl-btn.lg {
+    height: 48px;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    gap: 8px;
+}
+
+.kl-btn.primary-full.lg {
+    box-shadow: var(--kl-brand-primary-shadow);
+}
+
+[data-theme='dark'] .kl-btn.primary-full.lg:not(:disabled) {
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, #fff 11%, transparent),
+        var(--kl-brand-primary-shadow);
+}
+
+[data-theme='dark'] .kl-btn.primary-full.lg:hover:not(:disabled) {
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, #fff 13%, transparent),
+        0 8px 24px rgba(0, 0, 0, 0.58),
+        0 3px 8px rgba(0, 0, 0, 0.42);
+}
+
+.kl-btn.primary-outline.lg:hover:not(:disabled) {
+    background: var(--kl-brand-primary-grad);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: var(--kl-brand-primary-shadow);
 }
 
 .kl-btn.gray-fill,

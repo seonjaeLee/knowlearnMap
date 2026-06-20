@@ -66,7 +66,7 @@ function SemanticEntityListPanel({
         return <span className="admin-col-strong">{row.nameEn}</span>;
       case 'categoryNameEn':
         return row.categoryNameEn
-          ? <span className="admin-badge admin-badge-info">{row.categoryNameEn}</span>
+          ? <span className="kl-table-category-text">{row.categoryNameEn}</span>
           : <TableCellBlank />;
       case 'description': {
         const desc = row.description;
@@ -153,7 +153,6 @@ function SemanticEntityListPanel({
 
       <div className="basic-table-shell">
         <BasicTable
-          className="admin-semantic-split-basic-table"
           columns={columns}
           data={loading ? [] : items}
           renderCell={renderCell}

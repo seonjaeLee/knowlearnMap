@@ -11,9 +11,12 @@ import PromptFormDialog from './PromptFormDialog';
 import EditPromptDialog from './EditPromptDialog';
 import MakerPageHeader from '../../../components/admin/MakerPageHeader';
 import KlIconButton from '../../../components/common/KlIconButton';
+import KlBadge from '../../../components/common/KlBadge';
 import BasicTable from '../../../components/common/BasicTable';
+import { basicTableActionsColumnDef } from '../../../components/common/table/basicTableActionsColumn';
 import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
 import { isTableCellBlank, TableCellBlank } from '../../../components/common/tableCellDisplay';
+import { formatKlDate } from '../../../utils/formatKlDate';
 import { useBasicTableColumnResize } from '../../../hooks/useBasicTableColumnResize';
 import '../../../pages/admin/admin-common.css';
 import './PromptList.css';
@@ -63,14 +66,7 @@ const PromptListContent = () => {
       { id: 'securityLevel', label: '등급', defaultWidthPx: 80, minWidthPx: 72, align: 'left', ellipsis: false },
       { id: 'versionSummary', label: '버전', defaultWidthPx: 100, minWidthPx: 80, align: 'left', ellipsis: false },
       { id: 'updatedAt', label: '수정일', defaultWidthPx: 84, minWidthPx: 74, align: 'left' },
-      {
-        id: 'actions',
-        label: '관리',
-        defaultWidthPx: 92,
-        minWidthPx: 92,
-        align: 'center',
-        ellipsis: false,
-      },
+      basicTableActionsColumnDef({ buttonCount: 2 }),
     ],
     [],
   );
@@ -182,13 +178,15 @@ const PromptListContent = () => {
         return rowIndex + 1;
       case 'category':
         return prompt.category ? (
-          <span className="admin-badge admin-badge-primary">{prompt.category}</span>
+          <span className="kl-table-category-text">{prompt.category}</span>
         ) : (
           <span className="prompt-list-muted">미분류</span>
         );
       case 'purpose':
         return prompt.purpose ? (
-          <span className="admin-badge admin-badge-info">{prompt.purpose}</span>
+          <KlBadge tone="info" variant="compact">
+            {prompt.purpose}
+          </KlBadge>
         ) : (
           <TableCellBlank className="prompt-list-muted" />
         );
@@ -217,7 +215,11 @@ const PromptListContent = () => {
           </span>
         );
       case 'securityLevel':
-        return <span className={`prompt-list-grade-badge ${level.badge}`}>{level.label}</span>;
+        return (
+          <KlBadge tone={level.tone} variant="compact">
+            {level.label}
+          </KlBadge>
+        );
       case 'versionSummary': {
         const hasActive = !isTableCellBlank(prompt.activeVersion);
         const count = prompt.versionCount ?? 0;
@@ -236,7 +238,7 @@ const PromptListContent = () => {
       case 'updatedAt':
         return (
           <span className="prompt-list-date-cell">
-            {new Date(prompt.updatedAt).toLocaleDateString()}
+            {formatKlDate(prompt.updatedAt)}
           </span>
         );
       case 'actions':
@@ -345,7 +347,6 @@ const PromptListContent = () => {
         ) : (
           <div className="basic-table-shell">
             <BasicTable
-              className="prompt-list-basic-table"
               columns={promptTableColumns}
               data={prompts}
               renderCell={renderPromptCell}

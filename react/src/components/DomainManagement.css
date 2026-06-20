@@ -23,23 +23,7 @@
     flex-shrink: 0;
 }
 
-.domain-mgmt-basic-table {
-    min-width: 1120px;
-}
-
-.table-area .domain-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .domain-mgmt-actions-head {
-    padding-right: var(--spacing-sm);
-}
-
-.domain-mgmt-actions-head {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
-}
-
-.table-area .domain-mgmt-basic-table .MuiTableBody-root .MuiTableRow-root .MuiTableCell-root .domain-mgmt-ws-badge {
+.domain-mgmt-ws-badge {
     padding: 2px var(--spacing-xs);
 }
 

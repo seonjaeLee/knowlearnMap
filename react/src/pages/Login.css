@@ -1,3 +1,26 @@
+/* 로그인 카드 내부 — react/src/assets/README.md · login-preview.html SSOT (배경 제외) */
+
+.login-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+}
+
+.login-page-copyright {
+    flex-shrink: 0;
+    margin: 0;
+    padding: var(--spacing-md) var(--spacing-lg);
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+}
+
+[data-theme='dark'] .login-page-copyright {
+    color: var(--color-text-secondary);
+}
+
 .login-container {
     display: flex;
     justify-content: center;
@@ -9,7 +32,6 @@
     color: var(--color-text-primary);
 }
 
-/* 키보드·작은 뷰포트에서만 세로 스크롤 허용 */
 @media (max-height: 520px) {
     .login-container {
         overflow-x: hidden;
@@ -20,20 +42,106 @@
 }
 
 .login-card {
-    background: var(--color-bg-secondary);
-    padding: 3rem;
-    border-radius: var(--radius-xl);
-    width: 100%;
-    max-width: 400px;
-    box-shadow: var(--shadow-medium);
-    border: 1px solid var(--color-border-subtle);
+    --login-radius: 10px;
+    --login-surface: #ffffff;
+    --login-surface-2: #eef1f6;
+    --login-border: #e4e8ef;
+    --login-border-strong: #d4dae3;
+    --login-text-1: #161b24;
+    --login-text-2: #525c6b;
+    --login-text-3: #8a93a3;
+
+    width: 440px;
+    max-width: calc(100% - var(--spacing-xl));
+    padding: 48px 44px;
+    background: var(--login-surface);
+    border: 1px solid var(--login-border);
+    border-radius: 20px;
+    box-shadow:
+        0 1px 2px rgba(20, 28, 46, 0.05),
+        0 18px 50px rgba(20, 28, 46, 0.1);
+    box-sizing: border-box;
 }
 
-.login-logo-wrap {
+/* 다크 — assets/README.md · 다크모드-프롬프트.md (카드 로컬 변수만, 라이트 카드 SSOT 유지) */
+[data-theme='dark'] .login-card {
+    --login-surface: #171a20;
+    --login-surface-2: #1c2028;
+    --login-border: #272c36;
+    --login-border-strong: #333a46;
+    --login-text-1: #e9ecf1;
+    --login-text-2: #a6adba;
+    --login-text-3: #6f7886;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.login-logo {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: var(--spacing-lg);
+    gap: 16px;
+    margin-bottom: 36px;
+}
+
+.login-logo:has(+ .login-title) {
+    margin-bottom: 24px;
+}
+
+.login-logo--row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.login-logo--row .login-logo__symbol {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.login-logo--row .login-wordmark {
+    font-size: 22px;
+    margin-left: -8px;
+}
+
+.login-logo__symbol {
+    width: 52px;
+    height: 52px;
+    display: block;
+}
+
+/* 기본: 라이트 심볼만 표시 (KlBrandLogo.css와 동일 SSOT 순서 — 토글은 베이스 규칙 뒤에 위치) */
+.login-logo__symbol--dark {
+    display: none;
+}
+
+[data-theme='dark'] .login-logo__symbol--light {
+    display: none;
+}
+
+[data-theme='dark'] .login-logo__symbol--dark {
+    display: block;
+}
+
+.login-wordmark {
+    font-family: var(--font-family);
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--login-text-1);
+    line-height: 1;
+}
+
+.login-wordmark__map {
+    background: var(--kl-brand-primary-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
 }
 
 .login-hidden-title {
@@ -43,110 +151,212 @@
     overflow: hidden;
 }
 
-.login-card h1 {
+.login-title {
+    margin: 0 0 24px;
+    font-family: var(--font-family);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--login-text-1);
     text-align: center;
-    margin-bottom: var(--spacing-xl);
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 2px;
-    color: var(--color-text-primary);
 }
 
-.form-group {
-    margin-bottom: var(--spacing-lg);
+.login-disclaimer {
+    margin-bottom: 24px;
+    padding: 15px;
+    background: var(--login-surface-2);
+    border: 1px solid var(--login-border);
+    border-radius: var(--login-radius);
+    text-align: left;
 }
 
-.form-group label {
+.login-disclaimer__title {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--login-text-1);
+}
+
+.login-disclaimer__body {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--login-text-2);
+}
+
+.login-disclaimer__agree {
+    margin-top: 12px;
+}
+
+.login-disclaimer__agree-text {
+    font-weight: 600;
+    color: var(--kl-brand-primary);
+}
+
+.login-footer-text {
+    margin: 24px 0 0;
+    text-align: center;
+    font-size: 13.5px;
+    color: var(--login-text-2);
+}
+
+.login-footer-text a {
+    color: var(--kl-brand-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-footer-text a:hover {
+    color: var(--login-text-1);
+}
+
+.login-field {
+    margin-bottom: 18px;
+}
+
+.login-field label {
     display: block;
-    margin-bottom: var(--spacing-sm);
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--login-text-2);
+    margin-bottom: 8px;
 }
 
-.form-group input {
+.login-inp {
     width: 100%;
-    padding: var(--spacing-sm);
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    color: var(--color-text-primary);
-    font-size: var(--font-size-lg);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    height: 48px;
+    border-radius: var(--login-radius);
+    background: var(--login-surface-2);
+    border: 1px solid var(--login-border);
+    padding: 0 15px;
+    font-family: var(--font-family);
+    font-size: 14.5px;
+    color: var(--login-text-1);
+    outline: none;
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
     box-sizing: border-box;
 }
 
-.login-container .form-group input:hover:not(:disabled) {
-    border-color: var(--color-border-hover);
+.login-inp:hover:not(:disabled) {
+    border-color: var(--login-border-strong);
 }
 
-.login-container .form-group input:focus,
-.login-container .form-group input:focus-visible {
-    border-color: var(--color-accent);
-    outline: none;
-    box-shadow: var(--shadow-focus-input);
+.login-inp:focus {
+    border-color: var(--kl-brand-primary);
+    background: var(--login-surface);
+    box-shadow: 0 0 0 3px var(--kl-brand-primary-soft);
 }
 
+.login-inp::placeholder {
+    color: var(--login-text-3);
+}
+
+.login-inp:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.login-checks {
+    display: flex;
+    gap: 22px;
+    justify-content: flex-end;
+    margin: 18px 2px 24px;
+}
+
+.login-chk {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--login-text-2);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+}
+
+.login-chk input {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    border-radius: 5px;
+    border: 1.6px solid var(--login-border-strong);
+    background: var(--login-surface);
+    display: grid;
+    place-items: center;
+    transition: background 0.12s ease, border-color 0.12s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.login-chk input:checked {
+    background: var(--kl-brand-primary);
+    border-color: var(--kl-brand-primary);
+}
+
+.login-chk input:checked::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: 0;
+    border-left: 0;
+    transform: rotate(42deg) translateY(-1px);
+}
+
+/* 색·그라데이션·hover·disabled 등 시각 스타일은 공통 kl-btn primary-full lg 사용 — 여기는 폼 안에서의 너비만 */
 .login-btn {
     width: 100%;
-    padding: var(--spacing-md);
-    background: var(--color-accent);
-    color: #ffffff;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    cursor: pointer;
-    transition: background 0.2s ease;
-    margin-top: var(--spacing-md);
 }
 
-.login-btn:hover:not(:disabled) {
-    background: var(--color-accent-hover);
-}
-
-.login-btn:disabled {
-    background: var(--btn-disabled-bg);
-    color: var(--btn-disabled-text);
-    cursor: not-allowed;
-    opacity: 0.85;
-}
-
-.login-footer {
-    margin-top: var(--spacing-lg);
+.login-links {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: var(--spacing-md);
-    font-size: var(--font-size-base);
+    justify-content: center;
+    gap: 18px;
+    margin-top: 24px;
+    font-size: 13.5px;
 }
 
-.login-footer a,
-.text-btn {
-    color: var(--color-text-secondary);
+.login-links a,
+.login-links .login-links__btn {
+    color: var(--login-text-2);
     text-decoration: none;
     cursor: pointer;
     background: none;
     border: none;
+    font-family: var(--font-family);
     font-size: inherit;
     padding: 0;
 }
 
-.login-footer a:hover,
-.text-btn:hover {
-    color: var(--color-accent);
+.login-links a:hover,
+.login-links .login-links__btn:hover {
+    color: var(--login-text-1);
 }
 
-.divider {
-    color: var(--color-border);
+.login-links__sep {
+    color: var(--login-border-strong);
 }
 
 .error-message {
     background: color-mix(in srgb, var(--color-icon-danger) 12%, transparent);
     color: var(--color-icon-danger-emphasis);
     padding: var(--spacing-sm);
-    border-radius: var(--radius-md);
-    margin-bottom: 20px;
+    border-radius: var(--login-radius);
+    margin-bottom: 18px;
+    font-size: 13.5px;
     border: 1px solid color-mix(in srgb, var(--color-icon-danger) 25%, transparent);
+}
+
+.success-message {
+    background: color-mix(in srgb, var(--color-icon-success) 12%, transparent);
+    color: var(--color-icon-success-emphasis);
+    padding: var(--spacing-sm);
+    border-radius: var(--login-radius);
+    margin-bottom: 18px;
+    font-size: 13.5px;
+    border: 1px solid color-mix(in srgb, var(--color-icon-success) 25%, transparent);
 }
 
 .error-reset-btn {
@@ -154,37 +364,11 @@
     width: 100%;
     margin-top: 10px;
     padding: var(--spacing-sm);
-    background: var(--color-accent);
-    color: white;
+    background: var(--kl-brand-primary-grad);
+    color: #fff;
     border: none;
-    border-radius: var(--radius-sm);
+    border-radius: var(--login-radius);
     cursor: pointer;
-}
-
-.login-signup-link {
-    color: var(--color-accent);
-    font-weight: var(--font-weight-medium);
-}
-
-.options-group {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-    align-items: center;
-    justify-content: center;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-base);
-    cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 13.5px;
 }

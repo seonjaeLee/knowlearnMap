@@ -2,11 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Plus, RotateCcw, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
+import { useBasicTableColumnResize } from '../hooks/useBasicTableColumnResize';
 import QnaCreateModal from '../components/QnaCreateModal';
 import QnaDetailModal from '../components/QnaDetailModal';
 import PageHeader from '../components/common/PageHeader';
 import KlIconButton from '../components/common/KlIconButton';
+import KlBadge from '../components/common/KlBadge';
+import { getQnaStatusBadgeProps } from '../components/common/klBadgeToneMaps';
 import BasicTable from '../components/common/BasicTable';
+import { basicTableActionsColumnDef } from '../components/common/table/basicTableActionsColumn';
 import { formatTableCellText, isTableCellBlank } from '../components/common/tableCellDisplay';
 import SupportTableAdminActions from '../components/support/SupportTableAdminActions';
 import { isSupportMockEnabled, listTableEmptyState } from '../config/supportMock';
@@ -14,23 +18,9 @@ import { mockQuestions } from '../data/supportMockData';
 import { qnaApi } from '../services/api';
 import { normalizeSupportListPayload } from '../utils/supportListResponse';
 import { isSupportCenterAdmin } from '../utils/supportCenterAdmin';
-import { SUPPORT_ADMIN_ACTIONS_COLUMN } from './supportCenterColumns';
+import { formatKlDateCell as formatDate } from '../utils/formatKlDate';
 import './QnaBoard.css';
 import './SupportCenter.css';
-
-const QNA_BASE_COLUMNS = [
-  { id: 'id', label: '문의번호', width: 96, align: 'left' },
-  { id: 'domainName', label: '도메인', width: 120, align: 'left' },
-  { id: 'title', label: '제목', width: '40%', align: 'left' },
-  { id: 'createdAt', label: '등록일', width: 120, align: 'left' },
-  { id: 'updatedAt', label: '최근 활동', width: 120, align: 'left' },
-  { id: 'status', label: '상태', width: 112, align: 'left', ellipsis: false },
-];
-
-function formatDate(value) {
-  if (isTableCellBlank(value)) return formatTableCellText(value);
-  return new Date(value).toLocaleDateString('ko-KR');
-}
 
 function QnaBoard() {
   const { user } = useAuth();
@@ -83,10 +73,29 @@ function QnaBoard() {
     [questions, selectedQuestionId],
   );
 
-  const qnaColumns = useMemo(
-    () => (isAdmin ? [...QNA_BASE_COLUMNS, SUPPORT_ADMIN_ACTIONS_COLUMN] : QNA_BASE_COLUMNS),
+  const qnaTableColumnDefinitions = useMemo(
+    () => {
+      const base = [
+        { id: 'id', label: '문의번호', defaultWidthPx: 96, minWidthPx: 88, align: 'left' },
+        { id: 'domainName', label: '도메인', defaultWidthPx: 120, minWidthPx: 96, align: 'left' },
+        { id: 'title', label: '제목', minWidthPx: 160, align: 'left', flex: true },
+        { id: 'createdAt', label: '등록일', defaultWidthPx: 120, minWidthPx: 104, align: 'left' },
+        { id: 'updatedAt', label: '최근 활동', defaultWidthPx: 120, minWidthPx: 104, align: 'left' },
+        { id: 'status', label: '상태', defaultWidthPx: 112, minWidthPx: 96, align: 'left', ellipsis: false },
+      ];
+      if (isAdmin) {
+        base.push(basicTableActionsColumnDef({ id: '_actions', buttonCount: 2 }));
+      }
+      return base;
+    },
     [isAdmin],
   );
+
+  const { columns: qnaColumns, startResize: qnaColumnStartResize } = useBasicTableColumnResize({
+    definitions: qnaTableColumnDefinitions,
+    storageKey: isAdmin ? 'kl-qna-board-admin-v1' : 'kl-qna-board-v1',
+    enabled: true,
+  });
 
   const filteredQuestions = useMemo(() => {
     const q = qnaSearch.trim().toLowerCase();
@@ -190,7 +199,9 @@ function QnaBoard() {
           <div className="support-title-cell">
             {row.isPinned && <span className="support-badge support-badge--danger">중요</span>}
             <span className="support-title-text">{row.title}</span>
-            {row.answerCount > 0 && <span className="support-badge support-badge--soft">답변 {row.answerCount}</span>}
+            {row.answerCount > 0 && (
+              <span className="support-badge support-badge--answer">답변 {row.answerCount}</span>
+            )}
           </div>
         );
       case 'domainName': {
@@ -220,12 +231,14 @@ function QnaBoard() {
           </span>
         );
       }
-      case 'status':
+      case 'status': {
+        const { label, tone } = getQnaStatusBadgeProps(row.status);
         return (
-          <span className={`support-status ${row.status === 'ANSWERED' ? 'is-answered' : 'is-waiting'}`}>
-            {row.status === 'ANSWERED' ? '답변완료' : '답변대기'}
-          </span>
+          <KlBadge tone={tone} variant="compact">
+            {label}
+          </KlBadge>
         );
+      }
       case '_actions':
         return (
           <SupportTableAdminActions
@@ -304,10 +317,10 @@ function QnaBoard() {
 
         <div className="basic-table-shell">
           <BasicTable
-            className="support-basic-table support-qna-table"
             columns={qnaColumns}
             data={loading ? [] : filteredQuestions}
             renderCell={renderQnaCell}
+            onColumnResizeMouseDown={qnaColumnStartResize}
             onRowClick={(e, { row }) => handleQuestionClick(row)}
             onRowKeyDown={(e, { row }) => {
               if (e.key === 'Enter' || e.key === ' ') {

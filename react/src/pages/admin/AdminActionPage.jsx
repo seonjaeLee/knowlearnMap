@@ -6,9 +6,16 @@ import { Zap, RotateCcw, Clock, Pencil, List, Info } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
 import KlIconButton from '../../components/common/KlIconButton';
+import KlBadge from '../../components/common/KlBadge';
+import {
+  getActionListStatusTone,
+  getActionLogStatusTone,
+} from '../../components/common/klBadgeToneMaps';
 import { listTableEmptyState } from '../../config/supportMock';
 import KlTooltip from '../../components/common/KlTooltip';
+import KlTabBar from '../../components/common/KlTabBar';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
+import { formatKlDateTimeCell } from '../../utils/formatKlDate';
 import BaseModal from '../../components/common/modal/BaseModal';
 import { homeRenameModalPaperSx } from '../../components/common/modal/klModalPaper';
 import {
@@ -28,6 +35,11 @@ const STORAGE_KEY = 'admin_selected_workspace_id';
 const isActionMockEnabled = import.meta.env.VITE_ENABLE_ACTION_MOCK === 'true';
 /** 로컬 dev·mock 시 실행 이력 탭 자동 샘플 로드 */
 const isActionLogDemoEnabled = isActionMockEnabled || import.meta.env.DEV;
+
+const ACTION_TABS = [
+  { id: 'list', label: 'Action 목록 (읽기 전용)', icon: <List size={14} aria-hidden /> },
+  { id: 'logs', label: '실행 이력', icon: <Clock size={14} aria-hidden /> },
+];
 
 function readStoredWorkspaceId() {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -168,24 +180,13 @@ function AdminActionPage() {
         />
       </div>
 
-      <div className="kl-subtabs">
-        <button
-          type="button"
-          className={`kl-subtab ${subTab === 'list' ? 'active' : ''}`}
-          onClick={() => setSubTab('list')}
-        >
-          <List size={14} aria-hidden />
-          Action 목록 (읽기 전용)
-        </button>
-        <button
-          type="button"
-          className={`kl-subtab ${subTab === 'logs' ? 'active' : ''}`}
-          onClick={() => setSubTab('logs')}
-        >
-          <Clock size={14} aria-hidden />
-          실행 이력
-        </button>
-        <div className="kl-subtabs__actions">
+      <KlTabBar
+        variant="subtle"
+        ariaLabel="Action 관리"
+        tabs={ACTION_TABS}
+        value={subTab}
+        onChange={setSubTab}
+        actions={(
           <KlTooltip
             title="워크스페이스 ID 변경"
             placement="bottom"
@@ -202,8 +203,8 @@ function AdminActionPage() {
               워크스페이스 ID 변경
             </button>
           </KlTooltip>
-        </div>
-      </div>
+        )}
+      />
 
       {subTab === 'list' && <ActionListTab workspaceId={workspaceId} />}
       {subTab === 'logs' && <ActionLogTab />}
@@ -248,9 +249,17 @@ function ActionListTab({ workspaceId }) {
       case 'nameEn':
         return <span className="admin-action-name-en">{row.nameEn}</span>;
       case 'actionType':
-        return <span className="admin-badge admin-badge-info">{row.actionType}</span>;
+        return (
+          <KlBadge tone="info" variant="compact">
+            {row.actionType}
+          </KlBadge>
+        );
       case 'approvalMode':
-        return <span className="admin-badge admin-badge-neutral">{row.approvalMode}</span>;
+        return (
+          <KlBadge tone="neutral" variant="compact">
+            {row.approvalMode}
+          </KlBadge>
+        );
       case 'category': {
         const category = row.category;
         return (
@@ -261,9 +270,9 @@ function ActionListTab({ workspaceId }) {
       }
       case 'status':
         return (
-          <span className={`admin-badge ${row.status === 'active' ? 'admin-badge-success' : 'admin-badge-neutral'}`}>
+          <KlBadge tone={getActionListStatusTone(row.status)} variant="inline">
             {row.status}
-          </span>
+          </KlBadge>
         );
       default:
         return undefined;
@@ -315,7 +324,6 @@ function ActionListTab({ workspaceId }) {
 
       <div className="basic-table-shell">
         <BasicTable
-          className="admin-action-basic-table"
           columns={actionListColumns}
           data={loading ? [] : items}
           renderCell={renderActionListCell}
@@ -366,15 +374,15 @@ function ActionLogTab() {
           <span className={isTableCellBlank(executedAt) ? 'kl-table-cell-blank' : undefined}>
             {isTableCellBlank(executedAt)
               ? formatTableCellText(executedAt)
-              : new Date(executedAt).toLocaleString('ko-KR')}
+              : formatKlDateTimeCell(executedAt)}
           </span>
         );
       }
       case 'status':
         return (
-          <span className={`admin-badge ${row.status === 'SUCCESS' ? 'admin-badge-success' : 'admin-badge-danger'}`}>
+          <KlBadge tone={getActionLogStatusTone(row.status)} variant="inline">
             {row.status}
-          </span>
+          </KlBadge>
         );
       case 'durationMs': {
         const durationMs = row.durationMs;
@@ -484,7 +492,6 @@ function ActionLogTab() {
 
       <div className="basic-table-shell">
         <BasicTable
-          className="admin-action-log-basic-table"
           columns={actionLogColumns}
           data={logs}
           renderCell={renderActionLogCell}

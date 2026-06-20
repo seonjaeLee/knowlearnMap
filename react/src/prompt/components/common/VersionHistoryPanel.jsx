@@ -1,16 +1,31 @@
-import React from 'react';
-import { ChevronsLeft, Copy, Trash2 } from 'lucide-react';
+import React, { useCallback, useMemo } from 'react';
+import { ChevronsLeft, Copy } from 'lucide-react';
 import { useAlert } from '../../../context/AlertContext';
+import BasicTable, {
+  basicTableControlColumnDef,
+} from '../../../components/common/BasicTable';
+import { basicTableActionsColumnDef } from '../../../components/common/table/basicTableActionsColumn';
 import KlTooltip from '../../../components/common/KlTooltip';
+import KlBadge from '../../../components/common/KlBadge';
+import KlTableRowActions from '../../../components/common/table/KlTableRowActions';
 import { formatPromptVersionDate, getPromptVersionStatus } from '../../utils/promptVersionStatus';
 import './VersionHistoryPanel.css';
 
-const StatusTag = ({ tone, label }) => (
-  <span className={`prompt-skin-tag${tone ? ` prompt-skin-tag--${tone}` : ''}`}>
-    <span className="prompt-skin-tag__dot" aria-hidden />
-    {label}
-  </span>
-);
+const VERSION_HISTORY_COLUMNS = [
+  { id: 'version', label: '버전', width: 72, align: 'left', ellipsis: false },
+  { id: 'status', label: '상태', width: 76, align: 'left', ellipsis: false },
+  { id: 'updatedAt', label: '수정일자', width: 136, align: 'left' },
+  basicTableControlColumnDef({
+    id: 'isActive',
+    label: '활성',
+    control: 'radio',
+    width: 48,
+    align: 'center',
+    getControlChecked: (row) => Boolean(row.isActive),
+    getControlAriaLabel: (row) => (row.isActive ? '현재 활성' : '활성으로 적용'),
+  }),
+  basicTableActionsColumnDef({ id: '_actions', buttonCount: 1, width: 52 }),
+];
 
 const VersionHistoryPanel = ({
   promptName = '',
@@ -25,7 +40,7 @@ const VersionHistoryPanel = ({
 }) => {
   const { showAlert, showConfirm } = useAlert();
 
-  const handleVersionClick = async (newVersionId) => {
+  const handleVersionClick = useCallback(async (newVersionId) => {
     const currentVersion = versions.find((v) => v.id === selectedVersion);
     const newVersion = versions.find((v) => v.id === newVersionId);
 
@@ -46,9 +61,9 @@ const VersionHistoryPanel = ({
     } else {
       onVersionChange?.(newVersionId, newVersion.content);
     }
-  };
+  }, [compareVersions, onVersionChange, selectedVersion, showConfirm, versions]);
 
-  const handleDelete = async (e, version) => {
+  const handleDelete = useCallback(async (e, version) => {
     e.stopPropagation();
 
     if (version.isActive) {
@@ -77,7 +92,65 @@ const VersionHistoryPanel = ({
     } else {
       onDeleteVersion?.(version.id);
     }
-  };
+  }, [compareVersions, onDeleteVersion, showAlert, showConfirm, versions]);
+
+  const renderCell = useCallback(({ column, row }) => {
+    switch (column.id) {
+      case 'version':
+        return (
+          <div className="vh-vercell">
+            <span className="vh-ver">v{row.version}</span>
+            <KlTooltip title="복사본 만들기" placement="top" enterDelay={300}>
+              <button
+                type="button"
+                className="vh-copy"
+                aria-label={`버전 ${row.version} 복사`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCopyVersion?.(row);
+                }}
+              >
+                <Copy size={14} strokeWidth={1.9} aria-hidden />
+              </button>
+            </KlTooltip>
+          </div>
+        );
+      case 'status': {
+        const status = getPromptVersionStatus(row, selectedVersion);
+        const tagTone = status.tone === 'active' ? 'ok'
+          : status.tone === 'editing' ? 'warn'
+          : null;
+        return <KlBadge tone={tagTone}>{status.label}</KlBadge>;
+      }
+      case 'updatedAt':
+        return formatPromptVersionDate(row.updatedAt || row.createdAt);
+      case '_actions':
+        return (
+          <KlTableRowActions
+            stopPropagationOnWrapper={false}
+            actions={[
+              {
+                kind: 'delete',
+                ariaLabel: `버전 ${row.version} 삭제`,
+                onClick: (e) => handleDelete(e, row),
+              },
+            ]}
+          />
+        );
+      default:
+        return undefined;
+    }
+  }, [handleDelete, onCopyVersion, selectedVersion]);
+
+  const onRowClick = useCallback((_event, { row }) => {
+    handleVersionClick(row.id);
+  }, [handleVersionClick]);
+
+  const getRowClassName = useCallback((row) => (
+    selectedVersion === row.id ? 'kl-table-row-selected' : ''
+  ), [selectedVersion]);
+
+  const columns = useMemo(() => VERSION_HISTORY_COLUMNS, []);
 
   return (
     <div className={`vh-col ${collapsed ? 'is-collapsed' : ''}`}>
@@ -99,95 +172,15 @@ const VersionHistoryPanel = ({
           </KlTooltip>
         </div>
       </div>
-      <div className="vh-panel">
-        <div className="vh-scroll">
-          <table className="vh-table">
-            <thead>
-              <tr>
-                <th>버전</th>
-                <th>상태</th>
-                <th>수정일자</th>
-                <th className="vh-table__col-center vh-table__col-active">활성</th>
-                <th className="vh-table__col-center vh-table__col-actions" aria-label="관리" />
-              </tr>
-            </thead>
-            <tbody>
-              {versions.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="vh-table__empty">
-                    버전이 없습니다.
-                  </td>
-                </tr>
-              ) : (
-                versions.map((version) => {
-                  const status = getPromptVersionStatus(version, selectedVersion);
-                  const isSelected = selectedVersion === version.id;
-                  const rowClass = [
-                    version.isActive ? 'vh-active-row' : '',
-                    !version.isActive && (isSelected || status.tone === 'editing') ? 'vh-editing' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ');
-
-                  const tagTone = status.tone === 'active' ? 'ok'
-                    : status.tone === 'editing' ? 'warn'
-                    : null;
-
-                  return (
-                    <tr
-                      key={version.id}
-                      className={rowClass}
-                      onClick={() => handleVersionClick(version.id)}
-                    >
-                      <td>
-                        <div className="vh-vercell">
-                          <span className="vh-ver">v{version.version}</span>
-                          <KlTooltip title="복사본 만들기" placement="top" enterDelay={300}>
-                            <button
-                              type="button"
-                              className="vh-copy"
-                              aria-label={`버전 ${version.version} 복사`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onCopyVersion?.(version);
-                              }}
-                            >
-                              <Copy size={14} strokeWidth={1.9} aria-hidden />
-                            </button>
-                          </KlTooltip>
-                        </div>
-                      </td>
-                      <td>
-                        <StatusTag tone={tagTone} label={status.label} />
-                      </td>
-                      <td>
-                        {formatPromptVersionDate(version.updatedAt || version.createdAt)}
-                      </td>
-                      <td className="vh-table__col-center vh-table__col-active">
-                        <span
-                          className={`vh-radio${version.isActive ? ' is-checked' : ''}`}
-                          role="radio"
-                          aria-checked={version.isActive}
-                          aria-label={version.isActive ? '현재 활성' : '활성으로 적용'}
-                        />
-                      </td>
-                      <td className="vh-table__col-center vh-table__col-actions">
-                        <button
-                          type="button"
-                          className="vh-del"
-                          aria-label={`버전 ${version.version} 삭제`}
-                          onClick={(e) => handleDelete(e, version)}
-                        >
-                          <Trash2 size={15} strokeWidth={1.9} aria-hidden />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div className="vh-panel basic-table-shell">
+        <BasicTable
+          columns={columns}
+          data={versions}
+          renderCell={renderCell}
+          onRowClick={onRowClick}
+          getRowClassName={getRowClassName}
+          emptyState={{ message: '버전이 없습니다.' }}
+        />
       </div>
     </div>
   );

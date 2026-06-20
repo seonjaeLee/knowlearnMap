@@ -1,10 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  basicTableActionsColumnMinWidthPx,
+  isBasicTableActionsColumn,
+} from '../components/common/table/basicTableActionsColumn';
 
 function clamp(n, lo, hi) {
     return Math.max(lo, Math.min(hi, n));
 }
 
-function loadStoredWidths(storageKey, defaultWidths, minWidths) {
+function resolveColumnWidthPx(definition, storedOrDefaultPx) {
+    if (!isBasicTableActionsColumn(definition.id)) {
+        return Math.max(definition.minWidthPx ?? 40, storedOrDefaultPx);
+    }
+    const floor = basicTableActionsColumnMinWidthPx(definition.actionsButtonCount ?? 2);
+    return Math.max(definition.minWidthPx ?? 40, floor, storedOrDefaultPx);
+}
+
+function loadStoredWidths(storageKey, defaultWidths, definitions) {
     if (!storageKey || typeof window === 'undefined') return defaultWidths;
     try {
         const raw = window.localStorage.getItem(storageKey);
@@ -12,7 +24,7 @@ function loadStoredWidths(storageKey, defaultWidths, minWidths) {
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed) || parsed.length !== defaultWidths.length) return defaultWidths;
         if (!parsed.every((x) => typeof x === 'number' && Number.isFinite(x) && x > 0)) return defaultWidths;
-        return parsed.map((w, i) => Math.max(minWidths[i] ?? 40, w));
+        return parsed.map((w, i) => resolveColumnWidthPx(definitions[i], w));
     } catch {
         return defaultWidths;
     }
@@ -32,9 +44,12 @@ function loadStoredWidths(storageKey, defaultWidths, minWidths) {
  */
 export function useBasicTableColumnResize({ definitions, storageKey, enabled = true }) {
     const count = definitions.length;
-    const minWidthsPx = useMemo(() => definitions.map((d) => d.minWidthPx ?? 40), [definitions]);
+    const minWidthsPx = useMemo(
+        () => definitions.map((d) => resolveColumnWidthPx(d, d.minWidthPx ?? 40)),
+        [definitions]
+    );
     const defaultWidthsPx = useMemo(
-        () => definitions.map((d) => d.defaultWidthPx ?? d.minWidthPx ?? 80),
+        () => definitions.map((d) => resolveColumnWidthPx(d, d.defaultWidthPx ?? d.minWidthPx ?? 80)),
         [definitions]
     );
 
@@ -43,12 +58,12 @@ export function useBasicTableColumnResize({ definitions, storageKey, enabled = t
     }
 
     const [widths, setWidths] = useState(() =>
-        loadStoredWidths(storageKey, defaultWidthsPx, minWidthsPx)
+        loadStoredWidths(storageKey, defaultWidthsPx, definitions)
     );
 
     useEffect(() => {
-        setWidths(loadStoredWidths(storageKey, defaultWidthsPx, minWidthsPx));
-    }, [storageKey, defaultWidthsPx, minWidthsPx]);
+        setWidths(loadStoredWidths(storageKey, defaultWidthsPx, definitions));
+    }, [storageKey, defaultWidthsPx, definitions]);
 
     const widthsRef = useRef(widths);
     useEffect(() => {

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { noticeApi } from '../../services/api';
+import { formatKlDate } from '../../utils/formatKlDate';
 import KlTooltip from './KlTooltip';
 import './NotificationBell.css';
 
@@ -167,7 +168,7 @@ function NotificationBell({ tooltipPlacement = 'bottom', showLabel = false }) {
                                 >
                                     <div className="notification-item-title">{notice.title}</div>
                                     <div className="notification-item-date">
-                                        {new Date(notice.createdAt).toLocaleDateString()}
+                                        {formatKlDate(notice.createdAt)}
                                     </div>
                                 </div>
                             ))

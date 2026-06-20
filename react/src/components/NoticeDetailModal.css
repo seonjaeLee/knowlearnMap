@@ -194,14 +194,20 @@
 
 .btn-cancel-edit {
     border: 1px solid #6b7280;
-    background: #f3f4f6;
+    background: var(--color-bg-hover);
     color: #6b7280;
 }
 
 .btn-save-edit {
-    border: 1px solid var(--color-accent);
-    background: var(--color-accent);
+    border: 1px solid transparent;
+    background: var(--kl-brand-primary-grad);
     color: #fff;
+    box-shadow: none;
+}
+
+.btn-save-edit:hover:not(:disabled) {
+    background: var(--kl-brand-primary-grad);
+    filter: brightness(1.07);
 }
 
 .notice-detail-loading,

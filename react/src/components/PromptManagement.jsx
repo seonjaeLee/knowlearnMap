@@ -386,7 +386,7 @@ export default function PromptManagement() {
                                                     minHeight: 56
                                                 }}
                                                 onClick={item.enabled ? () => handleDropdownItemClick(item) : undefined}
-                                                onMouseEnter={e => { if (item.enabled && selectedDropdownItem !== item.text) e.currentTarget.style.background = '#f5f5f5'; }}
+                                                onMouseEnter={e => { if (item.enabled && selectedDropdownItem !== item.text) e.currentTarget.style.background = 'var(--color-bg-hover)'; }}
                                                 onMouseLeave={e => { if (item.enabled && selectedDropdownItem !== item.text) e.currentTarget.style.background = 'white'; }}
                                             >
                                                 {/* 붉은 도장 스탬프 - 배경 없이 글씨만 빨간색 */}

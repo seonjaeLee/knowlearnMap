@@ -1,91 +1,32 @@
-/* 프롬프트 상세 — History 탭 (MUI 없음 · KL 패턴) */
+/* 프롬프트 상세 — History 탭 (KL 목록·BasicTable 패턴) */
 
 .prompt-history {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  flex: 0 1 auto;
   min-height: 0;
 }
 
-.prompt-history-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  min-height: 280px;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+/* kl-page--fill shell stretch 무효화 — 행 수에 맞춘 표 카드 높이 */
+.prompt-detail-page .prompt-history .table-area:has(> .table-toolbar) {
+  flex: 0 1 auto;
 }
 
-.prompt-history-spinner {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-border);
-  border-top-color: var(--color-accent);
-  border-radius: 50%;
-  animation: ph-spin 0.7s linear infinite;
-}
-
-@keyframes ph-spin {
-  to { transform: rotate(360deg); }
-}
-
-.prompt-history-table-shell {
+.prompt-detail-page .prompt-history .table-area:has(> .table-toolbar) > .basic-table-shell {
+  flex: 0 1 auto;
+  min-height: 0;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-y: visible;
 }
 
-.prompt-history-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--font-size-sm);
-}
 
-.prompt-history-table th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 10px 12px;
-  text-align: left;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  background: var(--color-bg-subtle);
-  border-bottom: 1px solid var(--color-border-subtle);
-  white-space: nowrap;
-}
-
-.prompt-history-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--color-border-subtle);
-  vertical-align: middle;
-  color: var(--color-text-primary);
-}
-
-.prompt-history-table__col-center {
-  text-align: center;
-}
-
-.prompt-history-table__row:hover {
-  background: var(--color-bg-hover);
-}
-
-.prompt-history-table__id,
-.prompt-history-table__name {
+.prompt-history-cell--emphasis {
   font-weight: var(--font-weight-medium);
 }
 
-.prompt-history-table__time {
+.prompt-history-cell--time {
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
-}
-
-.prompt-history-table__empty {
-  padding: var(--spacing-2xl);
-  text-align: center;
-  color: var(--color-text-tertiary);
 }
 
 .prompt-history-version-pill {
@@ -141,111 +82,121 @@
   color: var(--color-icon-danger);
 }
 
-.prompt-history-table__actions {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.prompt-history-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-text-tertiary);
-  cursor: pointer;
-}
-
-.prompt-history-action-btn:hover {
-  color: var(--color-text-secondary);
-  background: var(--color-bg-hover);
-}
-
-.prompt-history-action-btn--danger {
-  color: var(--color-icon-danger);
-}
-
-.prompt-history-action-btn--danger:hover {
-  background: color-mix(in srgb, var(--color-icon-danger) 12%, transparent);
-}
-
-.prompt-history-detail {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.prompt-history-detail__block {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.prompt-history-detail__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-}
-
-.prompt-history-detail__label {
-  margin: 0;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-}
-
-.prompt-history-detail__value {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-}
-
-.prompt-history-detail__code {
-  margin: 0;
-  max-height: 200px;
-  overflow: auto;
-  padding: var(--spacing-md);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-subtle);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: var(--font-size-xs);
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.prompt-history-detail__toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.prompt-history-toggle-btn {
-  height: 28px;
-  padding: 0 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+/* 테스트 상세 팝업 — 상단 정보란 (프롬프트 상세 item-info 패턴)
+   주의: BaseModal(MUI Dialog)은 document.body로 portal되어 .prompt-detail-page의
+   --ps-* 지역 변수를 상속받지 못함 — 여기는 전역 --color-* 토큰만 사용할 것 */
+.prompt-history-detail-info {
   background: var(--color-bg-secondary);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: 10px;
+  padding: 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.prompt-history-detail-info__top {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-wrap: wrap;
+}
+
+.prompt-history-detail-info__nameg {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.prompt-history-detail-info__label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.prompt-history-detail-info__name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.prompt-history-detail-info__sep {
+  width: 1px;
+  height: 18px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.prompt-history-detail-info__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.prompt-history-detail-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 7px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 2px rgba(16, 20, 30, 0.05);
+  font-size: 12px;
+  font-weight: 600;
   color: var(--color-text-secondary);
-  cursor: pointer;
 }
 
-.prompt-history-toggle-btn.is-active {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-  background: var(--color-accent-light);
+.prompt-history-detail-chip--mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.01em;
 }
 
-.prompt-history-toggle-btn + .prompt-history-toggle-btn {
-  margin-left: 0;
+.prompt-history-detail-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px 0 8px;
+  border-radius: 6px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 2px rgba(16, 20, 30, 0.05);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.prompt-history-detail-status__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--color-text-tertiary);
+}
+
+.prompt-history-detail-status.is-success .prompt-history-detail-status__dot {
+  background: var(--color-icon-success);
+}
+
+.prompt-history-detail-status.is-error .prompt-history-detail-status__dot {
+  background: var(--color-icon-danger);
+}
+
+.prompt-history-detail-info__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-text-tertiary);
+}
+
+.pt-panels--single .pt-panel {
+  flex: 1 1 100%;
 }

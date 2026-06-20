@@ -99,10 +99,6 @@
   justify-content: center;
 }
 
-.lnb-sidebar.collapsed .lnb-logo-link .kl-brand-logo {
-  gap: 0;
-}
-
 .lnb-nav {
   display: flex;
   flex-direction: column;
@@ -557,6 +553,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  background-color: var(--color-bg-primary);
 }
 
 /* Outlet + 푸터: main 세로를 채우고 짧은 본문일 때 site-footer는 패널(스크롤 영역) 하단에 고정 */
@@ -693,7 +690,6 @@
   text-align: center;
   color: var(--color-text-tertiary);
   font-size: 12px;
-  background-color: var(--color-bg-subtle);
 }
 
 @media (min-width: 1920px) {

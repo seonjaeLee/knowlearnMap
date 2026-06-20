@@ -64,7 +64,7 @@
 }
 
 .itm-close:hover {
-    background: #f0f0f0;
+    background: var(--color-bg-hover);
 }
 
 /* Error */
@@ -193,7 +193,7 @@
 }
 
 .itm-table th {
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     padding: 8px 10px;
     text-align: left;
     font-weight: 600;
@@ -208,12 +208,12 @@
 
 .itm-table td {
     padding: 6px 10px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--color-border-subtle);
     color: #334155;
 }
 
 .itm-table tr:hover {
-    background: #f8fafc;
+    background: var(--color-table-row-hover-bg);
 }
 
 .itm-col-num {
@@ -237,7 +237,7 @@
     font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
     font-size: 11px;
     padding: 2px 6px;
-    background: #f1f5f9;
+    background: var(--color-bg-hover);
     border-radius: 4px;
     color: #334155;
     white-space: nowrap;
@@ -380,7 +380,7 @@
 }
 
 .itm-btn-secondary {
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
     color: #333;
     border: 1px solid #e0e0e0;
 }
@@ -418,7 +418,7 @@
 }
 
 .itm-btn-retry:hover:not(:disabled) {
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     color: #334155;
 }
 

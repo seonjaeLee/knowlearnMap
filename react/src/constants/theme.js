@@ -1,21 +1,18 @@
-/** localStorage 키 — 표시 테마 (light | dark | system) */
+/** localStorage 키 — 표시 테마 (light | dark) */
 export const KL_THEME_MODE_STORAGE_KEY = 'kl-theme-mode';
 
 export const THEME_MODES = {
   LIGHT: 'light',
   DARK: 'dark',
+  /** @deprecated UI 제거 — stored 값 마이그레이션용 */
   SYSTEM: 'system',
 };
 
-/** true — 라이트만 선택 가능, 다크·시스템 UI 비활성·항상 light 적용 */
-export const THEME_LIGHT_ONLY = true;
-
 export function isThemeModeSelectable(mode) {
-  if (THEME_LIGHT_ONLY) return mode === THEME_MODES.LIGHT;
-  return mode === THEME_MODES.LIGHT || mode === THEME_MODES.DARK || mode === THEME_MODES.SYSTEM;
+  return mode === THEME_MODES.LIGHT || mode === THEME_MODES.DARK;
 }
 
-/** 인증 라우트 — 항상 라이트 UI (전역 테마 무관) */
+/** 인증 라우트 경로 (라우팅·레이아웃 분기용 — 테마 강제 라이트 아님) */
 export const AUTH_ROUTE_PREFIXES = [
   '/login',
   '/signup',
@@ -31,26 +28,20 @@ export function isAuthRoutePath(pathname = '') {
 }
 
 export function resolveThemeFromMode(mode) {
-  if (THEME_LIGHT_ONLY) return THEME_MODES.LIGHT;
   if (mode === THEME_MODES.DARK) return THEME_MODES.DARK;
-  if (mode === THEME_MODES.LIGHT) return THEME_MODES.LIGHT;
-  if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return THEME_MODES.DARK;
-  }
   return THEME_MODES.LIGHT;
 }
 
 export function readStoredThemeMode() {
-  if (THEME_LIGHT_ONLY) return THEME_MODES.LIGHT;
   try {
     const stored = localStorage.getItem(KL_THEME_MODE_STORAGE_KEY);
-    if (stored === THEME_MODES.LIGHT || stored === THEME_MODES.DARK || stored === THEME_MODES.SYSTEM) {
+    if (stored === THEME_MODES.LIGHT || stored === THEME_MODES.DARK) {
       return stored;
     }
   } catch {
     /* ignore */
   }
-  return THEME_MODES.SYSTEM;
+  return THEME_MODES.LIGHT;
 }
 
 export function applyDocumentTheme(resolved) {
@@ -60,7 +51,6 @@ export function applyDocumentTheme(resolved) {
 }
 
 /** index.html 인라인 스크립트와 동일 로직 — FOUC 방지 */
-export function getInitialDocumentTheme(pathname) {
-  if (isAuthRoutePath(pathname)) return THEME_MODES.LIGHT;
+export function getInitialDocumentTheme(_pathname) {
   return resolveThemeFromMode(readStoredThemeMode());
 }

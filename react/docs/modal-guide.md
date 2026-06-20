@@ -58,9 +58,39 @@
 - 취소 Outlined(회색) · 확인 Contained · **취소에 파란 Contained 금지**.
 - Decision 버튼 **`min-width: 100px`** (Form contained **150px**와 구분).
 
+### 2.3 Promo shell (요금제 등 마케팅·선택형)
+
+업무 Form 팝업과 **의도적으로 다른 쉘**을 쓰는 경우. `BaseModal` 필수 아님.
+
+| | **Work shell** (`BaseModal`) | **Promo shell** (예: `UpgradeModal`) |
+|:--|:--|:--|
+| **용도** | 생성·수정·조회·업무 폼 | 플랜 선택·신청·온보딩 등 |
+| **껍데기** | MUI `Dialog` + `BaseModal` | 커스텀 오버레이·카드 (step 슬라이드·폭 애니메이션 가능) |
+| **제목** | 좌측 정렬 + 헤더 하단 라인 | **가운데 정렬 가능**, 라인 없음 |
+| **닫기 X** | MUI `IconButton` + `CloseIcon` | **`KlModalClose`** (`kl-modal-close`) |
+| **본문 폼** | `kl-modal-form` | 페이지 전용 클래스 (요금제: `upgrade-form-*`) |
+
+**닫기 버튼 — Work·Promo 공통 affordance (SSOT)**
+
+| 항목 | 규격 |
+|------|------|
+| 컴포넌트 | `src/components/common/KlModalClose.jsx` |
+| CSS | `patterns/kl-modal-close.css` (`kl-global.css` 로드) |
+| 클래스 | `kl-modal-close` |
+| 아이콘 | lucide `X` 18px · `aria-label="닫기"` |
+| 크기 | `var(--kl-control-height)` 정사각 |
+| 색 | 기본 `--color-text-secondary` · hover `--color-bg-hover` + `--color-text-primary` |
+| 포커스 | `--shadow-focus-input` |
+| 금지 | 텍스트 `×` 단독 · 페이지별 `*-modal-close` 색·hover 임의 정의 |
+
+- Promo 헤더에서 닫기 **위치만** 쉘별로 조정 가능 (예: `upgrade-modal-header__close` — absolute 우측).
+- Work shell `BaseModal` 닫기는 당분간 MUI 유지. 이관 시 `KlModalClose`로 통일 검토.
+
+**참조 구현:** `src/components/UpgradeModal.{jsx,css}`
+
 ---
 
-## 3. 레이아웃 규격 (고정)
+## 3. 레이아웃 규격 (Work shell · 고정)
 
 | 영역 | 규격 |
 |------|------|
@@ -191,6 +221,7 @@ import {
 | 페르소나 편집 | Form |
 | 소스 추가 | No-Footer |
 | 용어사전 | Form |
+| 요금제·플랜 선택 | **Promo** (`UpgradeModal` — §2.3) |
 
 ---
 
@@ -215,6 +246,7 @@ import {
 | Decision 레이아웃 | `DialogContext.module.scss` |
 | 팝업 안 input/select/MUI | `styles/kit/kl-modal-form.css` |
 | 모달 필드 행·라벨 shell | `styles/layout/kl-layout-modal.css` |
+| **모달 닫기 (Promo·공통)** | `patterns/kl-modal-close.css` · `components/common/KlModalClose.jsx` |
 | 레거시 `.modal-overlay` 등 | `styles/legacy/kl-legacy-modal.css` |
 
 **신규·수정 모달** — 상세 점검은 **§9 공통 팝업 구성 체크리스트** 를 따른다.

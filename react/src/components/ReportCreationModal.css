@@ -29,11 +29,11 @@
 }
 
 .back-btn:hover {
-    background-color: #f1f3f4;
+    background-color: var(--color-bg-hover);
 }
 
 .template-info {
-    background-color: #f8f9fa;
+    background-color: var(--color-bg-hover);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 24px;

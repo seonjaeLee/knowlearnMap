@@ -2,10 +2,16 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { adminArangoApi } from '../../services/api';
 import { useDialog } from '../../hooks/useDialog';
 import { useBasicTableColumnResize } from '../../hooks/useBasicTableColumnResize';
-import { RotateCcw, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
+import { RotateCcw, ChevronRight } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import BasicTableRowDetail from '../../components/common/BasicTableRowDetail';
 import KlIconButton from '../../components/common/KlIconButton';
+import KlBadge from '../../components/common/KlBadge';
+import {
+    getArangoDbExistsBadgeProps,
+    getArangoWorkspaceStatusBadgeProps,
+} from '../../components/common/klBadgeToneMaps';
 import { listTableEmptyState } from '../../config/supportMock';
 import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
 import { mockArangoDatabases, mockArangoWorkspacesByDomainId } from '../../data/arangoAdminMockData';
@@ -24,7 +30,7 @@ function AdminArangoManagement() {
     const [loading, setLoading] = useState(true);
     /** `live` | `mock` — mock이면 워크스페이스 상세도 로컬 맵 사용 */
     const [listSource, setListSource] = useState('live');
-    const [expandedDomain, setExpandedDomain] = useState(null);
+    const [expandedDomains, setExpandedDomains] = useState(() => new Set());
     const [workspaceDetails, setWorkspaceDetails] = useState({});
     const [loadingDetails, setLoadingDetails] = useState({});
     const { alert } = useDialog();
@@ -132,7 +138,7 @@ function AdminArangoManagement() {
     );
 
     const handleRefresh = useCallback(() => {
-        setExpandedDomain(null);
+        setExpandedDomains(new Set());
         setWorkspaceDetails({});
         setLoadingDetails({});
         fetchDatabases();
@@ -141,12 +147,19 @@ function AdminArangoManagement() {
     const handleDomainRowClick = useCallback(
         (_e, { row }) => {
             const domainId = row.domainId;
-            if (expandedDomain === domainId) {
-                setExpandedDomain(null);
-                return;
-            }
-            setExpandedDomain(domainId);
-            if (workspaceDetails[domainId] != null) {
+            const isOpen = expandedDomains.has(domainId);
+
+            setExpandedDomains((prev) => {
+                const next = new Set(prev);
+                if (isOpen) {
+                    next.delete(domainId);
+                } else {
+                    next.add(domainId);
+                }
+                return next;
+            });
+
+            if (isOpen || workspaceDetails[domainId] != null) {
                 return;
             }
             if (isArangoMockEnabled || listSource === 'mock') {
@@ -158,7 +171,7 @@ function AdminArangoManagement() {
             }
             void loadWorkspaces(domainId);
         },
-        [expandedDomain, listSource, loadWorkspaces, workspaceDetails]
+        [expandedDomains, listSource, loadWorkspaces, workspaceDetails]
     );
 
     const domainTableRows = useMemo(
@@ -171,37 +184,16 @@ function AdminArangoManagement() {
             switch (column.id) {
                 case '_expand':
                     return (
-                        <span className="arango-mgmt-expand-cell" aria-hidden>
-                            {expandedDomain === row.domainId ? (
-                                <ChevronDown size={16} strokeWidth={1.75} />
-                            ) : (
-                                <ChevronRight size={16} strokeWidth={1.75} />
-                            )}
+                        <span className="kl-table-expand-chevron" aria-hidden>
+                            <ChevronRight size={17} strokeWidth={1.75} />
                         </span>
                     );
-                case 'domainName': {
-                    const domainName = row.domainName;
-                    return (
-                        <span
-                            className={
-                                isTableCellBlank(domainName) ? 'kl-table-cell-blank' : 'arango-mgmt-domain-name'
-                            }
-                            title={!isTableCellBlank(domainName) ? String(domainName) : undefined}
-                        >
-                            {formatTableCellText(domainName)}
-                        </span>
-                    );
-                }
+                case 'domainName':
                 case 'arangoDbName': {
-                    const arangoDbName = row.arangoDbName;
+                    const value = row[column.id];
                     return (
-                        <span
-                            className={
-                                isTableCellBlank(arangoDbName) ? 'kl-table-cell-blank' : 'arango-mgmt-mono'
-                            }
-                            title={!isTableCellBlank(arangoDbName) ? String(arangoDbName) : undefined}
-                        >
-                            {formatTableCellText(arangoDbName)}
+                        <span className={isTableCellBlank(value) ? 'kl-table-cell-blank' : undefined}>
+                            {formatTableCellText(value)}
                         </span>
                     );
                 }
@@ -210,25 +202,27 @@ function AdminArangoManagement() {
                 case 'edgeCount':
                 case 'rdbWorkspaceCount':
                 case 'arangoWorkspaceCount':
-                    return <span className="arango-mgmt-num">{fmtCount(row[column.id])}</span>;
+                    return fmtCount(row[column.id]);
                 case 'orphanWorkspaceCount': {
                     const nOrphan = Number(row.orphanWorkspaceCount) || 0;
                     if (nOrphan > 0) {
-                        return <span className="arango-mgmt-badge arango-mgmt-badge--danger">{nOrphan}</span>;
+                        return <span className="kl-table-badge-count kl-table-badge-count--bad">{nOrphan}</span>;
                     }
-                    return <span className="arango-mgmt-badge arango-mgmt-badge--muted">0</span>;
+                    return <span className="kl-table-badge-count kl-table-badge-count--zero">0</span>;
                 }
-                case 'dbExists':
-                    return row.dbExists ? (
-                        <span className="arango-mgmt-badge arango-mgmt-badge--ok">정상</span>
-                    ) : (
-                        <span className="arango-mgmt-badge arango-mgmt-badge--off">없음</span>
+                case 'dbExists': {
+                    const { label, tone } = getArangoDbExistsBadgeProps(row.dbExists);
+                    return (
+                        <KlBadge tone={tone} variant="compact">
+                            {label}
+                        </KlBadge>
                     );
+                }
                 default:
                     return undefined;
             }
         },
-        [expandedDomain]
+        []
     );
 
     const renderWorkspaceCell = useCallback(({ column, row }) => {
@@ -237,7 +231,11 @@ function AdminArangoManagement() {
                 const workspaceId = row.workspaceId;
                 return (
                     <span
-                        className={isTableCellBlank(workspaceId) ? 'kl-table-cell-blank' : 'arango-mgmt-mono'}
+                        className={
+                            isTableCellBlank(workspaceId)
+                                ? 'kl-table-cell-blank'
+                                : 'kl-table-nested-mono'
+                        }
                     >
                         {isTableCellBlank(workspaceId) ? formatTableCellText(workspaceId) : String(workspaceId)}
                     </span>
@@ -248,7 +246,8 @@ function AdminArangoManagement() {
                 return (
                     <span
                         className={[
-                            row.isOrphan ? 'arango-mgmt-ws-name arango-mgmt-ws-name--orphan' : 'arango-mgmt-ws-name',
+                            'kl-table-nested-name',
+                            row.isOrphan ? 'kl-table-nested-danger' : '',
                             isTableCellBlank(workspaceName) ? 'kl-table-cell-blank' : '',
                         ]
                             .filter(Boolean)
@@ -263,7 +262,11 @@ function AdminArangoManagement() {
                 const createdBy = row.createdBy;
                 return (
                     <span
-                        className={isTableCellBlank(createdBy) ? 'kl-table-cell-blank' : 'arango-mgmt-muted'}
+                        className={
+                            isTableCellBlank(createdBy)
+                                ? 'kl-table-cell-blank'
+                                : 'kl-table-nested-mono'
+                        }
                         title={!isTableCellBlank(createdBy) ? String(createdBy) : undefined}
                     >
                         {formatTableCellText(createdBy)}
@@ -275,46 +278,48 @@ function AdminArangoManagement() {
             case 'edgeCount':
             case 'arangoDocumentCount':
             case 'rdbDocumentCount':
-                return <span className="arango-mgmt-num">{fmtCount(row[column.id])}</span>;
-            case '_status':
-                return row.isOrphan ? (
-                    <span className="arango-mgmt-badge arango-mgmt-badge--danger">고아</span>
-                ) : (
-                    <span className="arango-mgmt-badge arango-mgmt-badge--ok">정상</span>
+                return <span className="kl-table-nested-num">{fmtCount(row[column.id])}</span>;
+            case '_status': {
+                const { label, tone } = getArangoWorkspaceStatusBadgeProps(row.isOrphan);
+                return (
+                    <KlBadge tone={tone} variant="inline">
+                        {label}
+                    </KlBadge>
                 );
+            }
             default:
                 return undefined;
         }
     }, []);
 
     const domainRowClassName = useCallback(
-        (row) => (expandedDomain === row.domainId ? 'arango-mgmt-row-expanded' : ''),
-        [expandedDomain]
+        (row) => [
+            'kl-table-expand-row',
+            expandedDomains.has(row.domainId) ? 'is-open' : '',
+        ].filter(Boolean).join(' '),
+        [expandedDomains]
     );
 
     const domainRowAriaLabel = useCallback((row) => {
         const name = row.domainName || '도메인';
-        return `${name}, 워크스페이스 상세 ${expandedDomain === row.domainId ? '접기' : '펼치기'}`;
-    }, [expandedDomain]);
+        return `${name}, 워크스페이스 상세 ${expandedDomains.has(row.domainId) ? '접기' : '펼치기'}`;
+    }, [expandedDomains]);
 
     const renderRowDetail = useCallback(
         ({ row }) => {
-            if (expandedDomain !== row.domainId) return null;
+            if (!expandedDomains.has(row.domainId)) return null;
             const domainId = row.domainId;
-            if (loadingDetails[domainId]) {
-                return (
-                    <div className="arango-mgmt-row-detail-loading" role="status">
-                        <Loader2 className="arango-mgmt-spin" size={18} aria-hidden />
-                        <span>워크스페이스 상세 정보를 불러오는 중...</span>
-                    </div>
-                );
-            }
+            const isLoading = Boolean(loadingDetails[domainId]);
             const list = workspaceDetails[domainId] ?? [];
             const rows = list.map((ws) => ({ ...ws, id: ws.workspaceId }));
+
             return (
-                <div className="arango-mgmt-row-detail-inner basic-table-shell">
+                <BasicTableRowDetail
+                    loading={isLoading}
+                    loadingMessage="워크스페이스 상세 정보를 불러오는 중..."
+                >
                     <BasicTable
-                        className="arango-mgmt-detail-basic-table"
+                        className="kl-basic-table--nested"
                         columns={workspaceTableColumns}
                         data={rows}
                         renderCell={renderWorkspaceCell}
@@ -324,11 +329,11 @@ function AdminArangoManagement() {
                             message: '워크스페이스 데이터가 없습니다.',
                         }}
                     />
-                </div>
+                </BasicTableRowDetail>
             );
         },
         [
-            expandedDomain,
+            expandedDomains,
             loadingDetails,
             workspaceDetails,
             workspaceTableColumns,
@@ -365,9 +370,8 @@ function AdminArangoManagement() {
                     </div>
                 </div>
 
-                <div className="basic-table-shell">
+                <div className="basic-table-shell basic-table-shell--expandable">
                     <BasicTable
-                        className="arango-mgmt-basic-table"
                         columns={domainTableColumns}
                         data={loading ? [] : domainTableRows}
                         renderCell={renderDomainCell}

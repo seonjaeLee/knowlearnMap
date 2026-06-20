@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../hooks/useDialog';
 import { faqApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
+import { formatKlDateTime } from '../utils/formatKlDate';
 import BaseModal from './common/modal/BaseModal';
 import {
     supportDetailModalPaperClassName,
@@ -57,17 +58,7 @@ function FaqDetailModal({
         }
     }, [isOpen, faqId, faqData]);
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
+    const formatDate = (dateString) => formatKlDateTime(dateString, { fallback: '' });
 
     const isOwner = faq && (user?.email === faq.authorEmail || user?.email === faq.createdBy);
     const canModify = !faqData && (isOwner || isAdmin);

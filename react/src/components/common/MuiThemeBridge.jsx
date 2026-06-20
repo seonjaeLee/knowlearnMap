@@ -18,7 +18,7 @@ export default function MuiThemeBridge({ children }) {
           dark: brand.primaryHover,
         },
         background: {
-          default: resolvedTheme === 'dark' ? '#0f172a' : '#f8f9fa',
+          default: resolvedTheme === 'dark' ? '#0f172a' : '#f8f8f8',
           paper: resolvedTheme === 'dark' ? '#1e293b' : '#ffffff',
         },
       },

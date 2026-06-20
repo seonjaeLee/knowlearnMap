@@ -1,7 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { AlertCircle, ChevronLeft, Upload } from 'lucide-react';
+import KlTabBar from '../../../components/common/KlTabBar';
 import MakerPageHeader from '../../../components/admin/MakerPageHeader';
+import KlBadge from '../../../components/common/KlBadge';
 import { usePromptDetail } from '../../hooks/usePrompts';
 import { useVersions } from '../../hooks/useVersions';
 import { getPromptsBasePath } from '../../utils/promptRoutes';
@@ -127,22 +129,17 @@ const PromptDetailContent = () => {
               {code}
             </span>
             {prompt?.category ? (
-              <span className="prompt-skin-tag prompt-skin-tag--info">
-                <span className="prompt-skin-tag__dot" aria-hidden />
-                {prompt.category}
-              </span>
+              <KlBadge tone="info">{prompt.category}</KlBadge>
             ) : null}
             {activeVersion ? (
-              <span className="prompt-skin-tag prompt-skin-tag--ok">
-                <span className="prompt-skin-tag__dot" aria-hidden />
+              <KlBadge tone="ok">
                 활성중 v{activeVersion.version}
-              </span>
+              </KlBadge>
             ) : null}
             {editingVersion ? (
-              <span className="prompt-skin-tag prompt-skin-tag--warn">
-                <span className="prompt-skin-tag__dot" aria-hidden />
+              <KlBadge tone="warn">
                 편집중 v{editingVersion.version}
-              </span>
+              </KlBadge>
             ) : null}
           </div>
         </div>
@@ -152,28 +149,22 @@ const PromptDetailContent = () => {
         </div>
       </div>
 
-      <div className="prompt-detail-tabs" role="tablist" aria-label="프롬프트 상세">
-        {DETAIL_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={currentTab === tab.id}
-            className={`prompt-detail-tab ${currentTab === tab.id ? 'is-active' : ''}`}
-            onClick={() => setCurrentTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-        {currentTab === 'editor' && (
-          <div className="prompt-detail-tabs__actions">
+      <KlTabBar
+        variant="page"
+        className="prompt-detail-tabs"
+        ariaLabel="프롬프트 상세"
+        tabs={DETAIL_TABS}
+        value={currentTab}
+        onChange={setCurrentTab}
+        actions={
+          currentTab === 'editor' ? (
             <button type="button" className="prompt-detail-deploy-btn" onClick={handlePublish}>
               <Upload size={17} strokeWidth={2.2} aria-hidden />
               배포 (PUBLISH)
             </button>
-          </div>
-        )}
-      </div>
+          ) : null
+        }
+      />
 
       <div className="prompt-detail-body">
         {currentTab === 'editor' && (

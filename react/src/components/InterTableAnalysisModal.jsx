@@ -95,7 +95,7 @@ function InterTableAnalysisModal({ workspaceId, onClose, onApplied }) {
     const getRelationTypeStyle = (type) => {
         const found = RELATION_TYPES.find(r => r.value === type);
         if (found) return { background: found.bg, color: found.color };
-        return { background: '#f1f5f9', color: '#475569' };
+        return { background: 'var(--color-bg-hover)', color: '#475569' };
     };
 
     const relations = result?.interRelations || [];

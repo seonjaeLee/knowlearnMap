@@ -18,8 +18,49 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 15px 18px;
+  min-height: 48px;
+  padding: 0 18px;
   border-bottom: 1px solid var(--ps-border, #e6e9ef);
+  flex-shrink: 0;
+}
+
+.prompt-panel__head .kl-tab-bar--panel {
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: stretch;
+  margin-left: -18px;
+  padding-left: 18px;
+  align-items: stretch;
+}
+
+.prompt-panel__head .kl-tab-bar--panel .kl-tab-bar__body {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+}
+
+.prompt-panel__head .kl-tab-bar--panel .kl-tab-bar__track {
+  align-items: center;
+  width: 100%;
+  min-height: 23px;
+}
+
+.prompt-panel__head .kl-tab-bar--panel .kl-tab-bar__tab:not(.kl-tab-bar__tab--bubble) {
+  padding: 0 2px;
+}
+
+.prompt-panel__head .kl-tab-bar--panel .kl-tab-bar__indicator {
+  bottom: 0;
+}
+
+.prompt-panel__head .kl-tab-bar__scroll-btn {
+  width: 23px;
+  height: 23px;
+  border-radius: 6px;
+}
+
+.prompt-panel__head .prompt-panel__tools {
   flex-shrink: 0;
 }
 
@@ -31,8 +72,8 @@
 }
 
 .prompt-panel-tool-btn {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 7px;
   display: grid;
   place-items: center;
@@ -59,21 +100,13 @@
 }
 
 .prompt-panel-tool-btn.is-copied {
-  color: #1aa85f;
-  background: color-mix(in srgb, #1aa85f 10%, transparent);
+  color: var(--ps-ok, #1aa85f);
+  background: color-mix(in srgb, var(--ps-ok, #1aa85f) 10%, transparent);
 }
 
 .prompt-panel-tool-btn svg {
   width: 16px;
   height: 16px;
-}
-
-.prompt-panel-tools-sep {
-  width: 1px;
-  height: 18px;
-  background: var(--ps-border, #e6e9ef);
-  flex-shrink: 0;
-  margin: 0 2px;
 }
 
 .editor-body {

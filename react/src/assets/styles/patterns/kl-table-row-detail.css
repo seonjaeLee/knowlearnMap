@@ -1,0 +1,368 @@
+/**
+ * BasicTable 펼침 행(nested table) — recessed 트레이 + 카드형 내부 표
+ * DOM: basic-table-shell--expandable > BasicTable + renderRowDetail > BasicTableRowDetail
+ */
+
+/* ---------- shell · 부모 행 ---------- */
+.basic-table-shell--expandable td[class*='detailCell'] {
+  position: relative;
+  padding: 0 !important;
+  background: var(--color-table-recessed) !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+  /* 상단 inset — 아래로 갈수록 희미해지는 recessed 트레이 */
+  box-shadow:
+    inset 0 16px 24px -20px color-mix(in srgb, var(--color-text-primary) 12%, transparent),
+    inset 0 6px 10px -8px color-mix(in srgb, var(--color-text-primary) 6%, transparent);
+}
+
+.basic-table-shell--expandable .kl-table-expand-row {
+  cursor: pointer;
+}
+
+.basic-table-shell--expandable .kl-table-expand-row.is-open {
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+/* 펼침 행 열린 상태 — 바깥 행 셀만 (표준 행 높이·타이포는 BasicTable 기본 유지) */
+.basic-table-shell--expandable .kl-table-expand-row.is-open > td[class*='bodyCell'] {
+  border-bottom: none !important;
+}
+
+.kl-table-expand-chevron {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-tertiary);
+  transition: color var(--transition-fast, 0.12s);
+  margin-left: var(--spacing-xs);
+}
+
+.basic-table-shell--expandable .kl-table-expand-row:hover .kl-table-expand-chevron {
+  color: var(--color-text-primary);
+}
+
+.kl-table-expand-chevron svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.15s;
+}
+
+.basic-table-shell--expandable .kl-table-expand-row.is-open .kl-table-expand-chevron svg {
+  transform: rotate(90deg);
+  color: var(--color-accent);
+}
+
+/* ---------- 펼침 패널 ---------- */
+.kl-table-row-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 24px;
+}
+
+.kl-table-row-detail__arrow {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  color: var(--color-accent);
+  margin-top: var(--spacing-sm);
+}
+
+.kl-table-row-detail__arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.kl-table-row-detail__card {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-bg-secondary);
+  border: 1px solid #cecece;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  position: relative;
+}
+
+/* 내부 중첩 테이블 — 여백 없이 카드 가득 채움 + 스크롤 페이드 mask 기본 */
+.kl-table-row-detail__card [class*='scrollWrap'] {
+  padding: 0 !important;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  transition: -webkit-mask-image 0.22s ease, mask-image 0.22s ease;
+}
+
+/* 내부 중첩 테이블 — 셀 모서리 radius 없음(카드 overflow로 외곽만 라운드) */
+.kl-table-row-detail__card .kl-basic-table--nested :is(th)[class*='headCell'],
+.kl-table-row-detail__card .kl-basic-table--nested :is(td)[class*='bodyCell'] {
+  border-radius: 0 !important;
+}
+
+/* tbody::before 스페이서 제거 — 내부 테이블은 불필요 */
+.kl-table-row-detail__card [class*='table'] tbody::before {
+  display: none !important;
+}
+
+/* 좌우 스크롤 페이드 — fade-l / fade-r 시 mask 적용 */
+.kl-table-row-detail__card.fade-r [class*='scrollWrap'] {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - 56px),
+    rgba(0, 0, 0, 0.97) calc(100% - 48px),
+    rgba(0, 0, 0, 0.88) calc(100% - 40px),
+    rgba(0, 0, 0, 0.72) calc(100% - 32px),
+    rgba(0, 0, 0, 0.52) calc(100% - 24px),
+    rgba(0, 0, 0, 0.3) calc(100% - 16px),
+    rgba(0, 0, 0, 0.12) calc(100% - 8px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - 56px),
+    rgba(0, 0, 0, 0.97) calc(100% - 48px),
+    rgba(0, 0, 0, 0.88) calc(100% - 40px),
+    rgba(0, 0, 0, 0.72) calc(100% - 32px),
+    rgba(0, 0, 0, 0.52) calc(100% - 24px),
+    rgba(0, 0, 0, 0.3) calc(100% - 16px),
+    rgba(0, 0, 0, 0.12) calc(100% - 8px),
+    transparent 100%
+  );
+}
+
+.kl-table-row-detail__card.fade-l [class*='scrollWrap'] {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 8px,
+    rgba(0, 0, 0, 0.3) 16px,
+    rgba(0, 0, 0, 0.52) 24px,
+    rgba(0, 0, 0, 0.72) 32px,
+    rgba(0, 0, 0, 0.88) 40px,
+    rgba(0, 0, 0, 0.97) 48px,
+    #000 56px,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 8px,
+    rgba(0, 0, 0, 0.3) 16px,
+    rgba(0, 0, 0, 0.52) 24px,
+    rgba(0, 0, 0, 0.72) 32px,
+    rgba(0, 0, 0, 0.88) 40px,
+    rgba(0, 0, 0, 0.97) 48px,
+    #000 56px,
+    #000 100%
+  );
+}
+
+.kl-table-row-detail__card.fade-l.fade-r [class*='scrollWrap'] {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 8px,
+    rgba(0, 0, 0, 0.3) 16px,
+    rgba(0, 0, 0, 0.52) 24px,
+    rgba(0, 0, 0, 0.72) 32px,
+    rgba(0, 0, 0, 0.88) 40px,
+    rgba(0, 0, 0, 0.97) 48px,
+    #000 56px,
+    #000 calc(100% - 56px),
+    rgba(0, 0, 0, 0.97) calc(100% - 48px),
+    rgba(0, 0, 0, 0.88) calc(100% - 40px),
+    rgba(0, 0, 0, 0.72) calc(100% - 32px),
+    rgba(0, 0, 0, 0.52) calc(100% - 24px),
+    rgba(0, 0, 0, 0.3) calc(100% - 16px),
+    rgba(0, 0, 0, 0.12) calc(100% - 8px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 8px,
+    rgba(0, 0, 0, 0.3) 16px,
+    rgba(0, 0, 0, 0.52) 24px,
+    rgba(0, 0, 0, 0.72) 32px,
+    rgba(0, 0, 0, 0.88) 40px,
+    rgba(0, 0, 0, 0.97) 48px,
+    #000 56px,
+    #000 calc(100% - 56px),
+    rgba(0, 0, 0, 0.97) calc(100% - 48px),
+    rgba(0, 0, 0, 0.88) calc(100% - 40px),
+    rgba(0, 0, 0, 0.72) calc(100% - 32px),
+    rgba(0, 0, 0, 0.52) calc(100% - 24px),
+    rgba(0, 0, 0, 0.3) calc(100% - 16px),
+    rgba(0, 0, 0, 0.12) calc(100% - 8px),
+    transparent 100%
+  );
+}
+
+.kl-table-row-detail__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.kl-table-row-detail__spin {
+  animation: kl-table-row-detail-spin 0.9s linear infinite;
+}
+
+@keyframes kl-table-row-detail-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- nested BasicTable (thead 26px · tbody 24px — 높이는 BasicTable.module.scss) ---------- */
+.kl-table-row-detail__card .kl-basic-table--nested {
+  min-width: 0;
+  border-radius: 0;
+  box-shadow: none !important;
+  background: transparent !important;
+  --kl-nested-table-border: #cecece;
+  --kl-nested-table-text: #555;
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested :is(th)[class*='headCell'] {
+  padding: 0 var(--spacing-sm) !important;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  text-align: center;
+  vertical-align: middle !important;
+  color: var(--kl-nested-table-text);
+  line-height: 1.25;
+  background: var(--color-table-head-bg);
+  border-bottom: 1px solid var(--kl-nested-table-border);
+  border-right: 1px solid var(--kl-nested-table-border);
+  box-sizing: border-box;
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested :is(th)[class*='headCell']:last-child {
+  border-right: none;
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested [class*='headCellLabel'] {
+  display: block;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested [class*='bodyCell'] {
+  padding: 0 var(--spacing-sm) !important;
+  font-size: var(--font-size-xs);
+  color: var(--kl-nested-table-text);
+  line-height: 1.25;
+  text-align: left;
+  vertical-align: middle !important;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--kl-nested-table-border);
+  border-right: 1px solid var(--kl-nested-table-border);
+  box-sizing: border-box;
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested :is(td)[class*='bodyCell']:last-child {
+  border-right: none;
+}
+
+/* nested 본문 — 셀 내부 span은 td 크기(12px) 상속, 개별 font-size 금지 */
+.kl-table-row-detail__card .kl-basic-table--nested [class*='bodyCell'] :where(span, a, p):not([class*='kl-table-badge']) {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested .kl-table-nested-name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--kl-nested-table-text);
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested .kl-table-nested-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--kl-nested-table-text);
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested .kl-table-nested-num {
+  font-variant-numeric: tabular-nums;
+  color: var(--kl-nested-table-text);
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested .kl-table-nested-danger {
+  color: var(--color-icon-danger);
+}
+
+.kl-table-row-detail__card .kl-basic-table--nested tbody tr:last-child [class*='bodyCell'] {
+  border-bottom: none;
+}
+
+/* ---------- 셀 · 뱃지 (펼침 표 공통) ---------- */
+.kl-table-cell-strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.kl-table-cell-strong--md {
+  font-size: 13.5px;
+}
+
+.kl-table-cell-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.kl-table-cell-mono--emphasis {
+  font-weight: var(--font-weight-semibold);
+}
+
+.kl-table-cell-num {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.kl-table-cell-num--sub {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.kl-table-cell-danger {
+  color: var(--color-icon-danger);
+}
+
+.kl-table-badge-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  font-size: 11.5px;
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.kl-table-badge-count--zero {
+  color: var(--color-text-tertiary);
+}
+
+.kl-table-badge-count--bad {
+  color: var(--color-icon-danger);
+  background: color-mix(in srgb, var(--color-icon-danger) 13%, transparent);
+}

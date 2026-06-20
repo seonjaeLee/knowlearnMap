@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Bell } from 'lucide-react';
 import { noticeApi } from '../services/api';
+import { formatKlDate } from '../utils/formatKlDate';
 import './NoticePopupModal.css';
 
 function NoticePopupModal({ isOpen, onClose }) {
@@ -78,7 +79,7 @@ function NoticePopupModal({ isOpen, onClose }) {
                                 <div key={notice.id} className="notice-popup-item">
                                     <div className="notice-popup-item-title">{notice.title}</div>
                                     <div className="notice-popup-item-date">
-                                        {new Date(notice.createdAt).toLocaleDateString()}
+                                        {formatKlDate(notice.createdAt)}
                                     </div>
                                 </div>
                             ))}

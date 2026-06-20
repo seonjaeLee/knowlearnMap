@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Network, Box, Link2, Zap } from 'lucide-react';
+import KlTabBar from '../../components/common/KlTabBar';
 import AdminSemanticObjectPage from './AdminSemanticObjectPage';
 import AdminSemanticRelationPage from './AdminSemanticRelationPage';
 import AdminSemanticActionPage from './AdminSemanticActionPage';
@@ -11,6 +12,12 @@ import './AdminSemanticPage.css';
  * 온톨로지 옵션 통합 페이지 (V20260424 통합 이후).
  * 각 탭은 type 별 카테고리(좌) + 항목(우) 2패널 구조.
  */
+const SEMANTIC_TABS = [
+  { id: 'objects', label: '객체 & 카테고리', icon: <Box size={14} aria-hidden /> },
+  { id: 'relations', label: '관계 & 카테고리', icon: <Link2 size={14} aria-hidden /> },
+  { id: 'actions', label: '액션 & 카테고리', icon: <Zap size={14} aria-hidden /> },
+];
+
 function AdminSemanticPage() {
   const [subTab, setSubTab] = useState('objects');
 
@@ -24,32 +31,13 @@ function AdminSemanticPage() {
         />
       </div>
 
-      <div className="kl-subtabs">
-        <button
-          type="button"
-          className={`kl-subtab ${subTab === 'objects' ? 'active' : ''}`}
-          onClick={() => setSubTab('objects')}
-        >
-          <Box size={14} aria-hidden />
-          객체 & 카테고리
-        </button>
-        <button
-          type="button"
-          className={`kl-subtab ${subTab === 'relations' ? 'active' : ''}`}
-          onClick={() => setSubTab('relations')}
-        >
-          <Link2 size={14} aria-hidden />
-          관계 & 카테고리
-        </button>
-        <button
-          type="button"
-          className={`kl-subtab ${subTab === 'actions' ? 'active' : ''}`}
-          onClick={() => setSubTab('actions')}
-        >
-          <Zap size={14} aria-hidden />
-          액션 & 카테고리
-        </button>
-      </div>
+      <KlTabBar
+        variant="subtle"
+        ariaLabel="온톨로지 옵션"
+        tabs={SEMANTIC_TABS}
+        value={subTab}
+        onChange={setSubTab}
+      />
 
       <div className="admin-semantic-page-body">
         {subTab === 'objects'   && <AdminSemanticObjectPage   compact />}

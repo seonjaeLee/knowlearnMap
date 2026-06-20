@@ -37,8 +37,6 @@ import {
 import './admin-common.css';
 import './AdminSemanticPage.css';
 
-const SEMANTIC_SPLIT_TABLE_CLASS = 'admin-semantic-split-basic-table';
-
 /**
  * 온톨로지 카테고리 관리 (V20260424 통합 이후).
  * type: OBJECT | RELATION | ACTION — 같은 테이블 다른 네임스페이스.
@@ -525,7 +523,6 @@ function AdminSemanticCategoryPage({
       </div>
       <div className="basic-table-shell">
         <BasicTable
-          className={SEMANTIC_SPLIT_TABLE_CLASS}
           columns={categoryColumns}
           data={showLoading ? [] : visibleItems}
           renderCell={renderCategoryCell}

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { API_URL } from '../config/api';
-import { Globe, Check } from 'lucide-react';
+import { Globe, Check, ArrowRight, Layers } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import './admin/admin-common.css';
 import './DomainSelection.css';
@@ -120,22 +120,31 @@ function DomainSelection() {
                                 >
                                     <div className="domain-card-head">
                                         <span className="domain-card-icon" aria-hidden>
-                                            <Globe size={18} />
+                                            <Globe size={22} />
                                         </span>
                                         {isCurrent ? (
                                             <span className="domain-card-current-badge">
-                                                <Check size={12} aria-hidden /> 현재
+                                                <Check size={13} strokeWidth={2.6} aria-hidden /> 현재
                                             </span>
-                                        ) : null}
+                                        ) : (
+                                            <span className="domain-card-go" aria-hidden>
+                                                <ArrowRight size={18} />
+                                            </span>
+                                        )}
                                     </div>
-                                    <div className="domain-card-name" title={domain.name}>
-                                        {domain.name}
-                                    </div>
-                                    <div className="domain-card-desc" title={domain.description || ''}>
+                                    <div className="domain-card-body">
+                                        <div className="domain-card-name" title={domain.name}>
+                                            {domain.name}
+                                        </div>
+                                        <div className="domain-card-desc" title={domain.description || ''}>
                                         {domain.description ? domain.description : ' '}
+                                        </div>
                                     </div>
                                     {typeof domain.workspaceCount === 'number' ? (
-                                        <div className="domain-card-meta">워크스페이스 {domain.workspaceCount}개</div>
+                                        <div className="domain-card-meta">
+                                            <Layers size={14} aria-hidden />
+                                            <span>워크스페이스 {domain.workspaceCount}개</span>
+                                        </div>
                                     ) : null}
                                 </button>
                             );

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import {
   AlignLeft,
   Check,
@@ -12,6 +12,7 @@ import {
   ScanText,
 } from 'lucide-react';
 import KlTooltip from '../../../components/common/KlTooltip';
+import KlTabBar from '../../../components/common/KlTabBar';
 import { useCopyFeedback } from '../../../hooks/useCopyFeedback';
 import './PromptEditTabs.css';
 
@@ -95,7 +96,6 @@ const PromptEditTabs = memo(({
       >
         <ScanText size={ICON_SIZE} strokeWidth={ICON_STROKE} />
       </PanelToolBtn>
-      <span className="prompt-panel-tools-sep" aria-hidden />
       <PanelToolBtn tooltip={isCopied() ? '복사됨' : '복사'} onClick={handleCopy} disabled={disabled} className={isCopied() ? 'is-copied' : ''}>
         {isCopied() ? <Check size={ICON_SIZE} strokeWidth={ICON_STROKE} /> : <Copy size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
       </PanelToolBtn>
@@ -179,6 +179,47 @@ const PromptEditTabs = memo(({
     return <CircleAlert size={11} strokeWidth={2} aria-hidden />;
   };
 
+  const detailTabs = useMemo(() => {
+    const tabs = [{ id: 0, label: '프롬프트 편집', disabled }];
+    extractedVariables.forEach((varKey, index) => {
+      const tabIndex = index + 1;
+      const filled = Boolean(variables[varKey]?.content);
+      tabs.push({
+        id: tabIndex,
+        label: varKey,
+        disabled,
+        className: [
+          'kl-tab-bar__tab--bubble',
+          filled ? 'kl-tab-bar__tab--bubble-filled' : 'kl-tab-bar__tab--bubble-empty',
+        ].join(' '),
+        icon: (
+          <span className="kl-tab-bar__tab-bubble-mark">
+            {renderVarBubbleIcon(filled, activeTab === tabIndex)}
+          </span>
+        ),
+      });
+    });
+    return tabs;
+  }, [extractedVariables, variables, disabled, activeTab]);
+
+  const defaultTabs = useMemo(() => {
+    const tabs = [{ id: 0, label: '프롬프트 편집', disabled }];
+    extractedVariables.forEach((varKey, index) => {
+      const tabIndex = index + 1;
+      const isMissing = !variables[varKey]?.content;
+      const label = variables[varKey]?.label
+        ? `${variables[varKey].label} (${varKey})`
+        : varKey;
+      tabs.push({
+        id: tabIndex,
+        label,
+        disabled,
+        className: isMissing ? 'kl-tab-bar__tab--error' : '',
+      });
+    });
+    return tabs;
+  }, [extractedVariables, variables, disabled]);
+
   const promptPlaceholder = showToolbar
     ? '프롬프트 내용을 입력하세요\n\n예시:\nYou are a document chunking assistant.\nSplit the following document into chunks based on the rule: {{rule}}.\nLanguage: {{lang}}.\nMax length per chunk: {{max_length}} characters.'
     : '프롬프트 내용을 입력하세요…';
@@ -200,49 +241,18 @@ const PromptEditTabs = memo(({
       <div id="prompt-edit-tabs-root" className={rootClass}>
         <div className="prompt-panel">
           <div className="prompt-panel__head">
-            <div className="editor-subtabs" role="tablist" aria-label="프롬프트·변수 편집">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === 0}
-                className={`editor-subtab ${activeTab === 0 ? 'is-active' : ''}`}
-                disabled={disabled}
-                onClick={() => onTabChange(0)}
-              >
-                프롬프트 편집
-              </button>
-              {extractedVariables.length > 0 && (
-                <>
-                  <span className="var-sep" aria-hidden />
-                  <div className="var-bubbles">
-                    {extractedVariables.map((varKey, index) => {
-                      const tabIndex = index + 1;
-                      const filled = Boolean(variables[varKey]?.content);
-                      return (
-                        <button
-                          key={varKey}
-                          type="button"
-                          role="tab"
-                          aria-selected={activeTab === tabIndex}
-                          className={[
-                            'var-bubble',
-                            filled ? 'var-bubble--filled' : 'var-bubble--empty',
-                            activeTab === tabIndex ? 'is-selected' : '',
-                          ].filter(Boolean).join(' ')}
-                          disabled={disabled}
-                          onClick={() => onTabChange(tabIndex)}
-                        >
-                          <span className="var-bubble__mark">
-                            {renderVarBubbleIcon(filled, activeTab === tabIndex)}
-                          </span>
-                          {varKey}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-            </div>
+            <KlTabBar
+              variant="panel"
+              className="prompt-panel__head-tabs"
+              ariaLabel="프롬프트·변수 편집"
+              tabs={detailTabs}
+              value={activeTab}
+              onChange={onTabChange}
+              scrollTail={extractedVariables.length > 0}
+              scrollTailAfterIndex={0}
+              scrollFade
+              scrollNav
+            />
             {showToolbar ? renderDetailPanelTools() : null}
           </div>
           <div className="editor-body">
@@ -267,40 +277,15 @@ const PromptEditTabs = memo(({
   return (
     <div id="prompt-edit-tabs-root" className={rootClass}>
       <div className="prompt-edit-default-toolbar" id="tabs-toolbar-header">
-        <div className="prompt-edit-default-toolbar__tabs" id="tabs-and-check-box" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 0}
-            className={`prompt-edit-default-tab ${activeTab === 0 ? 'is-active' : ''}`}
-            disabled={disabled}
-            onClick={() => onTabChange(0)}
-          >
-            프롬프트 편집
-          </button>
-          {extractedVariables.map((varKey, index) => {
-            const tabIndex = index + 1;
-            const isMissing = !variables[varKey]?.content;
-            return (
-              <button
-                key={varKey}
-                type="button"
-                role="tab"
-                aria-selected={activeTab === tabIndex}
-                className={[
-                  'prompt-edit-default-tab',
-                  activeTab === tabIndex ? 'is-active' : '',
-                  isMissing ? 'is-error' : '',
-                ].filter(Boolean).join(' ')}
-                disabled={disabled}
-                onClick={() => onTabChange(tabIndex)}
-              >
-                {variables[varKey]?.label ? `${variables[varKey].label} (${varKey})` : varKey}
-              </button>
-            );
-          })}
-        </div>
-        {showToolbar ? renderDefaultHeaderActions() : null}
+        <KlTabBar
+          variant="compact"
+          ariaLabel="프롬프트·변수 편집"
+          tabs={defaultTabs}
+          value={activeTab}
+          onChange={onTabChange}
+          scrollable
+          actions={showToolbar ? renderDefaultHeaderActions() : null}
+        />
       </div>
 
       <div className="prompt-edit-tabs__body">

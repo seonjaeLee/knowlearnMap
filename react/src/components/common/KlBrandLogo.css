@@ -1,63 +1,89 @@
-/* 브랜드 심볼 + knowlearnMap 워드마크 — LNB·로그인 등 공통 */
+/* LNB 브랜드 로고 — assets/README.md SSOT (심볼·워드마크) */
 
 .kl-brand-logo {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   min-width: 0;
   max-width: 100%;
 }
 
-.kl-brand-mark {
-  width: 24px;
-  height: 24px;
-  flex: 0 0 auto;
-  color: #5eb8ff;
+.kl-brand-logo--row {
+  flex-direction: row;
+}
+
+.kl-brand-logo__symbol {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: block;
+  margin-right: 4px;
+}
+
+/* 기본: 라이트 심볼 (밝은 LNB 스킴·README 라이트 UI) */
+.kl-brand-logo__symbol--dark {
+  display: none;
 }
 
 .kl-brand-wordmark {
-  display: inline-flex;
-  align-items: baseline;
   min-width: 0;
   font-family: var(--font-family);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1;
-  letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* README .wordmark → --text-1; LNB는 sidebar 대비(--sb-text-strong) */
+  color: var(--sb-text-strong, var(--color-text-primary));
 }
 
-.kl-brand-wordmark__knowlearn {
-  color: #f1f5f9;
-}
-
+/* README .map → --brand-grad */
 .kl-brand-wordmark__map {
-  color: #5eb8ff;
+  background: var(--kl-brand-primary-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
-/* 로그인 카드 — 심볼 위 · 워드마크 아래 세로 정렬 */
-.kl-brand-logo--login {
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+/* ── LNB 심볼: README — dark.svg = 어두운/다크 UI, light.svg = 밝은 UI ── */
+
+/* 기본 LNB(dark chrome, data-lnb 없음): 항상 knowlearnMap-dark.svg */
+.lnb-sidebar .kl-brand-logo__symbol--light {
+  display: none;
 }
 
-.kl-brand-logo--login .kl-brand-mark {
-  width: 36px;
-  height: 36px;
+.lnb-sidebar .kl-brand-logo__symbol--dark {
+  display: block;
 }
 
-.kl-brand-logo--login .kl-brand-wordmark {
-  font-size: 20px;
-  justify-content: center;
+/* 밝은 LNB 스킴 — data-theme에 따라 README와 동일 교체 */
+[data-lnb='indigo'] .lnb-sidebar .kl-brand-logo__symbol--light,
+[data-lnb='light'][data-theme='light'] .lnb-sidebar .kl-brand-logo__symbol--light {
+  display: block;
 }
 
-.kl-brand-logo--login .kl-brand-wordmark__knowlearn {
-  color: var(--color-text-primary);
+[data-lnb='indigo'] .lnb-sidebar .kl-brand-logo__symbol--dark,
+[data-lnb='light'][data-theme='light'] .lnb-sidebar .kl-brand-logo__symbol--dark {
+  display: none;
 }
 
-.kl-brand-logo--login .kl-brand-wordmark__knowlearn {
-  color: var(--color-text-primary);
+[data-lnb='indigo'][data-theme='dark'] .lnb-sidebar .kl-brand-logo__symbol--light,
+[data-lnb='light'][data-theme='dark'] .lnb-sidebar .kl-brand-logo__symbol--light {
+  display: none;
+}
+
+[data-lnb='indigo'][data-theme='dark'] .lnb-sidebar .kl-brand-logo__symbol--dark,
+[data-lnb='light'][data-theme='dark'] .lnb-sidebar .kl-brand-logo__symbol--dark {
+  display: block;
+}
+
+/* LNB 접힘 — 심볼만, 오른쪽 여백 제거 */
+.lnb-sidebar.collapsed .kl-brand-logo__symbol {
+  margin-right: 0;
+}
+
+.lnb-sidebar.collapsed .lnb-logo-link .kl-brand-logo {
+  gap: 0;
 }

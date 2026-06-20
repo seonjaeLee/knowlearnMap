@@ -18,16 +18,17 @@
 /* 표만 있는 영역 — 카드 외곽 */
 .table-area:not(:has(> .table-toolbar)) {
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid #c6ccd7;
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
 .table-area:not(:has(> .table-toolbar)) > .basic-table-shell {
   background: var(--color-bg-secondary);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  position: relative;
   min-width: 0;
+  overflow: hidden;
+  padding: 12px;
 }
 
 /* 툴바 + 표 — 툴바는 카드 밖, 표만 카드 */
@@ -54,15 +55,134 @@
 
 .table-area:has(> .table-toolbar) > .basic-table-shell {
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid #c6ccd7;
   border-radius: var(--radius-lg);
+  position: relative;
   min-width: 0;
+  overflow: hidden;
+  padding: 12px;
 }
+
+/* 좌우 스크롤 페이드 — mask로 콘텐츠 자체를 서서히 투명화 (thead·tbody 색이 자연스럽게 사라짐) */
+.basic-table-shell > .basic-table-scroll-wrap {
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  transition: -webkit-mask-image 0.22s ease, mask-image 0.22s ease;
+}
+
+.basic-table-shell.fade-r > .basic-table-scroll-wrap {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - 80px),
+    rgba(0, 0, 0, 0.97) calc(100% - 68px),
+    rgba(0, 0, 0, 0.88) calc(100% - 56px),
+    rgba(0, 0, 0, 0.72) calc(100% - 44px),
+    rgba(0, 0, 0, 0.52) calc(100% - 32px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.12) calc(100% - 10px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0,
+    #000 calc(100% - 80px),
+    rgba(0, 0, 0, 0.97) calc(100% - 68px),
+    rgba(0, 0, 0, 0.88) calc(100% - 56px),
+    rgba(0, 0, 0, 0.72) calc(100% - 44px),
+    rgba(0, 0, 0, 0.52) calc(100% - 32px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.12) calc(100% - 10px),
+    transparent 100%
+  );
+}
+
+.basic-table-shell.fade-l > .basic-table-scroll-wrap {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 10px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.52) 32px,
+    rgba(0, 0, 0, 0.72) 44px,
+    rgba(0, 0, 0, 0.88) 56px,
+    rgba(0, 0, 0, 0.97) 68px,
+    #000 80px,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 10px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.52) 32px,
+    rgba(0, 0, 0, 0.72) 44px,
+    rgba(0, 0, 0, 0.88) 56px,
+    rgba(0, 0, 0, 0.97) 68px,
+    #000 80px,
+    #000 100%
+  );
+}
+
+.basic-table-shell.fade-l.fade-r > .basic-table-scroll-wrap {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 10px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.52) 32px,
+    rgba(0, 0, 0, 0.72) 44px,
+    rgba(0, 0, 0, 0.88) 56px,
+    rgba(0, 0, 0, 0.97) 68px,
+    #000 80px,
+    #000 calc(100% - 80px),
+    rgba(0, 0, 0, 0.97) calc(100% - 68px),
+    rgba(0, 0, 0, 0.88) calc(100% - 56px),
+    rgba(0, 0, 0, 0.72) calc(100% - 44px),
+    rgba(0, 0, 0, 0.52) calc(100% - 32px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.12) calc(100% - 10px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 10px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.52) 32px,
+    rgba(0, 0, 0, 0.72) 44px,
+    rgba(0, 0, 0, 0.88) 56px,
+    rgba(0, 0, 0, 0.97) 68px,
+    #000 80px,
+    #000 calc(100% - 80px),
+    rgba(0, 0, 0, 0.97) calc(100% - 68px),
+    rgba(0, 0, 0, 0.88) calc(100% - 56px),
+    rgba(0, 0, 0, 0.72) calc(100% - 44px),
+    rgba(0, 0, 0, 0.52) calc(100% - 32px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.12) calc(100% - 10px),
+    transparent 100%
+  );
+}
+
 
 .kl-page--fill .table-area:has(> .table-toolbar) > .basic-table-shell,
 .kl-page--fill:has(> .table-area > .table-toolbar)
   > .table-area:has(> .table-toolbar)
   > .basic-table-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.kl-page--fill .table-area:has(> .table-toolbar) > .basic-table-shell > .basic-table-scroll-wrap,
+.kl-page--fill:has(> .table-area > .table-toolbar)
+  > .table-area:has(> .table-toolbar)
+  > .basic-table-shell > .basic-table-scroll-wrap {
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -112,7 +232,19 @@
   > .basic-table-shell {
   flex: 1 1 auto;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.kl-page--fill:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
+  > .table-area
+  > .basic-table-shell
+  > .basic-table-scroll-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .kl-page--fill:has(> .kl-main-sticky-head + .table-area > .table-toolbar)
@@ -124,17 +256,128 @@
 
 /* thead 고정(sticky) — 맨 마지막 단계 백로그. 현재는 일반 표 흐름(헤더 상단)만 유지 */
 
-.basic-table-shell:has([class*='colResizeHandle']) .MuiTableHead-root .MuiTableCell-head {
+/* colResizeHandle 활성 시 thead th를 앞으로 */
+.basic-table-shell:has([class*='colResizeHandle']) thead th {
   z-index: 10;
+}
+
+/* 관리 열 — 아이콘 버튼 클리핑 방지 */
+.basic-table-shell :is(th[class*='headCellActions'], td[class*='bodyCellActions']) {
+  overflow: visible;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+ * 제어 열 — radio · checkbox (BasicTable `control` column)
+ * ============================================================================= */
+
+.kl-table-control-radio {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.7px solid var(--color-border-strong, #d9dde5);
+  cursor: default;
+  display: inline-grid;
+  place-items: center;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg-secondary, #fff);
+  box-sizing: border-box;
+}
+
+.kl-table-control-radio.is-checked {
+  border-color: var(--color-icon-success, #1aa85f);
+}
+
+.kl-table-control-radio.is-checked::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-icon-success, #1aa85f);
+}
+
+.kl-table-control-radio.is-disabled {
+  opacity: 0.45;
+}
+
+.kl-table-control-radio-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  vertical-align: middle;
+  cursor: pointer;
+  accent-color: var(--color-icon-success, #1aa85f);
+}
+
+.kl-table-control-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm, 4px);
+  border: 1.7px solid var(--color-border-strong, #d9dde5);
+  cursor: default;
+  display: inline-grid;
+  place-items: center;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg-secondary, #fff);
+  box-sizing: border-box;
+}
+
+.kl-table-control-checkbox.is-checked {
+  border-color: var(--color-accent, #5a57e6);
+  background: var(--color-accent, #5a57e6);
+}
+
+.kl-table-control-checkbox.is-checked::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.kl-table-control-checkbox.is-disabled {
+  opacity: 0.45;
+}
+
+.kl-table-control-checkbox-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  vertical-align: middle;
+  cursor: pointer;
+  accent-color: var(--color-accent, #5a57e6);
 }
 
 /* =============================================================================
  * basic-table-shell — 행 · 셀 · 페이지네이션 전역 클래스
  * ============================================================================= */
 
-.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected):not(.kl-table-row-selected) > td,
-.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected):not(.kl-table-row-selected) > th {
-  background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary)) !important;
+.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected):not(.kl-table-row-selected):not(.kl-table-expand-row.is-open):not([class*='detailRow']) > td,
+.basic-table-shell tbody tr:hover:not(.support-row-pinned):not(.domain-selected):not(.kl-table-row-selected):not(.kl-table-expand-row.is-open):not([class*='detailRow']) > th {
+  background: var(--color-table-row-hover-bg) !important;
+}
+
+/* 레거시 admin-table — tr 배경 hover (BasicTable와 동일 토큰) */
+.admin-table tbody tr:hover {
+  background: var(--color-table-row-hover-bg);
+}
+
+/* 펼침(열린) 부모 행 — 선택된 상태로 간주, hover 배경 변화 없음 */
+.basic-table-shell tbody tr.kl-table-expand-row.is-open:hover > td,
+.basic-table-shell tbody tr.kl-table-expand-row.is-open:hover > th {
+  background: var(--color-bg-secondary) !important;
+}
+
+/* detail 서브행 — hover 배경 변화 없음 */
+.basic-table-shell tbody tr[class*='detailRow']:hover > td[class*='detailCell'] {
+  background: var(--color-table-recessed) !important;
 }
 
 .basic-table-shell tbody tr.kl-table-row-selected > td {
@@ -234,4 +477,46 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   line-height: 1.45;
+}
+
+.kl-table-category-text {
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: 1.35;
+}
+
+/* 등급·승인 유형(PRO/MAX) — 서열은 농담·굵기, 색 뱃지 없음 */
+.kl-grade-tier-text {
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-xs);
+  line-height: 1.35;
+}
+
+.kl-grade-tier-text--free {
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-normal);
+}
+
+.kl-grade-tier-text--pro {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.kl-grade-tier-text--max,
+.kl-grade-tier-text--special,
+.kl-grade-tier-text--admin {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
 }

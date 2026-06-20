@@ -7,11 +7,14 @@
 :root,
 [data-theme="light"] {
   /* Color Palette */
-  --color-bg-primary: #f3f5fb;
+  --color-bg-primary: #f8f8f8;
   --color-bg-secondary: #ffffff;
   --color-bg-hover: #f1f3f4;
   --color-bg-dark: #e8eaed;
-  --color-bg-subtle: #f3f5fb;
+  /* 페이지 본문과 동일 — 푸터·탭바 등 별도 띠 색 금지. inset 면은 --color-bg-hover */
+  --color-bg-subtle: var(--color-bg-primary);
+  --color-badge-bg: #f7f6fa;
+  --color-badge-border: #e3e3e3;
 
   --color-text-primary: #202124;
   --color-text-secondary: #5f6368;
@@ -23,6 +26,9 @@
   --color-accent-hover: var(--kl-brand-primary-hover);
   --color-accent-light: var(--kl-brand-primary-soft);
   --color-accent-muted: color-mix(in srgb, var(--kl-brand-primary) 8%, transparent);
+  --color-accent-gradient: var(--kl-brand-primary-grad);
+  /* glow shadow — 로그인 full-width CTA(.login-btn) 전용 */
+  --shadow-btn-primary: none;
 
   --color-icon-danger: #dc2626;
   --color-icon-danger-emphasis: #b91c1c;
@@ -31,9 +37,22 @@
 
   --color-border: #dadce0;
   --color-border-subtle: #e5e7eb;
+  --color-border-strong: #d4dae3;
   --color-border-hover: #bdc1c6;
 
   --shadow-focus-input: 0 0 0 2px color-mix(in srgb, var(--color-accent) 32%, transparent);
+
+  /* 입력·코드블록·보조 표면 (로그인 --surface-2 SSOT) */
+  --color-bg-input: #eef1f6;
+
+  --color-table-recessed: #f7f9ff;
+  --color-table-head-bg: #eeeeee;
+  --color-table-head-text: #3a394b;
+  --color-table-head-border: var(--color-border-subtle);
+  --color-table-recessed-border: var(--color-border-subtle);
+  --color-table-recessed-line: var(--color-border-subtle);
+  --color-table-row-hover-bg: var(--color-accent-light);
+  --shadow-card: 0 1px 2px rgba(16, 20, 30, 0.04), 0 4px 16px rgba(16, 20, 30, 0.05);
 
   --form-control-disabled-bg: #eceff1;
   --form-control-disabled-border: #dadce0;
@@ -84,40 +103,66 @@
 }
 
 [data-theme="dark"] {
-  --color-bg-primary: #0a0f1a;
-  --color-bg-secondary: #1e293b;
-  --color-bg-hover: #334155;
-  --color-bg-dark: #334155;
-  --color-bg-subtle: #0a0f1a;
+  /* 다크 팔레트 — react/docs 참고: 다크모드-프롬프트.md §1 (--bg/--surface 등 → --color-*) */
+  --color-bg-primary: #0e1014;
+  --color-bg-secondary: #171a20;
+  --color-bg-input: #1c2028;
+  --color-bg-hover: #1f242d;
+  --color-bg-dark: #1f242d;
+  --color-bg-subtle: #0e1014;
+  --color-badge-bg: color-mix(in srgb, var(--kl-brand-primary) 10%, var(--color-bg-secondary));
+  --color-badge-border: var(--color-border);
 
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-text-tertiary: #64748b;
-  --color-text-muted: #94a3b8;
-  --color-grey6: #94a3b8;
+  --color-text-primary: #e9ecf1;
+  --color-text-secondary: #a6adba;
+  --color-text-tertiary: #6f7886;
+  --color-text-muted: #a6adba;
+  --color-grey6: #a6adba;
 
   --color-accent: var(--kl-brand-primary);
   --color-accent-hover: var(--kl-brand-primary-hover);
   --color-accent-light: var(--kl-brand-primary-soft);
   --color-accent-muted: color-mix(in srgb, var(--kl-brand-primary) 12%, transparent);
+  --color-accent-gradient: var(--kl-brand-primary-grad);
+  --color-accent-emphasis: #aaa8f6;
+  /* glow shadow — 로그인 full-width CTA(.login-btn) 전용 */
+  --shadow-btn-primary: none;
 
-  --color-icon-danger: #f87171;
-  --color-icon-danger-emphasis: #ef4444;
-  --color-icon-success: #4ade80;
-  --color-icon-success-emphasis: #22c55e;
+  --color-icon-danger: #ff8a80;
+  --color-icon-danger-emphasis: #ff8a80;
+  --color-icon-success: #5fd99b;
+  --color-icon-success-emphasis: #5fd99b;
+  --color-icon-warn: #f0b429;
+  --color-icon-info: #6b9cf0;
 
-  --color-border: #475569;
-  --color-border-subtle: #334155;
-  --color-border-hover: #64748b;
+  --color-border: #272c36;
+  --color-border-subtle: #262b34;
+  --color-border-strong: #333a46;
+  --color-border-hover: #333a46;
 
   --shadow-focus-input: 0 0 0 2px color-mix(in srgb, var(--color-accent) 40%, transparent);
 
-  --form-control-disabled-bg: #334155;
-  --form-control-disabled-border: #475569;
-  --form-control-disabled-text: #64748b;
-  --form-control-disabled-placeholder: #64748b;
-  --btn-disabled-bg: #475569;
-  --btn-disabled-text: #94a3b8;
+  --color-table-recessed: #0a0c10;
+  --color-table-recessed-border: #23272f;
+  --color-table-recessed-line: #262b34;
+  --color-table-head-bg: #232038;
+  --color-table-head-text: #b3afda;
+  --color-table-head-border: #2e2b47;
+  --color-table-row-hover-bg: #1f242d;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+
+  --form-control-disabled-bg: #1c2028;
+  --form-control-disabled-border: #272c36;
+  --form-control-disabled-text: #6f7886;
+  --form-control-disabled-placeholder: #6f7886;
+  --btn-disabled-bg: #272c36;
+  --btn-disabled-text: #6f7886;
+
+  --control-pill-active-bg: var(--color-accent);
+  --control-pill-active-text: #ffffff;
+  --control-pill-active-hover-bg: var(--color-accent-hover);
+
+  --color-required-asterisk: #ff8a80;
 
   --color-notebook-yellow: #422006;
   --color-notebook-blue: #1e3a5f;
@@ -125,29 +170,32 @@
   --color-notebook-pink: #500724;
 
   --shadow-small: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --shadow-medium: 0 2px 8px 0 rgba(0, 0, 0, 0.45);
+  --shadow-medium: 0 10px 34px rgba(0, 0, 0, 0.5);
   --shadow-hover: 0 4px 12px 0 rgba(0, 0, 0, 0.5);
 
-  --kl-aurora-base: #0a0f1a;
-  --kl-aurora-blob-a: rgba(96, 165, 250, 0.14);
-  --kl-aurora-blob-b: rgba(129, 140, 248, 0.12);
-  --kl-aurora-blob-c: rgba(56, 189, 248, 0.1);
-  --kl-aurora-blob-d: rgba(167, 139, 250, 0.1);
-  --kl-aurora-motion-blob: rgba(94, 184, 255, 0.12);
+  --kl-aurora-base: #0a0c10;
+  /* 오로라 mesh — 은은한 브랜드 틴트 (전체 배경 톤 낮춤, 카피라이트 대비) */
+  --kl-aurora-blob-a: color-mix(in srgb, var(--color-accent-emphasis) 20%, transparent);
+  --kl-aurora-blob-b: color-mix(in srgb, var(--kl-brand-primary) 22%, transparent);
+  --kl-aurora-blob-c: color-mix(in srgb, var(--kl-brand-primary-2) 18%, transparent);
+  --kl-aurora-blob-d: color-mix(in srgb, var(--color-icon-info) 16%, transparent);
+  --kl-aurora-motion-blob: color-mix(in srgb, var(--kl-brand-primary) 18%, transparent);
+  --kl-aurora-blob-core: color-mix(in srgb, var(--kl-brand-primary) 7%, transparent);
+  --kl-aurora-dim: color-mix(in srgb, var(--kl-aurora-base) 48%, transparent);
 
-  --kl-prompt-badge-category: #60a5fa;
-  --kl-prompt-badge-active: #34d399;
-  --kl-prompt-badge-editing: #fbbf24;
-  --kl-prompt-badge-archived: #94a3b8;
-  --kl-prompt-row-editing-bg: rgba(245, 158, 11, 0.12);
-  --kl-prompt-row-editing-border: #fbbf24;
-  --kl-prompt-row-active-bg: rgba(16, 185, 129, 0.12);
-  --kl-prompt-row-active-border: #34d399;
-  --kl-prompt-var-rule-border: rgba(248, 113, 113, 0.45);
-  --kl-prompt-var-rule-bg: rgba(239, 68, 68, 0.12);
-  --kl-prompt-var-rule-dot: #f87171;
-  --kl-prompt-var-lang-border: rgba(52, 211, 153, 0.45);
-  --kl-prompt-var-lang-bg: rgba(16, 185, 129, 0.12);
-  --kl-prompt-var-lang-dot: #34d399;
-  --kl-prompt-editor-border: #334155;
+  --kl-prompt-badge-category: #6b9cf0;
+  --kl-prompt-badge-active: #5fd99b;
+  --kl-prompt-badge-editing: #f0b429;
+  --kl-prompt-badge-archived: #a6adba;
+  --kl-prompt-row-editing-bg: color-mix(in srgb, #dd8a16 12%, var(--color-bg-secondary));
+  --kl-prompt-row-editing-border: #f0b429;
+  --kl-prompt-row-active-bg: color-mix(in srgb, #1aa85f 12%, var(--color-bg-secondary));
+  --kl-prompt-row-active-border: #5fd99b;
+  --kl-prompt-var-rule-border: color-mix(in srgb, #ff8a80 45%, transparent);
+  --kl-prompt-var-rule-bg: color-mix(in srgb, #e0483d 12%, var(--color-bg-secondary));
+  --kl-prompt-var-rule-dot: #ff8a80;
+  --kl-prompt-var-lang-border: color-mix(in srgb, #5fd99b 45%, transparent);
+  --kl-prompt-var-lang-bg: color-mix(in srgb, #1aa85f 12%, var(--color-bg-secondary));
+  --kl-prompt-var-lang-dot: #5fd99b;
+  --kl-prompt-editor-border: #272c36;
 }

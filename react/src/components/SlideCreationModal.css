@@ -23,7 +23,7 @@
 
 .format-option {
     position: relative;
-    background-color: #f8f9fa;
+    background-color: var(--color-bg-hover);
     border: 2px solid #e8eaed;
     border-radius: 12px;
     padding: 16px;
@@ -36,7 +36,7 @@
 }
 
 .format-option:hover {
-    background-color: #f1f3f4;
+    background-color: var(--color-bg-hover);
     border-color: #dadce0;
 }
 
@@ -71,7 +71,7 @@
 .length-options {
     display: flex;
     gap: 8px;
-    background-color: #f1f3f4;
+    background-color: var(--color-bg-hover);
     padding: 4px;
     border-radius: 24px;
     width: fit-content;

@@ -36,37 +36,19 @@
   font-size: var(--font-size-base);
 }
 
-.member-mgmt-basic-table {
-  min-width: 1320px;
-}
-
-.table-area .member-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .member-mgmt-actions-head {
-  padding-right: var(--spacing-sm);
-}
-
-.member-mgmt-actions-head {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-  min-width: 0;
-}
 
 .member-mgmt-status-cell {
   overflow: hidden;
   min-width: 0;
 }
 
-.table-area .member-mgmt-basic-table .MuiTableBody-root .member-mgmt-status-cell .admin-badge {
-  box-sizing: border-box;
-  display: inline-block;
-  max-width: 100%;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.member-mgmt-role-text,
+.member-mgmt-status-plain {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
   white-space: nowrap;
-  vertical-align: middle;
 }
+
 
 .member-mgmt-empty--solo {
   text-align: center;
@@ -110,47 +92,4 @@
 
 .admin-member-locked-date {
   color: var(--color-icon-danger-emphasis);
-}
-
-/* 배지 — 기존 admin-common `.admin-badge*` 와 동일 시각(리터럴 팔레트) */
-.admin-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.admin-badge-primary {
-  background: #e3f2fd;
-  color: #1565c0;
-}
-
-.admin-badge-success {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.admin-badge-warn {
-  background: #fff3e0;
-  color: #e65100;
-}
-
-.admin-badge-danger {
-  background: #fee2e2;
-  color: #c62828;
-}
-
-.admin-badge-info {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.admin-badge-neutral {
-  background: #f3f4f6;
-  color: #4b5563;
 }

@@ -5,8 +5,9 @@ import { History, Search, RotateCcw } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable, { BasicTableFooter, BasicTablePaginationNav } from '../../components/common/BasicTable';
 import KlIconButton from '../../components/common/KlIconButton';
+import KlBadge from '../../components/common/KlBadge';
 import { listTableEmptyState } from '../../config/supportMock';
-import { formatTableCellText, isTableCellBlank } from '../../components/common/tableCellDisplay';
+import { formatKlDateTimeSecondsCell } from '../../utils/formatKlDate';
 import './admin-common.css';
 import './AdminAuditLog.css';
 
@@ -111,17 +112,7 @@ function AdminAuditLog() {
         }
     };
 
-    const formatDateTime = useCallback((value) => {
-        if (isTableCellBlank(value)) return formatTableCellText(value);
-        try {
-            return new Date(value).toLocaleString('ko-KR', {
-                year: 'numeric', month: '2-digit', day: '2-digit',
-                hour: '2-digit', minute: '2-digit', second: '2-digit',
-            });
-        } catch {
-            return String(value);
-        }
-    }, []);
+    const formatDateTime = useCallback((value) => formatKlDateTimeSecondsCell(value), []);
 
     const renderCell = useCallback(({ column, row }) => {
         switch (column.id) {
@@ -147,9 +138,9 @@ function AdminAuditLog() {
             }
             case 'action':
                 return (
-                    <span className="admin-badge admin-badge-neutral" title={row.action || ''}>
+                    <KlBadge tone="neutral" variant="compact" title={row.action || ''}>
                         {row.action || '-'}
-                    </span>
+                    </KlBadge>
                 );
             case 'entityType':
                 return (
@@ -272,7 +263,6 @@ function AdminAuditLog() {
 
                     <div className="basic-table-shell">
                         <BasicTable
-                            className="audit-log-basic-table"
                             columns={columns}
                             data={loading ? [] : logs}
                             renderCell={renderCell}

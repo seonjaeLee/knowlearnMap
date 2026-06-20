@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+  <defs>
+    <linearGradient id="klm" x1="6" y1="9" x2="34" y2="31" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5b58e8"></stop>
+      <stop offset="1" stop-color="#7d4fe0"></stop>
+    </linearGradient>
+  </defs>
+  <path d="M20 9L31 14.5L20 20L9 14.5L20 9Z" fill="url(#klm)"></path>
+  <path d="M9 20L20 25.5L31 20" stroke="#6f5ce8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".62"></path>
+  <path d="M9 25.5L20 31L31 25.5" stroke="#7d4fe0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".36"></path>
+</svg>

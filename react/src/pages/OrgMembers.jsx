@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { orgApi } from '../services/orgApi';
 import { useAuth } from '../context/AuthContext';
-import './admin/admin-common.css';
+import KlBadge from '../components/common/KlBadge';
+import {
+  getOrgInviteStatusBadgeTone,
+  getOrgMemberRoleBadgeTone,
+  getOrgMemberStatusBadgeTone,
+} from '../components/common/klMemberBadgeTones';
+import { formatKlDate, formatKlDateTime } from '../utils/formatKlDate';
 
 /**
  * 조직 멤버 관리 페이지 (V20260429).
@@ -171,17 +177,17 @@ export default function OrgMembers() {
                                 <td className="admin-col-id">{m.id}</td>
                                 <td style={{ fontWeight: 500 }}>{m.email}</td>
                                 <td>
-                                    <span className={`admin-badge ${m.role === 'SYSOP' ? 'admin-badge-warn' : m.role === 'VIEWER' ? 'admin-badge-neutral' : 'admin-badge-info'}`}>
+                                    <KlBadge tone={getOrgMemberRoleBadgeTone(m.role)} variant="compact">
                                         {m.role}
-                                    </span>
+                                    </KlBadge>
                                 </td>
                                 <td>
-                                    <span className={`admin-badge ${m.status === 'ACTIVE' ? 'admin-badge-success' : 'admin-badge-neutral'}`}>
+                                    <KlBadge tone={getOrgMemberStatusBadgeTone(m.status)} variant="compact">
                                         {m.status}
-                                    </span>
+                                    </KlBadge>
                                 </td>
-                                <td className="admin-col-date">{m.createdAt ? new Date(m.createdAt).toLocaleDateString('ko-KR') : '-'}</td>
-                                <td className="admin-col-date">{m.lastLoginAt ? new Date(m.lastLoginAt).toLocaleDateString('ko-KR') : '미접속'}</td>
+                                <td className="admin-col-date">{m.createdAt ? formatKlDate(m.createdAt) : '-'}</td>
+                                <td className="admin-col-date">{m.lastLoginAt ? formatKlDate(m.lastLoginAt) : '미접속'}</td>
                                 <td className="admin-col-actions">
                                     {m.role === 'SYSOP' ? (
                                         <span style={{ color: '#94a3b8', fontSize: 11 }}>(owner)</span>
@@ -228,14 +234,18 @@ export default function OrgMembers() {
                                 {pending.map((p) => (
                                     <tr key={p.tokenId}>
                                         <td style={{ fontWeight: 500 }}>{p.email}</td>
-                                        <td><span className="admin-badge admin-badge-info">{p.invitedRole}</span></td>
+                                        <td>
+                                            <KlBadge tone="info" variant="compact">
+                                                {p.invitedRole}
+                                            </KlBadge>
+                                        </td>
                                         <td className="admin-col-date">
-                                            {p.expiresAt ? new Date(p.expiresAt).toLocaleString('ko-KR') : '-'}
+                                            {p.expiresAt ? formatKlDateTime(p.expiresAt) : '-'}
                                         </td>
                                         <td>
-                                            <span className={`admin-badge ${p.expired ? 'admin-badge-danger' : 'admin-badge-warn'}`}>
+                                            <KlBadge tone={getOrgInviteStatusBadgeTone(p.expired)} variant="compact">
                                                 {p.expired ? '만료' : '대기'}
-                                            </span>
+                                            </KlBadge>
                                         </td>
                                     </tr>
                                 ))}

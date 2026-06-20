@@ -987,7 +987,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                     <div style={{
                         width: '180px',
                         minWidth: '180px',
-                        backgroundColor: '#fafafa',
+                        backgroundColor: 'var(--color-bg-hover)',
                         borderRight: '1px solid #e0e0e0',
                         overflowY: 'auto',
                         padding: '10px 0'
@@ -1016,7 +1016,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                                 }}
                                 onMouseEnter={(e) => {
                                     if (currentHubId !== hub.nodeId) {
-                                        e.currentTarget.style.backgroundColor = '#f5f5f5';
+                                        e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
                                     }
                                 }}
                                 onMouseLeave={(e) => {

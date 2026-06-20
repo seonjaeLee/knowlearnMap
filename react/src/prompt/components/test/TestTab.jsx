@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState,
+} from 'react';
 import { Check, Copy, Play, Save } from 'lucide-react';
 import { useAlert } from '../../../context/AlertContext';
 import { configApi } from '../../../services/api';
@@ -15,12 +17,14 @@ const LLM_MODELS_DEFAULT = [
   { value: 'SLLM',            label: 'Qwen3-32B-AWQ (sLLM)' },
 ];
 
-const TestTab = ({
+const TestTab = forwardRef(({
   promptCode,
   versions = [],
   variableSchemas = [],
   llmConfig,
-}) => {
+  hideRunButton = false,
+  onRunStateChange,
+}, ref) => {
   const [selectedVersion, setSelectedVersion] = useState(versions?.[0]?.id);
   const [llmModel, setLlmModel]               = useState(llmConfig?.llmModel || 'GEMINI_2_5_PRO');
   const [temperature, setTemperature]         = useState(llmConfig?.temperature ?? 0.7);
@@ -123,7 +127,7 @@ const TestTab = ({
     }
   };
 
-  const handleTest = async () => {
+  const handleTest = useCallback(async () => {
     setLoading(true);
     try {
       const variables = {};
@@ -141,7 +145,29 @@ const TestTab = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    currentVersion,
+    promptCode,
+    selectedVersion,
+    llmModel,
+    temperature,
+    topP,
+    maxOutputTokens,
+    topK,
+    n,
+  ]);
+
+  useImperativeHandle(ref, () => ({
+    runTest: handleTest,
+  }), [handleTest]);
+
+  useEffect(() => {
+    if (!onRunStateChange) return;
+    onRunStateChange({
+      loading,
+      disabled: !currentVersion,
+    });
+  }, [loading, currentVersion, onRunStateChange]);
 
   useEffect(() => {
     if (result && resultRef.current) {
@@ -265,8 +291,22 @@ const TestTab = ({
       {/* 응답 결과 */}
       {result && (
         <div ref={resultRef} className="pt-result-card">
-          <div className="pt-panel-header">
+          <div className="pt-panel-header pt-panel-header--title-only">
             <span className="pt-panel-label">응답 결과</span>
+          </div>
+          <div className="pt-result-tabs-row">
+            <div className="pt-result-tabs">
+              <button
+                type="button"
+                className={`pt-result-tab${resultTab === 'json' ? ' is-active' : ''}`}
+                onClick={() => setResultTab('json')}
+              >JSON</button>
+              <button
+                type="button"
+                className={`pt-result-tab${resultTab === 'text' ? ' is-active' : ''}`}
+                onClick={() => setResultTab('text')}
+              >텍스트</button>
+            </div>
             <button
               type="button"
               className={`pt-copy-btn${isCopied('result') ? ' is-copied' : ''}`}
@@ -276,18 +316,6 @@ const TestTab = ({
               {isCopied('result') ? <Check size={14} aria-hidden /> : <Copy size={14} aria-hidden />}
             </button>
           </div>
-          <div className="pt-result-tabs">
-            <button
-              type="button"
-              className={`pt-result-tab${resultTab === 'json' ? ' is-active' : ''}`}
-              onClick={() => setResultTab('json')}
-            >JSON</button>
-            <button
-              type="button"
-              className={`pt-result-tab${resultTab === 'text' ? ' is-active' : ''}`}
-              onClick={() => setResultTab('text')}
-            >텍스트</button>
-          </div>
           <div className="pt-result-body">
             <pre className="pt-panel-pre">
               {resultTab === 'json' ? resultJson : (resultText || '응답 없음')}
@@ -296,22 +324,26 @@ const TestTab = ({
         </div>
       )}
 
-      {/* 실행 버튼 */}
-      <div className="pt-run-wrap">
-        <button
-          type="button"
-          className="kl-btn kl-btn--primary pt-run-btn"
-          onClick={handleTest}
-          disabled={loading || !currentVersion}
-        >
-          {loading
-            ? <span className="spinner pt-spinner" aria-hidden />
-            : <Play size={15} aria-hidden />}
-          {loading ? '실행 중...' : 'API 호출 테스트'}
-        </button>
-      </div>
+      {/* 실행 버튼 — 모달 actions 사용 시 본문 sticky footer 생략 */}
+      {!hideRunButton ? (
+        <div className="pt-run-wrap">
+          <button
+            type="button"
+            className="kl-btn kl-btn--primary pt-run-btn"
+            onClick={handleTest}
+            disabled={loading || !currentVersion}
+          >
+            {loading
+              ? <span className="spinner pt-spinner" aria-hidden />
+              : <Play size={15} aria-hidden />}
+            {loading ? '실행 중...' : 'API 호출 테스트'}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
-};
+});
+
+TestTab.displayName = 'TestTab';
 
 export default TestTab;

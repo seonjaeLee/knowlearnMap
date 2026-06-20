@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { orgApi } from '../services/orgApi';
+import { formatKlDateTime } from '../utils/formatKlDate';
 import './Login.css';
 
 /**
@@ -96,7 +97,7 @@ export default function InviteAccept() {
                     <p style={{ color: '#475569', fontSize: 13, marginBottom: 16 }}>
                         역할: <strong>{tokenInfo.invitedRole}</strong>
                         <br />
-                        만료: {tokenInfo.expiresAt ? new Date(tokenInfo.expiresAt).toLocaleString('ko-KR') : '-'}
+                        만료: {tokenInfo.expiresAt ? formatKlDateTime(tokenInfo.expiresAt) : '-'}
                     </p>
                 )}
                 {error && (

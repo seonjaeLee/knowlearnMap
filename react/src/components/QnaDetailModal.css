@@ -36,17 +36,39 @@
     color: var(--color-accent);
 }
 
-/* 답변 — 문의 본문 대비 간격(본문 하단 48px 여백과 맞춤), 좌측 들여쓰기는 section 한 곳만 */
+/* 답변 — ↳ + 제목 한 줄(head), 본문 들여쓰기(body) */
 .qna-detail-answers-section {
     margin-top: var(--spacing-lg);
-    padding-left: var(--spacing-xl);
+}
+
+.qna-detail-answers-section__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.qna-detail-answers-section__head .kl-table-row-detail__arrow {
+    flex-shrink: 0;
+    margin-top: 0;
+    height: 22px;
+}
+
+/* CornerDownRight 가로선 — 「답변」 텍스트 중앙에 맞춤 */
+.qna-detail-answers-section__head .kl-table-row-detail__arrow svg {
+    transform: translateY(-1px);
 }
 
 .qna-answers-title {
-    margin: 0 0 var(--spacing-md);
+    margin: 0;
+    line-height: 22px;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
+}
+
+.qna-detail-answers-section__body {
+    padding-left: calc(22px + var(--spacing-sm));
 }
 
 .qna-answers-list {

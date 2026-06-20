@@ -31,14 +31,14 @@
     --admin-color-info-soft: #dbeafe;
     --admin-color-info-on-soft: #1e40af;
 
-    --admin-color-neutral-soft: #f3f4f6;
+    --admin-color-neutral-soft: var(--color-bg-hover);
     --admin-color-neutral-on-soft: #4b5563;
 
     /* === 표면 색상 === */
     --admin-bg-page: #ffffff;
     --admin-bg-panel: #ffffff;
-    --admin-bg-subtle: #f8f9fa;
-    --admin-bg-hover: #f3f4f6;
+    --admin-bg-subtle: var(--color-bg-hover);
+    --admin-bg-hover: var(--color-bg-hover);
 
     /* === 텍스트 === */
     --admin-text-primary: #111827;
@@ -315,10 +315,6 @@
     border-bottom: none;
 }
 
-.admin-table tbody tr:hover {
-    background: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary));
-}
-
 .admin-table .admin-col-id {
     color: var(--admin-text-muted);
     font-variant-numeric: tabular-nums;
@@ -428,51 +424,6 @@
     stroke: currentColor;
 }
 
-/* ============================================================
- * 배지 (상태/역할/등급 공통)
- * ============================================================ */
-.admin-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: var(--admin-font-xs);
-    font-weight: 600;
-    line-height: 1.4;
-    white-space: nowrap;
-}
-
-.admin-badge-primary {
-    background: var(--admin-color-primary-soft);
-    color: var(--admin-color-primary-on-soft);
-}
-
-.admin-badge-success {
-    background: var(--admin-color-success-soft);
-    color: var(--admin-color-success-on-soft);
-}
-
-.admin-badge-warn {
-    background: var(--admin-color-warn-soft);
-    color: var(--admin-color-warn-on-soft);
-}
-
-.admin-badge-danger {
-    background: var(--admin-color-danger-soft);
-    color: var(--admin-color-danger-on-soft);
-}
-
-.admin-badge-info {
-    background: var(--admin-color-info-soft);
-    color: var(--admin-color-info-on-soft);
-}
-
-.admin-badge-neutral {
-    background: var(--admin-color-neutral-soft);
-    color: var(--admin-color-neutral-on-soft);
-}
-
 /* 텍스트 액션 버튼 — `assets/styles/kit/kl-buttons.css` (`.kl-btn`; `.admin-btn` 별칭은 제거 예정, TODO는 해당 파일 상단) */
 
 /* Workspace prompt tags (migrated from DomainManagement.css) */
@@ -491,7 +442,7 @@
     border-radius: 4px;
     font-size: 11px;
     line-height: 1.4;
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     color: #94a3b8;
     white-space: nowrap;
 }
@@ -751,7 +702,7 @@
     font-family: monospace;
     font-size: var(--admin-font-base);
     color: #1976d2;
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
     padding: 6px 10px;
     border-radius: var(--admin-radius-sm);
     word-break: break-all;
@@ -774,7 +725,7 @@
 .admin-config-help-value-block {
     font-family: monospace;
     font-size: var(--admin-font-base);
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
     padding: var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs));
     border-radius: var(--admin-radius-sm);
     white-space: pre-wrap;
@@ -809,7 +760,7 @@
 .admin-sticky-head {
     position: sticky;
     top: 0;
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     z-index: 1;
 }
 
@@ -848,7 +799,7 @@
     align-items: center;
     gap: 6px;
     padding: 6px 0;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .admin-semantic-search-icon {

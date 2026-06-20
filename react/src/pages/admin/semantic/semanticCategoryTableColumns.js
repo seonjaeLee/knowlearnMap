@@ -1,13 +1,8 @@
 /** 온톨로지 좌측 카테고리 패널 BasicTable 열 정의 */
 
-const categoryActionsColumn = {
-  id: 'actions',
-  label: '관리',
-  defaultWidthPx: 80,
-  minWidthPx: 80,
-  align: 'right',
-  ellipsis: false,
-};
+import { basicTableActionsColumnDef } from '../../../components/common/table/basicTableActionsColumn';
+
+const categoryActionsColumn = basicTableActionsColumnDef({ buttonCount: 2 });
 
 /** 접힘(좌측 ~300px) — 이름 · 한글명 · 관리 */
 export const semanticCategoryColumnDefinitionsCollapsed = [

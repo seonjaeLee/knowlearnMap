@@ -50,7 +50,7 @@
     border-radius: 12px;
     font-size: 11px;
     font-weight: 500;
-    background: #f1f5f9;
+    background: var(--color-bg-hover);
     color: #475569;
     max-width: 200px;
     overflow: hidden;
@@ -68,7 +68,7 @@
 }
 
 .asm-close:hover {
-    background: #f0f0f0;
+    background: var(--color-bg-hover);
 }
 
 /* Error */
@@ -128,7 +128,7 @@
 
 .asm-summary-item {
     padding: 12px 14px;
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     border: 1px solid #e2e8f0;
     border-radius: 8px;
 }
@@ -224,7 +224,7 @@
 }
 
 .asm-table th {
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     padding: 8px 10px;
     text-align: left;
     font-weight: 600;
@@ -239,12 +239,12 @@
 
 .asm-table td {
     padding: 6px 10px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--color-border-subtle);
     color: #334155;
 }
 
 .asm-table tr:hover {
-    background: #f8fafc;
+    background: var(--color-table-row-hover-bg);
 }
 
 .asm-table tr.row-skip {
@@ -289,7 +289,7 @@
 .asm-type-badge.type-number { background: #e8f5e9; color: #2e7d32; }
 .asm-type-badge.type-string { background: #e3f2fd; color: #1565c0; }
 .asm-type-badge.type-boolean { background: #fff3e0; color: #e65100; }
-.asm-type-badge.type-unknown { background: #f5f5f5; color: #757575; }
+.asm-type-badge.type-unknown { background: var(--color-bg-hover); color: #757575; }
 
 /* Agg Function Select */
 .asm-agg-select {
@@ -432,7 +432,7 @@
 }
 
 .asm-btn-secondary {
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
     color: #333;
     border: 1px solid #e0e0e0;
 }
@@ -470,7 +470,7 @@
 }
 
 .asm-btn-retry:hover:not(:disabled) {
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     color: #334155;
 }
 

@@ -14,6 +14,7 @@ import { mockNotices } from '../data/supportMockData';
 import { noticeApi } from '../services/api';
 import { normalizeSupportListPayload } from '../utils/supportListResponse';
 import { isSupportCenterAdmin } from '../utils/supportCenterAdmin';
+import { formatKlDateCell as formatDate } from '../utils/formatKlDate';
 import { SUPPORT_ADMIN_ACTIONS_COLUMN } from './supportCenterColumns';
 import './NoticeList.css';
 import './SupportCenter.css';
@@ -25,11 +26,6 @@ const NOTICE_BASE_COLUMNS = [
   { id: 'createdAt', label: '작성일', width: 120, align: 'left' },
   { id: 'viewCount', label: '조회수', width: 88, align: 'center', ellipsis: false },
 ];
-
-function formatDate(value) {
-  if (isTableCellBlank(value)) return formatTableCellText(value);
-  return new Date(value).toLocaleDateString('ko-KR');
-}
 
 /** 고정 공지 우선, 동일 그룹 내 작성일 최신순 */
 function sortNoticesForList(items) {
@@ -329,7 +325,6 @@ function NoticeList() {
 
         <div className="basic-table-shell">
           <BasicTable
-            className="support-basic-table"
             columns={noticeColumns}
             data={loading ? [] : filteredNotices}
             renderCell={renderNoticeCell}

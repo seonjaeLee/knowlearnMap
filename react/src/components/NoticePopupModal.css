@@ -55,7 +55,7 @@
 }
 
 .notice-popup-close:hover {
-    background: #f1f3f4;
+    background: var(--color-bg-hover);
 }
 
 .notice-popup-body {
@@ -79,7 +79,7 @@
 
 .notice-popup-item {
     padding: 12px 20px;
-    border-bottom: 1px solid #f5f5f5;
+    border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .notice-popup-item:last-child {
@@ -133,5 +133,5 @@
 }
 
 .btn-close-popup:hover {
-    background: #f1f3f4;
+    background: var(--color-bg-hover);
 }

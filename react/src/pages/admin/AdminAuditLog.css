@@ -33,9 +33,6 @@
   font-size: var(--font-size-base);
 }
 
-.audit-log-basic-table {
-  min-width: 1200px;
-}
 
 .audit-log-col-date {
   display: inline-block;

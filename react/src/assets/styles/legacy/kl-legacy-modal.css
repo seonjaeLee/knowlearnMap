@@ -123,10 +123,14 @@
 }
 
 .confirm-btn {
-  background-color: var(--color-accent);
-  color: var(--color-bg-secondary);
+  background: var(--kl-brand-primary-grad);
+  color: #fff;
+  border: none;
+  box-shadow: none;
+  transition: filter var(--transition-fast);
 }
 
-.confirm-btn:hover {
-  background-color: var(--color-accent-hover);
+.confirm-btn:hover:not(:disabled) {
+  background: var(--kl-brand-primary-grad);
+  filter: brightness(1.07);
 }

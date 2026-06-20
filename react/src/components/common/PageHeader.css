@@ -183,22 +183,24 @@
   gap: var(--spacing-xs);
 }
 
-/* 주 액션(등록·추가) — 푸른색 통일 */
+/* 주 액션(등록·추가) — 브랜드 그라데이션 통일 */
 .page-header-actions .kl-btn--primary,
 .page-header-actions .admin-btn-primary,
 .kl-header-actions > .kl-btn--primary,
 .kl-header-actions > .admin-btn-primary {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+  background: var(--kl-brand-primary-grad);
+  border-color: transparent;
   color: #fff;
+  box-shadow: none;
 }
 
-.page-header-actions .kl-btn--primary:hover,
-.page-header-actions .admin-btn-primary:hover,
-.kl-header-actions > .kl-btn--primary:hover,
-.kl-header-actions > .admin-btn-primary:hover {
-  background: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
+.page-header-actions .kl-btn--primary:hover:not(:disabled),
+.page-header-actions .admin-btn-primary:hover:not(:disabled),
+.kl-header-actions > .kl-btn--primary:hover:not(:disabled),
+.kl-header-actions > .admin-btn-primary:hover:not(:disabled) {
+  background: var(--kl-brand-primary-grad);
+  border-color: transparent;
+  filter: brightness(1.07);
 }
 
 /* 캐시 갱신 — 녹색 아웃라인 유지, 크기·radius만 그룹과 동일 */

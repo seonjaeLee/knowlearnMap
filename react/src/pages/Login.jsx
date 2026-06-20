@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
-import { KlBrandLogo } from '../components/common/KlBrandLogo';
+import knowlearnMapSymbol from '../assets/knowlearnMap.svg';
+import knowlearnMapSymbolDark from '../assets/knowlearnMap-dark.svg';
 import './Login.css';
 
 
@@ -16,7 +17,6 @@ const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    // Forgot Password Modal State
     const [showForgotModal, setShowForgotModal] = useState(false);
 
     useEffect(() => {
@@ -41,14 +41,12 @@ const Login = () => {
             const result = await login(email, password);
             const role = result?.user?.role;
 
-            // Handle Save ID
             if (saveId) {
                 localStorage.setItem('savedEmail', email);
             } else {
                 localStorage.removeItem('savedEmail');
             }
 
-            // Handle Save PW (Security warning: Storing plaintext password in localStorage is unsafe for production)
             if (savePw) {
                 localStorage.setItem('savedPassword', password);
             } else {
@@ -69,10 +67,26 @@ const Login = () => {
     };
 
     return (
-        <div className="login-container kl-aurora-bg kl-aurora-bg--ambient">
-            <div className="login-card">
-                <div className="login-logo-wrap">
-                    <KlBrandLogo className="kl-brand-logo--login" />
+        <div className="login-page kl-aurora-bg kl-aurora-bg--ambient">
+            <div className="login-container">
+                <div className="login-card">
+                <div className="login-logo">
+                    <img
+                        className="login-logo__symbol login-logo__symbol--light"
+                        src={knowlearnMapSymbol}
+                        alt=""
+                        aria-hidden
+                    />
+                    <img
+                        className="login-logo__symbol login-logo__symbol--dark"
+                        src={knowlearnMapSymbolDark}
+                        alt=""
+                        aria-hidden
+                    />
+                    <div className="login-wordmark">
+                        knowlearn
+                        <span className="login-wordmark__map">Map</span>
+                    </div>
                 </div>
                 <h1 className="login-hidden-title">SIGN IN</h1>
                 {error && (
@@ -90,28 +104,34 @@ const Login = () => {
                     </div>
                 )}
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Email ID</label>
+                    <div className="login-field">
+                        <label htmlFor="login-email">Email ID</label>
                         <input
+                            id="login-email"
+                            className="login-inp"
                             type="text"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            placeholder="user"
+                            placeholder="admin@company.com"
+                            autoComplete="username"
                         />
                     </div>
-                    <div className="form-group">
-                        <label>Password</label>
+                    <div className="login-field">
+                        <label htmlFor="login-password">Password</label>
                         <input
+                            id="login-password"
+                            className="login-inp"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            placeholder="password"
+                            placeholder="••••••••"
+                            autoComplete="current-password"
                         />
                     </div>
-                    <div className="options-group">
-                        <label className="checkbox-label">
+                    <div className="login-checks">
+                        <label className="login-chk">
                             <input
                                 type="checkbox"
                                 checked={saveId}
@@ -119,7 +139,7 @@ const Login = () => {
                             />
                             Save ID
                         </label>
-                        <label className="checkbox-label">
+                        <label className="login-chk">
                             <input
                                 type="checkbox"
                                 checked={savePw}
@@ -128,18 +148,26 @@ const Login = () => {
                             Save PW
                         </label>
                     </div>
-                    <button type="submit" className="login-btn" disabled={isLocked}>
+                    <button type="submit" className="login-btn kl-btn primary-full lg" disabled={isLocked}>
                         {isLocked ? '계정 잠금됨' : 'LOGIN'}
                     </button>
                 </form>
-                <div className="login-footer">
-                    <Link to="/signup" className="login-signup-link">Sign Up</Link>
-                    <span className="divider">|</span>
-                    <button className="text-btn" onClick={() => setShowForgotModal(true)}>Forgot Password</button>
+                <div className="login-links">
+                    <Link to="/signup">Sign Up</Link>
+                    <span className="login-links__sep" aria-hidden>|</span>
+                    <button
+                        type="button"
+                        className="login-links__btn"
+                        onClick={() => setShowForgotModal(true)}
+                    >
+                        Forgot Password
+                    </button>
                 </div>
             </div>
+            </div>
 
-            {/* Forgot Password Modal */}
+            <p className="login-page-copyright">© 2025 KNOWLEARN MAP. All rights reserved.</p>
+
             <ForgotPasswordModal
                 isOpen={showForgotModal}
                 onClose={() => setShowForgotModal(false)}

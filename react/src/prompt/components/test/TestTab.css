@@ -8,13 +8,30 @@
   padding: 4px 0 0;
 }
 
+/* BaseModal(MUI Dialog)은 document.body로 portal되어 .prompt-detail-page의 --ps-*를
+   상속받지 못함 — "테스트 상세" 팝업(HistoryTab)에서 .pt-wrap을 재사용할 때를 위해 직접 정의 */
+[data-theme='dark'] .kl-base-modal-paper .pt-wrap {
+  --ps-surface: var(--color-bg-secondary);
+  --ps-surface-2: var(--color-bg-input);
+  --ps-border: var(--color-border);
+  --ps-border-strong: var(--color-border-strong);
+  --ps-text-1: var(--color-text-primary);
+  --ps-text-2: var(--color-text-secondary);
+  --ps-text-3: var(--color-text-tertiary);
+  --ps-brand: var(--kl-brand-primary);
+  --ps-ok: var(--color-icon-success);
+  --ps-danger: var(--color-icon-danger);
+  --ps-info: var(--color-icon-info, #6b9cf0);
+  --ps-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
 /* ---- 환경 설정 카드 ---- */
 .pt-env-card {
-  background: #ffffff;
-  border: 1px solid #e6e9ef;
+  background: var(--ps-surface, #fff);
+  border: 1px solid var(--ps-border, #e6e9ef);
   border-radius: 10px;
   padding: 18px 20px 16px;
-  box-shadow: 0 1px 3px rgba(16, 20, 30, 0.04);
+  box-shadow: var(--ps-shadow-card, 0 1px 3px rgba(16, 20, 30, 0.04));
 }
 
 .pt-env-header {
@@ -27,7 +44,7 @@
 .pt-env-title {
   font-size: 14px;
   font-weight: 700;
-  color: #1a1f29;
+  color: var(--ps-text-1, #1a1f29);
   letter-spacing: -0.01em;
 }
 
@@ -68,7 +85,7 @@
 .pt-field-label {
   font-size: 11px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--ps-text-2, #64748b);
   white-space: nowrap;
 }
 
@@ -85,14 +102,14 @@
 .pt-panel {
   flex: 1 1 0;
   min-width: 0;
-  background: #ffffff;
-  border: 1px solid #e6e9ef;
+  background: var(--ps-surface, #fff);
+  border: 1px solid var(--ps-border, #e6e9ef);
   border-radius: 10px;
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: 0 1px 3px rgba(16, 20, 30, 0.04);
+  box-shadow: var(--ps-shadow-card, 0 1px 3px rgba(16, 20, 30, 0.04));
 }
 
 .pt-panel-header {
@@ -112,17 +129,17 @@
 .pt-panel-label {
   font-size: 13px;
   font-weight: 600;
-  color: #1a1f29;
+  color: var(--ps-text-1, #1a1f29);
   white-space: nowrap;
 }
 
 .pt-panel-label--warn {
-  color: #e0483d;
+  color: var(--ps-danger, #e0483d);
 }
 
 .pt-panel-unresolved {
   font-size: 11px;
-  color: #e0483d;
+  color: var(--ps-danger, #e0483d);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -135,25 +152,25 @@
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid #e6e9ef;
+  border: 1px solid var(--ps-border, #e6e9ef);
   border-radius: 6px;
   background: transparent;
-  color: #9099a8;
+  color: var(--ps-text-3, #9099a8);
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.12s, color 0.12s, border-color 0.12s;
 }
 
 .pt-copy-btn:hover {
-  background: #f3f5f8;
-  color: #5b6472;
-  border-color: #d1d5db;
+  background: var(--ps-surface-2, #f3f5f8);
+  color: var(--ps-text-2, #5b6472);
+  border-color: var(--ps-border-strong, #d1d5db);
 }
 
 .pt-copy-btn.is-copied {
-  background: color-mix(in srgb, #1aa85f 10%, transparent);
-  color: #1aa85f;
-  border-color: color-mix(in srgb, #1aa85f 30%, #e6e9ef);
+  background: color-mix(in srgb, var(--ps-ok, #1aa85f) 10%, transparent);
+  color: var(--ps-ok, #1aa85f);
+  border-color: color-mix(in srgb, var(--ps-ok, #1aa85f) 30%, var(--ps-border, #e6e9ef));
 }
 
 .pt-panel-body {
@@ -165,11 +182,11 @@
 }
 
 .pt-panel-body--original {
-  background: #f5f7fa;
+  background: var(--ps-surface-2, #f5f7fa);
 }
 
 .pt-panel-body--resolved {
-  background: #edf4fe;
+  background: color-mix(in srgb, var(--ps-info, #2f73e6) 10%, var(--ps-surface, #edf4fe));
 }
 
 .pt-panel-pre {
@@ -177,27 +194,52 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12.5px;
   line-height: 1.65;
-  color: #374151;
+  color: var(--ps-text-1, #374151);
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 /* ---- 응답 결과 카드 ---- */
 .pt-result-card {
-  background: #ffffff;
-  border: 1px solid #e6e9ef;
+  background: var(--ps-surface, #fff);
+  border: 1px solid var(--ps-border, #e6e9ef);
   border-radius: 10px;
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: 0 1px 3px rgba(16, 20, 30, 0.04);
+  box-shadow: var(--ps-shadow-card, 0 1px 3px rgba(16, 20, 30, 0.04));
+}
+
+.pt-panel-header--title-only {
+  justify-content: flex-start;
+}
+
+.pt-result-tabs-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--ps-border, #e6e9ef);
+  margin-bottom: 2px;
+}
+
+.pt-result-tabs-row .pt-result-tabs {
+  flex: 1;
+  min-width: 0;
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.pt-result-tabs-row .pt-copy-btn {
+  flex-shrink: 0;
+  margin-bottom: 4px;
 }
 
 .pt-result-tabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid #e6e9ef;
+  border-bottom: 1px solid var(--ps-border, #e6e9ef);
   margin-bottom: 2px;
 }
 
@@ -205,7 +247,7 @@
   padding: 5px 14px 7px;
   font-size: 12.5px;
   font-weight: 500;
-  color: #9099a8;
+  color: var(--ps-text-3, #9099a8);
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
@@ -215,33 +257,28 @@
 }
 
 .pt-result-tab:hover {
-  color: #5b6472;
+  color: var(--ps-text-2, #5b6472);
 }
 
 .pt-result-tab.is-active {
-  color: #5a57e6;
-  border-bottom-color: #5a57e6;
+  color: var(--ps-brand, #5a57e6);
+  border-bottom-color: var(--ps-brand, #5a57e6);
   font-weight: 600;
 }
 
 .pt-result-body {
-  background: #f5f7fa;
+  background: var(--ps-surface-2, #f5f7fa);
   border-radius: 7px;
   padding: 12px 14px;
   overflow: auto;
   max-height: 320px;
 }
 
-/* ---- 실행 버튼 (sticky) ---- */
+/* ---- 실행 버튼 (본문 내장 — hideRunButton=false 일 때만) ---- */
 .pt-run-wrap {
-  position: sticky;
-  bottom: 0;
   display: flex;
   justify-content: flex-end;
-  padding: 10px 0 4px;
-  background: var(--color-bg-primary, #fff);
-  border-top: 1px solid #e6e9ef;
-  z-index: 1;
+  padding-top: var(--spacing-sm);
 }
 
 .pt-run-btn {

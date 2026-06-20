@@ -6,6 +6,7 @@ import { attachRowSpanMeta, getRowSpanCellProps } from '../../hooks/useTableRowS
 import { RotateCcw, RefreshCw, HelpCircle } from 'lucide-react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader';
 import BasicTable from '../../components/common/BasicTable';
+import { basicTableActionsColumnDef } from '../../components/common/table/basicTableActionsColumn';
 import KlTableRowActions from '../../components/common/table/KlTableRowActions';
 import KlPopover from '../../components/common/KlPopover';
 import KlIconButton from '../../components/common/KlIconButton';
@@ -358,14 +359,7 @@ function AdminConfigManagement() {
             { id: 'configValue', label: '값', defaultWidthPx: 280, minWidthPx: 200, align: 'left' },
             { id: 'dataType', label: '타입', defaultWidthPx: 90, minWidthPx: 72, align: 'left' },
             { id: 'description', label: '설명', minWidthPx: 160, align: 'left', flex: true },
-            {
-                id: '_actions',
-                label: <span className="config-mgmt-actions-head">관리</span>,
-                defaultWidthPx: 88,
-                minWidthPx: 72,
-                align: 'right',
-                ellipsis: false,
-            },
+            basicTableActionsColumnDef({ id: '_actions', buttonCount: 1 }),
         ],
         []
     );

@@ -11,8 +11,12 @@
 :root,
 [data-theme="light"] {
   --kl-brand-primary: #5a57e6;
+  --kl-brand-primary-2: #7d4fe0;
+  --kl-brand-primary-grad: linear-gradient(135deg, #5b58e8 0%, var(--kl-brand-primary-2) 100%);
+  /* glow — 로그인 .login-btn 전용. 업무 primary 버튼은 box-shadow: none */
+  --kl-brand-primary-shadow: 0 4px 16px rgba(98, 80, 230, 0.34);
   --kl-brand-primary-hover: #4845c4;
-  --kl-brand-primary-soft: #ededfc;
+  --kl-brand-primary-soft: #edecfd;
   --kl-brand-primary-on-soft: #4338ca;
   --kl-brand-wordmark: #5a57e6;
   --kl-brand-wordmark-symbol: #5a57e6;
@@ -20,6 +24,10 @@
 
 [data-theme="dark"] {
   --kl-brand-primary: #7b78f5;
+  --kl-brand-primary-2: #9d6ef0;
+  --kl-brand-primary-grad: linear-gradient(135deg, #7b78f5 0%, var(--kl-brand-primary-2) 100%);
+  /* glow — 로그인 .login-btn · 라이트만 보라 glow / 다크는 어두운 depth */
+  --kl-brand-primary-shadow: 0 6px 20px rgba(0, 0, 0, 0.52), 0 2px 6px rgba(0, 0, 0, 0.38);
   --kl-brand-primary-hover: #9593f8;
   --kl-brand-primary-soft: rgba(90, 87, 230, 0.2);
   --kl-brand-primary-on-soft: #c4c2fc;

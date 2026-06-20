@@ -3,13 +3,24 @@
  * admin-common 의 `.admin-table` 마크업에 의존하지 않고 동일 팔레트·행 높이·푸터를 유지합니다.
  * 스크롤 래퍼에는 전역 `basic-table-shell` + `assets/styles/patterns/kl-scrollbar-thin.css` 를 함께 쓰세요.
  */
+/* 실제 가로 스크롤 컨테이너 — basic-table-shell 은 position wrapper만, 스크롤은 여기서 */
+.scrollWrap {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
 .wrap {
   /* admin-common :root 와 동일 값(테이블·푸터 범위) — admin-common 미 import 화면에서도 동작 */
   --bt-bg-panel: #ffffff;
-  --bt-bg-subtle: #f8f9fa;
-  --bt-bg-hover: color-mix(in srgb, var(--color-accent) 5%, var(--color-bg-secondary));
-  --bt-border: #e5e7eb;
-  --bt-border-strong: #d1d5db;
+  --bt-bg-subtle: #f3f2fb;
+  --bt-bg-hover: var(--color-table-row-hover-bg);
+  --bt-border: #e6e9ef;
+  --bt-border-strong: #d9dde5;
+  --bt-head-bg: var(--color-table-head-bg);
+  --bt-head-text: #3a394b;
   --bt-text-primary: #111827;
   --bt-text-secondary: #4b5563;
   --bt-text-muted: #9ca3af;
@@ -27,9 +38,6 @@
 
   width: 100%;
   min-width: 0;
-  max-width: 100%;
-  overflow-x: visible !important;
-  overflow-y: visible !important;
   font-family: var(--font-family);
   background: var(--bt-bg-panel);
   color: var(--bt-text-primary);
@@ -38,34 +46,61 @@
 .table {
   width: 100%;
   table-layout: fixed;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: var(--bt-font-base);
 }
 
 .headRow {
-  height: 34px;
-  background: var(--bt-bg-subtle);
-  border-bottom: 1px solid var(--bt-border);
+  height: 36px;
+  /* thead 배경·색은 th(.headCell)에만 — tr 배경은 th에 가려져 보이지 않음 */
+  background: transparent;
+  border-bottom: none;
   text-align: left;
 }
 
+/* thead 배경과 tbody 첫 행 사이 간격 */
+.table tbody::before {
+  content: '';
+  display: table-row;
+  height: 8px;
+}
+
 .headCell {
-  height: 34px;
+  height: 36px;
   padding-block: 0;
   padding-inline: var(--bt-space-sm);
+
+  &:first-child {
+    padding-inline-start: var(--bt-space-md);
+  }
+
+  &:last-child {
+    padding-inline-end: var(--bt-space-md);
+  }
   font-family: var(--font-family);
   text-align: left;
   vertical-align: middle;
   font-size: var(--bt-font-sm);
   font-weight: var(--bt-weight-semibold);
   letter-spacing: 0.02em;
-  color: var(--bt-text-secondary);
-  background: transparent;
+  color: var(--bt-head-text);
+  background: var(--bt-head-bg);
   border-bottom: none;
   line-height: 1.25;
   box-sizing: border-box;
   min-width: 0;
   overflow: hidden;
+
+  &:first-child {
+    border-top-left-radius: var(--bt-radius-md);
+    border-bottom-left-radius: var(--bt-radius-md);
+  }
+
+  &:last-child {
+    border-top-right-radius: var(--bt-radius-md);
+    border-bottom-right-radius: var(--bt-radius-md);
+  }
 }
 
 .headCellLabel {
@@ -84,6 +119,17 @@
 .headCellResizable .headCellLabel {
   /* 리사이즈 핸들(오른쪽)과 겹치지 않게 */
   padding-right: calc(var(--spacing-sm) + var(--spacing-xs));
+}
+
+/* 관리 열(`actions` / `_actions`) — 버튼 개수 가변 시 우측 기준선 정렬 */
+.headCellActions {
+  overflow: visible;
+  text-align: right;
+}
+
+.headCellControl {
+  overflow: visible;
+  text-align: center;
 }
 
 .colResizeHandle {
@@ -105,9 +151,17 @@
 }
 
 .bodyCell {
-  height: 40px;
+  height: 44px;
   padding-block: 0;
   padding-inline: var(--bt-space-sm);
+
+  &:first-child {
+    padding-inline-start: var(--bt-space-md);
+  }
+
+  &:last-child {
+    padding-inline-end: var(--bt-space-md);
+  }
   font-family: var(--font-family);
   text-align: left;
   vertical-align: middle;
@@ -119,6 +173,26 @@
   box-sizing: border-box;
   transition: background-color 0.1s ease;
   min-width: 0;
+}
+
+.bodyCellActions {
+  overflow: visible;
+  white-space: nowrap;
+  text-align: right;
+
+  :global(.kl-table-actions) {
+    justify-content: flex-end;
+    width: auto;
+    max-width: none;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+}
+
+.bodyCellControl {
+  overflow: visible;
+  white-space: nowrap;
+  text-align: center;
 }
 
 /* `ellipsis: true`(기본) — 좁아진 열에서 인접 열과 겹치지 않고 … 처리 */
@@ -286,4 +360,29 @@
   color: var(--color-text-tertiary);
   font-size: var(--font-size-sm);
   user-select: none;
+}
+
+/* 펼침 행 내부 중첩 표 — 높이·radius (색·테두리는 kl-table-row-detail.css) */
+.scrollWrap:global(.kl-basic-table--nested) {
+  .headRow {
+    height: auto;
+  }
+
+  .headCell {
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
+    border-radius: 0 !important;
+
+    &:first-child,
+    &:last-child {
+      border-radius: 0 !important;
+    }
+  }
+
+  .bodyCell {
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+  }
 }

@@ -9,7 +9,6 @@ import {
 import { useLocation } from 'react-router-dom';
 import {
   KL_THEME_MODE_STORAGE_KEY,
-  THEME_MODES,
   applyDocumentTheme,
   isAuthRoutePath,
   isThemeModeSelectable,
@@ -25,10 +24,10 @@ export function ThemeProvider({ children }) {
 
   const isAuthRoute = isAuthRoutePath(location.pathname);
 
-  const resolvedTheme = useMemo(() => {
-    if (isAuthRoute) return THEME_MODES.LIGHT;
-    return resolveThemeFromMode(themeMode);
-  }, [isAuthRoute, themeMode]);
+  const resolvedTheme = useMemo(
+    () => resolveThemeFromMode(themeMode),
+    [themeMode],
+  );
 
   const setThemeMode = useCallback((mode) => {
     if (!isThemeModeSelectable(mode)) {
@@ -45,17 +44,6 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     applyDocumentTheme(resolvedTheme);
   }, [resolvedTheme]);
-
-  useEffect(() => {
-    if (themeMode !== THEME_MODES.SYSTEM || isAuthRoute) return undefined;
-
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => {
-      applyDocumentTheme(resolveThemeFromMode(THEME_MODES.SYSTEM));
-    };
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, [themeMode, isAuthRoute]);
 
   const value = useMemo(
     () => ({

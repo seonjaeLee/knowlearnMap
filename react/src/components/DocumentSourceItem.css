@@ -145,7 +145,7 @@
 }
 
 .menu-dropdown .menu-item:hover {
-  background-color: var(--color-bg-hover, #f5f5f5);
+  background-color: var(--color-bg-hover);
 }
 
 .menu-dropdown .menu-item.delete {

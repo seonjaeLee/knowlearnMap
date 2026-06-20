@@ -63,3 +63,26 @@
     opacity: 0.5;
   }
 }
+
+/* 다크 — 전체 배경 톤 낮춤 (blob + 균일 dim, 라이트 SSOT 유지) */
+[data-theme='dark'] .kl-aurora-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--kl-aurora-dim);
+}
+
+[data-theme='dark'] .kl-aurora-bg--ambient::after {
+  opacity: 0.52;
+  background:
+    radial-gradient(circle at 30% 40%, var(--kl-aurora-motion-blob), transparent 42%),
+    radial-gradient(circle at 70% 60%, var(--kl-aurora-blob-a), transparent 45%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='dark'] .kl-aurora-bg--ambient::after {
+    opacity: 0.38;
+  }
+}

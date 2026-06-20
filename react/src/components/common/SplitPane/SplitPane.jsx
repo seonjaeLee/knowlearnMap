@@ -18,6 +18,9 @@ function SplitPane({
   maxLeftPercent = 60,
   collapsedLeftWidthPx = 300,
   minCollapsedLeftWidthPx = 250,
+  collapsedFitContent = false,
+  minLeftWidthPx,
+  maxLeftWidthPx,
   percentStorageKey,
   onResizeStart,
   className = '',
@@ -29,6 +32,7 @@ function SplitPane({
   const {
     leftPaneStyle,
     isResizing,
+    effectiveCollapsed,
     handleResizerPointerDown,
   } = useSplitPaneResize({
     containerRef,
@@ -38,6 +42,9 @@ function SplitPane({
     maxLeftPercent,
     collapsedLeftWidthPx,
     minCollapsedLeftWidthPx,
+    collapsedFitContent,
+    minLeftWidthPx,
+    maxLeftWidthPx,
     percentStorageKey,
     onResizeStart,
   });
@@ -48,7 +55,11 @@ function SplitPane({
     className,
   ].filter(Boolean).join(' ');
 
-  const leftClass = [styles.leftPane, leftPaneClassName].filter(Boolean).join(' ');
+  const leftClass = [
+    styles.leftPane,
+    effectiveCollapsed && collapsedFitContent ? styles.leftPaneCollapsedFit : '',
+    leftPaneClassName,
+  ].filter(Boolean).join(' ');
   const rightClass = [styles.rightPane, rightPaneClassName].filter(Boolean).join(' ');
 
   return (
@@ -80,6 +91,9 @@ SplitPane.propTypes = {
   maxLeftPercent: PropTypes.number,
   collapsedLeftWidthPx: PropTypes.number,
   minCollapsedLeftWidthPx: PropTypes.number,
+  collapsedFitContent: PropTypes.bool,
+  minLeftWidthPx: PropTypes.number,
+  maxLeftWidthPx: PropTypes.number,
   percentStorageKey: PropTypes.string,
   onResizeStart: PropTypes.func,
   className: PropTypes.string,
@@ -95,6 +109,9 @@ SplitPane.defaultProps = {
   maxLeftPercent: 60,
   collapsedLeftWidthPx: 300,
   minCollapsedLeftWidthPx: 250,
+  collapsedFitContent: false,
+  minLeftWidthPx: undefined,
+  maxLeftWidthPx: undefined,
   percentStorageKey: undefined,
   onResizeStart: undefined,
   className: '',

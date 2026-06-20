@@ -56,7 +56,7 @@
     flex: 1;
     overflow-y: auto;
     padding: 24px;
-    background: #f8f9fa;
+    background: var(--color-bg-hover);
 }
 
 /* 로딩 상태 */

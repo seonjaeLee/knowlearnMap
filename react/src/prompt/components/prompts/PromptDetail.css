@@ -32,6 +32,27 @@
   gap: 0; /* kl-page의 gap 제거 — 자식 margin으로 간격 제어 */
 }
 
+/* 다크모드 — react/docs 다크모드-프롬프트.md 참고. 토큰만 교체, 사용처(.item-info 등)는 그대로 */
+[data-theme='dark'] .prompt-detail-page {
+  --ps-brand: var(--kl-brand-primary);
+  --ps-brand-strong: var(--kl-brand-primary-hover);
+  --ps-ok: var(--color-icon-success);
+  --ps-warn: var(--color-icon-warn, #f0b429);
+  --ps-info: var(--color-icon-info, #6b9cf0);
+  --ps-danger: var(--color-icon-danger);
+  --ps-bg: var(--color-bg-primary);
+  --ps-surface: var(--color-bg-secondary);
+  --ps-surface-2: var(--color-bg-input);
+  --ps-surface-hover: var(--color-bg-hover);
+  --ps-border: var(--color-border);
+  --ps-border-strong: var(--color-border-strong);
+  --ps-text-1: var(--color-text-primary);
+  --ps-text-2: var(--color-text-secondary);
+  --ps-text-3: var(--color-text-tertiary);
+  --ps-th: var(--color-table-head-text);
+  --ps-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
 .prompt-detail-page > .kl-main-sticky-head {
   flex-shrink: 0;
   padding-top: 34px;
@@ -132,43 +153,6 @@
   font-weight: 500;
 }
 
-.prompt-skin-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 10px 0 8px;
-  border-radius: 6px;
-  background: var(--ps-surface);
-  border: 1px solid var(--ps-border);
-  box-shadow: 0 1px 2px rgba(16, 20, 30, 0.05);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--ps-text-2);
-  white-space: nowrap;
-}
-
-.prompt-skin-tag__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: var(--ps-text-3);
-}
-
-.prompt-skin-tag--info .prompt-skin-tag__dot {
-  background: var(--ps-info);
-}
-
-.prompt-skin-tag--ok .prompt-skin-tag__dot {
-  background: var(--ps-ok);
-}
-
-.prompt-skin-tag--warn .prompt-skin-tag__dot {
-  background: var(--ps-warn);
-}
-
 .item-info__desc {
   margin: 0;
   font-size: 13px;
@@ -177,54 +161,9 @@
   max-width: 96ch;
 }
 
-/* ---- tabs ---- */
+/* ---- tabs (KlTabBar variant page) ---- */
 .prompt-detail-page > .prompt-detail-tabs {
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  margin-bottom: 20px;
-  padding: 0;
-  background: transparent;
-  border-bottom: 1px solid var(--ps-border);
-}
-
-.prompt-detail-tab {
-  padding: 0 2px 13px;
-  border: none;
-  background: transparent;
-  font-family: var(--font-family);
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--ps-text-3);
-  cursor: pointer;
-  position: relative;
-  transition: color 0.12s;
-}
-
-.prompt-detail-tab:hover {
-  color: var(--ps-text-1);
-}
-
-.prompt-detail-tab.is-active {
-  color: var(--ps-brand);
-}
-
-.prompt-detail-tab.is-active::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 2px;
-  background: var(--ps-brand);
-  border-radius: 2px;
-}
-
-.prompt-detail-tabs__actions {
-  margin-left: auto;
-  margin-bottom: 9px;
-  align-self: center;
 }
 
 .prompt-detail-deploy-btn {
@@ -309,7 +248,7 @@
   min-height: 0;
 }
 
-/* 왼쪽: 버전 목록 콘텐츠 높이만 차지 (전체 높이 채우지 않음) */
+/* 왼쪽: 버전 목록 — 콘텐츠 너비에 맞춤 */
 .prompt-detail-left-panel {
   align-self: flex-start;
   transition: flex-basis var(--transition-normal), max-width var(--transition-normal);
@@ -320,7 +259,9 @@
   align-self: stretch;
 }
 
+/* History 탭 — 행 수에 맞춘 표 높이 · 많을 때 패널 스크롤 */
 .prompt-detail-history-panel {
+  min-height: 0;
   overflow: auto;
 }
 

@@ -56,7 +56,7 @@
 }
 
 .cmm-close:hover {
-    background: #f0f0f0;
+    background: var(--color-bg-hover);
 }
 
 /* Tabs */
@@ -142,7 +142,7 @@
 .cmm-badge.entity { background: #e8f5e9; color: #2e7d32; }
 .cmm-badge.content { background: #f3e5f5; color: #7b1fa2; }
 .cmm-badge.relation { background: #fff3e0; color: #e65100; }
-.cmm-badge.skip { background: #f5f5f5; color: #757575; }
+.cmm-badge.skip { background: var(--color-bg-hover); color: #757575; }
 .cmm-badge.total { background: #e3f2fd; color: #1565c0; }
 
 /* Table */
@@ -160,7 +160,7 @@
 }
 
 .cmm-table th {
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
     padding: 8px 10px;
     text-align: left;
     font-weight: 600;
@@ -177,7 +177,7 @@
 }
 
 .cmm-table tr:hover {
-    background: #fafafa;
+    background: var(--color-table-row-hover-bg);
 }
 
 .cmm-table tr.row-skip {
@@ -358,7 +358,7 @@
 .cmm-status-badge.completed { background: #e8f5e9; color: #2e7d32; }
 .cmm-status-badge.processing { background: #e3f2fd; color: #1565c0; }
 .cmm-status-badge.failed { background: #fce4ec; color: #c62828; }
-.cmm-status-badge.pending { background: #f5f5f5; color: #757575; }
+.cmm-status-badge.pending { background: var(--color-bg-hover); color: #757575; }
 .cmm-status-badge.mapped { background: #fff3e0; color: #e65100; }
 
 .cmm-refresh-btn {
@@ -375,7 +375,7 @@
 }
 
 .cmm-refresh-btn:hover {
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
 }
 
 /* Progress bar */
@@ -421,7 +421,7 @@
     text-align: center;
     padding: 12px;
     border-radius: 8px;
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
 }
 
 .cmm-stat.completed { background: #e8f5e9; }
@@ -505,7 +505,7 @@
 }
 
 .cmm-btn.secondary {
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
     color: #333;
     border: 1px solid #e0e0e0;
 }
@@ -825,7 +825,7 @@
     text-align: center;
     padding: 14px 12px;
     border-radius: 8px;
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
     border: 1px solid #e0e0e0;
 }
 
@@ -997,7 +997,7 @@
 }
 
 .cmm-quality-indicator.all-same {
-    background: #f3f4f6;
+    background: var(--color-bg-hover);
     color: #6b7280;
 }
 
@@ -1018,7 +1018,7 @@
 
 /* Row highlights for quality table */
 .cmm-quality-table tr.row-all-same {
-    background: #f9fafb;
+    background: var(--color-bg-hover);
 }
 
 .cmm-quality-table tr.row-derived {
@@ -1048,7 +1048,7 @@
     width: 100%;
     padding: 6px 12px;
     margin-bottom: 8px;
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     border: 1px solid #e2e8f0;
     border-radius: 6px;
     color: #475569;
@@ -1059,12 +1059,12 @@
 }
 
 .cmm-hint-toggle:hover {
-    background: #f1f5f9;
+    background: var(--color-bg-hover);
     border-color: #cbd5e1;
 }
 
 .cmm-hint-panel {
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     padding: 12px 14px;
@@ -1108,7 +1108,7 @@
 
 .cmm-hint-type-btn:hover {
     border-color: #94a3b8;
-    background: #f1f5f9;
+    background: var(--color-bg-hover);
 }
 
 .cmm-hint-type-btn.active {
@@ -1336,7 +1336,7 @@
 
 .cmm-mode-btn:hover {
     border-color: #9ca3af;
-    background: #f9fafb;
+    background: var(--color-bg-hover);
 }
 
 .cmm-mode-btn.active.master {
@@ -1471,7 +1471,7 @@
 
 .cmm-help-tab:hover {
     color: #333;
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
 }
 
 .cmm-help-tab.active {
@@ -1501,7 +1501,7 @@
 }
 
 .cmm-help-desc code {
-    background: #f3f4f6;
+    background: var(--color-bg-hover);
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 12px;
@@ -1520,7 +1520,7 @@
 }
 
 .cmm-help-table th {
-    background: #f8fafc;
+    background: var(--color-bg-hover);
     padding: 10px 12px;
     text-align: left;
     font-weight: 600;
@@ -1543,11 +1543,11 @@
 }
 
 .cmm-help-table tr:hover {
-    background: #fafbfc;
+    background: var(--color-table-row-hover-bg);
 }
 
 .cmm-help-table code {
-    background: #f3f4f6;
+    background: var(--color-bg-hover);
     padding: 1px 5px;
     border-radius: 3px;
     font-size: 11px;
@@ -1569,7 +1569,7 @@
 .cmm-help-role-badge.attributes { background: #e0f2f1; color: #00695c; }
 .cmm-help-role-badge.content { background: #f3e8ff; color: #6b21a8; }
 .cmm-help-role-badge.join { background: #fff7ed; color: #c2410c; }
-.cmm-help-role-badge.skip { background: #f3f4f6; color: #6b7280; }
+.cmm-help-role-badge.skip { background: var(--color-bg-hover); color: #6b7280; }
 
 /* Mode Badges */
 .cmm-help-mode-badge {
@@ -1620,7 +1620,7 @@
 
 /* Example Box */
 .cmm-help-example {
-    background: #f9fafb;
+    background: var(--color-bg-hover);
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 12px 14px;

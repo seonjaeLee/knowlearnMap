@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인 핸드오프 검증</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<style>
+  :root{ --brand:#5a57e6; --brand-2:#7d4fe0; --brand-grad:linear-gradient(135deg,#5b58e8 0%,#7d4fe0 100%); --radius:10px; }
+  [data-theme="light"]{ --surface:#fff; --surface-2:#eef1f6; --border:#e4e8ef; --border-strong:#d4dae3; --text-1:#161b24; --text-2:#525c6b; --text-3:#8a93a3; --brand-soft:#edecfd; --page:#f0f1f8; }
+  [data-theme="dark"]{ --surface:#171a20; --surface-2:#1c2028; --border:#272c36; --border-strong:#333a46; --text-1:#e9ecf1; --text-2:#a6adba; --text-3:#6f7886; --brand-soft:rgba(90,87,230,.22); --page:#0e1014; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Pretendard Variable",Pretendard,sans-serif;display:flex;min-height:100vh}
+  .pane{flex:1;display:grid;place-items:center;background:var(--page);padding:40px}
+  .login-card{width:440px;padding:48px 44px;background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:0 1px 2px rgba(20,28,46,.05),0 18px 50px rgba(20,28,46,.10)}
+  .login-logo{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:36px}
+  .login-logo .symbol{width:52px;height:52px}
+  .wordmark{font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--text-1)}
+  .map{background:var(--brand-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:8px}
+  .inp{width:100%;height:48px;border-radius:var(--radius);background:var(--surface-2);border:1px solid var(--border);padding:0 15px;font-size:14.5px;color:var(--text-1);outline:none;transition:.15s;font-family:inherit}
+  .inp:focus{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px var(--brand-soft)}
+  .inp::placeholder{color:var(--text-3)}
+  .checks{display:flex;gap:22px;justify-content:flex-end;margin:18px 2px 24px}
+  .chk{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text-2);font-weight:500;cursor:pointer}
+  .chk input{appearance:none;width:18px;height:18px;border-radius:5px;border:1.6px solid var(--border-strong);background:var(--surface);display:grid;place-items:center;transition:.12s;cursor:pointer}
+  .chk input:checked{background:var(--brand);border-color:var(--brand)}
+  .chk input:checked::after{content:"";width:5px;height:9px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(42deg) translateY(-1px)}
+  .btn-login{width:100%;height:50px;border-radius:var(--radius);background:var(--brand-grad);color:#fff;font-size:15px;font-weight:700;letter-spacing:.04em;box-shadow:0 4px 16px rgba(98,80,230,.34);transition:.15s;cursor:pointer;border:0}
+  .btn-login:hover{filter:brightness(1.07)}
+  .login-links{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:24px}
+  .login-links a{font-size:13.5px;color:var(--text-2);text-decoration:none}
+  .login-links .sep{color:var(--border-strong)}
+</style>
+</head>
+<body>
+  <div class="pane" data-theme="light">
+    <div class="login-card">
+      <div class="login-logo"><img class="symbol" src="knowlearnMap.svg" alt=""><div class="wordmark">knowlearn<span class="map">Map</span></div></div>
+      <div class="field"><label>Email ID</label><input class="inp" type="text" value="admin@company.com"></div>
+      <div class="field"><label>Password</label><input class="inp" type="password" value="password"></div>
+      <div class="checks"><label class="chk"><input type="checkbox" checked> Save ID</label><label class="chk"><input type="checkbox" checked> Save PW</label></div>
+      <button class="btn-login">LOGIN</button>
+      <div class="login-links"><a href="#">Sign Up</a><span class="sep">|</span><a href="#">Forgot Password</a></div>
+    </div>
+  </div>
+  <div class="pane" data-theme="dark">
+    <div class="login-card">
+      <div class="login-logo"><img class="symbol" src="knowlearnMap-dark.svg" alt=""><div class="wordmark">knowlearn<span class="map">Map</span></div></div>
+      <div class="field"><label>Email ID</label><input class="inp" type="text" value="admin@company.com"></div>
+      <div class="field"><label>Password</label><input class="inp" type="password" value="password"></div>
+      <div class="checks"><label class="chk"><input type="checkbox" checked> Save ID</label><label class="chk"><input type="checkbox" checked> Save PW</label></div>
+      <button class="btn-login">LOGIN</button>
+      <div class="login-links"><a href="#">Sign Up</a><span class="sep">|</span><a href="#">Forgot Password</a></div>
+    </div>
+  </div>
+</body>
+</html>

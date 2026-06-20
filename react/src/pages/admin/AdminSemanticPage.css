@@ -6,7 +6,7 @@
   min-height: 0;
 }
 
-.admin-semantic-page .kl-subtabs {
+.admin-semantic-page .kl-tab-bar {
   flex-shrink: 0;
 }
 
@@ -65,22 +65,4 @@
   overflow: visible;
 }
 
-/* 펼침 시에만 최소 너비 — 접힘(~300px) 3열과 충돌 방지 · 가로 스크롤은 basic-table-shell 단일 래퍼 */
-.admin-semantic-left-panel
-  .admin-semantic-category-table-area--expanded
-  .basic-table-shell
-  .admin-semantic-split-basic-table {
-  min-width: 480px;
-}
-
-.admin-semantic-right-panel .basic-table-shell .admin-semantic-split-basic-table {
-  min-width: 680px;
-}
-
 /* 툴바 gap·정렬: TableToolbar.css — :has(.kl-table-toolbar-summary) 공통 */
-
-/* 카테고리 split 표 — 헤더(th)·본문 셀 좌우 간격(BasicTable 기본 padding과 동일) */
-.admin-semantic-left-panel .admin-semantic-split-basic-table .MuiTableCell-head,
-.admin-semantic-left-panel .admin-semantic-split-basic-table .MuiTableCell-body {
-  box-sizing: border-box;
-}

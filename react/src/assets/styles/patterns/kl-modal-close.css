@@ -1,0 +1,40 @@
+/**
+ * 모달 닫기 버튼 — Work(BaseModal) · Promo(커스텀 쉘) 공통 affordance
+ * @see docs/modal-guide.md §2.3
+ * 컴포넌트: components/common/KlModalClose.jsx
+ */
+
+.kl-modal-close {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--kl-control-height);
+  min-width: var(--kl-control-height);
+  height: var(--kl-control-height);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.kl-modal-close:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.kl-modal-close:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-input);
+}
+
+.kl-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

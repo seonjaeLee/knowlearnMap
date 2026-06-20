@@ -10,6 +10,7 @@ import {
     getMockSharedMembers,
     mockMemberSearchSuggestions,
 } from '../data/workspaceShareMockData';
+import { formatKlDate } from '../utils/formatKlDate';
 import './ShareSettingsModal.css';
 
 const isWorkspaceMockEnabled = import.meta.env.VITE_ENABLE_WORKSPACE_MOCK === 'true';
@@ -227,12 +228,7 @@ function ShareSettingsModal({ workspace, onClose, onSaved }) {
         }
     };
 
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        return new Date(dateStr).toLocaleDateString('ko-KR', {
-            month: 'short', day: 'numeric'
-        });
-    };
+    const formatDate = (dateStr) => formatKlDate(dateStr, { fallback: '' });
 
     return (
         <BaseModal

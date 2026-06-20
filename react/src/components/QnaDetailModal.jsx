@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Edit2, Trash2, ImagePlus } from 'lucide-react';
+import { CornerDownRight, Edit2, Trash2, ImagePlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import { useDialog } from '../hooks/useDialog';
 import { qnaApi, imageApi } from '../services/api';
 import ContentRenderer from './ContentRenderer';
+import { formatKlDateTime } from '../utils/formatKlDate';
 import BaseModal from './common/modal/BaseModal';
 import {
     qnaDetailModalPaperClassName,
@@ -61,17 +62,7 @@ function QnaDetailModal({
         }
     }, [isOpen, questionId, questionData]);
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
+    const formatDate = (dateString) => formatKlDateTime(dateString, { fallback: '' });
 
     const isOwner = question && user?.email === question.authorEmail;
     const canEditQuestion = Boolean(question) && isOwner && !readOnly;
@@ -333,80 +324,86 @@ function QnaDetailModal({
                         </section>
 
                         <section className="qna-detail-answers-section" aria-label="답변">
-                            <h4 className="qna-answers-title">답변</h4>
+                            <div className="qna-detail-answers-section__head">
+                                <span className="kl-table-row-detail__arrow" aria-hidden>
+                                    <CornerDownRight size={18} strokeWidth={1.75} />
+                                </span>
+                                <h4 className="qna-answers-title">답변</h4>
+                            </div>
+                            <div className="qna-detail-answers-section__body">
+                                {question.answers && question.answers.length > 0 ? (
+                                    <div className="qna-answers-list">
+                                        {question.answers.map((answer) => (
+                                            <article key={answer.id} className="qna-answer-item">
+                                                <div className="qna-answer-header">
+                                                    <span className="qna-answer-badge">관리자</span>
+                                                    <span className="qna-answer-date">{formatDate(answer.createdAt)}</span>
+                                                    {!readOnly && isAdmin && (
+                                                        <button
+                                                            type="button"
+                                                            className="qna-answer-btn-delete"
+                                                            onClick={() => handleDeleteAnswer(answer.id)}
+                                                            title="삭제"
+                                                            aria-label="답변 삭제"
+                                                        >
+                                                            <Trash2 size={14} aria-hidden />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <div className="qna-answer-content">
+                                                    <ContentRenderer content={answer.content} />
+                                                </div>
+                                            </article>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="qna-no-answers">
+                                        <p>아직 답변이 없습니다.</p>
+                                    </div>
+                                )}
 
-                            {question.answers && question.answers.length > 0 ? (
-                                <div className="qna-answers-list">
-                                    {question.answers.map((answer) => (
-                                        <article key={answer.id} className="qna-answer-item">
-                                            <div className="qna-answer-header">
-                                                <span className="qna-answer-badge">관리자</span>
-                                                <span className="qna-answer-date">{formatDate(answer.createdAt)}</span>
-                                                {!readOnly && isAdmin && (
-                                                    <button
-                                                        type="button"
-                                                        className="qna-answer-btn-delete"
-                                                        onClick={() => handleDeleteAnswer(answer.id)}
-                                                        title="삭제"
-                                                        aria-label="답변 삭제"
-                                                    >
-                                                        <Trash2 size={14} aria-hidden />
-                                                    </button>
-                                                )}
+                                {!readOnly && isAdmin && (
+                                    <div className="qna-answer-form-container">
+                                        <form className="qna-answer-form" onSubmit={handleSubmitAnswer}>
+                                            <div className="qna-answer-toolbar">
+                                                <button
+                                                    type="button"
+                                                    className="kl-icon-label-btn"
+                                                    onClick={() => answerFileInputRef.current?.click()}
+                                                    disabled={isUploadingAnswer}
+                                                    title="이미지 첨부"
+                                                >
+                                                    <ImagePlus size={16} aria-hidden />
+                                                    {isUploadingAnswer ? '업로드 중...' : '이미지 첨부'}
+                                                </button>
+                                                <input
+                                                    ref={answerFileInputRef}
+                                                    type="file"
+                                                    accept="image/jpeg,image/png,image/gif,image/webp"
+                                                    onChange={handleAnswerImageUpload}
+                                                    className="kl-modal-form-hidden-input"
+                                                />
                                             </div>
-                                            <div className="qna-answer-content">
-                                                <ContentRenderer content={answer.content} />
-                                            </div>
-                                        </article>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="qna-no-answers">
-                                    <p>아직 답변이 없습니다.</p>
-                                </div>
-                            )}
-
-                            {!readOnly && isAdmin && (
-                                <div className="qna-answer-form-container">
-                                    <form className="qna-answer-form" onSubmit={handleSubmitAnswer}>
-                                        <div className="qna-answer-toolbar">
-                                            <button
-                                                type="button"
-                                                className="kl-icon-label-btn"
-                                                onClick={() => answerFileInputRef.current?.click()}
-                                                disabled={isUploadingAnswer}
-                                                title="이미지 첨부"
-                                            >
-                                                <ImagePlus size={16} aria-hidden />
-                                                {isUploadingAnswer ? '업로드 중...' : '이미지 첨부'}
-                                            </button>
-                                            <input
-                                                ref={answerFileInputRef}
-                                                type="file"
-                                                accept="image/jpeg,image/png,image/gif,image/webp"
-                                                onChange={handleAnswerImageUpload}
-                                                className="kl-modal-form-hidden-input"
+                                            <textarea
+                                                ref={answerTextareaRef}
+                                                value={answerContent}
+                                                onChange={(e) => setAnswerContent(e.target.value)}
+                                                placeholder="답변을 입력해주세요."
+                                                rows={4}
                                             />
-                                        </div>
-                                        <textarea
-                                            ref={answerTextareaRef}
-                                            value={answerContent}
-                                            onChange={(e) => setAnswerContent(e.target.value)}
-                                            placeholder="답변을 입력해주세요."
-                                            rows={4}
-                                        />
-                                        <div className="qna-answer-form-actions">
-                                            <button
-                                                type="submit"
-                                                className="kl-btn primary-outline md"
-                                                disabled={!answerContent.trim() || isSubmitting}
-                                            >
-                                                답변 등록
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            )}
+                                            <div className="qna-answer-form-actions">
+                                                <button
+                                                    type="submit"
+                                                    className="kl-btn primary-outline md"
+                                                    disabled={!answerContent.trim() || isSubmitting}
+                                                >
+                                                    답변 등록
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                )}
+                            </div>
                         </section>
                     </div>
                 ) : (

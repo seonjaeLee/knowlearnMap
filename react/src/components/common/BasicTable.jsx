@@ -1,16 +1,18 @@
 import PropTypes from 'prop-types';
-import { Fragment } from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import { Fragment, useMemo } from 'react';
 import styles from './BasicTable.module.scss';
 import BasicTableFooter from './BasicTableFooter';
 import BasicTablePaginationNav from './BasicTablePaginationNav';
 import TableEmptyState from './TableEmptyState';
+import { useBasicTableScrollFade } from '../../hooks/useBasicTableScrollFade';
+import {
+  basicTableActionsColumnMinWidthPx,
+  isBasicTableActionsColumn,
+} from './table/basicTableActionsColumn';
+import {
+  isBasicTableControlColumn,
+} from './table/basicTableControlColumn';
+import KlTableCellControl from './table/KlTableCellControl';
 
 function getRowKey(row, rowIndex) {
   if (row && Object.prototype.hasOwnProperty.call(row, 'id') && row.id != null) {
@@ -29,9 +31,40 @@ function defaultCellValue(row, columnId) {
 
 function columnCellStyle(col) {
   const style = {};
-  if (col.width != null) style.width = col.width;
-  if (col.align) style.textAlign = col.align;
+  if (col.width != null) {
+    style.width = typeof col.width === 'number' ? `${col.width}px` : col.width;
+  }
+  if (isBasicTableActionsColumn(col.id)) {
+    style.textAlign = 'right';
+  } else if (isBasicTableControlColumn(col) && col.align) {
+    style.textAlign = col.align;
+  } else if (col.align) {
+    style.textAlign = col.align;
+  }
   return Object.keys(style).length ? style : undefined;
+}
+
+function renderControlCellContent(col, row, rowIndex) {
+  const checked = col.getControlChecked?.(row) ?? Boolean(row[col.id]);
+  const ariaLabel = col.getControlAriaLabel?.(row);
+  const disabled = col.getControlDisabled?.(row) ?? false;
+  const readOnly = col.controlReadOnly !== false;
+
+  return (
+    <KlTableCellControl
+      type={col.control}
+      checked={checked}
+      ariaLabel={ariaLabel}
+      readOnly={readOnly}
+      disabled={disabled}
+      name={col.controlName}
+      onChange={
+        !readOnly && col.onControlChange
+          ? (event) => col.onControlChange(event, { row, rowIndex })
+          : undefined
+      }
+    />
+  );
 }
 
 /**
@@ -46,17 +79,10 @@ function columnCellStyle(col) {
  * @param {(row: object, rowIndex: number) => string} [getRowClassName]
  * @param {(boundaryIndex: number, event: React.MouseEvent) => void} [onColumnResizeMouseDown] — `useBasicTableColumnResize`의 `startResize` 연동
  * @param {(row: object) => string|undefined} [rowAriaLabel]
- *
- * 스타일(사용자 관리 기준): thead 행·th 높이 34px, tbody td 40px, 팔레트는 컴포넌트 내부 `--bt-*` 로 유지.
- * 가로 스크롤: 바깥 래퍼에 `basic-table-shell` + `overflow-x: auto`(얇은 스크롤바는 `kl-scrollbar-thin.css`).
- * 목록 하단: `BasicTableFooter`, 페이지네이션 전역 클래스 — `assets/styles/kit/kl-basic-table.css` (`basic-table-pagination` 등).
- * 선택: `tableFooter` — `enabled: true`이면 테이블 아래에 `BasicTableFooter`+`BasicTablePaginationNav`를 같이 렌더합니다. 가로 스크롤 셸(`basic-table-shell`)은 **테이블만** 감싸고 푸터는 밖에 두는 레이아웃을 권장합니다(그 경우 `tableFooter`는 `false`로 두고 페이지에서 `BasicTableFooter`를 별도 배치).
  * @param {false|object} [tableFooter] — `false`(기본) | `{ enabled?: boolean, summary?: React.ReactNode, end?: React.ReactNode, pagination: { page, totalPages, onPageChange } }`
- * @param {(ctx: { row: object, rowIndex: number }) => React.ReactNode} [renderRowDetail] — 반환값이 있으면 해당 데이터 행 바로 아래에 `colSpan` 서브행(아코디언 패널)을 렌더합니다. `null`/`false`면 생략합니다.
+ * @param {(ctx: { row: object, rowIndex: number }) => React.ReactNode} [renderRowDetail]
  * @param {(ctx: { column: object, row: object, rowIndex: number }) => { skip?: boolean, rowSpan?: number, style?: object, className?: string }} [getBodyCellProps]
- *        `skip: true`이면 해당 열 `td`를 렌더하지 않음. `rowSpan`은 병합 셀용.
- * @param {false|object} [emptyState] — `false`(기본) | `{ variant?: 'default'|'search', message?: string, hint?: string }`
- *        `data.length === 0`일 때 **thead는 유지**하고 본문에 빈 메시지 행(`TableEmptyState` 문구)을 렌더합니다.
+ * @param {false|object} [emptyState]
  */
 function BasicTable({
   columns,
@@ -73,15 +99,48 @@ function BasicTable({
   tableFooter = false,
   emptyState = false,
 }) {
-  const rootClass = [styles.wrap, className].filter(Boolean).join(' ');
+  const normalizedColumns = useMemo(
+    () =>
+      columns.map((col) => {
+        if (!isBasicTableActionsColumn(col.id)) return col;
+        const floor = basicTableActionsColumnMinWidthPx(col.actionsButtonCount ?? 2);
+        if (col.width == null) return { ...col, width: `${floor}px` };
+        if (typeof col.width === 'string' && !String(col.width).endsWith('px')) return col;
+        const widthStr = typeof col.width === 'number' ? `${col.width}px` : String(col.width);
+        const m = widthStr.match(/^(\d+(?:\.\d+)?)px$/);
+        if (!m) return col;
+        const px = Math.max(parseFloat(m[1]), floor);
+        const nextWidth = `${px}px`;
+        return px === parseFloat(m[1]) && typeof col.width === 'string' ? col : { ...col, width: nextWidth };
+      }),
+    [columns]
+  );
+
+  const scrollRef = useBasicTableScrollFade([normalizedColumns, data.length]);
+
   const showEmptyBody = data.length === 0 && emptyState && typeof emptyState === 'object';
 
+  // 열 너비 합산 → table minWidth. 이 값 이하로 컨테이너가 좁아지면 scrollWrap에 가로 스크롤 발생
+  const tableMinWidthPx = useMemo(() => {
+    return normalizedColumns.reduce((sum, col) => {
+      if (!col.width) return sum;
+      const m = String(col.width).match(/^(\d+(?:\.\d+)?)px$/);
+      return m ? sum + parseFloat(m[1]) : sum;
+    }, 0);
+  }, [normalizedColumns]);
+
   const tableBlock = (
-    <TableContainer component={Paper} className={rootClass} elevation={0}>
-      <Table className={styles.table}>
-        <TableHead>
-          <TableRow className={styles.headRow}>
-            {columns.map((col, colIndex) => {
+    <div
+      className={[styles.scrollWrap, 'basic-table-scroll-wrap', className].filter(Boolean).join(' ')}
+      ref={scrollRef}
+    >
+      <table
+        className={[styles.wrap, styles.table].filter(Boolean).join(' ')}
+        style={tableMinWidthPx > 0 ? { minWidth: `${tableMinWidthPx}px` } : undefined}
+      >
+        <thead>
+          <tr className={styles.headRow}>
+            {normalizedColumns.map((col, colIndex) => {
               const hasResize =
                 typeof col.resizeBoundaryAfter === 'number' && typeof onColumnResizeMouseDown === 'function';
               const headStyle = {
@@ -90,12 +149,20 @@ function BasicTable({
                   ? { position: 'relative', overflow: 'visible', zIndex: 40 - colIndex }
                   : {}),
               };
+              const isActionsCol = isBasicTableActionsColumn(col.id);
+              const isControlCol = isBasicTableControlColumn(col);
               return (
-                <TableCell
+                <th
                   key={col.id}
-                  component="th"
                   scope="col"
-                  className={[styles.headCell, hasResize ? styles.headCellResizable : ''].filter(Boolean).join(' ')}
+                  className={[
+                    styles.headCell,
+                    isActionsCol ? styles.headCellActions : '',
+                    isControlCol ? styles.headCellControl : '',
+                    hasResize ? styles.headCellResizable : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
                   style={headStyle}
                 >
                   {col.headLabelWrap === false ? (
@@ -115,27 +182,23 @@ function BasicTable({
                       aria-hidden
                     />
                   ) : null}
-                </TableCell>
+                </th>
               );
             })}
-          </TableRow>
-        </TableHead>
-        <TableBody>
+          </tr>
+        </thead>
+        <tbody>
           {showEmptyBody ? (
-            <TableRow className={styles.emptyRow} hover={false}>
-              <TableCell
-                component="td"
-                colSpan={columns.length}
-                className={styles.emptyCell}
-              >
+            <tr className={styles.emptyRow}>
+              <td colSpan={normalizedColumns.length} className={styles.emptyCell}>
                 <TableEmptyState
                   variant={emptyState.variant}
                   message={emptyState.message}
                   hint={emptyState.hint}
                   compact
                 />
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ) : null}
           {!showEmptyBody && data.map((row, rowIndex) => {
             const rowInteractive = Boolean(onRowClick || onRowKeyDown);
@@ -148,9 +211,7 @@ function BasicTable({
             const showDetail = detailContent != null && detailContent !== false;
             return (
               <Fragment key={rk}>
-                <TableRow
-                  key={`${rk}-main`}
-                  hover={false}
+                <tr
                   className={rowClass}
                   tabIndex={rowInteractive ? 0 : undefined}
                   role={rowInteractive ? 'button' : undefined}
@@ -159,50 +220,62 @@ function BasicTable({
                   onClick={onRowClick ? (e) => onRowClick(e, { row, rowIndex }) : undefined}
                   onKeyDown={onRowKeyDown ? (e) => onRowKeyDown(e, { row, rowIndex }) : undefined}
                 >
-                  {columns.map((col) => {
+                  {normalizedColumns.map((col) => {
                     const spanProps = getBodyCellProps?.({ column: col, row, rowIndex }) ?? {};
                     if (spanProps.skip) return null;
 
                     const custom = renderCell?.({ column: col, row, rowIndex });
-                    const content =
-                      custom !== undefined && custom !== null ? custom : defaultCellValue(row, col.id);
+                    const content = custom !== undefined && custom !== null
+                      ? custom
+                      : isBasicTableControlColumn(col)
+                        ? renderControlCellContent(col, row, rowIndex)
+                        : defaultCellValue(row, col.id);
                     const cellEllipsis = col.ellipsis !== false;
                     const baseStyle = columnCellStyle(col);
                     const mergedStyle =
                       baseStyle || spanProps.style
                         ? { ...baseStyle, ...spanProps.style }
                         : undefined;
-                    const cellClass = [styles.bodyCell, spanProps.className].filter(Boolean).join(' ');
+                    const isActionsCol = isBasicTableActionsColumn(col.id);
+                    const isControlCol = isBasicTableControlColumn(col);
+                    const cellClass = [
+                      styles.bodyCell,
+                      isActionsCol ? styles.bodyCellActions : '',
+                      isControlCol ? styles.bodyCellControl : '',
+                      spanProps.className,
+                    ]
+                      .filter(Boolean)
+                      .join(' ');
 
                     return (
-                      <TableCell
+                      <td
                         key={col.id}
                         className={cellClass}
                         style={mergedStyle}
                         rowSpan={spanProps.rowSpan}
                       >
-                        <div className={cellEllipsis ? styles.cellClip : styles.cellClipFree}>{content}</div>
-                      </TableCell>
+                        {isActionsCol || isControlCol ? (
+                          content
+                        ) : (
+                          <div className={cellEllipsis ? styles.cellClip : styles.cellClipFree}>{content}</div>
+                        )}
+                      </td>
                     );
                   })}
-                </TableRow>
+                </tr>
                 {showDetail ? (
-                  <TableRow key={`${rk}-detail`} className={styles.detailRow} hover={false}>
-                    <TableCell
-                      component="td"
-                      colSpan={columns.length}
-                      className={styles.detailCell}
-                    >
+                  <tr key={`${rk}-detail`} className={styles.detailRow}>
+                    <td colSpan={normalizedColumns.length} className={styles.detailCell}>
                       {detailContent}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ) : null}
               </Fragment>
             );
           })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </tbody>
+      </table>
+    </div>
   );
 
   const showBuiltInFooter =
@@ -251,6 +324,13 @@ BasicTable.propTypes = {
       ellipsis: PropTypes.bool,
       resizeBoundaryAfter: PropTypes.number,
       headLabelWrap: PropTypes.bool,
+      control: PropTypes.oneOf(['radio', 'checkbox']),
+      getControlChecked: PropTypes.func,
+      getControlAriaLabel: PropTypes.func,
+      controlReadOnly: PropTypes.bool,
+      getControlDisabled: PropTypes.func,
+      onControlChange: PropTypes.func,
+      controlName: PropTypes.string,
     })
   ).isRequired,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -303,5 +383,10 @@ BasicTable.defaultProps = {
 };
 
 export default BasicTable;
+export { isBasicTableActionsColumn } from './table/basicTableActionsColumn';
+export {
+  basicTableControlColumnDef,
+  isBasicTableControlColumn,
+} from './table/basicTableControlColumn';
 export { default as BasicTableFooter } from './BasicTableFooter';
 export { default as BasicTablePaginationNav } from './BasicTablePaginationNav';

@@ -38,9 +38,6 @@
     font-size: var(--font-size-base);
 }
 
-.workspace-mgmt-basic-table {
-    min-width: 1020px;
-}
 
 .workspace-mgmt-prompt-cell {
     min-width: 0;
@@ -56,8 +53,8 @@
     margin: 0;
     padding: var(--spacing-xs) var(--spacing-sm);
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-subtle);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-hover);
     font-family: var(--font-family);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
@@ -129,18 +126,6 @@
     font-size: var(--font-size-base);
 }
 
-.workspace-mgmt-actions-head {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
-}
-
-.table-area .workspace-mgmt-basic-table .MuiTableHead-root .MuiTableCell-head:last-of-type .workspace-mgmt-actions-head {
-    padding-right: var(--spacing-sm);
-}
-
 .workspace-mgmt-name-cell {
     display: flex;
     align-items: center;
@@ -173,31 +158,6 @@
     font-size: var(--font-size-sm);
 }
 
-.workspace-mgmt-share-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: 999px;
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-}
-
-.workspace-mgmt-share-badge.share-all {
-    background-color: var(--color-accent-light);
-    color: var(--color-accent);
-}
-
-.workspace-mgmt-share-badge.share-individual {
-    background-color: #ede9fe;
-    color: #7c3aed;
-}
-
-.workspace-mgmt-share-badge.share-none {
-    background-color: var(--color-bg-hover);
-    color: var(--color-text-tertiary);
-}
-
 .workspace-mgmt-empty {
     text-align: center;
     color: var(--color-text-secondary);
@@ -220,7 +180,7 @@
     border-radius: var(--radius-sm);
     font-size: var(--font-size-xs);
     line-height: 1.4;
-    background: var(--color-bg-subtle);
+    background: var(--color-bg-hover);
     color: var(--color-text-tertiary);
     white-space: nowrap;
 }
