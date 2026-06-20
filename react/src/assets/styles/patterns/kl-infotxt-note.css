@@ -26,6 +26,16 @@
   font-weight: var(--font-weight-semibold);
 }
 
+/* 다크 모드 — 라이트의 크림·브라운 톤이 어두운 배경에서 너무 튀어서 차분한 민트 톤으로 대체 */
+[data-theme="dark"] .kl-infotxt-note {
+  background-color: #223046;
+  color: #63d5b9;
+}
+
+[data-theme="dark"] .kl-infotxt-note > svg {
+  color: #63d5b9;
+}
+
 .kl-infotxt-note-row {
   display: flex;
   flex-shrink: 0;

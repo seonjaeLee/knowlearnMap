@@ -7,6 +7,7 @@ import { useBasicTableColumnResize } from '../hooks/useBasicTableColumnResize';
 import { apiCall } from '../services/api';
 import AdminPageHeader from './admin/AdminPageHeader';
 import BaseModal from './common/modal/BaseModal';
+import KlCheckbox from './common/KlCheckbox';
 import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
 import { klTallFormModalPaperSx } from './common/modal/klModalPaper';
 import {
@@ -564,15 +565,14 @@ function DomainManagement() {
                             LLM 청킹
                         </label>
                         <div className="kl-modal-form-row__control">
-                            <label className={KL_MODAL_FORM_CHECK_CLASS} htmlFor="domain-mgmt-chunking">
-                                <input
-                                    id="domain-mgmt-chunking"
-                                    type="checkbox"
-                                    checked={isChunkingEnabled}
-                                    onChange={handleChunkingToggle}
-                                />
-                                <span>{isChunkingEnabled ? '사용함' : '사용 안 함'}</span>
-                            </label>
+                            <KlCheckbox
+                                id="domain-mgmt-chunking"
+                                className={KL_MODAL_FORM_CHECK_CLASS}
+                                checked={isChunkingEnabled}
+                                onChange={handleChunkingToggle}
+                            >
+                                {isChunkingEnabled ? '사용함' : '사용 안 함'}
+                            </KlCheckbox>
                             <p className={`kl-modal-form-helper${isChunkingEnabled ? '' : ' kl-modal-form-helper--error'}`}>
                                 {isChunkingEnabled
                                     ? 'PDF 문서를 LLM으로 청킹합니다.'

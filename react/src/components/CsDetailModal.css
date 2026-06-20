@@ -75,6 +75,12 @@
     font-weight: var(--font-weight-medium);
 }
 
+/* 다크 모드 — 라이트용 화이트 믹스 배경이 밝아서 글자가 묻힘. 배경은 어둡게, 텍스트는 밝은 강조색으로 */
+[data-theme='dark'] .cs-detail-category {
+    background: color-mix(in srgb, var(--color-accent) 14%, var(--color-bg-secondary));
+    color: var(--color-accent-emphasis);
+}
+
 .cs-detail-title {
     margin: 0;
     color: var(--color-text-primary);
@@ -92,7 +98,7 @@
     padding: var(--spacing-xs) var(--spacing-sm);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-sm);
-    background: #fff;
+    background: var(--color-bg-secondary);
     color: var(--color-text-primary);
     font-family: var(--font-family);
     font-size: 20px;

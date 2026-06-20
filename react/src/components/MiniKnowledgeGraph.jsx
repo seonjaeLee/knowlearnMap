@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import { Maximize2, Network } from 'lucide-react';
+import { useGraphPalette } from '../hooks/useGraphPalette';
 import './MiniKnowledgeGraph.css';
 
 const MiniKnowledgeGraph = ({ nodes, links, onExpand }) => {
+    const palette = useGraphPalette();
     const graphRef = useRef();
     const containerRef = useRef(null);
     const [dimensions, setDimensions] = useState({ width: 300, height: 300 });
@@ -63,7 +65,7 @@ const MiniKnowledgeGraph = ({ nodes, links, onExpand }) => {
                     graphData={graphData}
                     nodeLabel="name"
                     nodeAutoColorBy="group"
-                    backgroundColor="#ffffff"
+                    backgroundColor={palette.background}
                     enableZoom={true}
                     enablePanInteraction={true}
                     cooldownTicks={100}
@@ -75,12 +77,12 @@ const MiniKnowledgeGraph = ({ nodes, links, onExpand }) => {
                         const r = 3 / globalScale;
                         ctx.beginPath();
                         ctx.arc(node.x, node.y, r, 0, 2 * Math.PI, false);
-                        ctx.fillStyle = node.color || '#9BBFEE';
+                        ctx.fillStyle = node.color || palette.nodeDefault;
                         ctx.fill();
 
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'top';
-                        ctx.fillStyle = '#333';
+                        ctx.fillStyle = palette.nodeLabel;
                         ctx.fillText(label, node.x, node.y + r + 1 / globalScale);
                     }}
                     linkCanvasObject={(link, ctx, globalScale) => {
@@ -103,7 +105,7 @@ const MiniKnowledgeGraph = ({ nodes, links, onExpand }) => {
                         ctx.beginPath();
                         ctx.moveTo(start.x, start.y);
                         ctx.lineTo(tipX, tipY);
-                        ctx.strokeStyle = '#999';
+                        ctx.strokeStyle = palette.edge;
                         ctx.lineWidth = 1 / globalScale;
                         ctx.stroke();
 
@@ -118,7 +120,7 @@ const MiniKnowledgeGraph = ({ nodes, links, onExpand }) => {
                             tipY - arrowLength * Math.sin(angle + Math.PI / 6)
                         );
                         ctx.closePath();
-                        ctx.fillStyle = '#999';
+                        ctx.fillStyle = palette.edge;
                         ctx.fill();
 
                         // Draw Label
@@ -133,12 +135,12 @@ const MiniKnowledgeGraph = ({ nodes, links, onExpand }) => {
 
                             // Label Background for readability
                             const textWidth = ctx.measureText(label).width;
-                            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                            ctx.fillStyle = palette.edgeLabelBg;
                             ctx.fillRect(textX - textWidth / 2 - 2, textY - fontSize / 2 - 2, textWidth + 4, fontSize + 4);
 
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            ctx.fillStyle = '#666'; // Darker gray for edge label
+                            ctx.fillStyle = palette.edgeLabelText;
                             ctx.fillText(label, textX, textY);
                         }
                     }}

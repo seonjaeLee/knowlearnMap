@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from
 import ForceGraph2D from 'react-force-graph-2d';
 import { Link2 } from 'lucide-react';
 import { useDialog } from '../hooks/useDialog';
+import { useGraphPalette } from '../hooks/useGraphPalette';
 import './KnowledgeGraphModal.css';
 import { API_URL } from '../config/api';
 
@@ -12,6 +13,7 @@ function getCsrfToken() {
 
 export default function KnowledgeMapView({ workspaceId, documents = [], initialSelectedDocIds = [], cachedData = null, onDataLoaded = null }) {
     const { alert } = useDialog();
+    const palette = useGraphPalette();
     const [fullGraphData, setFullGraphData] = useState({ nodes: [], links: [] });
     const [graphData, setGraphData] = useState({ nodes: [], links: [] });
     const graphRef = useRef();
@@ -849,7 +851,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                         <ul className="kg-suggestions">
                             {suggestions.map((s, i) => (
                                 <li key={i} onClick={() => selectSuggestion(s)}>
-                                    {s.name || s}{s.category ? <span style={{ color: '#888', fontSize: '11px' }}> ({s.category})</span> : ''}
+                                    {s.name || s}{s.category ? <span style={{ color: 'var(--color-text-tertiary)', fontSize: '11px' }}> ({s.category})</span> : ''}
                                 </li>
                             ))}
                         </ul>
@@ -909,13 +911,13 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                                 <ul className="kg-suggestions" style={{ width: '250px' }}>
                                     {fromSuggestions.map((s, i) => (
                                         <li key={i} onClick={() => selectFromSuggestion(s)}>
-                                            {s.name}{s.category ? <span style={{ color: '#888', fontSize: '11px' }}> ({s.category})</span> : ''}
+                                            {s.name}{s.category ? <span style={{ color: 'var(--color-text-tertiary)', fontSize: '11px' }}> ({s.category})</span> : ''}
                                         </li>
                                     ))}
                                 </ul>
                             )}
                         </div>
-                        <span style={{ color: '#666' }}>→</span>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>→</span>
                         <div className="kg-input-group" style={{ position: 'relative' }}>
                             <input
                                 type="text"
@@ -931,7 +933,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                                 <ul className="kg-suggestions" style={{ width: '250px' }}>
                                     {toSuggestions.map((s, i) => (
                                         <li key={i} onClick={() => selectToSuggestion(s)}>
-                                            {s.name}{s.category ? <span style={{ color: '#888', fontSize: '11px' }}> ({s.category})</span> : ''}
+                                            {s.name}{s.category ? <span style={{ color: 'var(--color-text-tertiary)', fontSize: '11px' }}> ({s.category})</span> : ''}
                                         </li>
                                     ))}
                                 </ul>
@@ -958,18 +960,17 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                     {isDocDropdownOpen && (
                         <div className="kg-dropdown-menu" style={{
                             position: 'absolute', top: '100%', right: 0, zIndex: 1000,
-                            backgroundColor: '#2d2d2d', border: '1px solid #444',
                             padding: '8px', minWidth: '250px', maxHeight: '300px', overflowY: 'auto'
                         }}>
-                            <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #444' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', color: '#fff', cursor: 'pointer' }}>
+                            <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--color-border-subtle)' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', color: 'var(--color-text-primary)', cursor: 'pointer' }}>
                                     <input type="checkbox" checked={documents.length > 0 && selectedDocumentIds.length === documents.length} onChange={handleSelectAllDocs} style={{ marginRight: '8px' }} />
                                     전체 선택
                                 </label>
                             </div>
                             {documents.map(doc => (
                                 <div key={doc.id} style={{ marginBottom: '4px' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', color: '#eee', fontSize: '13px', cursor: 'pointer' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', color: 'var(--color-text-primary)', fontSize: '13px', cursor: 'pointer' }}>
                                         <input type="checkbox" checked={selectedDocumentIds.includes(doc.id)} onChange={() => handleDocumentToggle(doc.id)} style={{ marginRight: '8px' }} />
                                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '200px' }} title={doc.filename}>{doc.filename}</span>
                                     </label>
@@ -988,7 +989,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                         width: '180px',
                         minWidth: '180px',
                         backgroundColor: 'var(--color-bg-hover)',
-                        borderRight: '1px solid #e0e0e0',
+                        borderRight: '1px solid var(--color-border)',
                         overflowY: 'auto',
                         padding: '10px 0'
                     }}>
@@ -996,8 +997,8 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                             padding: '8px 12px',
                             fontSize: '12px',
                             fontWeight: '600',
-                            color: '#666',
-                            borderBottom: '1px solid #e0e0e0',
+                            color: 'var(--color-text-secondary)',
+                            borderBottom: '1px solid var(--color-border)',
                             marginBottom: '5px'
                         }}>
                             TOP 10 Hub 노드
@@ -1009,10 +1010,10 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                                 style={{
                                     padding: '8px 12px',
                                     cursor: 'pointer',
-                                    backgroundColor: currentHubId === hub.nodeId ? '#e3f2fd' : 'transparent',
-                                    borderLeft: currentHubId === hub.nodeId ? '3px solid #1976d2' : '3px solid transparent',
+                                    backgroundColor: currentHubId === hub.nodeId ? 'var(--color-accent-light)' : 'transparent',
+                                    borderLeft: currentHubId === hub.nodeId ? '3px solid var(--color-accent)' : '3px solid transparent',
                                     transition: 'all 0.2s',
-                                    borderBottom: '1px solid #f0f0f0'
+                                    borderBottom: '1px solid var(--color-border-subtle)'
                                 }}
                                 onMouseEnter={(e) => {
                                     if (currentHubId !== hub.nodeId) {
@@ -1033,7 +1034,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                                     <span style={{
                                         fontSize: '11px',
                                         fontWeight: '600',
-                                        color: currentHubId === hub.nodeId ? '#1976d2' : '#888',
+                                        color: currentHubId === hub.nodeId ? 'var(--color-accent)' : 'var(--color-text-tertiary)',
                                         minWidth: '18px'
                                     }}>
                                         {index + 1}.
@@ -1042,17 +1043,17 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                                         <div style={{
                                             fontSize: '13px',
                                             fontWeight: currentHubId === hub.nodeId ? '600' : '400',
-                                            color: currentHubId === hub.nodeId ? '#1976d2' : '#333',
+                                            color: currentHubId === hub.nodeId ? 'var(--color-accent)' : 'var(--color-text-primary)',
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis'
                                         }} title={hub.name + (hub.category ? ` (${hub.category})` : '')}>
                                             {hub.name}
-                                            {hub.category && <span style={{ color: '#888', fontSize: '10px', marginLeft: '3px' }}>({hub.category})</span>}
+                                            {hub.category && <span style={{ color: 'var(--color-text-tertiary)', fontSize: '10px', marginLeft: '3px' }}>({hub.category})</span>}
                                         </div>
                                         <div style={{
                                             fontSize: '11px',
-                                            color: '#888'
+                                            color: 'var(--color-text-tertiary)'
                                         }}>
                                             연결 {hub.connectionCount}개
                                         </div>
@@ -1073,7 +1074,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                         left: '50%',
                         transform: 'translateX(-50%)',
                         zIndex: 100,
-                        background: 'rgba(255,255,255,0.95)',
+                        background: 'color-mix(in srgb, var(--color-bg-secondary) 95%, transparent)',
                         padding: '10px 20px',
                         borderRadius: '8px',
                         boxShadow: '0 2px 10px rgba(0,0,0,0.15)'
@@ -1082,12 +1083,12 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                             <div style={{
                                 width: '20px',
                                 height: '20px',
-                                border: '3px solid #e0e0e0',
-                                borderTop: '3px solid #4a90d9',
+                                border: '3px solid var(--color-border)',
+                                borderTop: '3px solid var(--color-accent)',
                                 borderRadius: '50%',
                                 animation: 'spin 1s linear infinite'
                             }}></div>
-                            <span style={{ color: '#5f6368', fontSize: '12px', fontWeight: '500' }}>
+                            <span style={{ color: 'var(--color-text-secondary)', fontSize: '12px', fontWeight: '500' }}>
                                 {isExpanding ? '노드 확장 중...' : '데이터 로딩 중...'}
                             </span>
                         </div>
@@ -1127,7 +1128,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                     graphData={graphData}
                     nodeLabel="name"
                     nodeAutoColorBy="group"
-                    backgroundColor="#ffffff"
+                    backgroundColor={palette.background}
                     cooldownTicks={100}
                     onEngineStop={() => graphRef.current?.zoomToFit(400)}
                     onNodeClick={handleNodeClick}
@@ -1166,9 +1167,9 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                         if (node.isPathNode) {
                             ctx.beginPath();
                             ctx.arc(node.x, node.y, nodeRadius + (5 / globalScale), 0, 2 * Math.PI, false);
-                            ctx.fillStyle = node.isStartNode ? 'rgba(76, 175, 80, 0.4)' :
-                                           node.isEndNode ? 'rgba(244, 67, 54, 0.4)' :
-                                           'rgba(255, 152, 0, 0.4)';
+                            ctx.fillStyle = node.isStartNode ? palette.pathStartGlow :
+                                           node.isEndNode ? palette.pathEndGlow :
+                                           palette.pathMidGlow;
                             ctx.fill();
                         }
 
@@ -1176,24 +1177,24 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                         if (node.isSearchResult && !node.isPathNode) {
                             ctx.beginPath();
                             ctx.arc(node.x, node.y, nodeRadius + (4 / globalScale), 0, 2 * Math.PI, false);
-                            ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+                            ctx.fillStyle = palette.searchHighlight;
                             ctx.fill();
                         }
 
                         // 노드 원 색상 결정
-                        let fillColor = '#9BBFEE'; // 기본
+                        let fillColor = palette.nodeDefault; // 기본
                         if (node.isStartNode) {
-                            fillColor = '#4CAF50'; // 녹색 (출발)
+                            fillColor = palette.pathStart; // 녹색 (출발)
                         } else if (node.isEndNode) {
-                            fillColor = '#F44336'; // 빨간색 (도착)
+                            fillColor = palette.pathEnd; // 빨간색 (도착)
                         } else if (node.isPathNode) {
-                            fillColor = '#FF9800'; // 주황색 (경로)
+                            fillColor = palette.pathMid; // 주황색 (경로)
                         } else if (node.isSearchResult) {
-                            fillColor = '#ff6b6b';
+                            fillColor = palette.nodeSearch;
                         } else if (node.isTopHub) {
-                            fillColor = '#1565c0'; // 진한 파란색 (Top Hub)
+                            fillColor = palette.nodeTopHub; // 진한 파란색 (Top Hub)
                         } else if (node.isHub) {
-                            fillColor = '#4a90d9';
+                            fillColor = palette.nodeHub;
                         }
 
                         // 노드 원
@@ -1206,17 +1207,17 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                         if (canExpand) {
                             // 확장 가능: 파란 점선 테두리
                             ctx.setLineDash([3 / globalScale, 2 / globalScale]);
-                            ctx.strokeStyle = '#1976d2';
+                            ctx.strokeStyle = palette.nodeBorderExpandable;
                             ctx.lineWidth = 2 / globalScale;
                         } else if (isExpanded) {
                             // 확장됨: 녹색 실선 테두리
                             ctx.setLineDash([]);
-                            ctx.strokeStyle = '#4CAF50';
+                            ctx.strokeStyle = palette.nodeBorderExpanded;
                             ctx.lineWidth = 2 / globalScale;
                         } else {
                             // 일반 테두리
                             ctx.setLineDash([]);
-                            ctx.strokeStyle = node.isPathNode ? '#333' : '#6688AA';
+                            ctx.strokeStyle = node.isPathNode ? palette.nodeBorderPath : palette.nodeBorderDefault;
                             ctx.lineWidth = (node.isPathNode ? 2 : 1.5) / globalScale;
                         }
                         ctx.stroke();
@@ -1227,7 +1228,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                             ctx.font = `bold ${10 / globalScale}px sans-serif`;
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            ctx.fillStyle = '#fff';
+                            ctx.fillStyle = palette.pathLabel;
                             ctx.fillText(String(node.pathOrder + 1), node.x, node.y);
                         }
 
@@ -1235,7 +1236,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                         ctx.font = `${node.isPathNode ? 'bold ' : ''}${fontSize}px "Pretendard Variable", sans-serif`;
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'top';
-                        ctx.fillStyle = node.isPathNode ? '#000' : '#444';
+                        ctx.fillStyle = node.isPathNode ? palette.nodeBorderPath : palette.nodeLabel;
                         ctx.fillText(label, node.x, node.y + nodeRadius + (2 / globalScale));
 
                         node.__bckgDimensions = [ctx.measureText(label).width, fontSize];
@@ -1249,7 +1250,7 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                         const lineWidth = (isPathEdge ? 3 : 1) / globalScale;
                         const arrowLength = (isPathEdge ? 8 : 5) / globalScale;
                         const nodeRadius = (isPathEdge ? 10 : 6) / globalScale;
-                        const edgeColor = isPathEdge ? '#FF5722' : '#B0B0B0';
+                        const edgeColor = isPathEdge ? palette.pathEdge : palette.edge;
 
                         ctx.beginPath();
                         ctx.moveTo(start.x, start.y);
@@ -1279,12 +1280,12 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                             const textWidth = ctx.measureText(label).width;
                             const padding = 2 / globalScale;
 
-                            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                            ctx.fillStyle = palette.edgeLabelBg;
                             ctx.fillRect(midX - textWidth / 2 - padding, midY - fontSize / 2 - padding, textWidth + padding * 2, fontSize + padding * 2);
 
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            ctx.fillStyle = '#888';
+                            ctx.fillStyle = palette.edgeLabelText;
                             ctx.fillText(label, midX, midY);
                         }
                     }}
@@ -1295,7 +1296,8 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                     position: 'absolute',
                     bottom: '10px',
                     left: '10px',
-                    backgroundColor: 'rgba(255,255,255,0.95)',
+                    backgroundColor: palette.legendBg,
+                    color: 'var(--color-text-primary)',
                     padding: '8px 12px',
                     borderRadius: '4px',
                     fontSize: '11px',
@@ -1303,45 +1305,45 @@ export default function KnowledgeMapView({ workspaceId, documents = [], initialS
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#1565c0' }}></div>
+                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.nodeTopHub }}></div>
                             <span>TopHub</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#4a90d9' }}></div>
+                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.nodeHub }}></div>
                             <span>Hub</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#9BBFEE' }}></div>
+                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.nodeDefault }}></div>
                             <span>일반</span>
                         </div>
-                        <div style={{ width: '1px', height: '12px', backgroundColor: '#ddd' }}></div>
+                        <div style={{ width: '1px', height: '12px', backgroundColor: palette.legendDivider }}></div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{
                                 width: '10px', height: '10px', borderRadius: '50%',
-                                border: '2px dashed #1976d2', backgroundColor: '#9BBFEE'
+                                border: `2px dashed ${palette.nodeBorderExpandable}`, backgroundColor: palette.nodeDefault
                             }}></div>
                             <span>확장가능</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <div style={{
                                 width: '10px', height: '10px', borderRadius: '50%',
-                                border: '2px solid #4CAF50', backgroundColor: '#9BBFEE'
+                                border: `2px solid ${palette.nodeBorderExpanded}`, backgroundColor: palette.nodeDefault
                             }}></div>
                             <span>확장됨</span>
                         </div>
                         {pathResult && (
                             <>
-                                <div style={{ width: '1px', height: '12px', backgroundColor: '#ddd' }}></div>
+                                <div style={{ width: '1px', height: '12px', backgroundColor: palette.legendDivider }}></div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#4CAF50' }}></div>
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.pathStart }}></div>
                                     <span>출발</span>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#FF9800' }}></div>
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.pathMid }}></div>
                                     <span>경로</span>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#F44336' }}></div>
+                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.pathEnd }}></div>
                                     <span>도착</span>
                                 </div>
                             </>

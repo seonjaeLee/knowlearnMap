@@ -364,7 +364,7 @@
     width: 100%;
     margin-top: 10px;
     padding: var(--spacing-sm);
-    background: var(--kl-brand-primary-grad);
+    background: var(--kl-btn-fill-grad);
     color: #fff;
     border: none;
     border-radius: var(--login-radius);

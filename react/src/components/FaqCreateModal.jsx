@@ -3,6 +3,7 @@ import { ImagePlus } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
+import KlCheckbox from './common/KlCheckbox';
 import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
 import {
     KL_MODAL_FORM_CHECK_CLASS,
@@ -195,15 +196,14 @@ function FaqCreateModal({ isOpen, onClose, onSubmit, editingFaq, categories }) {
                                 min={0}
                             />
                         </div>
-                        <label className={KL_MODAL_FORM_CHECK_CLASS} htmlFor="faq-active">
-                            <input
-                                id="faq-active"
-                                type="checkbox"
-                                checked={isActive}
-                                onChange={(e) => setIsActive(e.target.checked)}
-                            />
-                            <span>활성화</span>
-                        </label>
+                        <KlCheckbox
+                            id="faq-active"
+                            className={KL_MODAL_FORM_CHECK_CLASS}
+                            checked={isActive}
+                            onChange={(e) => setIsActive(e.target.checked)}
+                        >
+                            활성화
+                        </KlCheckbox>
                     </div>
                 </div>
 

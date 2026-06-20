@@ -4,6 +4,7 @@ import { dictionaryApi } from '../services/api';
 import { useDialog } from '../hooks/useDialog';
 import { Edit2, ArrowRightCircle, ChevronLeft, ChevronRight, X, Plus, BookOpen } from 'lucide-react';
 import BaseModal from './common/modal/BaseModal';
+import KlCheckbox from './common/KlCheckbox';
 import {
     KL_MODAL_FORM_CHECK_CLASS,
     KL_MODAL_FORM_ELEMENT_ID,
@@ -898,15 +899,14 @@ function DictionaryView({ workspaceId, initialSelectedDocIds = [], onUpdate, rea
                             </div>
                         </div>
 
-                        <label className={`${KL_MODAL_FORM_CHECK_CLASS} dict-keep-synonym-row`} htmlFor="keepSourceAsSynonym">
-                            <input
-                                type="checkbox"
-                                id="keepSourceAsSynonym"
-                                checked={keepSourceAsSynonym}
-                                onChange={(e) => setKeepSourceAsSynonym(e.target.checked)}
-                            />
-                            <span>원본 용어를 유의어로 추가 (병합 후 검색 가능)</span>
-                        </label>
+                        <KlCheckbox
+                            id="keepSourceAsSynonym"
+                            className={`${KL_MODAL_FORM_CHECK_CLASS} dict-keep-synonym-row`}
+                            checked={keepSourceAsSynonym}
+                            onChange={(e) => setKeepSourceAsSynonym(e.target.checked)}
+                        >
+                            원본 용어를 유의어로 추가 (병합 후 검색 가능)
+                        </KlCheckbox>
 
                     </div>
                 ) : null}

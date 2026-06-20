@@ -25,7 +25,8 @@
 
     --admin-color-success: #10b981;
     --admin-color-success-soft: #e8f5e9;
-    --admin-color-success-on-soft: #2e7d32;
+    /* 다크 배경에선 #2e7d32 텍스트 명도 대비가 부족(~2.8:1) — 이미 다크 보정된 토큰 재사용 */
+    --admin-color-success-on-soft: var(--color-icon-success-emphasis);
 
     --admin-color-info: #3b82f6;
     --admin-color-info-soft: #dbeafe;
@@ -35,19 +36,19 @@
     --admin-color-neutral-on-soft: #4b5563;
 
     /* === 표면 색상 === */
-    --admin-bg-page: #ffffff;
-    --admin-bg-panel: #ffffff;
+    --admin-bg-page: var(--color-bg-secondary);
+    --admin-bg-panel: var(--color-bg-secondary);
     --admin-bg-subtle: var(--color-bg-hover);
     --admin-bg-hover: var(--color-bg-hover);
 
     /* === 텍스트 === */
-    --admin-text-primary: #111827;
-    --admin-text-secondary: #4b5563;
-    --admin-text-muted: #9ca3af;
+    --admin-text-primary: var(--color-text-primary);
+    --admin-text-secondary: var(--color-text-secondary);
+    --admin-text-muted: var(--color-text-tertiary);
 
     /* === 보더 === */
-    --admin-border: #e5e7eb;
-    --admin-border-strong: #d1d5db;
+    --admin-border: var(--color-border-subtle);
+    --admin-border-strong: var(--color-border-strong);
 
     /* === 간격 === */
     --admin-space-xs: 4px;
@@ -381,12 +382,12 @@
 }
 
 .admin-table .kl-table-icon-btn--neutral.kl-table-icon-btn--accent {
-    box-shadow: inset 0 0 0 1px #cee7ec;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--admin-color-primary) 40%, var(--admin-border-strong));
     color: var(--admin-color-primary);
 }
 
 .admin-table .kl-table-icon-btn--neutral.kl-table-icon-btn--accent:hover:not(:disabled) {
-    box-shadow: inset 0 0 0 1px #cee7ec;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--admin-color-primary) 40%, var(--admin-border-strong));
     background: var(--admin-color-primary-soft);
     color: var(--admin-color-primary-hover);
 }

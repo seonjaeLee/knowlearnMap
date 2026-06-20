@@ -493,3 +493,68 @@
 
 ---
 
+## 2026-06-20
+
+### 1) 다크모드 색상·접근성 점검 — 버튼/뱃지·모달·고객센터 전반
+
+- **버튼/뱃지 WCAG 대비:** 다크모드 브랜드 그라디언트(흰 텍스트 대비 ~3.5:1, AA 미달) → 라이트·다크 공통 고정값 `--kl-btn-fill-grad`/`-solid`/`-shadow` 신규 토큰으로 분리, primary 버튼·FREE 뱃지 등 전체 교체
+- **모달:** BaseModal Form 헤더 흰색 하드코딩 제거(토큰화), MUI dark Paper의 흰 elevation 오버레이 제거
+- **고객센터(공지·FAQ·QnA):** 고정행·분류뱃지·중요뱃지·답변뱃지 하드코딩 라이트 색 다크 대응 + 죽은 레거시 CSS(`NoticeDetailModal.css` 등) 삭제
+- **사용자 지정 색 반영:** 안내 박스(`#223046`/`#63D5B9`), 고정 공지 제목(`#ffbe00`, 다크 전용), 분류 뱃지 라이트(`#f0edf4`/`#e5dfec`) 등
+- **그 외:** PageHeader 타이틀·breadcrumb, BasicTable 외곽 테두리, admin-common 색 토큰, 행 선택 표시(테두리→배경 틴트) 다크 대응
+
+#### 파일
+- `kl-tokens-brand-map.css`, `kl-buttons.css`, `kl-basic-table.css`, `kl-infotxt-note.css`, `kl-table-row-detail.css`
+- `BaseModal.module.scss`, `PageHeader.css`, `admin-common.css`
+- `SupportCenter.css`, `CsDetailModal.css`, `NoticePopupModal.css`, `QnaDetailModal.css`
+
+---
+
+### 2) 공용 체크박스 컴포넌트 `KlCheckbox` 신설
+
+- **목적:** 로그인 화면 체크박스 스타일·모션을 업무 화면에도 통일 적용
+- **신규:** `KlCheckbox.jsx` + `kl-checkbox.css` — 모달 폼 체크박스(도메인·FAQ·QnA·Home) 우선 교체
+- **MUI 정리:** 미사용 `PromptManagement.jsx`(MUI Checkbox 포함) 삭제
+- **버그 수정:** 체크/해제 시 라벨이 1~2px 흔들리던 문제 — `.kl-modal-form-check { vertical-align: top }`
+
+#### 파일
+- `react/src/components/common/KlCheckbox.jsx`(신규), `kl-checkbox.css`(신규), `kl-layout-modal.css`
+- `DomainManagement.jsx`, `Home.jsx`, `FaqCreateModal.jsx`, `QnaCreateModal.jsx`, `DictionaryView.jsx`
+- `PromptManagement.jsx`(삭제)
+
+---
+
+### 3) SplitPane 리사이즈 버그 수정 — 프롬프트 상세
+
+- 접힌 상태에서 드래그 시작 시 폭이 순간 점프하던 버그 수정
+- 프롬프트 상세 좌측 패널 너비 범위를 시맨틱 옵션 화면과 동일하게(20~60%) 통일
+
+#### 파일
+- `react/src/hooks/useSplitPaneResize.js`
+- `react/src/prompt/components/editor/EditorTab.jsx`
+
+---
+
+### 4) 다크모드 — 노트북 상세·지식그래프·사전·리포트 모달 (Map 메뉴 적용 완료)
+
+- **범위:** LNB 이후 업무 화면 중 **노트북 상세(`NotebookDetail`)까지** `data-theme` 토큰 전환 완료. (프롬프트 관리 등 이후 메뉴는 별도)
+- **NotebookDetail:** 패널·탭·브레드크럼·채팅·동기화 경고·버튼·뱃지 등 하드코드 `#fff`/`#e0e0e0`/`#333` 등 → `var(--color-*)` 일괄 치환. 동기화 상태 배너는 라이트 기존 톤 유지 + `[data-theme='dark']` 전용 `color-mix` 배경
+- **지식그래프(canvas):** `useGraphPalette.js` 신설 — `react-force-graph-2d`는 CSS 토큰이 안 닿으므로 라이트/다크 노드·엣지·레전드 색을 한 곳에서 관리. `KnowledgeGraphModal`·`MiniKnowledgeGraph`·`KnowledgeMapView` 연동
+- **KnowledgeGraphModal UI:** 툴바·문서 필터·닫기 버튼 하드코드 다크 톤 제거 → 토큰·`kl-btn gray-outline`. 중복 `admin/KnowledgeGraphModal.css` 삭제
+- **DictionaryView:** 헤더·모드탭·테이블·상세 패널 배경·테두리·텍스트 토큰화
+- **ReportGenerationModal:** 포맷 카드·페르소나·로딩 문구 토큰화, 기본 페르소나 카드 `color-mix` 톤
+- **공통·레이아웃:** `NotificationBell` 드롭다운, `KlPopover`/`KlTooltip` 화살·배경, `MainLayout` 노트북 `padding-bottom`(푸터 숨김 시 하단 여백), LNB `grade-tag` → `--kl-btn-fill-solid`
+- **고객센터 페이지 CSS 정리:** `Faq.css`·`NoticeList.css`·`QnaBoard.css` 내 미사용 레거시 스타일 블록 삭제(실제 UI는 `SupportCenter`·키트 SSOT)
+
+#### 파일
+- `react/src/components/NotebookDetail.css`
+- `react/src/hooks/useGraphPalette.js`(신규)
+- `KnowledgeGraphModal.jsx`, `KnowledgeGraphModal.css`, `MiniKnowledgeGraph.jsx`, `MiniKnowledgeGraph.css`, `KnowledgeMapView.jsx`
+- `DictionaryView.jsx`, `DictionaryView.css`, `DictionaryModal.jsx`
+- `ReportGenerationModal.jsx`, `ReportGenerationModal.css`, `RenameDialog.css`
+- `NotificationBell.css`, `KlPopover.module.scss`, `KlTooltip.module.scss`, `MainLayout.css`
+- `kl-tokens-theme-map.css`, `kl-legacy-modal.css`
+- `Faq.css`, `NoticeList.css`, `QnaBoard.css`, `admin/KnowledgeGraphModal.css`(삭제)
+
+---
+

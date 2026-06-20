@@ -13,17 +13,17 @@
 }
 
 .wrap {
-  /* admin-common :root 와 동일 값(테이블·푸터 범위) — admin-common 미 import 화면에서도 동작 */
-  --bt-bg-panel: #ffffff;
-  --bt-bg-subtle: #f3f2fb;
+  /* 테마 토큰 참조 — data-theme 전환 시 자동으로 라이트·다크 색상 적용 */
+  --bt-bg-panel: var(--color-bg-secondary);
+  --bt-bg-subtle: var(--color-bg-subtle);
   --bt-bg-hover: var(--color-table-row-hover-bg);
-  --bt-border: #e6e9ef;
-  --bt-border-strong: #d9dde5;
+  --bt-border: var(--color-border-subtle);
+  --bt-border-strong: var(--color-border-strong);
   --bt-head-bg: var(--color-table-head-bg);
-  --bt-head-text: #3a394b;
-  --bt-text-primary: #111827;
-  --bt-text-secondary: #4b5563;
-  --bt-text-muted: #9ca3af;
+  --bt-head-text: var(--color-table-head-text);
+  --bt-text-primary: var(--color-text-primary);
+  --bt-text-secondary: var(--color-text-secondary);
+  --bt-text-muted: var(--color-text-muted);
   --bt-font-sm: 12px;
   --bt-font-base: 13px;
   --bt-space-xs: 4px;

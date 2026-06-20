@@ -98,8 +98,8 @@
     min-height:19px;
     padding: 0 var(--spacing-xs);
     border-radius: var(--radius-sm);
-    background: var(--color-grey6);
-    color: #fff;
+    background: var(--color-bg-hover);
+    color: var(--color-text-secondary);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
 }

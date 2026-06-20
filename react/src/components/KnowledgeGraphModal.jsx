@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import { useDialog } from '../hooks/useDialog';
+import { useGraphPalette } from '../hooks/useGraphPalette';
 import './KnowledgeGraphModal.css';
 import { API_URL } from '../config/api';
 const isLocalAuthEnabled = import.meta.env.VITE_ENABLE_LOCAL_AUTH === 'true';
@@ -40,6 +41,7 @@ const getLocalGraphMap = () => {
 
 export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, initialSelectedDocIds = [], documents = [], overrideData = null }) {
     const { alert } = useDialog();
+    const palette = useGraphPalette();
     const [fullGraphData, setFullGraphData] = useState({ nodes: [], links: [] });
     const [graphData, setGraphData] = useState({ nodes: [], links: [] });
     const graphRef = useRef();
@@ -527,15 +529,15 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                     {/* Search Controls */}
                     <div className="kg-search-controls">
                         {/* 노드 카운트 정보 */}
-                        <div className="kg-node-count" style={{ marginRight: '15px', fontWeight: 'bold', color: '#333', fontSize: '14px' }}>
+                        <div className="kg-node-count" style={{ marginRight: '15px', fontWeight: 'bold', color: 'var(--color-text-primary)', fontSize: '14px' }}>
                             <span>현재: {graphData.nodes.length}개</span>
                             {totalNodeCount > 0 && (
-                                <span style={{ color: '#666', marginLeft: '5px' }}>
+                                <span style={{ color: 'var(--color-text-secondary)', marginLeft: '5px' }}>
                                     / 전체: {totalNodeCount}개
                                 </span>
                             )}
                             {hasMore && (
-                                <span style={{ color: '#4a90d9', marginLeft: '5px', fontSize: '12px' }}>
+                                <span style={{ color: 'var(--color-accent)', marginLeft: '5px', fontSize: '12px' }}>
                                     (더블클릭으로 확장)
                                 </span>
                             )}
@@ -559,7 +561,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                             )}
                         </div>
                         <div className="kg-input-group" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <span style={{ color: '#333', fontSize: '14px', fontWeight: '500' }}>Depth:</span>
+                            <span style={{ color: 'var(--color-text-secondary)', fontSize: '14px', fontWeight: '500' }}>Depth:</span>
                             <input
                                 type="number"
                                 className="kg-depth-input"
@@ -595,17 +597,14 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                                     right: 0,
                                     transform: 'none',
                                     zIndex: 1000,
-                                    backgroundColor: '#2d2d2d',
-                                    border: '1px solid #444',
                                     borderRadius: '4px',
                                     padding: '8px',
                                     minWidth: '250px',
                                     maxHeight: '300px',
                                     overflowY: 'auto',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
                                 }}>
-                                    <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #444' }}>
-                                        <label style={{ display: 'flex', alignItems: 'center', color: '#fff', cursor: 'pointer' }}>
+                                    <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--color-border-subtle)' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', color: 'var(--color-text-primary)', cursor: 'pointer' }}>
                                             <input
                                                 type="checkbox"
                                                 checked={documents.length > 0 && selectedDocumentIds.length === documents.length}
@@ -617,7 +616,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                                     </div>
                                     {documents.map(doc => (
                                         <div key={doc.id} style={{ marginBottom: '4px' }}>
-                                            <label style={{ display: 'flex', alignItems: 'center', color: '#eee', fontSize: '13px', cursor: 'pointer' }}>
+                                            <label style={{ display: 'flex', alignItems: 'center', color: 'var(--color-text-primary)', fontSize: '13px', cursor: 'pointer' }}>
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedDocumentIds.includes(doc.id)}
@@ -637,10 +636,10 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
 
                     <div style={{ flex: 1 }}></div>
 
-                    <button className="kg-close-btn" style={{ margin: 0 }} onClick={onClose}>닫기</button>
+                    <button type="button" className="kl-btn gray-outline md" onClick={onClose}>닫기</button>
                 </div>
 
-                <div ref={containerRef} style={{ flex: 1, border: '1px solid #333', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
+                <div ref={containerRef} style={{ flex: 1, border: '1px solid var(--color-border-strong)', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
                     {(isLoading || isExpanding) && (
                         <div style={{
                             position: 'absolute',
@@ -688,7 +687,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                         graphData={graphData}
                         nodeLabel="name"
                         nodeAutoColorBy="group"
-                        backgroundColor="#ffffff"
+                        backgroundColor={palette.background}
                         onNodeClick={(node) => console.log('[onNodeClick] 노드 클릭됨:', node?.name || node?.id)}
                         onNodeDoubleClick={handleNodeDoubleClick}
 
@@ -716,18 +715,18 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                             if (node.isSearchResult) {
                                 ctx.beginPath();
                                 ctx.arc(node.x, node.y, nodeRadius + (4 / globalScale), 0, 2 * Math.PI, false);
-                                ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+                                ctx.fillStyle = palette.searchHighlight;
                                 ctx.fill();
                             }
 
                             // 노드 색상 결정
-                            let fillColor = '#9BBFEE'; // 기본
+                            let fillColor = palette.nodeDefault;
                             if (node.isSearchResult) {
-                                fillColor = '#ff6b6b';
+                                fillColor = palette.nodeSearch;
                             } else if (node.isTopHub) {
-                                fillColor = '#1565c0';
+                                fillColor = palette.nodeTopHub;
                             } else if (node.isHub) {
-                                fillColor = '#4a90d9';
+                                fillColor = palette.nodeHub;
                             }
 
                             // Draw Node Circle
@@ -739,15 +738,15 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                             // 테두리 스타일 (확장 상태에 따라)
                             if (canExpand) {
                                 ctx.setLineDash([3 / globalScale, 2 / globalScale]);
-                                ctx.strokeStyle = '#1976d2';
+                                ctx.strokeStyle = palette.nodeBorderExpandable;
                                 ctx.lineWidth = 2 / globalScale;
                             } else if (isExpanded) {
                                 ctx.setLineDash([]);
-                                ctx.strokeStyle = '#4CAF50';
+                                ctx.strokeStyle = palette.nodeBorderExpanded;
                                 ctx.lineWidth = 2 / globalScale;
                             } else {
                                 ctx.setLineDash([]);
-                                ctx.strokeStyle = '#6688AA';
+                                ctx.strokeStyle = palette.nodeBorderDefault;
                                 ctx.lineWidth = 1.5 / globalScale;
                             }
                             ctx.stroke();
@@ -757,7 +756,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                             ctx.font = `${fontSize}px "Pretendard Variable", sans-serif`;
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'top';
-                            ctx.fillStyle = '#444';
+                            ctx.fillStyle = palette.nodeLabel;
                             ctx.fillText(label, node.x, node.y + nodeRadius + (2 / globalScale));
 
                             node.__bckgDimensions = [ctx.measureText(label).width, fontSize];
@@ -783,7 +782,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                             const lineWidth = 1 / globalScale;
                             const arrowLength = 5 / globalScale;
                             const nodeRadius = 6 / globalScale;
-                            const edgeColor = '#B0B0B0';
+                            const edgeColor = palette.edge;
 
                             // Draw Line
                             ctx.beginPath();
@@ -822,12 +821,12 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                                 const textWidth = ctx.measureText(label).width;
                                 const padding = 2 / globalScale;
 
-                                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                                ctx.fillStyle = palette.edgeLabelBg;
                                 ctx.fillRect(midX - textWidth / 2 - padding, midY - labelFontSize / 2 - padding, textWidth + padding * 2, labelFontSize + padding * 2);
 
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'middle';
-                                ctx.fillStyle = '#888';
+                                ctx.fillStyle = palette.edgeLabelText;
                                 ctx.fillText(label, midX, midY);
                             }
                         }}
@@ -838,7 +837,7 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                         position: 'absolute',
                         bottom: '10px',
                         left: '10px',
-                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        backgroundColor: palette.legendBg,
                         padding: '8px 12px',
                         borderRadius: '4px',
                         fontSize: '12px',
@@ -846,24 +845,24 @@ export default function KnowledgeGraphModal({ isOpen, onClose, workspaceId, init
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#1565c0' }}></div>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.nodeTopHub }}></div>
                                 <span>TopHub</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#4a90d9' }}></div>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.nodeHub }}></div>
                                 <span>Hub</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#9BBFEE' }}></div>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: palette.nodeDefault }}></div>
                                 <span>일반</span>
                             </div>
-                            <div style={{ width: '1px', height: '12px', backgroundColor: '#ddd' }}></div>
+                            <div style={{ width: '1px', height: '12px', backgroundColor: palette.legendDivider }}></div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px dashed #1976d2', backgroundColor: '#9BBFEE' }}></div>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', border: `2px dashed ${palette.nodeBorderExpandable}`, backgroundColor: palette.nodeDefault }}></div>
                                 <span>확장가능</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid #4CAF50', backgroundColor: '#9BBFEE' }}></div>
+                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', border: `2px solid ${palette.nodeBorderExpanded}`, backgroundColor: palette.nodeDefault }}></div>
                                 <span>확장됨</span>
                             </div>
                         </div>

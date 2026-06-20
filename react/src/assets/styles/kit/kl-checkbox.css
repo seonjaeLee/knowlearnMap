@@ -1,0 +1,52 @@
+/**
+ * 공용 체크박스 — 로그인 화면(login-chk)과 동일한 외형·모션을 업무 화면에도 적용.
+ * 사용: KlCheckbox 컴포넌트(components/common/KlCheckbox.jsx)가 input에 자동 적용.
+ */
+.kl-checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border-radius: 5px;
+  border: 1.6px solid var(--color-border-strong);
+  background: var(--color-bg-secondary);
+  display: grid;
+  place-items: center;
+  transition: background 0.12s ease, border-color 0.12s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.kl-checkbox:checked {
+  background: var(--kl-brand-primary);
+  border-color: var(--kl-brand-primary);
+}
+
+.kl-checkbox:checked::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(42deg) translateY(-1px);
+}
+
+.kl-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.kl-checkbox:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/*
+ * label이 inline-flex일 때, 체크 시 ::after(체크마크)가 생기면서 빈 grid 박스 vs 1개 항목 사이
+ * 합성 baseline이 달라져 label 전체가 1~2px 흔들린다. 호출부 className마다 따로 고치면
+ * 새 화면을 추가할 때마다 재발하므로, KlCheckbox가 렌더링하는 모든 label에 구조적으로 고정.
+ */
+label:has(> .kl-checkbox) {
+  vertical-align: top;
+}

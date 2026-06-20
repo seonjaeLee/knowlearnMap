@@ -116,10 +116,23 @@ export function useSplitPaneResize({
     event.preventDefault();
     event.stopPropagation();
 
-    onResizeStart?.();
-
     const container = containerRef.current;
     if (!container) return;
+
+    // 접힌 상태에서 드래그를 시작하면 onResizeStart가 펼침을 트리거하는데,
+    // leftPercent가 그대로면 고정폭(collapsedLeftWidthPx) → %폭으로 첫 프레임에 순간 점프한다.
+    // 펼치기 전에 현재 보이는 폭과 동일한 %로 먼저 맞춰서 점프 없이 이어지게 한다.
+    if (effectiveCollapsed) {
+      const rect = container.getBoundingClientRect();
+      const leftEl = container.firstElementChild;
+      const currentLeftWidth = leftEl ? leftEl.getBoundingClientRect().width : collapsedLeftWidthPx;
+      if (rect.width > 0) {
+        const equivalentPercent = clamp((currentLeftWidth / rect.width) * 100, minLeftPercent, maxLeftPercent);
+        setLeftPercent(equivalentPercent);
+      }
+    }
+
+    onResizeStart?.();
 
     setIsResizing(true);
     document.body.classList.add('kl-split-pane-resizing');
@@ -148,6 +161,8 @@ export function useSplitPaneResize({
     document.addEventListener('pointercancel', onUp);
   }, [
     containerRef,
+    effectiveCollapsed,
+    collapsedLeftWidthPx,
     minLeftPercent,
     maxLeftPercent,
     onResizeStart,

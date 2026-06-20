@@ -16,6 +16,12 @@
   color: var(--color-text-primary);
 }
 
+/* 자식 엘리먼트(각 페이지 CSS)가 자기 색을 직접 지정해도 항상 이기도록 * 까지 강제 (닫기 버튼 아이콘은 제외) */
+:global([data-theme='dark']) .panel,
+:global([data-theme='dark']) .panel *:not(.closeBtn):not(.closeBtn *) {
+  color: #ffbe00 !important;
+}
+
 .panelWithClose {
   position: relative;
 }

@@ -14,7 +14,7 @@ export default function DictionaryModal({ isOpen, onClose, workspaceId, initialS
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h2 className="kg-modal-title" style={{ margin: 0 }}>사전</h2>
-                    <button className="kg-close-btn" style={{ margin: 0 }} onClick={onClose}>닫기</button>
+                    <button type="button" className="kl-btn gray-outline md" onClick={onClose}>닫기</button>
                 </div>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
                     <DictionaryView

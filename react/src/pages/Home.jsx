@@ -10,6 +10,7 @@ import ShareSettingsModal from '../components/ShareSettingsModal';
 import PageHeader from '../components/common/PageHeader';
 import KlIconButton from '../components/common/KlIconButton';
 import KlBadge from '../components/common/KlBadge';
+import KlCheckbox from '../components/common/KlCheckbox';
 import { getWorkspaceShareBadgeProps } from '../components/common/klBadgeToneMaps';
 import BasicTable from '../components/common/BasicTable';
 import { listTableEmptyState } from '../config/supportMock';
@@ -1121,15 +1122,14 @@ function Home() {
                                 LLM 청킹
                             </label>
                             <div className="kl-modal-form-row__control">
-                                <label className={KL_MODAL_FORM_CHECK_CLASS} htmlFor="workspace-prompt-chunk">
-                                    <input
-                                        id="workspace-prompt-chunk"
-                                        type="checkbox"
-                                        checked={isChunkingEnabled}
-                                        onChange={handleChunkingToggle}
-                                    />
-                                    <span>{isChunkingEnabled ? '사용함' : '사용 안 함'}</span>
-                                </label>
+                                <KlCheckbox
+                                    id="workspace-prompt-chunk"
+                                    className={KL_MODAL_FORM_CHECK_CLASS}
+                                    checked={isChunkingEnabled}
+                                    onChange={handleChunkingToggle}
+                                >
+                                    {isChunkingEnabled ? '사용함' : '사용 안 함'}
+                                </KlCheckbox>
                                 <p className={`kl-modal-form-helper${isChunkingEnabled ? '' : ' kl-modal-form-helper--error'}`}>
                                     {isChunkingEnabled
                                         ? 'PDF 문서를 LLM으로 청킹합니다.'

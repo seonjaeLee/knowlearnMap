@@ -52,7 +52,7 @@
 .report-generation-loading {
     text-align: center;
     padding: 40px;
-    color: #5f6368;
+    color: var(--color-text-secondary);
 }
 
 .format-section {
@@ -66,7 +66,7 @@
 .section-title {
     font-size: 14px;
     font-weight: 500;
-    color: #5f6368;
+    color: var(--color-text-secondary);
     margin: 0 0 16px 0;
     display: flex;
     align-items: center;
@@ -80,7 +80,7 @@
 
 .format-card {
     background-color: var(--color-bg-hover);
-    border: 1px solid #e8eaed;
+    border: 1px solid var(--color-border-subtle);
     border-radius: 12px;
     padding: 20px 16px;
     text-align: left;
@@ -91,7 +91,7 @@
 
 .format-card:hover {
     background-color: var(--color-bg-hover);
-    border-color: #dadce0;
+    border-color: var(--color-border);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -111,7 +111,7 @@
 .format-title {
     font-size: 14px;
     font-weight: 500;
-    color: #202124;
+    color: var(--color-text-primary);
     margin: 0;
     flex: 1;
     line-height: 1.4;
@@ -131,7 +131,7 @@
 
 .edit-icon-btn:hover {
     opacity: 1;
-    background-color: rgba(26, 115, 232, 0.1);
+    background-color: var(--color-accent-muted);
     transform: scale(1.1);
 }
 
@@ -141,21 +141,21 @@
 
 .format-description {
     font-size: 12px;
-    color: #5f6368;
+    color: var(--color-text-secondary);
     margin: 0;
     line-height: 1.5;
 }
 
-/* Default persona card */
+/* Default persona card — 다른 카드와 살짝 구분되는 톤 */
 .default-persona-card {
-    background-color: #f0f4f9;
-    border-color: #c8d6e5;
+    background-color: color-mix(in srgb, var(--color-accent) 6%, var(--color-bg-secondary));
+    border-color: var(--color-border);
 }
 
 /* 추가 페르소나 카드 — 기본(정적) 스타일만. hover/active는 .format-card 유지 */
 .format-card.add-set-card {
     background-color: var(--color-bg-secondary);
-    border-color: #c8d6e5;
+    border-color: var(--color-border);
 }
 
 .format-card.add-set-card .format-header {
@@ -173,7 +173,7 @@
     transform: scaleX(-1) translateY(1px);
 }
 
-/* 목록 카드만 — 사용안함 우측 정렬 (편집 화면 persona-disable-consent 제외) */
+/* 목록 카드만 — 사용안함 우측 정렬 (편집 화면은 기본 좌측 정렬 유지) */
 .format-card.add-set-card .persona-checkbox-label {
     justify-content: flex-end;
 }
@@ -183,48 +183,17 @@
     opacity: 0.5;
 }
 
-/* 편집 폼 — 사용안함 (1:1 문의 개인정보 동의 체크박스와 동일 리듬) */
+/* 편집 폼 — 사용안함. 체크박스 자체는 kl-modal-form-check(+emphasis) 공용 스타일 사용 */
 .persona-disable-agreement {
     margin: 0;
 }
 
-.persona-disable-consent {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    margin: 0;
-    padding: 0;
-    cursor: pointer;
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1;
-    color: var(--color-text-primary);
-}
-
-.persona-disable-consent input[type='checkbox'] {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    flex-shrink: 0;
-    cursor: pointer;
-    accent-color: var(--color-accent);
-}
-
-.persona-disable-consent span {
-    line-height: var(--font-size-base);
-}
-
-/* 목록 카드 — 사용안함 */
+/* 목록 카드 — 사용안함. kl-modal-form-check 위에 카드 전용 구분선만 추가 */
 .persona-checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
     margin-top: 10px;
     padding-top: 8px;
-    border-top: 1px solid #e8eaed;
-    font-size: 12px;
-    color: #5f6368;
-    cursor: pointer;
+    border-top: 1px solid var(--color-border-subtle);
+    font-size: var(--font-size-xs);
 }
 
 .persona-toggle-row {
@@ -236,28 +205,21 @@
     margin-bottom: 0;
 }
 
-.persona-checkbox-label input[type="checkbox"] {
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
-    accent-color: #d93025;
-}
-
 .persona-title-input {
     font-size: 14px;
     font-weight: 500;
-    color: #202124;
-    border: 1px solid #1a73e8;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-accent);
     border-radius: 4px;
     padding: 2px 6px;
     outline: none;
     width: 100%;
     font-family: inherit;
-    background: #fff;
+    background: var(--color-bg-secondary);
 }
 
 .delete-icon-btn:hover {
-    background-color: rgba(217, 48, 37, 0.1) !important;
+    background-color: color-mix(in srgb, var(--color-icon-danger) 10%, transparent) !important;
 }
 
 .edit-icon-disabled {
@@ -272,20 +234,20 @@
     gap: 8px;
     width: 100%;
     padding: 14px;
-    background-color: #fff;
-    border: 2px dashed #dadce0;
+    background-color: var(--color-bg-secondary);
+    border: 2px dashed var(--color-border);
     border-radius: 12px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    color: #5f6368;
+    color: var(--color-text-secondary);
     transition: all 0.2s;
 }
 
 .add-persona-btn:hover {
-    border-color: #1a73e8;
-    color: #1a73e8;
-    background-color: #f0f7ff;
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background-color: var(--color-accent-light);
 }
 
 @media (max-width: 640px) {
@@ -313,11 +275,11 @@
 
 .report-generation-list-modal-body::-webkit-scrollbar-thumb,
 .report-generation-edit-modal-body::-webkit-scrollbar-thumb {
-    background-color: #dadce0;
+    background-color: var(--color-border);
     border-radius: 4px;
 }
 
 .report-generation-list-modal-body::-webkit-scrollbar-thumb:hover,
 .report-generation-edit-modal-body::-webkit-scrollbar-thumb:hover {
-    background-color: #bdc1c6;
+    background-color: var(--color-border-hover);
 }

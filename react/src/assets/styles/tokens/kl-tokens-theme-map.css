@@ -26,7 +26,8 @@
   --color-accent-hover: var(--kl-brand-primary-hover);
   --color-accent-light: var(--kl-brand-primary-soft);
   --color-accent-muted: color-mix(in srgb, var(--kl-brand-primary) 8%, transparent);
-  --color-accent-gradient: var(--kl-brand-primary-grad);
+  /* 흰 텍스트가 올라가는 채움용 — 다크에서도 명도대비 유지(라이트·다크 동일 고정값) */
+  --color-accent-gradient: var(--kl-btn-fill-grad);
   /* glow shadow — 로그인 full-width CTA(.login-btn) 전용 */
   --shadow-btn-primary: none;
 
@@ -123,7 +124,8 @@
   --color-accent-hover: var(--kl-brand-primary-hover);
   --color-accent-light: var(--kl-brand-primary-soft);
   --color-accent-muted: color-mix(in srgb, var(--kl-brand-primary) 12%, transparent);
-  --color-accent-gradient: var(--kl-brand-primary-grad);
+  /* 흰 텍스트가 올라가는 채움용 — 다크에서도 명도대비 유지(라이트·다크 동일 고정값) */
+  --color-accent-gradient: var(--kl-btn-fill-grad);
   --color-accent-emphasis: #aaa8f6;
   /* glow shadow — 로그인 full-width CTA(.login-btn) 전용 */
   --shadow-btn-primary: none;

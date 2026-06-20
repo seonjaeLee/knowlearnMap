@@ -18,7 +18,7 @@
 /* 표만 있는 영역 — 카드 외곽 */
 .table-area:not(:has(> .table-toolbar)) {
   background: var(--color-bg-secondary);
-  border: 1px solid #c6ccd7;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
@@ -55,7 +55,7 @@
 
 .table-area:has(> .table-toolbar) > .basic-table-shell {
   background: var(--color-bg-secondary);
-  border: 1px solid #c6ccd7;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   position: relative;
   min-width: 0;
@@ -369,10 +369,10 @@
   background: var(--color-table-row-hover-bg);
 }
 
-/* 펼침(열린) 부모 행 — 선택된 상태로 간주, hover 배경 변화 없음 */
+/* 펼침(열린) 부모 행 — 선택된 상태로 간주, hover에도 선택 틴트 유지 */
 .basic-table-shell tbody tr.kl-table-expand-row.is-open:hover > td,
 .basic-table-shell tbody tr.kl-table-expand-row.is-open:hover > th {
-  background: var(--color-bg-secondary) !important;
+  background: var(--color-accent-muted) !important;
 }
 
 /* detail 서브행 — hover 배경 변화 없음 */

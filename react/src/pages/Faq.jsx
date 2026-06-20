@@ -203,9 +203,18 @@ function Faq() {
         );
       case 'category': {
         const category = row.category;
-        return isTableCellBlank(category)
-          ? <span className="kl-table-cell-blank">{formatTableCellText(category)}</span>
-          : <span className="kl-table-category-text">{category}</span>;
+        return (
+          <span
+            className={[
+              'support-badge support-badge--soft',
+              isTableCellBlank(category) ? 'kl-table-cell-blank' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {formatTableCellText(category)}
+          </span>
+        );
       }
       case 'author': {
         const author = row.authorEmail?.split('@')[0] || row.createdBy;

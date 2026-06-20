@@ -4,7 +4,7 @@
     height: 100%;
     /* 뷰헤더: 모드탭(~234px) + 건수(~120px) + 카테고리·정렬·검색(220px) 행 — 740px이면 좌우가 압축되어 건수·셀렉트 글자 깨짐 */
     min-width: 880px;
-    background-color: #fff;
+    background-color: var(--color-bg-secondary);
 }
 
 /* View Header */
@@ -14,8 +14,8 @@
     justify-content: space-between;
     gap: 8px;
     padding: 10px 16px;
-    border-bottom: 1px solid #e0e0e0;
-    background-color: #fff;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-bg-secondary);
     min-width: 0;
     flex-wrap: nowrap;
 }
@@ -30,9 +30,9 @@
 .item-count-info {
     margin-left: 10px;
     padding-left: 10px;
-    border-left: 1px solid #e0e0e0;
+    border-left: 1px solid var(--color-border);
     font-size: 12px;
-    color: #5f6368;
+    color: var(--color-text-secondary);
     font-weight: 500;
     white-space: nowrap;
     flex-shrink: 0;
@@ -51,8 +51,7 @@
     cursor: pointer;
     font-size: 12px;
     font-weight: 500;
-    color: #475569;
-    /* border: 1px solid #dbe2ea; */
+    color: var(--color-text-secondary);
     border-radius: 4px;
     transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
@@ -66,27 +65,27 @@
 .dictionary-mode-tab-subtitle {
     font-size: 10px;
     line-height: 1.1;
-    color: #64748b;
+    color: var(--color-text-tertiary);
 }
 
 .dictionary-mode-tab:hover {
     background: var(--color-bg-hover);
-    color: #1e293b;
+    color: var(--color-text-primary);
 }
 
 .dictionary-mode-tab.active {
-    color: #0b57d0;
-    border-color: #9fc2fb;
-    background: #eaf2ff;
-    box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.12);
+    color: var(--color-accent);
+    border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 14%, var(--color-bg-secondary));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 18%, transparent);
 }
 
 .dictionary-mode-tab.active .dictionary-mode-tab-subtitle {
-    color: #3b74d7;
+    color: var(--color-accent-emphasis, var(--color-accent));
 }
 
 .dictionary-category-separator {
-    color: #e53935;
+    color: var(--color-icon-danger);
     font-weight: 800;
     margin: 0 3px;
 }
@@ -126,19 +125,19 @@
 .category-filter-inline label {
     font-size: 13px;
     font-weight: 500;
-    color: #202124;
+    color: var(--color-text-primary);
     white-space: nowrap;
 }
 
 .category-filter-inline select {
     padding: 3px 20px 3px 8px;
-    border: 1px solid #dadce0;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 12px;
     line-height: 1.2;
     height: 26px;
-    color: #3c4043;
-    background-color: white;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-secondary);
     cursor: pointer;
     width: 120px;
     min-width: 120px;
@@ -147,7 +146,7 @@
 
 .category-filter-inline select:focus {
     outline: none;
-    border-color: #1a73e8;
+    border-color: var(--color-accent);
 }
 
 /* 지식 그래프 .kg-search-input(220×26, 단일 테두리)과 동일 스케일 — 아이콘·클리어 없음 */
@@ -160,14 +159,14 @@
     max-width: 220px;
     height: 26px;
     padding: 0 8px;
-    border: 1px solid #dadce0;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
-    background-color: #ffffff;
+    background-color: var(--color-bg-secondary);
     flex-shrink: 0;
 }
 
 .search-bar:focus-within {
-    border-color: #1a73e8;
+    border-color: var(--color-accent);
 }
 
 .search-bar input {
@@ -178,13 +177,13 @@
     background: transparent;
     font-size: 12px;
     line-height: 1.2;
-    color: #202124;
+    color: var(--color-text-primary);
     box-sizing: border-box;
 }
 
 .search-bar input::placeholder {
     font-size: 11px;
-    color: #8a9099;
+    color: var(--color-text-tertiary);
 }
 
 .visually-hidden {
@@ -205,179 +204,6 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
-
-/* Sidebar */
-.dictionary-content-wrapper {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-
-.dictionary-sidebar {
-    width: 280px;
-    border-right: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    padding: 24px 16px;
-    background-color: #fff;
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.dictionary-sidebar.collapsed {
-    width: 0;
-    padding: 24px 0;
-    /* Keep vertical padding or set to 0? */
-    padding: 0;
-    border-right: none;
-    opacity: 0;
-}
-
-.sidebar-tabs {
-    display: flex;
-    border-bottom: 1px solid #e0e0e0;
-    margin-bottom: 24px;
-}
-
-.sidebar-tab {
-    flex: 1;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: #5f6368;
-    border-bottom: 2px solid transparent;
-}
-
-.sidebar-tab.active {
-    color: #1a73e8;
-    border-bottom-color: #1a73e8;
-}
-
-.category-list-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.category-header {
-    font-size: 14px;
-    font-weight: 600;
-    color: #202124;
-    margin: 0 0 12px 0;
-}
-
-.category-list {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.category-item {
-    text-align: left;
-    padding: 10px 12px;
-    font-size: 14px;
-    color: #202124;
-    border: none;
-    background: none;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-.category-item:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.category-item.active {
-    background-color: #e8f0fe;
-    color: #1a73e8;
-    font-weight: 500;
-    border: 1px solid #cce0fc;
-}
-
-/* Category Filter Dropdown */
-.category-filter {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background-color: var(--color-bg-hover);
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.category-filter label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #202124;
-    white-space: nowrap;
-}
-
-.category-filter select {
-    padding: 8px 32px 8px 12px;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    font-size: 14px;
-    color: #3c4043;
-    background-color: white;
-    cursor: pointer;
-    min-width: 150px;
-    transition: border-color 0.2s;
-}
-
-.category-filter select:hover {
-    border-color: #1a73e8;
-}
-
-.category-filter select:focus {
-    outline: none;
-    border-color: #1a73e8;
-    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
-}
-
-/* Main Content */
-.dictionary-main {
-    flex: 1;
-    padding: 24px 32px;
-    background-color: #fff;
-    overflow-y: auto;
-}
-
-.dictionary-search-bar {
-    position: relative;
-    margin-bottom: 24px;
-}
-
-.dictionary-search-bar input {
-    width: 100%;
-    padding: 10px 40px 10px 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.dictionary-search-bar .search-icon {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #5f6368;
-}
-
-.term-list-header {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 12px 0;
-    background-color: var(--color-bg-hover);
-    color: #202124;
-    font-weight: 500;
 }
 
 .data-table {
@@ -429,7 +255,7 @@
     align-items: center;
     justify-content: center;
     margin: 0 0 14px;
-    color: #cbd5e1;
+    color: var(--color-text-tertiary);
 }
 
 .dict-empty-icon svg {
@@ -441,7 +267,7 @@
     font-size: 14px;
     font-weight: 500;
     line-height: 1.4;
-    color: #5f6368;
+    color: var(--color-text-secondary);
 }
 
 .dict-empty-desc {
@@ -449,15 +275,15 @@
     font-size: 12px;
     line-height: 1.55;
     font-weight: 400;
-    color: #94a3b8;
+    color: var(--color-text-tertiary);
 }
 
 .term-item {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #f1f3f4;
+    border-bottom: 1px solid var(--color-border-subtle);
     padding: 12px 0;
-    color: #3c4043;
+    color: var(--color-text-primary);
     transition: background-color 0.2s;
 }
 
@@ -471,62 +297,13 @@
     word-break: break-all;
 }
 
-.term-table-container {
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-}
-
-.term-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.term-table th {
-    text-align: left;
-    padding: 12px 16px;
-    background-color: var(--color-bg-hover);
-    color: #202124;
-    font-weight: 500;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.term-table th:last-child {
-    text-align: center;
-}
-
-.term-table th:nth-child(4) {
-    text-align: center;
-}
-
-.term-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #f1f3f4;
-    color: #3c4043;
-    vertical-align: middle;
-}
-
 .category-tag {
     display: inline-block;
     padding: 2px 8px;
-    border: 1px solid #dadce0;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 12px;
-    color: #5f6368;
-}
-
-.desc-cell {
-    color: #5f6368;
-}
-
-.status-cell {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    /* Center align */
-    gap: 16px;
-    /* Larger gap */
+    color: var(--color-text-secondary);
 }
 
 .action-column {
@@ -535,18 +312,13 @@
     align-items: center;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 8px;
-}
-
 .icon-btn {
     padding: 6px;
     /* Slightly larger */
     background: none;
     border: none;
     cursor: pointer;
-    color: #5f6368;
+    color: var(--color-text-secondary);
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -556,61 +328,12 @@
 
 .icon-btn:hover {
     background-color: var(--color-bg-hover);
-    color: #202124;
+    color: var(--color-text-primary);
 }
 
 .icon-btn.delete:hover {
-    color: #d93025;
-    background-color: #fce8e6;
-}
-
-.status-tag {
-    display: inline-block;
-    padding: 4px 10px;
-    min-width: 60px;
-    text-align: center;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    font-size: 12px;
-    text-transform: capitalize;
-}
-
-/* Edit Modal Styles */
-.edit-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.edit-modal {
-    background-color: white;
-    padding: 24px;
-    border-radius: 8px;
-    width: 400px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.edit-modal h3 {
-    margin: 0 0 20px 0;
-    font-size: 18px;
-    color: #202124;
-}
-
-.edit-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.dictionary-modal-content {
-    min-height: auto !important;
+    color: var(--color-icon-danger);
+    background-color: color-mix(in srgb, var(--color-icon-danger) 12%, transparent);
 }
 
 .dictionary-search-wrap {
@@ -622,8 +345,8 @@
     top: 100%;
     left: 0;
     right: 0;
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
     border-top: none;
     border-radius: 0 0 6px 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -643,15 +366,15 @@
 }
 
 .dictionary-suggest-item:hover {
-    background-color: #f0f7ff;
+    background-color: var(--color-accent-light);
 }
 
 .dictionary-suggest-category {
     font-size: 10px;
     padding: 1px 6px;
     border-radius: 3px;
-    background-color: #e8eaf6;
-    color: #3949ab;
+    background-color: color-mix(in srgb, var(--color-accent) 14%, var(--color-bg-secondary));
+    color: var(--color-accent-emphasis, var(--color-accent));
     flex-shrink: 0;
 }
 
@@ -660,7 +383,7 @@
 }
 
 .dictionary-suggest-label-en {
-    color: #999;
+    color: var(--color-text-tertiary);
     font-size: 11px;
 }
 
@@ -689,14 +412,14 @@
 .dict-loading-wrap {
     padding: 40px;
     text-align: center;
-    color: #999;
+    color: var(--color-text-tertiary);
 }
 
 .dict-loading-spinner {
     width: 24px;
     height: 24px;
-    border: 2px solid #e0e0e0;
-    border-top-color: #1a73e8;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin: 0 auto var(--spacing-sm);
@@ -707,16 +430,16 @@
 }
 
 .dict-text-secondary {
-    color: #555;
+    color: var(--color-text-secondary);
 }
 
 .dict-text-desc {
     font-size: 0.9em;
-    color: #666;
+    color: var(--color-text-secondary);
 }
 
 .dict-synonym-cell {
-    color: #888;
+    color: var(--color-text-tertiary);
     font-style: italic;
 }
 
@@ -734,7 +457,7 @@
 }
 
 .dict-synonym-empty {
-    color: #999;
+    color: var(--color-text-tertiary);
     font-size: var(--font-size-xs);
 }
 
@@ -744,10 +467,10 @@
     gap: 4px;
     padding: 3px var(--spacing-sm) 3px 10px;
     border-radius: 14px;
-    background-color: #e3f2fd;
-    color: #1565c0;
+    background-color: color-mix(in srgb, var(--color-accent) 14%, var(--color-bg-secondary));
+    color: var(--color-accent-emphasis, var(--color-accent));
     font-size: var(--font-size-xs);
-    border: 1px solid #bbdefb;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
 }
 
 .dict-synonym-delete-btn {
@@ -757,7 +480,7 @@
     padding: 0;
     display: flex;
     align-items: center;
-    color: #1565c0;
+    color: var(--color-accent-emphasis, var(--color-accent));
 }
 
 .dict-synonym-delete-btn.is-disabled {
@@ -775,7 +498,7 @@
 
 .dict-synonym-add-btn {
     padding: 4px 10px;
-    border: 1px solid #1976d2;
+    border: 1px solid var(--color-accent);
     border-radius: var(--radius-sm);
     color: #fff;
     display: flex;
@@ -783,17 +506,17 @@
 }
 
 .dict-synonym-add-btn.is-enabled {
-    background-color: #1976d2;
+    background-color: var(--kl-btn-fill-solid);
     cursor: pointer;
 }
 
 .dict-synonym-add-btn.is-disabled {
-    background-color: #ccc;
+    background-color: var(--btn-disabled-bg);
     cursor: not-allowed;
 }
 
 .dict-move-desc {
-    color: #666;
+    color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
     margin-bottom: var(--spacing-md);
 }
@@ -802,39 +525,33 @@
     margin-bottom: var(--spacing-md);
 }
 
-.dict-move-label {
-    display: block;
-    margin-bottom: var(--spacing-sm);
-    font-weight: var(--font-weight-semibold);
-}
-
 .dict-move-search-input {
     width: 100%;
     padding: var(--spacing-sm);
     margin-bottom: var(--spacing-sm);
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
 }
 
 .dict-move-candidate-list {
     max-height: 200px;
     overflow-y: auto;
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
 }
 
 .dict-move-candidate-item {
     padding: var(--spacing-sm);
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    background-color: #fff;
+    border-bottom: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-secondary);
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
 }
 
 .dict-move-candidate-item.is-selected {
-    background-color: #e3f2fd;
+    background-color: var(--color-accent-light);
 }
 
 .dict-candidate-tag {
@@ -853,12 +570,12 @@
 
 .dict-candidate-label-en {
     font-size: 11px;
-    color: #666;
+    color: var(--color-text-secondary);
 }
 
 .dict-candidate-empty {
     padding: var(--spacing-sm);
-    color: #666;
+    color: var(--color-text-secondary);
     text-align: center;
 }
 
@@ -868,102 +585,13 @@
     align-items: center;
 }
 
-.dict-keep-synonym-check {
-    margin-right: var(--spacing-sm);
-}
-
-.dict-keep-synonym-label {
-    font-size: var(--font-size-sm);
-    color: #333;
-    cursor: pointer;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.form-group label {
-    font-size: 13px;
-    color: #5f6368;
-    font-weight: 500;
-}
-
-.form-group input,
-.form-group textarea {
-    padding: 8px 12px;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.form-group textarea {
-    resize: vertical;
-}
-
-.modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-}
-
-.cancel-btn,
-.save-btn {
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-}
-
-.cancel-btn {
-    background-color: white;
-    border: 1px solid #dadce0;
-    color: #3c4043;
-}
-
-.cancel-btn:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.save-btn {
-    background-color: #1a73e8;
-    color: white;
-}
-
-.save-btn:hover {
-    background-color: #1558b0;
-}
-
-
-/* Dictionary Dropdown Styles - Remnants or specific overrides if any */
-/* Inline styles used for dropdown to match KnowledgeGraphModal exactly */
-
-
-/* Ensure Edit Modal inputs are clearly enabled */
-.edit-form input:not([readonly]),
-.edit-form textarea:not([readonly]) {
-    background-color: #fff;
-    color: #333;
-}
-
-/* readonly 톤 — 전역 kl-form-readonly.css */
-
 /* 지식 그래프(.kg-*) 스타일은 KnowledgeGraphModal.css 단일 소스 — 중복 시 번들 순서로 14px·패딩이 덮어씀 */
 
 .pagination-container {
     display: flex;
     justify-content: center;
     padding: 16px 0;
-    border-top: 1px solid #e0e0e0;
-}
-
-.pagination-info {
-    font-size: 14px;
-    color: #5f6368;
-    font-weight: 500;
+    border-top: 1px solid var(--color-border);
 }
 
 .pagination {
@@ -974,9 +602,9 @@
 
 .pagination button {
     padding: 6px 12px;
-    border: 1px solid #dadce0;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
-    background-color: white;
+    background-color: var(--color-bg-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -986,7 +614,7 @@
 
 .pagination button:hover:not(:disabled) {
     background-color: var(--color-bg-hover);
-    border-color: #1a73e8;
+    border-color: var(--color-accent);
 }
 
 .pagination button:disabled {
@@ -996,7 +624,7 @@
 
 .pagination span {
     font-size: 14px;
-    color: #202124;
+    color: var(--color-text-primary);
     font-weight: 500;
     min-width: 60px;
     text-align: center;

@@ -10,6 +10,8 @@
   border: 1px solid var(--color-border) !important;
   box-shadow: var(--shadow-medium) !important;
   background-color: var(--color-bg-primary) !important;
+  /* MUI dark mode Paper가 elevation에 따라 흰색 반투명 그라디언트를 덧씌움 — 토큰 색이 떠 보이는 원인 */
+  background-image: none !important;
   font-family: 'Pretendard', sans-serif !important;
   min-height: var(--base-modal-paper-min-height) !important;
 }
@@ -34,9 +36,9 @@
   border-bottom: 1px solid var(--color-border-subtle) !important;
 }
 
-/* 업무 Form 팝업만 — 헤더 흰색 (alert/confirm은 Paper `--color-bg-primary` 유지) */
+/* 업무 Form 팝업만 — 헤더를 Paper보다 한 단계 밝게 (alert/confirm은 Paper `--color-bg-primary` 유지) */
 .dialogPaperForm .header {
-  background-color: #fff !important;
+  background-color: var(--color-bg-secondary) !important;
 }
 
 .headerCenter {
@@ -50,7 +52,7 @@
 }
 
 .dialogPaperForm .headerFilled {
-  background-color: #fff !important;
+  background-color: var(--color-bg-secondary) !important;
 }
 
 .headerFilled + .contentShell .contentScroll {
@@ -159,9 +161,10 @@
 
 .actions :global(.MuiButton-contained) {
   min-width: 150px !important;
-  background: var(--kl-brand-primary-grad) !important;
+  background: var(--kl-btn-fill-grad) !important;
   border: 1px solid transparent !important;
   color: #ffffff !important;
+  font-weight: var(--font-weight-medium) !important;
   box-shadow: none !important;
   transition: filter var(--transition-fast) !important;
 }
@@ -172,14 +175,14 @@
 }
 
 .actions :global(.MuiButton-contained:hover) {
-  background: var(--kl-brand-primary-grad) !important;
+  background: var(--kl-btn-fill-grad) !important;
   border-color: transparent !important;
   filter: brightness(1.07);
   box-shadow: none !important;
 }
 
 .actions :global(.MuiButton-contained:active) {
-  background: var(--kl-brand-primary-grad) !important;
+  background: var(--kl-btn-fill-grad) !important;
   border-color: transparent !important;
   filter: brightness(1.05);
   box-shadow: none !important;

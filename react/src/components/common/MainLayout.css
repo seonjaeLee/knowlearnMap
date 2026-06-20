@@ -583,9 +583,11 @@
   flex-direction: column;
 }
 
-/* 노트북: main-content·scroll-inner는 스크롤하지 않음 — 패널·채팅 내부만 세로 스크롤 */
+/* 노트북: main-content·scroll-inner는 스크롤하지 않음 — 패널·채팅 내부만 세로 스크롤
+   site-footer가 display:none이라 하단 여백이 통째로 사라짐 — 좌우(24px)와 균형 맞춰 보강 */
 .main-layout .main-content--notebook {
   overflow-y: hidden;
+  padding-bottom: var(--spacing-lg);
 }
 
 /* 프롬프트 상세: 에디터가 뷰포트를 채우도록 외부 스크롤 제거, footer 숨김 */
@@ -668,7 +670,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background-color: var(--color-accent);
+  background-color: var(--kl-btn-fill-solid);
   color: #ffffff;
 }
 
@@ -678,7 +680,7 @@
 .grade-tag.max,
 .grade-tag.special,
 .grade-tag.admin {
-  background-color: var(--color-accent);
+  background-color: var(--kl-btn-fill-solid);
   color: #ffffff;
 }
 

@@ -44,6 +44,12 @@
   color: var(--color-text-primary) !important;
 }
 
+/* title이 노드(JSX)일 때 안쪽 엘리먼트가 자기 색을 지정해도 항상 이기도록 * 까지 강제 */
+:global([data-theme='dark']) .tooltip,
+:global([data-theme='dark']) .tooltip * {
+  color: #ffbe00 !important;
+}
+
 .arrow {
   color: var(--color-bg-secondary) !important;
 

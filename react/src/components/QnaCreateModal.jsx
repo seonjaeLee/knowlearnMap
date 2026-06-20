@@ -3,6 +3,7 @@ import { ImagePlus } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
 import { imageApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
+import KlCheckbox from './common/KlCheckbox';
 import { getModalSubmitLabel } from './common/modal/modalSubmitLabel';
 import {
     KL_MODAL_FORM_CHECK_CLASS,
@@ -220,15 +221,14 @@ function QnaCreateModal({ isOpen, onClose, onSubmit, editingQuestion }) {
                 </div>
 
                 <div>
-                    <label className={`${KL_MODAL_FORM_CHECK_CLASS} ${KL_MODAL_FORM_CHECK_EMPHASIS_CLASS}`} htmlFor="qna-privacy-agree">
-                        <input
-                            id="qna-privacy-agree"
-                            type="checkbox"
-                            checked={privacyAgreement}
-                            onChange={(e) => setPrivacyAgreement(e.target.checked)}
-                        />
-                        <span>개인정보 수집 및 이용 동의</span>
-                    </label>
+                    <KlCheckbox
+                        id="qna-privacy-agree"
+                        className={`${KL_MODAL_FORM_CHECK_CLASS} ${KL_MODAL_FORM_CHECK_EMPHASIS_CLASS}`}
+                        checked={privacyAgreement}
+                        onChange={(e) => setPrivacyAgreement(e.target.checked)}
+                    >
+                        개인정보 수집 및 이용 동의
+                    </KlCheckbox>
                     <p className="kl-modal-form-helper kl-modal-form-helper--legal">
                         * 수집항목: [필수]회원정보(이름, 이메일) / [선택] 참조이메일, 연락처 * 개인정보의 수집 및 이용목적: 문의 확인 및 처리 * 개인정보의 보유 및 이용기간: 3년 * 귀하는 동의를 거절할 수 있는 권리를 보유하며, 동의를 거절하는 경우 문의에 대한 처리에 제한이 있습니다.
                     </p>

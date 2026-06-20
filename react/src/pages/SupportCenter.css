@@ -52,8 +52,16 @@
 }
 
 .support-badge--soft {
-    background: var(--color-bg-hover);
+    background: #f0edf4;
+    border: 1px solid #e5dfec;
     color: var(--color-text-secondary);
+}
+
+/* 분류 뱃지 — 다크 모드에서는 팝업 카테고리(cs-detail-category)와 동일한 톤 */
+[data-theme='dark'] .support-badge--soft {
+    background: color-mix(in srgb, var(--color-accent) 14%, var(--color-bg-secondary));
+    border: 1px solid color-mix(in srgb, var(--color-accent) 28%, var(--color-bg-secondary));
+    color: var(--color-accent-emphasis);
 }
 
 /* 1:1 문의 제목 — 답변 N (dot 없음, 녹색 틴트 pill) */
@@ -64,18 +72,26 @@
 }
 
 .support-badge--new {
-    background: var(--color-accent);
+    background: var(--kl-btn-fill-solid);
     color: #fff;
 }
 
 .support-badge--danger {
-    background: color-mix(in srgb, var(--color-icon-danger) 12%, white);
+    background: color-mix(in srgb, var(--color-icon-danger) 12%, var(--color-bg-secondary));
     color: var(--color-icon-danger);
 }
 
-.support-row-pinned td,
+.support-row-pinned td {
+    background: color-mix(in srgb, var(--color-icon-danger) 6%, var(--color-bg-secondary));
+}
+
+/* 고정 공지 — 다크 모드에서만 제목을 강조색으로 표시 */
+[data-theme='dark'] .support-row-pinned .support-title-text {
+    color: #ffbe00;
+}
+
 .support-row-unread td {
-    background: #f8fbff;
+    background: color-mix(in srgb, var(--color-accent) 6%, var(--color-bg-secondary));
 }
 
 @media (max-width: 768px) {

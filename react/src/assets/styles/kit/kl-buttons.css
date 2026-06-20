@@ -320,12 +320,12 @@
 }
 
 .kl-table-icon-btn--neutral.kl-table-icon-btn--accent {
-    box-shadow: inset 0 0 0 1px #cee7ec;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
     color: var(--color-accent);
 }
 
 .kl-table-icon-btn--neutral.kl-table-icon-btn--accent:hover:not(:disabled) {
-    box-shadow: inset 0 0 0 1px #cee7ec;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
     background: var(--color-accent-light);
     color: var(--color-accent-hover);
 }
@@ -426,7 +426,7 @@
 .admin-btn-primary,
 .kl-btn.primary-full,
 .confirm-btn {
-    background: var(--kl-brand-primary-grad);
+    background: var(--kl-btn-fill-grad);
     border-color: transparent;
     color: #fff;
     box-shadow: none;
@@ -437,7 +437,7 @@
 .admin-btn-primary:hover:not(:disabled),
 .kl-btn.primary-full:hover:not(:disabled),
 .confirm-btn:hover:not(:disabled) {
-    background: var(--kl-brand-primary-grad);
+    background: var(--kl-btn-fill-grad);
     border-color: transparent;
     filter: brightness(1.07);
 }
@@ -568,7 +568,7 @@
     padding: 0 var(--spacing-md);
     border: 1px solid transparent;
     border-radius: var(--radius-sm);
-    background: var(--kl-brand-primary-grad);
+    background: var(--kl-btn-fill-grad);
     color: #fff;
     font-family: var(--font-family);
     font-size: var(--font-size-sm);
@@ -580,7 +580,7 @@
 }
 
 .kl-btn-primary-sm:hover:not(:disabled) {
-    background: var(--kl-brand-primary-grad);
+    background: var(--kl-btn-fill-grad);
     border-color: transparent;
     filter: brightness(1.07);
 }
@@ -758,13 +758,13 @@
 }
 
 .kl-btn.primary-full.lg {
-    box-shadow: var(--kl-brand-primary-shadow);
+    box-shadow: var(--kl-btn-fill-shadow);
 }
 
 [data-theme='dark'] .kl-btn.primary-full.lg:not(:disabled) {
     box-shadow:
         inset 0 1px 0 color-mix(in srgb, #fff 11%, transparent),
-        var(--kl-brand-primary-shadow);
+        var(--kl-btn-fill-shadow);
 }
 
 [data-theme='dark'] .kl-btn.primary-full.lg:hover:not(:disabled) {
@@ -775,10 +775,10 @@
 }
 
 .kl-btn.primary-outline.lg:hover:not(:disabled) {
-    background: var(--kl-brand-primary-grad);
+    background: var(--kl-btn-fill-grad);
     border-color: transparent;
     color: #fff;
-    box-shadow: var(--kl-brand-primary-shadow);
+    box-shadow: var(--kl-btn-fill-shadow);
 }
 
 .kl-btn.gray-fill,

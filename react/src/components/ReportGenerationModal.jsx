@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { workspaceApi } from '../services/api';
 import BaseModal from './common/modal/BaseModal';
+import KlCheckbox from './common/KlCheckbox';
+import {
+    KL_MODAL_FORM_CHECK_CLASS,
+    KL_MODAL_FORM_CHECK_EMPHASIS_CLASS,
+} from './common/modal/klModalForm';
 import { useDialog } from '../hooks/useDialog';
 import './ReportGenerationModal.css';
 
@@ -290,16 +295,15 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
 
                     {!isDefault && (
                         <div className="persona-disable-agreement">
-                            <label className="persona-disable-consent" htmlFor="persona-disabled">
-                                <input
-                                    id="persona-disabled"
-                                    type="checkbox"
-                                    checked={!editEnabled}
-                                    onChange={(e) => setEditEnabled(!e.target.checked)}
-                                    disabled={saving}
-                                />
-                                <span>사용안함</span>
-                            </label>
+                            <KlCheckbox
+                                id="persona-disabled"
+                                className={`${KL_MODAL_FORM_CHECK_CLASS} ${KL_MODAL_FORM_CHECK_EMPHASIS_CLASS}`}
+                                checked={!editEnabled}
+                                onChange={(e) => setEditEnabled(!e.target.checked)}
+                                disabled={saving}
+                            >
+                                사용안함
+                            </KlCheckbox>
                         </div>
                     )}
                 </form>
@@ -358,19 +362,16 @@ function ReportGenerationModal({ isOpen, onClose, workspaceId }) {
                                                     ? (role.promptText.length > 50 ? `${role.promptText.substring(0, 50)}...` : role.promptText)
                                                     : ''}
                                             </p>
-                                            <label
-                                                className="persona-checkbox-label"
-                                                onMouseDown={(e) => e.stopPropagation()}
+                                            <KlCheckbox
+                                                className={`${KL_MODAL_FORM_CHECK_CLASS} persona-checkbox-label`}
+                                                checked={isRoleDisabled(role)}
+                                                onChange={(e) => handleToggleEnabled(role, e)}
                                                 onClick={(e) => e.stopPropagation()}
+                                                onLabelClick={(e) => e.stopPropagation()}
+                                                onLabelMouseDown={(e) => e.stopPropagation()}
                                             >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isRoleDisabled(role)}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    onChange={(e) => handleToggleEnabled(role, e)}
-                                                />
-                                                <span>사용안함</span>
-                                            </label>
+                                                사용안함
+                                            </KlCheckbox>
                                         </div>
                                     ))}
                                 </div>

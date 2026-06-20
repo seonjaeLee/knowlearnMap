@@ -92,7 +92,7 @@
   max-width: none;
 }
 
-/* 모달 Form 체크박스 라벨 (활성화·동의 등) */
+/* 모달 Form 체크박스 라벨 (활성화·동의 등) — vertical-align은 kl-checkbox.css의 label:has() 공용 규칙이 처리 */
 .kl-modal-form-check {
   display: inline-flex;
   align-items: center;
@@ -112,15 +112,6 @@
 .kl-modal-form-check--emphasis {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
-}
-
-.kl-modal-form-check input[type='checkbox'] {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  flex-shrink: 0;
-  cursor: pointer;
-  accent-color: var(--color-accent);
 }
 
 .kl-modal-form-helper--legal {
